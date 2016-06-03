@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\BooleanParameter;
 
 /**
- * Class MultiChannelOutput
- *
  * A BooleanParameter to indicate whether the output is multi-channel.
  *
- * @package hrm\param
+ * @package hrm
  */
 class MultiChannelOutput extends BooleanParameter
 {

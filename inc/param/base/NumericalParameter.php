@@ -15,11 +15,9 @@ use hrm\DatabaseConnection;
 require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
- * Class NumericalParameter
- *
  * Class for a Parameter that has a scalar number as possible value.
  *
- * @package hrm\param
+ * @package hrm
  */
 class NumericalParameter extends Parameter
 {

@@ -14,11 +14,9 @@ use hrm\DatabaseConnection;
 use hrm\param\base\ChoiceParameter;
 
 /**
- * Class OutputFileFormat
- *
  * A ChoiceParameter to represent the output file format.
  *
- * @package hrm\param
+ * @package hrm
  */
 class OutputFileFormat extends ChoiceParameter
 {

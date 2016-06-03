@@ -15,10 +15,10 @@ use hrm\param\base\ChoiceParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class PointSpreadFunction
- *
- * Class that handles the type of PointSpreadFunction to be used,
+ * A ChoiceParameter to handle the type of PointSpreadFunction to be used,
  * theoretical or measured.
+ *
+ * @package hrm
  */
 class PointSpreadFunction extends ChoiceParameter
 {

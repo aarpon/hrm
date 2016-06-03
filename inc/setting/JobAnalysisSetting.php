@@ -14,8 +14,6 @@ require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 
 /**
- * Class JobAnalysisSetting
- *
  * A JobAnalysisSetting is an AnalysisSetting that is used when a Job is
  * executed by the queue manager. It uses different database tables and knows
  * how to put its parameter settings onto a script.

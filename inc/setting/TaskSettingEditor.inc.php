@@ -16,8 +16,6 @@ require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 
 /**
- * Class TaskSettingEditor
- *
  * Implements an Editor for TaskSetting.
  *
  * @package hrm

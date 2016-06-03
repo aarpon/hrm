@@ -13,10 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class StedImmunity
+ * A NumericalArrayParameter to represent the STED immunity fraction.
  *
- * A NumericalParameter to represent the STED immunity fraction.
- * @package hrm\param
+ * @package hrm
  */
 class StedImmunity extends NumericalArrayParameter
 {

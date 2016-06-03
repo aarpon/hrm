@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\AnyTypeArrayParameter;
 
 /**
- * Class ColocCoefficient
+ * An AnyTypeArrayParameter to represent the colocalization coefficients choice.
  *
- * A ChoiceParameter to represent the colocalization coefficients choice.
- *
- * @package hrm\param
+ * @package hrm
  */
 class ColocCoefficient extends AnyTypeArrayParameter
 {

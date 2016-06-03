@@ -28,7 +28,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
  * A user with read-access to Active Directory must be set up in the
  * configuration file for queries to be possible.
  *
- * @package hrm\auth
+ * @package hrm
  */
 class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 

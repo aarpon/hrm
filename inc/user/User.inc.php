@@ -18,8 +18,9 @@ require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 
 /**
- * @class   User
  * Manages a user and its state.
+ *
+ * @package hrm
  */
 class User {
 

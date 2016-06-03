@@ -15,13 +15,11 @@ use hrm\param\base\NumericalArrayParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class EmissionWavelength
- *
- * A NumericalParameter to represent the excitation wavelength
+ * A NumericalArrayParameter to represent the excitation wavelength.
  *
  * The EmissionWavelength class can store an array of numbers as value.
  *
- * @package hrm\param
+ * @package hrm
  */
 class EmissionWavelength extends NumericalArrayParameter
 {

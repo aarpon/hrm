@@ -13,11 +13,9 @@ namespace hrm\param\base;
 require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
- * Class NumericalVectorParameter
- *
  * Class for a channel Parameter consisting of N components.
  *
- * @package hrm\param
+ * @package hrm
  */
 class NumericalVectorParameter extends NumericalParameter
 {

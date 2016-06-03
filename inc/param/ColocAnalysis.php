@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\ChoiceParameter;
 
 /**
- * Class ColocAnalysis
+ * A ChoiceParameter to represent the colocalization analysis choice.
  *
- * A ChoiceParameter to represent the colocalization analysis choice..
- *
- * @package hrm\param
+ * @package hrm
  */
 class ColocAnalysis extends ChoiceParameter
 {

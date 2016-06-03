@@ -7,10 +7,11 @@ namespace hrm;
 require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
 /**
- * Class Nav
  * Commodity class to manage all links and actions of the navigation bar.
  *
  * All items are enclosed in <li> tags.
+ *
+ * @package hrm
  */
 class Nav
 {

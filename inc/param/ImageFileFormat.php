@@ -16,11 +16,9 @@ use hrm\param\base\SingleOrMultiChannelParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class ImageFileFormat
- *
  * A SingleOrMultiChannelParameter to represent the image file format.
  *
- * @package hrm\param
+ * @package hrm
  */
 class ImageFileFormat extends SingleOrMultiChannelParameter
 {
@@ -42,7 +40,7 @@ class ImageFileFormat extends SingleOrMultiChannelParameter
         return True;
     }
 
-    /***
+    /**
      * Returns all image file extensions for current or given format.
      * @param string $value Set to null to get the extensions for current format.
      * @return array Array of file extensions.

@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class SpimFocusOffset
- *
  * A NumericalArrayParameter to represent the focus offset of the SPIM light sheet
  *
- * @package hrm\param
+ * @package hrm
  */
 class SpimFocusOffset extends NumericalArrayParameter
 {

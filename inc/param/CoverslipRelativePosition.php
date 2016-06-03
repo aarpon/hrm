@@ -13,12 +13,10 @@ namespace hrm\param;
 use hrm\param\base\ChoiceParameter;
 
 /**
- * Class CoverslipRelativePosition
- *
  * A ChoiceParameter to represent the relative position of plane 0 with respect
  * to the coverslip.
  *
- * @package hrm\param
+ * @package hrm
  */
 class CoverslipRelativePosition extends ChoiceParameter
 {

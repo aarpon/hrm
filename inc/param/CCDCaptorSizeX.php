@@ -14,11 +14,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalParameter;
 
 /**
- * Class CCDCaptorSizeX
- *
  * A NumericalParameter to represent the x-size of the CCD pixel.
  *
- * @package hrm\param
+ * @package hrm
  */
 class CCDCaptorSizeX extends NumericalParameter
 {

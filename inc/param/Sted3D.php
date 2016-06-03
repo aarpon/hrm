@@ -13,10 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class Sted3D
- *
  * A NumericalArrayParameter to represent the STED 3D parameters.
- * @package hrm\param
+ *
+ * @package hrm
  */
 class Sted3D extends NumericalArrayParameter
 {

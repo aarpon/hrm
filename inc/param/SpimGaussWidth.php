@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class SpimGaussWidth
- *
  * A NumericalArrayParameter to represent the SPIM width of a Gaussian sheet.
  *
- * @package hrm\param
+ * @package hrm
  */
 class SpimGaussWidth extends NumericalArrayParameter
 {

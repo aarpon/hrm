@@ -17,8 +17,6 @@ use Monolog\Handler\StreamHandler;
 require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
 /**
- * Class Logger
- *
  * Singleton class that sets up the logging facility (using Monolog) once.
  *
  * @package hrm
@@ -26,14 +24,19 @@ require_once dirname(__FILE__) . '/bootstrap.inc.php';
 class Log
 {
     /**
-     * Logger instance (singleton)
+     * Log instance (singleton)
      * @var Logger
      */
     private static $instance;
+
+    /**
+     * Instance of the Monolog::Logger class.
+     * @var Monolog::Logger
+     */
     private static $monologger;
 
     /**
-     * Private Logger constructor.
+     * Private Log constructor.
      *
      * Instantiates a static instance of the Log class and of the
      * Monolog::Logger class.

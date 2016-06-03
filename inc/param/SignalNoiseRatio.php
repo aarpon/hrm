@@ -13,9 +13,7 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class SignalNoiseRatio
- *
- * A NumericalParameter to represent the SNR per channel.
+ * A NumericalArrayParameter to represent the SNR per channel.
  *
  * @package hrm@param
  */

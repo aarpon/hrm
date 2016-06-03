@@ -15,11 +15,9 @@ use hrm\param\base\ChoiceParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class NumberOfChannels
- *
  * A ChoiceParameter to represent the number of channels.
  *
- * @package hrm\param
+ * @package hrm
  */
 class NumberOfChannels extends ChoiceParameter
 {

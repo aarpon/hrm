@@ -13,14 +13,14 @@ namespace hrm;
 require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
 /**
- * Class Validator
- *
  * Validates and in very rare cases sanitizes relevant user input.
  *
- * This <b>static</b> class checks user input through login forms, to avoid
+ * This **static** class checks user input through login forms, to avoid
  * attacks. Here, no SQL escape functions are (explicitly) called!
  *
  * This is the initial implementation and might require additional checks.
+ * 
+ * @package hrm
  */
 class Validator
 {

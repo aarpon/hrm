@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\AnyTypeArrayParameter;
 
 /**
- * Class ColocThreshold
- *
  * An AnyTypeArrayParameter to represent the colocalization threshold.
  *
- * @package hrm\param
+ * @package hrm
  */
 class ColocThreshold extends AnyTypeArrayParameter
 {

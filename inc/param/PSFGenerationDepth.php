@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalParameter;
 
 /**
- * Class PSFGenerationDepth
- *
  * A NumericalParameter to represent the depth of the PSF generation.
  *
- * @package hrm\param
+ * @package hrm
  */
 class PSFGenerationDepth extends NumericalParameter
 {

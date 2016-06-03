@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class StedWavelength
- *
  * A NumericalParameter to represent the STED depletion wavelength.
  *
- * @package hrm\param
+ * @package hrm
  */
 class StedWavelength extends NumericalArrayParameter
 {

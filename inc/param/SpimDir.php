@@ -14,11 +14,9 @@ use hrm\DatabaseConnection;
 use hrm\param\base\AnyTypeArrayParameter;
 
 /**
- * Class SpimDir
+ * An AnyTypeArrayParameter to represent the SPIM direction.
  *
- * An AnyTypeArrayParameter to represent the SPIM direction .
- *
- * @package hrm\param
+ * @package hrm
  */
 class SpimDir extends AnyTypeArrayParameter
 {

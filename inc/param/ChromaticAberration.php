@@ -14,13 +14,11 @@ use hrm\DatabaseConnection;
 use hrm\param\base\NumericalVectorParameter;
 
 /**
- * Class ChromaticAberration
- *
  * A multi-channel, vector parameter to characterize the chromatic aberration.
  *
  * @todo Why doesn't this inherit from any base class?
  *
- * @package hrm\param
+ * @package hrm
  */
 class ChromaticAberration
 {

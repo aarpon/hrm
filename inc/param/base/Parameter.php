@@ -17,8 +17,6 @@ require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 
 /**
- * Class Parameter
- *
  * (Abstract) base class for all Parameter types in the HRM.
  */
 abstract class Parameter {
@@ -114,6 +112,7 @@ abstract class Parameter {
     }
 
     /**
+     * Return true of the value is not set.
      * @return bool True if the value is *not set* (i.e. null), false otherwise.
      */
     public function notSet( ) {

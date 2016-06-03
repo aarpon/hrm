@@ -15,12 +15,9 @@ use hrm\DatabaseConnection;
 require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
- * Class ChoiceParameter
- *
- * Base class for all ChoiceParameter types.
  * The ChoiceParameter can assume a limited number of possible values.
  *
- * @package hrm\param
+ * @package hrm
  */
 abstract class ChoiceParameter extends Parameter
 {

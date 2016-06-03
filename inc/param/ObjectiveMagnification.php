@@ -15,11 +15,9 @@ use hrm\param\base\ChoiceParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class ObjectiveMagnification
- *
  * A ChoiceParameter to represent the objective magnification.
  *
- * @package hrm\param
+ * @package hrm
  */
 class ObjectiveMagnification extends ChoiceParameter
 {

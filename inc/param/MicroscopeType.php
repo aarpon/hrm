@@ -16,11 +16,9 @@ use hrm\param\base\ChoiceParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class MicroscopeType
- *
  * A ChoiceParameter to represent the microscope type.
  *
- * @package hrm\param
+ * @package hrm
  */
 class MicroscopeType extends ChoiceParameter
 {
@@ -33,7 +31,7 @@ class MicroscopeType extends ChoiceParameter
         parent::__construct("MicroscopeType");
     }
 
-    /***
+    /**
      * Confirms that this is a Microscope Parameter.
      * @return bool Always true.
      */

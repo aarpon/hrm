@@ -20,7 +20,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
  *
  * Manages authentication against the internal HRM  user database.
  *
- * @package hrm\auth
+ * @package hrm
  */
 class InternalAuthenticator extends AbstractAuthenticator {
 

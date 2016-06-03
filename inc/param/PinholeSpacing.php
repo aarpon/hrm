@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalParameter;
 
 /**
- * Class PinholeSpacing
- *
  * A NumericalParameter to represent the pinhole spacing per Nipkow spinning disks.
  *
- * @package hrm\param
+ * @package hrm
  */
 class PinholeSpacing extends NumericalParameter
 {

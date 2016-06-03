@@ -15,8 +15,6 @@ use hrm\param\ColocAnalysis;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class AnalysisSetting
- *
  * An AnalysisSetting is a complete set of analysis parameters.
  *
  * @package hrm

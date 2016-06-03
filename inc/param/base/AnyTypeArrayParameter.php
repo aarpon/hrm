@@ -16,13 +16,13 @@ require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 
 /**
- * Class AnyTypeArrayParameter
- *
  * Class for a Parameter that has an array of variable of any type
- * as possible value. It inherits from NumericalArrayParameter and
- * relaxes the condition that the values must be integers.
+ * as possible value.
  *
- * @package hrm\param
+ * It inherits from NumericalArrayParameter and relaxes the condition that
+ * the values must be integers.
+ *
+ * @package hrm
  */
 class AnyTypeArrayParameter extends NumericalArrayParameter
 {

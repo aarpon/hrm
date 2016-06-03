@@ -14,11 +14,10 @@ require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 
 /**
- * Class JobParameterSetting
- *
  * A JobParameterSetting is a ParameterSetting that is used when a Job is
  * executed by the queue manager. It uses different database tables and knows
  * how to put its parameter settings onto a script.
+ * 
  * @package hrm
  */
 class JobParameterSetting extends ParameterSetting

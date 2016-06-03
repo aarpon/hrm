@@ -19,8 +19,6 @@ use hrm\setting\base\Setting;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class ParameterSetting
- *
  * A ParameterSetting is a complete set of microscope, image, SPIM, STED,
  * aberration correction, pixel size calculation and capture parameters.
  *

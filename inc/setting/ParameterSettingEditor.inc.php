@@ -16,8 +16,6 @@ require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 
 /**
- * Class ParameterSettingEditor
- *
  * Implements an Editor for ParameterSetting.
  *
  * @package hrm

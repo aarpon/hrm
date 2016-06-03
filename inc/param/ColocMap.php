@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\ChoiceParameter;
 
 /**
- * Class ColocMap
- *
  * A ChoiceParameter to represent the colocalization map choice.
  *
- * @package hrm\param
+ * @package hrm
  */
 class ColocMap extends ChoiceParameter {
 

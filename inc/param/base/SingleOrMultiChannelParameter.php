@@ -13,12 +13,12 @@ namespace hrm\param\base;
 require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
- * Class SingleOrMultiChannelParameter
- *
  * A ChoiceParameter that handles single- and multi-channel Parameters
  * with prefixing.
  *
- * @package hrm\param
+ * @todo Check whether this is still used anywhere.
+ * 
+ * @package hrm
  */
 class SingleOrMultiChannelParameter extends ChoiceParameter {
 

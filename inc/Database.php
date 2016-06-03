@@ -18,9 +18,7 @@ require_once dirname(__FILE__) . "/bootstrap.inc.php";
 require_once dirname(__FILE__) . "/Util.inc.php" ;
 
 /**
- * Class DatabaseConnection
- *
- * Manages the database connection through the ADOdb library
+ * Manages the database connection through the ADOdb library.
  *
  * This class abstracts the database back-end and should be used to handle all
  * communication to and from it. Since there are some differences between the

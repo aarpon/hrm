@@ -16,11 +16,9 @@ use hrm\param\base\ChoiceParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class SampleMedium
- *
  * A ChoiceParameter to represent the sample medium.
  *
- * @package hrm\param
+ * @package hrm
  */
 class SampleMedium extends ChoiceParameter
 {

@@ -13,9 +13,9 @@ namespace hrm;
 require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
 /**
- * Mail
- *
  * Commodity class for sending e-mails.
+ *
+ * @package hrm
  */
 class Mail
 {

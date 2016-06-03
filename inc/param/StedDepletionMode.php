@@ -14,11 +14,9 @@ use hrm\DatabaseConnection;
 use hrm\param\base\AnyTypeArrayParameter;
 
 /**
- * Class StedDepletionMode
- *
  * An AnyTypeArrayParameter to represent the STED depletion mode.
  *
- * @package hrm\param
+ * @package hrm
  */
 class StedDepletionMode extends AnyTypeArrayParameter
 {

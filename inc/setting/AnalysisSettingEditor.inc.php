@@ -15,8 +15,6 @@ require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 
 /**
- * Class AnalysisSettingEditor
- *
  * Implements an Editor for AnalysisSetting.
  *
  * @package hrm

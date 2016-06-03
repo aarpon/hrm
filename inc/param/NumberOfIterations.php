@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalParameter;
 
 /**
- * Class NumberOfIterations
- *
  * A NumericalParameter to represent the number of iterations.
  *
- * @package hrm\param
+ * @package hrm
  */
 class NumberOfIterations extends NumericalParameter
 {

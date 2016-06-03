@@ -15,11 +15,9 @@ use hrm\param\base\NumericalParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class NumericalAperture
- *
  * A NumericalParameter to represent the numerical aperture of the objective.
  *
- * @package hrm\param
+ * @package hrm
  */
 class NumericalAperture extends NumericalParameter
 {

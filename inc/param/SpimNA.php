@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class SpimNA
- *
  * A NumericalArrayParameter to represent the NA of the SPIM lens.
  *
- * @package hrm\param
+ * @package hrm
  */
 class SpimNA extends NumericalArrayParameter
 {

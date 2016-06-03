@@ -14,11 +14,9 @@ use hrm\DatabaseConnection;
 use hrm\param\base\AnyTypeArrayParameter;
 
 /**
- * Class SpimExcMode
- *
  * An AnyTypeArrayParameter to represent the SPIM excitation mode.
  *
- * @package hrm\param
+ * @package hrm
  */
 class SpimExcMode extends AnyTypeArrayParameter
 {

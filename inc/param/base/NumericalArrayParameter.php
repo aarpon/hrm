@@ -15,12 +15,10 @@ use hrm\DatabaseConnection;
 require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
- * Class NumericalArrayParameter
- *
  * Class for a Parameter that has an array of numbers as possible value,
  * where each entry represents a channel.
  *
- * @package hrm\param
+ * @package hrm
  */
 class NumericalArrayParameter extends NumericalParameter
 {

@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class ColocChannel
+ * A NumericalArrayParameter to represent the colocalization channel choice.
  *
- * A NumericalParameter to represent the colocalization channel choice.
- *
- * @package hrm\param
+ * @package hrm
  */
 class ColocChannel extends NumericalArrayParameter
 {

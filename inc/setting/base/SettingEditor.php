@@ -18,8 +18,6 @@ require_once dirname(__FILE__) . '/../../Util.inc.php';
 
 
 /**
- * Class SettingEditor
- *
  * Abstract class for a SettingEditor.
  *
  * @package hrm

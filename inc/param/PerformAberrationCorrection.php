@@ -13,14 +13,12 @@ namespace hrm\param;
 use hrm\param\base\ChoiceParameter;
 
 /**
- * Class PerformAberrationCorrection
- *
  * A ChoiceParameter to indicate whether aberration correction should be
  * performed.
  *
  * @todo Why not a BooleanParameter?
  *
- * @package hrm\param
+ * @package hrm
  */
 class PerformAberrationCorrection extends ChoiceParameter
 {

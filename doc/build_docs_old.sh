@@ -13,11 +13,10 @@ else
     dest="./api/private"
 fi
 
-./apigen.phar generate \
-    --source ../inc --destination ${dest} \
-    --access-levels="${levels}" \
-    --todo \
-    --title="Huygens Remote Manager" \
-    --no-source-code \
-    --tree \
-    --template-theme bootstrap
+../vendor/bin/phpdoc -d ../inc/ \
+                     -t ${dest} \
+                     --ignore "/extern/*" \
+                     --visibility=${levels} \
+                     --template="responsive-twig"
+
+# Templates: "clean", "responsive-twig"

@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalParameter;
 
 /**
- * Class ZStepSize
- *
  * A NumericalParameter to represent the z step (distance between planes).
  *
- * @package hrm\param
+ * @package hrm
  */
 class ZStepSize extends NumericalParameter
 {

@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalParameter;
 
 /**
- * Class QualityChangeStoppingCriterion
- *
  * A NumericalParameter to represent the quality change stopping criterion.
  *
- * @package hrm\param
+ * @package hrm
  */
 class QualityChangeStoppingCriterion extends NumericalParameter
 {

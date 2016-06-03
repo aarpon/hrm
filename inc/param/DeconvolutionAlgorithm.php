@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\ChoiceParameter;
 
 /**
- * Class DeconvolutionAlgorithm
- *
  * A ChoiceParameter to represent the deconvolution algorithm.
  *
- * @package hrm\param
+ * @package hrm
  */
 class DeconvolutionAlgorithm extends ChoiceParameter
 {

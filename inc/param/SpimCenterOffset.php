@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class SpimCenterOffset
- *
  * A NumericalArrayParameter to represent the Z offset of the light sheet center.
  *
- * @package hrm\param
+ * @package hrm
  */
 class SpimCenterOffset extends NumericalArrayParameter
 {

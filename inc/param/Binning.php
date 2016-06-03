@@ -15,11 +15,9 @@ use hrm\param\base\ChoiceParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class Binning
- *
  * A ChoiceParameter to represent the binning.
  *
- * @package hrm\param
+ * @package hrm
  */
 class Binning extends ChoiceParameter
 {

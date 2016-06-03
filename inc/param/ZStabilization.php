@@ -13,14 +13,12 @@ namespace hrm\param;
 use hrm\param\base\ChoiceParameter;
 
 /**
- * Class ZStabilization
- *
  * A ChoiceParameter to indicate whether stabilization in the Z direction
  * is enabled.
  *
  * @todo Why not a BooleanParameter?
  *
- * @package hrm\param
+ * @package hrm
  */
 class ZStabilization extends ChoiceParameter
 {

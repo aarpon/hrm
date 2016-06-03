@@ -15,13 +15,13 @@ require_once dirname(__FILE__) . '/bootstrap.inc.php';
 require_once("Util.inc.php");
 
 /**
- * Class System
- *
  * Commodity class for inspecting the System.
  *
- * This <b>static</b> class provides several commodity functions to inspect
+ * This **static** class provides several commodity functions to inspect
  * system and configuration parameters and to format their input in various
  * ways.
+ *
+ * @package hrm
  */
 class System
 {

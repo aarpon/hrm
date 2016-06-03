@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class SpimFill
+ * A NumericalArrayParameter to represent the SPIM Fill Factor.
  *
- * A NumericalArrayParameter to represent the SPIM Fill Factor
- *
- * @package hrm\param
+ * @package hrm
  */
 class SpimFill extends NumericalArrayParameter
 {

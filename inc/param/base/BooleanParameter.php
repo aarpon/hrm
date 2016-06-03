@@ -13,11 +13,9 @@ namespace hrm\param\base;
 require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
- * Class BooleanParameter
- *
  * Class for a Parameter that has only true and false as possible value.
  *
- * @package hrm\param
+ * @package hrm
  */
 class BooleanParameter extends ChoiceParameter
 {

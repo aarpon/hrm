@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\AnyTypeArrayParameter;
 
 /**
- * Class BackgroundOffsetPercent
- *
  * An AnyTypeArrayParameter to represent the background offset in percent.
  *
- * @package hrm\param
+ * @package hrm
  */
 class BackgroundOffsetPercent extends AnyTypeArrayParameter
 {

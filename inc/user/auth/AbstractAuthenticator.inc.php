@@ -23,7 +23,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
  * The User class expects concrete Authenticator classes to extend this class
  * and implement all of its abstract methods.
  *
- * @package hrm\auth
+ * @package hrm
  */
 abstract class AbstractAuthenticator {
 

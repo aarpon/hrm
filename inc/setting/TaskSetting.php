@@ -17,8 +17,6 @@ require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 
 /**
- * Class TaskSetting
- *
  * A TaskSetting is a complete set of restoration parameters.
  *
  * @package hrm

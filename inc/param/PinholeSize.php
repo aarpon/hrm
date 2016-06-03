@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class PinholeSize
- *
  * A NumericalArrayParameter to represent the pinhole size per channel.
  *
- * @package hrm\param
+ * @package hrm
  */
 class PinholeSize extends NumericalArrayParameter
 {

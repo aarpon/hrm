@@ -20,7 +20,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
  * Returns the Authenticator object to be used to manage the user based on the
  * value of $authenticateAgainst from the configuration files.
  *
- * @package hrm\auth
+ * @package hrm
  */
 class AuthenticatorFactory {
 

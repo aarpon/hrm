@@ -15,12 +15,12 @@ use hrm\param\base\BooleanParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class IsMultiChannel
- *
  * A BooleanParameter that distinguishes between single- and multi-channel
  * images.
  *
- * @package hrm\param
+ * @todo Is this still in use?
+ * 
+ * @package hrm
  */
 class IsMultiChannel extends BooleanParameter
 {

@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\BooleanParameter;
 
 /**
- * Class AberrationCorrectionNecessary
- *
  * A BooleanParameter to indicate whether aberration correction is necessary.
  *
- * @package hrm\param
+ * @package hrm
  */
 class AberrationCorrectionNecessary extends BooleanParameter {
 

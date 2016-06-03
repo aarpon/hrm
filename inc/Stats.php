@@ -18,12 +18,11 @@ require_once("Database.php");
 require_once("Util.inc.php");
 
 /**
- * Class Type
- * @package hrm
- *
- * Type of display to be generated from the statistics
+ * Type of display to be generated from the statistics.
  *
  * This class is used by the Stats class.
+ *
+ * @package hrm
  */
 class Type
 {
@@ -492,10 +491,9 @@ class Type
 */
 
 /**
- * Class Stats
- * @package hrm
- *
  * Commodity class to generate statistics of HRM usage.
+ *
+ * @package hrm
  */
 class Stats
 {

@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
- * Class StedSaturationFactor
+ * A NumericalArrayParameter to represent the STED saturation factor.
  *
- * A NumericalParameter to represent the STED saturation factor.
- *
- * @package hrm\param
+ * @package hrm
  */
 class StedSaturationFactor extends NumericalArrayParameter
 {

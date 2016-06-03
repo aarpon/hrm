@@ -16,8 +16,6 @@ use hrm\user\User;
 require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
 
 /**
- * Class Setting
- *
  * (Abstract) base class for all specific Setting classes.
  *
  * @package hrm

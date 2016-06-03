@@ -13,13 +13,11 @@ namespace hrm\param;
 use hrm\param\base\ChoiceParameter;
 
 /**
- * Class Autocrop
- *
  * A ChoiceParameter to indicate whether autocrop is enabled.
  *
  * @todo Whyt not using a BooleanParameter?
  *
- * @package hrm\param
+ * @package hrm
  */
 class Autocrop extends ChoiceParameter
 {

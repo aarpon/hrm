@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalParameter;
 
 /**
- * Class CMount
- *
  * A NumericalParameter to represent the c-mount.
  *
- * @package hrm\param
+ * @package hrm
  */
 class CMount extends NumericalParameter {
 

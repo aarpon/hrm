@@ -15,12 +15,10 @@ use hrm\param\base\AnyTypeArrayParameter;
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
 /**
- * Class PSF
- *
  * An AnyTypeArrayParameter that handles the file names of the PSF files per
  * channel.
  *
- * @package hrm\param
+ * @package hrm
  */
 class PSF extends AnyTypeArrayParameter
 {

@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalParameter;
 
 /**
- * Class TubeFactor
- *
  * A NumericalParameter to represent the tube factor.
  *
- * @package hrm\param
+ * @package hrm
  */
 class TubeFactor extends NumericalParameter
 {

@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\ChoiceParameter;
 
 /**
- * Class AdvancedCorrectionOptions
- *
  * A ChoiceParameter to indicate the options of aberration correction.
  *
- * @package hrm\param
+ * @package hrm
  */
 class AdvancedCorrectionOptions extends ChoiceParameter
 {

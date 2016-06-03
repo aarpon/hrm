@@ -13,11 +13,9 @@ namespace hrm\param;
 use hrm\param\base\NumericalParameter;
 
 /**
- * Class TimeInterval
- *
  * A NumericalParameter to represent the time interval in time series.
  *
- * @package hrm\param
+ * @package hrm
  */
 class TimeInterval extends NumericalParameter
 {
