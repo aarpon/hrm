@@ -33,7 +33,7 @@ class UserManagerFactory {
         // If the user is the Admin, we currently must return
         // an InternalAuthenticator
         if ($isAdmin) {
-            require_once(dirname(__FILE__) . "/InternalUserManager.inc.php");
+            require_once(dirname(__FILE__) . "/InternalUserManager.php");
             return new InternalUserManager();
         }
 

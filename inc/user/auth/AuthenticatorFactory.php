@@ -40,7 +40,6 @@ class AuthenticatorFactory {
         // If the user is the Admin, we currently must return
         // an InternalAuthenticator
         if ($isAdmin) {
-            require_once(dirname(__FILE__) . "/InternalAdminAuthenticator.inc.php");
             return new InternalAdminAuthenticator();
         }
 
@@ -49,18 +48,15 @@ class AuthenticatorFactory {
 
             case "MYSQL":
 
-                require_once(dirname(__FILE__) . "/InternalAuthenticator.inc.php");
                 return new InternalAuthenticator();
 
             case "LDAP":
 
-                require_once(dirname(__FILE__) . "/LDAPAuthenticator.inc.php");
                 return new LDAPAuthenticator();
 
             case "ACTIVE_DIR":
 
                 // Initialize the ActiveDirectoryAuthenticator object
-                require_once(dirname(__FILE__) . "/ActiveDirectoryAuthenticator.inc.php");
                 return new ActiveDirectoryAuthenticator();
 
             default:

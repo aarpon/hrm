@@ -4,7 +4,7 @@
 
 require_once("Parameter.inc.php");
 require_once("Database.php");
-require_once("user/User.inc.php");
+require_once("user/User.php");
 require_once("Shell.inc.php");
 require_once("hrm_config.inc.php");
 require_once("Job.inc.php");
