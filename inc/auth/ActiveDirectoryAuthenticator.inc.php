@@ -178,6 +178,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
             $username = preg_replace($pattern,
                 $this->m_UsernameSuffixReplaceString,
                 $username);
+            report("Processed AD user name: '$username'", 0);
         }
 
         // Get the user groups from AD
@@ -208,6 +209,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
             $username = preg_replace($pattern,
                                      $this->m_UsernameSuffixReplaceString,
                                      $username);
+            report("Processed AD user name: '$username'", 0);
         }
 
         // Get the email from AD
@@ -237,6 +239,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
             $username = preg_replace($pattern,
                                      $this->m_UsernameSuffixReplaceString,
                                      $username);
+            report("Processed AD user name: '$username'", 0);
         }
 
         // Get the user groups from AD
