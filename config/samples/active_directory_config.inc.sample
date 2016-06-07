@@ -18,12 +18,47 @@
     // Domain controller port
     $AD_PORT = 389;
 
-    // Special settings to postprocess domain suffixes in an Active Directory
-    // multidomain / forest environment. Leave empty in a regular AD setup.
-    // See the documentation in case you're in an AD forest.
+
+    //////// ActiveDirectory User Name Processing ////////
+
+    // Append this string to the name specified by the user. Can be used to
+    // allow for "short" login names when the authentication service requires
+    // the full name, e.g. if this is set to "mydomain.local", the user
+    // "foo234@mydomain.local" can log on with the short name "foo234".
     $AD_USERNAME_SUFFIX = "";
+
+    // SPECIAL SETTINGS to rewrite the username in case an ActiveDirectory
+    // forest is in use where users from different LEVELS of the forest's
+    // hierarchy should be allowed to log on. Assuming this AD-forest structure
+    // (NetBIOS names in captial letters, DNS names in brackets)
+    //
+    // MYDOMAIN                     (ads.mydomain.local)
+    // |__ TITAN              (titan.ads.mydomain.local)
+    // |__ EUROPE            (europe.ads.mydomain.local)
+    // \__ GANYMEDE        (ganymede.ads.mydomain.local)
+    //
+    // and the following user names
+    //
+    //          foo123@ads.mydomain.local
+    //    bar456@titan.ads.mydomain.local
+    //   zap789@europe.ads.mydomain.local
+    // cat963@ganymede.ads.mydomain.local
+    //
+    // a configuration like this would allow all users from all domains to use
+    // the short versions "foo123@mydomain", "bar456@titan", "zap789@europe"
+    // and "cat963@ganymede" for logging in, instead of having to type their
+    // full DNS user names as shown above:
+    //
+    // $AD_USERNAME_SUFFIX = ".ads.mydomain.local";
+    // $AD_USERNAME_SUFFIX_PATTERN = "@mydomain.ads.mydomain.local";
+    // $AD_USERNAME_SUFFIX_REPLACE = "@ads.mydomain.local";
+
+    // LEAVE EMPTY in a REGULAR ActiveDirectory setup!!
     $AD_USERNAME_SUFFIX_PATTERN = "";
     $AD_USERNAME_SUFFIX_REPLACE = "";
+
+    //////// ActiveDirectory User Name Processing ////////
+
 
     // Optional account with higher privileges for searching (otherwise
     // leave it to NULL). This should be set to a domain admin account (only
