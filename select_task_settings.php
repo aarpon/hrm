@@ -2,15 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-use hrm\AnalysisSetting;
 use hrm\Nav;
+use hrm\setting\AnalysisSetting;
+use hrm\setting\TaskSettingEditor;
 use hrm\System;
-use hrm\TaskSettingEditor;
 use hrm\user\User;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
-
-require_once("./inc/Parameter.inc.php");
 
 
 /* *****************************************************************************

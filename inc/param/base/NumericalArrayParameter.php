@@ -3,7 +3,6 @@
  * NumericalArrayParameter
  *
  * @package hrm
- * @subpackage param\base
  *
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt

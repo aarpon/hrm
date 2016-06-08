@@ -2,14 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\setting\AnalysisSetting;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Parameter.inc.php");
-require_once("./inc/Setting.inc.php");
-require_once("./inc/Database.php");
 require_once("./inc/Util.inc.php");
 
 /* *****************************************************************************
@@ -105,18 +103,17 @@ include("header.inc.php");
     ***************************************************************************/
     ?>
             <fieldset class="setting"
-                onmouseover="javascript:changeQuickHelp( 'perform' );" >
+                onmouseover="changeQuickHelp( 'perform' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
-                       'http://www.svi.nl/ColocalizationBasics')">
+                    <a href="openWindow('http://www.svi.nl/ColocalizationBasics')">
                         <img src="images/help.png" alt="?" />
                     </a>
                     Would you like to perform Colocalization Analysis?
                     </legend>
                     <select id="ColocAnalysis"
                               name="ColocAnalysis"
-                              onchange="javascript:switchColocMode();">
+                              onchange="switchColocMode();">
 
 <?php
 
@@ -165,11 +162,10 @@ if ($parameterPerformColocAnalysis->value( ) == 1)
 
 <div id="ColocChannelSelectionDiv"<?php echo $visibility?>>
  <fieldset class="setting"
-            onmouseover="javascript:changeQuickHelp( 'channels' );" >
+            onmouseover="changeQuickHelp( 'channels' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
-                       'http://www.svi.nl/ColocalizationBasics')">
+                    <a href="openWindow('http://www.svi.nl/ColocalizationBasics')">
                         <img src="images/help.png" alt="?" />
                     </a>
 Channels
@@ -212,10 +208,10 @@ $selectedValues = $parameterColocChannel->value();
 
 <div id="ColocCoefficientSelectionDiv"<?php echo $visibility?>>
  <fieldset class="setting"
-            onmouseover="javascript:changeQuickHelp( 'coeff' );" >
+            onmouseover="changeQuickHelp( 'coeff' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/ColocalizationCoefficientsInBrief')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -280,9 +276,9 @@ foreach ($possibleValues as $possibleValue) {
 ?>
 <div id="ColocThresholdSelectionDiv"<?php echo $visibility?>>
 <fieldset class="setting"
-    onmouseover="javascript:changeQuickHelp( 'threshold' );" >
+    onmouseover="changeQuickHelp( 'threshold' );" >
     <legend>
-<a href="javascript:openWindow(
+<a href="openWindow(
                        'http://www.svi.nl/ColocalizationBasics')">
     <img src="images/help.png" alt="?" />
     </a>
@@ -376,10 +372,10 @@ if ($colocThreshold[0] != "" && $colocThreshold[0] != "auto") {
 
 <div id="ColocMapSelectionDiv"<?php echo $visibility?>>
  <fieldset class="setting"
-            onmouseover="javascript:changeQuickHelp( 'maps' );" >
+            onmouseover="changeQuickHelp( 'maps' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/ColocalizationMap')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -424,7 +420,7 @@ foreach ($possibleValues as $possibleValue) {
             <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
-                 onmouseover="javascript:changeQuickHelp( 'default' );">
+                 onmouseover="changeQuickHelp( 'default' );">
               <input type="button" value="" class="icon up"
                   id="controls_cancel"
                   onclick="document.location.href='select_analysis_settings.php'" />
@@ -442,7 +438,7 @@ foreach ($possibleValues as $possibleValue) {
 
 
     <div id="rightpanel"
-         onmouseover="javascript:changeQuickHelp( 'default' );" >
+         onmouseover="changeQuickHelp( 'default' );" >
 
         <div id="info">
 

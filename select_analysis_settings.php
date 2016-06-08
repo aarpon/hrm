@@ -3,6 +3,9 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\setting\AnalysisSetting;
+use hrm\setting\AnalysisSettingEditor;
+use hrm\user\User;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 

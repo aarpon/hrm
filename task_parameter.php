@@ -4,13 +4,11 @@
 
 use hrm\DatabaseConnection;
 use hrm\Nav;
-use hrm\TaskSetting;
+use hrm\setting\TaskSetting;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
 
-require_once("./inc/Parameter.inc.php");
 require_once("./inc/Util.inc.php");
-require_once("./inc/System.php");
 
 /* *****************************************************************************
  *

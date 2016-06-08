@@ -3,7 +3,6 @@
  * Parameter
  *
  * @package hrm
- * @subpackage param\base
  *
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
@@ -102,13 +101,6 @@ abstract class Parameter {
         return !( $this->confidenceLevel == "reported"
                   || $this->confidenceLevel == "verified"
                   || $this->confidenceLevel == "asIs" );
-    }
-
-    /**
-     * Sets the Parameter value(s) to empty.
-     */
-    public function reset( ) {
-        $this->value = null;
     }
 
     /**

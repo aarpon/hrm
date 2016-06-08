@@ -3,7 +3,6 @@
  * ChromaticAberration
  *
  * @package hrm
- * @subpackage param
  *
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
@@ -12,15 +11,18 @@ namespace hrm\param;
 
 use hrm\DatabaseConnection;
 use hrm\param\base\NumericalVectorParameter;
+use hrm\param\base\Parameter;
 
 /**
  * A multi-channel, vector parameter to characterize the chromatic aberration.
  *
- * @todo Why doesn't this inherit from any base class?
+ * @todo This did not inherit from any base class. Now it inherits from Parameter.
+ * Make sure that it still works as expected!
+ *
  *
  * @package hrm
  */
-class ChromaticAberration
+class ChromaticAberration extends Parameter
 {
 
     /**
@@ -28,12 +30,6 @@ class ChromaticAberration
      * @var array
      */
     public $value;
-
-    /**
-     * A tag with a name for the parameter.
-     * @var string
-     */
-    public $name;
 
     /**
      * The number of channels for which a vector is needed.
@@ -64,19 +60,11 @@ class ChromaticAberration
         $db = new DatabaseConnection;
         $this->chanCnt = $db->getMaxChanCnt();
 
+        // Add a NumericalVectorParameter per channel
         for ($chan = 0; $chan < $this->chanCnt; $chan++) {
             $this->value[$chan] = new NumericalVectorParameter(
                 $this->name() . "Ch" . $chan, $this->componentCnt());
         }
-    }
-
-    /**
-     * A function returning the name of the parameter.
-     * @return string The parameter name.
-     */
-    public function name()
-    {
-        return $this->name;
     }
 
     /**
@@ -222,4 +210,13 @@ class ChromaticAberration
         return $result;
     }
 
+    /**
+     * Checks whether the Parameter is valid.
+     * @return bool True if the Parameter is valid, false otherwise.
+     */
+    public function check()
+    {
+        // @todo Implement check() method.
+        return true;
+    }
 }

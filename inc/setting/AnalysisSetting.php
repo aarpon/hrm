@@ -9,8 +9,10 @@
  */
 namespace hrm\setting;
 
+use hrm\DatabaseConnection;
 use hrm\param\base\Parameter;
 use hrm\param\ColocAnalysis;
+use hrm\setting\base\Setting;
 
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
@@ -42,8 +44,9 @@ class AnalysisSetting extends Setting
 
         // Instantiate Parameter objects.
         foreach ($parameterClasses as $class) {
+            $className = 'hrm\\param\\' . $class;
+            $param = new $className;
             /** @var Parameter $param */
-            $param = new $class;
             $name = $param->name();
             $this->parameter[$name] = $param;
             $this->numberOfChannels = NULL;
@@ -154,7 +157,7 @@ class AnalysisSetting extends Setting
             $this->set($parameter);
         }
 
-        // Colocalizastion threshold mode
+        // Colocalization threshold mode
         if (!isset($postedParameters["ColocThresholdMode"]) ||
             $postedParameters["ColocThresholdMode"] == ''
         ) {

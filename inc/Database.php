@@ -11,7 +11,9 @@
 namespace hrm;
 
 use ADODB_mysql;
+use hrm\param\base\Parameter;
 use hrm\setting\base\Setting;
+use hrm\user\User;
 
 require_once dirname(__FILE__) . "/bootstrap.inc.php";
 
@@ -1077,7 +1079,7 @@ class DatabaseConnection {
      * settings).
      * @return bool True if the settings exist in the database; false otherwise.
      */
-    public function existsSetting($settings) {
+    public function existsSetting(Setting $settings) {
         $owner = $settings->owner();
         $user = $owner->name();
         $name = $settings->name();
@@ -1399,7 +1401,7 @@ class DatabaseConnection {
      * @param Parameter $parameter Parameter (object).
      * @return array Array of restrictions.
      */
-    public function readNumericalValueRestrictions($parameter) {
+    public function readNumericalValueRestrictions(Parameter $parameter) {
         $name = $parameter->name();
         $query = "select min, max, min_included, max_included, standard from boundary_values where parameter = '$name';";
         $result = $this->queryLastRow($query);

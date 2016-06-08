@@ -10,8 +10,10 @@
 namespace hrm\setting;
 
 
+use hrm\DatabaseConnection;
 use hrm\param\base\Parameter;
 use hrm\param\SignalNoiseRatio;
+use hrm\setting\base\Setting;
 
 require_once dirname(__FILE__) . '/../bootstrap.inc.php';
 
@@ -48,11 +50,13 @@ class TaskSetting extends Setting
 
         // Instantiate the Parameter objects
         foreach ($parameterClasses as $class) {
-            /** @var Parameter $param */
-            $param = new $class;
-            $name = $param->name();
 
+            $className = 'hrm\\param\\' . $class;
+            $param = new $className;
+            /** @var Parameter $param */
+            $name = $param->name();
             $this->parameter[$name] = $param;
+
             $this->numberOfChannels = NULL;
         }
     }

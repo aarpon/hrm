@@ -3,7 +3,6 @@
  * MultiChannelOutput
  *
  * @package hrm
- * @subpackage param
  *
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
@@ -39,9 +38,10 @@ class MultiChannelOutput extends BooleanParameter
 
     /**
      * This Parameter should not display anything.
+     * @param int $numberOfChannels Number of channels (ignored).
      * @return string Empty string.
      */
-    public function displayString()
+    public function displayString($numberOfChannels = 0)
     {
         return "";
     }

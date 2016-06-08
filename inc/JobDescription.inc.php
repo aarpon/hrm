@@ -2,11 +2,11 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("Parameter.inc.php");
-require_once("Database.php");
-require_once("user/User.php");
+namespace hrm;
+
+require_once dirname(__FILE__) . '/bootstrap.inc.php';
+
 require_once("Shell.inc.php");
-require_once("hrm_config.inc.php");
 require_once("Job.inc.php");
 require_once("JobQueue.inc.php");
 
