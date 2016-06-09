@@ -18,8 +18,6 @@ use hrm\setting\TaskSetting;
 require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
- * class  HuygensTemplate
- *
  * Converts deconvolution parameters into a Huygens batch template.
  *
  * This class builds Tcl-compliant nested lists which summarize the tasks and

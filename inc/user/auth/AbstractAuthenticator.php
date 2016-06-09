@@ -14,8 +14,6 @@ namespace hrm\user\auth;
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
- * Class AbstractAuthenticator
- *
  * Abstract base Authenticator class that provides an interface for concrete
  * classes to implement.
  *

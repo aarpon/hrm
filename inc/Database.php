@@ -1161,6 +1161,7 @@ class DatabaseConnection
      * @param string $id Job id.
      * @param string $owner Name of the user that owns the job.
      * @param array $files Array of file names.
+     * @param bool $autoseries True if the series is to be loaded automatically, false otherwise.
      * @return bool True if the job files could be saved successfully; false
      * otherwise.
      */
@@ -2425,6 +2426,7 @@ class DatabaseConnection
      * If a user requests an account, his username is added to the database with
      * a random seed as status.
      *
+     * @param string $seed Seed associated to the User request.
      * @return bool True if a user with given seed exists, false otherwise.
      */
     public function existsUserRequestWithSeed($seed)

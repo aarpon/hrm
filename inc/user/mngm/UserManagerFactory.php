@@ -7,8 +7,6 @@ namespace hrm\user\mngm;
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
- * Class UserManagerFactory
- *
  * Returns the UserManager object to be used to manage the users based on the
  * value of $authenticateAgainst from the configuration files.
  *

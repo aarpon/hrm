@@ -13,8 +13,6 @@ namespace hrm\user\auth;
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
- * Class InternalAdminAuthenticator
- *
  * Manages authentication against the internal HRM user database.
  *
  * @package hrm

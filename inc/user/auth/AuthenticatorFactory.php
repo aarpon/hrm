@@ -14,8 +14,6 @@ namespace hrm\user\auth;
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
- * Class AuthenticatorFactory
- *
  * Returns the Authenticator object to be used to manage the user based on the
  * value of $authenticateAgainst from the configuration files.
  *

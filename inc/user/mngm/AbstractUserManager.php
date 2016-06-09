@@ -13,8 +13,6 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 
 /**
- * Class AbstractUserManager
- *
  * Abstract base UserManager class that provides an interface for concrete
  * classes to implement.
  *

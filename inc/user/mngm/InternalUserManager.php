@@ -10,8 +10,6 @@ use hrm\user\User;
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
- * Class InternalUserManager
- *
  * Manages the HRM users without relying on any external authentication or
  * management solution.
  *

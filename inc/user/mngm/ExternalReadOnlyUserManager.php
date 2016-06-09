@@ -10,8 +10,6 @@ use hrm\user\User;
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
- * Class ExternalReadOnlyUserManager
- *
  * Manages the HRM users relying on an external authentication mechanism.
  *
  * No user-related information can be modified using this Manager; for

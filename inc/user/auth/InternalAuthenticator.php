@@ -15,8 +15,6 @@ use hrm\DatabaseConnection;
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
- * Class InternalAuthenticator
- *
  * Manages authentication against the internal HRM  user database.
  *
  * @package hrm

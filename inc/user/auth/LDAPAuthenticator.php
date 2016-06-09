@@ -15,8 +15,6 @@ use hrm\Log;
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
- * Class LDAPAuthenticator
- *
  * Manages LDAP connections through built-in PHP LDAP support
  *
  * The configuration file for the LDAPAuthenticator class is config/ldap_config.inc.

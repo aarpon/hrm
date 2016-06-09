@@ -17,8 +17,6 @@ use hrm\Log;
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
- * Class ActiveDirectoryAuthenticator
- *
  * Manages Active Directory connections through the adLDAP library.
  *
  * The configuration file for the ActiveDirectoryAuthenticator class is

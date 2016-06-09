@@ -15,7 +15,6 @@ require_once dirname(__FILE__) . '/../Shell.inc.php';
 
 /**
  * Stores all information for a deconvolution Job.
- * Class Job
  */
 class Job
 {
