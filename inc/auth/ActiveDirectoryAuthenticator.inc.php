@@ -48,19 +48,33 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
     /*!
     \var    $m_UsernameSuffix
-    \brief  TODO Complete
+    \brief  Append this to usernames in AD-forests to request the email address
+
+    Suffix that should be appended to usernames for retrieving the email
+    address in an ActiveDirectory FOREST (multi-domain setup). See the
+    configuration file "active_directory_config.inc" for a detailed example.
     */
     private $m_UsernameSuffix;
 
     /*!
     \var    $m_UsernameSuffixReplaceMatch
-    \brief  TODO Complete
+    \brief  Matching string for username processing in an AD-forest.
+
+    The matching string for the match-replace operation on usernames in an
+    ActiveDirectory FOREST (multi-domain setup) for retrieving the email
+    address. See the configuration file "active_directory_config.inc" for a
+    detailed example.
     */
     private $m_UsernameSuffixReplaceMatch;
 
     /*!
     \var    $m_UsernameSuffixReplaceString
-    \brief  TODO Complete
+    \brief  Replacement string for username processing in an AD-forest.
+
+    The replacement string for the match-replace operation on usernames in an
+    ActiveDirectory FOREST (multi-domain setup) for retrieving the email
+    address. See the configuration file "active_directory_config.inc" for a
+    detailed example.
     */
     private $m_UsernameSuffixReplaceString;
 
