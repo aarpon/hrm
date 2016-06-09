@@ -213,9 +213,9 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         $username .= $this->m_UsernameSuffix;
         if ($this->m_UsernameSuffixReplaceMatch != '') {
             $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
-            $username = preg_replace($pattern,
-                                     $this->m_UsernameSuffixReplaceString,
-                                     $username);
+            $replace = $this->m_UsernameSuffixReplaceString;
+            report("getEmailAddress(): preg_replace($pattern, $replace, $username)", 2);
+            $username = preg_replace($pattern, $replace, $username);
             report("Processed AD user name: '$username'", 0);
         }
 
@@ -243,9 +243,9 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         $username .= $this->m_UsernameSuffix;
         if ($this->m_UsernameSuffixReplaceMatch != '') {
             $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
-            $username = preg_replace($pattern,
-                                     $this->m_UsernameSuffixReplaceString,
-                                     $username);
+            $replace = $this->m_UsernameSuffixReplaceString;
+            report("getEmailAddress(): preg_replace($pattern, $replace, $username)", 2);
+            $username = preg_replace($pattern, $replace, $username);
             report("Processed AD user name: '$username'", 0);
         }
 
