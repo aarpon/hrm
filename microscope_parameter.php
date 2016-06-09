@@ -13,7 +13,7 @@ use hrm\param\NumericalAperture;
 use hrm\param\ObjectiveType;
 use hrm\param\SampleMedium;
 
-require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 
 /* *****************************************************************************

@@ -12,7 +12,7 @@ use hrm\System;
 use hrm\setting\TaskSetting;
 use hrm\user\User;
 
-require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 
 /*
 

@@ -11,7 +11,7 @@ namespace hrm\param;
 
 use hrm\param\base\ChoiceParameter;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../bootstrap.php';
 
 /**
  * A ChoiceParameter to handle the type of PointSpreadFunction to be used,

@@ -5,7 +5,7 @@
 use hrm\Nav;
 use hrm\Stats;
 
-require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 require_once("./inc/Fileserver.inc.php");
 

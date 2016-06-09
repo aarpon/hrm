@@ -9,7 +9,7 @@
  */
 namespace hrm\param\base;
 
-require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
  * A ChoiceParameter that handles single- and multi-channel Parameters

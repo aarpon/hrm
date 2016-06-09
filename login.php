@@ -11,7 +11,7 @@ use hrm\DatabaseConnection;
 use hrm\user\User;
 use hrm\System;
 
-require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 global $email_admin;
 global $authenticateAgainst;

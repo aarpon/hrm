@@ -6,7 +6,7 @@ use hrm\DatabaseConnection;
 use hrm\Mail;
 use hrm\Validator;
 
-require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 require_once("./inc/Util.inc.php");
 

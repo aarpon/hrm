@@ -11,7 +11,7 @@
 namespace hrm\user\auth;
 
 // Include the HRM configuration files.
-require_once dirname(__FILE__) . '/../../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
  * Class AbstractAuthenticator

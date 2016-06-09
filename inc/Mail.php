@@ -10,7 +10,7 @@
 
 namespace hrm;
 
-require_once dirname(__FILE__) . '/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
  * Commodity class for sending e-mails.

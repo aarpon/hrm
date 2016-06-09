@@ -14,7 +14,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-require_once dirname(__FILE__) . '/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
  * Singleton class that sets up the logging facility (using Monolog) once.

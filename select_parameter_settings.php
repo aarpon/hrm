@@ -9,7 +9,7 @@ use hrm\setting\ParameterSettingEditor;
 use hrm\System;
 use hrm\user\User;
 
-require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 require_once("./inc/Fileserver.inc.php");
 

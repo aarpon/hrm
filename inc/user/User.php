@@ -13,7 +13,7 @@ namespace hrm\user;
 use hrm\DatabaseConnection;
 use hrm\user\auth\AuthenticatorFactory;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../bootstrap.php';
 
 
 /**

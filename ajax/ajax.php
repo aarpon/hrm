@@ -7,7 +7,7 @@ use hrm\JobQueue;
 use hrm\setting\ParameterSettingEditor;
 use hrm\user\User;
 
-require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 
 /**
  * Get the summary for current template

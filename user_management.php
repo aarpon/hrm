@@ -8,7 +8,7 @@ use hrm\user\mngm\UserManagerFactory;
 use hrm\user\User;
 use hrm\Validator;
 
-require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 require_once(dirname(__FILE__) . "/inc/Util.inc.php");
 

@@ -17,7 +17,7 @@ use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
 use hrm\user\User;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../bootstrap.php';
 
 require_once dirname(__FILE__) . '/../Shell.inc.php';
 

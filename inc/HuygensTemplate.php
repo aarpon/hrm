@@ -15,7 +15,7 @@ use hrm\setting\AnalysisSetting;
 use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
 
-require_once dirname(__FILE__) . '/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
  * class  HuygensTemplate

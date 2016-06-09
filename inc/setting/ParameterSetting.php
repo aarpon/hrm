@@ -16,7 +16,7 @@ use hrm\param\PinholeSize;
 use hrm\param\PSF;
 use hrm\setting\base\Setting;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../bootstrap.php';
 
 /**
  * A ParameterSetting is a complete set of microscope, image, SPIM, STED,

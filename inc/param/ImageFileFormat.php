@@ -12,7 +12,7 @@ namespace hrm\param;
 use hrm\DatabaseConnection;
 use hrm\param\base\SingleOrMultiChannelParameter;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../bootstrap.php';
 
 /**
  * A SingleOrMultiChannelParameter to represent the image file format.

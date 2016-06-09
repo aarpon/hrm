@@ -12,7 +12,7 @@ namespace hrm;
 
 use hrm\user\User;
 
-require_once dirname(__FILE__) . '/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/bootstrap.php';
 
 require_once("Database.php");
 require_once("Util.inc.php");

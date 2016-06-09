@@ -6,6 +6,6 @@ global $isServer;
 use hrm\QueueManager;
 
 $isServer = true;
-require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 $manager = new QueueManager();
 $manager->run();

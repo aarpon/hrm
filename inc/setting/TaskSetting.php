@@ -15,7 +15,7 @@ use hrm\param\base\Parameter;
 use hrm\param\SignalNoiseRatio;
 use hrm\setting\base\Setting;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../bootstrap.php';
 
 
 /**

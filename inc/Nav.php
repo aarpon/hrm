@@ -4,7 +4,7 @@
 
 namespace hrm;
 
-require_once dirname(__FILE__) . '/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
  * Commodity class to manage all links and actions of the navigation bar.

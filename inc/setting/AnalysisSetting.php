@@ -14,7 +14,7 @@ use hrm\param\base\Parameter;
 use hrm\param\ColocAnalysis;
 use hrm\setting\base\Setting;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../bootstrap.php';
 
 /**
  * An AnalysisSetting is a complete set of analysis parameters.

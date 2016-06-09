@@ -9,7 +9,7 @@
  */
 namespace hrm\setting;
 
-require_once dirname(__FILE__) . '/../bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../bootstrap.php';
 
 
 /**
