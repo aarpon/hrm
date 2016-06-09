@@ -128,6 +128,14 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         $this->m_UsernameSuffixReplaceMatch = $AD_USERNAME_SUFFIX_PATTERN;
         $this->m_UsernameSuffixReplaceString = $AD_USERNAME_SUFFIX_REPLACE;
 
+        // Check if we have conflicting username settings
+        if (!empty($ACCOUNT_SUFFIX) and !empty($AD_USERNAME_SUFFIX)) {
+            $alert = '===========   WARNING   ===========';
+            report("$alert $alert $alert", 0);
+            report('$AD_USERNAME_SUFFIX and $ACCOUNT_SUFFIX are both set!', 0);
+            report("$alert $alert $alert", 0);
+        }
+
         try {
             $this->m_AdLDAP = new adLDAP($options);
         } catch (adLDAPException $e) {
