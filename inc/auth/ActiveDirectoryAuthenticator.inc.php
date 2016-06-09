@@ -150,6 +150,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // Make sure the user is active
         if (!$this->isActive($username)) {
+            report("User '$username': account is INACTIVE!", 0);
             return false;
         }
 
@@ -159,6 +160,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // If authentication failed, we can return here.
         if ($b === false) {
+            report("User '$username': authentication FAILED!", 0);
             $this->m_AdLDAP->close();
             return false;
         }
@@ -188,9 +190,9 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         // Test for intersection
         $b = count(array_intersect($userGroups, $this->m_AuthorizedGroups)) > 0;
         if ($b === true) {
-            report("User $username: group authentication succeeded.", 0);
+            report("User '$username': group authentication succeeded.", 0);
         } else {
-            report("User $username: user rejected by failed group authentication.", 0);
+            report("User '$username': group authentication FAILED!", 0);
         }
         return $b;
     }
