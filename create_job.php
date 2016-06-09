@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Fileserver;
+use hrm\JobDescription;
 use hrm\Nav;
 use hrm\System;
 
@@ -42,7 +43,7 @@ $goBackMessage = "Go back to step $previousStep/$currentStep - " . $goBackMessag
 $message = "";
 
 if (isset($_POST['create'])) {
-    /** @var OutputFileFormat $parameter */
+    /** @var \hrm\param\OutputFileFormat $parameter */
     $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
     $parameter->setValue($_POST['OutputFileFormat']);
     $_SESSION['task_setting']->set($parameter);
@@ -63,7 +64,7 @@ if (isset($_POST['create'])) {
         } else {
             $message = $job->message();
         }
-    } else $message = "An unknown error has occured. " .
+    } else $message = "An unknown error has occurred. " .
         "Please inform the administrator";
 } else if (isset($_POST['OK'])) {
     header("Location: " . "select_parameter_settings.php");
@@ -118,8 +119,7 @@ include("header.inc.php");
           <fieldset class="setting">
 
           <legend>
-            <a href="javascript:openWindow(
-               'http://www.svi.nl/FileFormats')">
+            <a href="openWindow('http://www.svi.nl/FileFormats')">
                 <img src="images/help.png" alt="?" />
             </a>
               Output file format
@@ -127,18 +127,18 @@ include("header.inc.php");
 
 <?php
 
-/** @var OutputFileFormat $parameter */
+/** @var \hrm\param\OutputFileFormat $parameter */
 $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
 $value = $parameter->value();
 
-/** @var TimeInterval $timeParameter */
+/** @var \hrm\param\TimeInterval $timeParameter */
 $timeParameter = $_SESSION['setting']->parameter("TimeInterval");
 $timeValue = $timeParameter->value();
 
 // Make sure that if we had TIFF (8 or 16 bit) as output file format and a
 // multichannel dataset, we reset the value to ics
 if (($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')) {
-    /** @var NumberOfChannels $nChannelsParameter */
+    /** @var \hrm\param\NumberOfChannels $nChannelsParameter */
     $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
     $numberOfChannels = $nChannelsParameter->value();
     if ($numberOfChannels > 1) {
@@ -184,6 +184,8 @@ sort( $possibleValues );
 
 // If the dataset is multi-channel, we remove the TIFF-16 bit
 // options from the list
+
+/** @var \hrm\param\NumberOfChannels $nChannelsParameter */
 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
 $numberOfChannels = $nChannelsParameter->value( );
 if ( $numberOfChannels > 1 ) {
@@ -248,8 +250,7 @@ foreach ($possibleValues as $possibleValue) {
 
         <fieldset class="report">
             <legend>
-                <a href="openWindow('
-                   http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                <a href="openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                     <img src="images/help.png" alt="?" />
                 </a>
                 <a href="select_parameter_settings.php">
@@ -271,7 +272,7 @@ echo $_SESSION['setting']->displayString();
 
         <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow('
+                <a href="openWindow('
                    http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                     <img src="images/help.png" alt="?" />
                 </a>
@@ -297,8 +298,7 @@ $micrType = $_SESSION['setting']->microscopeType();
 
    <fieldset class="report">
             <legend>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                <a href="openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                     <img src="images/help.png" alt="?" />
                 </a>
 

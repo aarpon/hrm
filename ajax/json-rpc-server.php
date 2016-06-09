@@ -66,8 +66,6 @@ PHP:          $params[0] := "ExcitationWavelength"
 
 */
 
-require_once(dirname(__FILE__) . '/../inc/JobQueue.inc.php');
-
 // This is not strictly necessary for the Ajax communication, but will be
 // necessary for accessing session data to create the response.
 session_start();
@@ -361,7 +359,7 @@ function jsonGetParameter($parameterName) {
         $param = new $parameterName;
 
         // Get the JSON data
-        /** @var $json Parameter */
+        /** @var $param Parameter */
         $json = $param->getJsonData();
 
     } catch (Exception $e) {
@@ -418,7 +416,7 @@ function jsonGetImageParameterFromSession($parameterName) {
         $param = $_SESSION['setting']->parameter($parameterName);
 
         // Get the JSON data
-        /** @var $json Parameter */
+        /** @var $param Parameter */
         $json = $param->getJsonData();
 
     } else {

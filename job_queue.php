@@ -2,12 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\JobQueue;
 use hrm\Nav;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
-
-require_once("./inc/JobDescription.inc.php");
-require_once("./inc/JobQueue.inc.php");
 
 session_start();
 

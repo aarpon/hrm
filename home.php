@@ -3,11 +3,8 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
-use hrm\user\User;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.inc.php';
-
-require_once("./inc/Fileserver.inc.php");
 
 global $email_admin;
 global $authenticateAgainst;

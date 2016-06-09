@@ -1,6 +1,6 @@
 <?php
 /**
- * UseHuygensTemplate
+ * HuygensTemplate
  *
  * @package hrm
  *
@@ -11,7 +11,9 @@
 namespace hrm;
 
 use hrm\param\ChromaticAberration;
-use JobDescription;
+use hrm\setting\AnalysisSetting;
+use hrm\setting\ParameterSetting;
+use hrm\setting\TaskSetting;
 
 require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
@@ -287,7 +289,7 @@ class HuygensTemplate {
      * Constructor
      * @param JobDescription $jobDescription JobDescription object
      */
-    public function __construct($jobDescription) {
+    public function __construct(JobDescription $jobDescription) {
         $this->initialize($jobDescription);
         $this->setJobInfoList();
         $this->setJobTasksList();
@@ -302,7 +304,7 @@ class HuygensTemplate {
      * Sets general class properties to initial values
      * @param JobDescription $jobDescription JobDescription object.
      */
-    private function initialize($jobDescription) {
+    private function initialize(JobDescription $jobDescription) {
         $this->jobDescription  = $jobDescription;
         $this->microSetting    = $jobDescription->parameterSetting;
         $this->deconSetting    = $jobDescription->taskSetting;

@@ -3,15 +3,11 @@
 // Copyright and license notice: see license.txt
 
 use hrm\DatabaseConnection;
+use hrm\JobQueue;
 use hrm\setting\ParameterSettingEditor;
 use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';
-
-require_once '../inc/JobQueue.inc.php';
-
-//
-// Functions
 
 /**
  * Get the summary for current template
@@ -25,7 +21,7 @@ function getParameters($editor, $setName, $numChannels, $micrType) {
       // In Chrome, the onclick event is fired even if one clicks on an empty
       // area of an input field (passing a value of ''). In Firefox, the event
       // is fired only if one clicks on one of the existing values.
-      return;
+      return "";
   }
   $setting = $editor->setting($setName);
   $data = $setting->displayString($numChannels, $micrType);
@@ -76,7 +72,7 @@ function getTotalNumberOfJobsInQueue() {
  * Get complete job queue table for rendering
  * @return String
  */
-function getJobQueuetable() {
+function getJobQueueTable() {
 
   // Get queue information
   $queue = new JobQueue();

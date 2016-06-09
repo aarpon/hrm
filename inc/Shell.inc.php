@@ -2,10 +2,9 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 //namespace hrm;
+namespace hrm;
 
 require_once dirname(__FILE__) . "/bootstrap.inc.php";
-
-require_once("Fileserver.inc.php");
 
 global $hucore, $hutask, $logdir;
 

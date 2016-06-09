@@ -1,66 +1,65 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
-
-use hrm\Mail;
+/**
+ * QueueManager
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
+namespace hrm;
 
 require_once dirname(__FILE__) . '/bootstrap.inc.php';
 
-require_once ("Setting.inc.php");
-require_once("Database.php");
-require_once ("JobDescription.inc.php");
-require_once ("hrm_config.inc.php");
-require_once ("Fileserver.inc.php");
-require_once ("Shell.inc.php");
-require_once ("Job.inc.php");
-require_once ("JobQueue.inc.php");
-require_once("System.php");
+require_once dirname(__FILE__) . '/Shell.inc.php';
 
-/*!
- \class  QueueManager
- \brief  Creates Jobs from JobDescriptions and manages them in a priority queue
+
+/**
+ * Creates Jobs from JobDescriptions and manages them in a priority queue.
+ *
+ * @package hrm
  */
 class QueueManager {
 
-    /*!
-     \var   $queue
-     \brief A JobQueue object
+    /**
+     * A JobQueue object.
+     * @var JobQueue
      */
     private $queue;
 
-    /*!
-    \var    $freeServer
-    \brief  Name of a free server
-    */
+    /**
+     * Name of a free server.
+     * @var string
+     */
     private $freeServer;
 
-    /*!
-    \var	$job
-    \brief	Job object
-    */
+    /**
+     * A Job object.
+     * @var Job
+     */
     private $job;
 
-    /*!
-    \var	$shallStop
-    \brief	Flag to indicate whether a Job should stop
-    */
+    /**
+     * Flag to indicate whether a Job should stop.
+     * @var bool
+     */
     private $shallStop;
 
-    /*!
-    \var	$stopTime
-    \brief	Time of completion of a Job
-    */
+    /**
+     * Time of completion of a Job.
+     * @var string
+     */
     private $stopTime;
 
-    /*!
-    \var	$nping
-    \brief	Number of times a server has been pinged
-    */
+    /**
+     * Number of times each server has been pinged.
+     * @var array
+     */
     private $nping;
 
-    /*!
-    \brief	Constructor: creates an initializes the QueueManager
-    */
+    /**
+     * QueueManager constructor.
+     */
     public function __construct() {
         $this->runningJobs = array();
         $this->queue = new JobQueue();
@@ -68,11 +67,11 @@ class QueueManager {
         $this->nping = array();
     }
 
-    /*!
-    \brief  If existing, delete debris from previously run jobs.
-    \param  $desc A JobDescription object.
-    \param  $server_hostname The server where the job will be run.
-    \TODO   Move to Shell.inc.php.
+    /**
+     * If existing, delete debris from previously run jobs.
+     * @param JobDescription $desc A JobDescription object.
+     * @param string $server_hostname The server where the job will be run.
+     * @todo Move to Shell.inc.php.
     */
     public function removeHuygensOutputFiles($desc, $server_hostname ) {
         global $imageProcessingIsOnQueueManager;
@@ -98,9 +97,11 @@ class QueueManager {
         }
     }
 
-    /*!
-    \brief  Executes given Job
-    \todo   Update templateName variable with templateName
+    /**
+     * Executes given Job.
+     * @param Job $job A Job object.
+     * @return true if the Job could be executed, false otherwise.
+     * @todo  Update templateName variable with templateName
     */
     public function executeTemplate( Job $job) {
         global $imageProcessingIsOnQueueManager;
@@ -154,14 +155,14 @@ class QueueManager {
         return ($pid > 0);
     }
 
-    /*!
-    \brief  Grants permissions to deconvolved images and image previews
-            to avoid conflicts between the previews generated from
-            the website and the ones generated from the queue manager, as
-            well as to guarantee that the files can always be deleted.
-
-    \param       $desc A JobDescription object
-    \param       $fileserver A Fileserver object.
+    /**
+     * Grants permissions to deconvolved images and image previews
+     * to avoid conflicts between the previews generated from
+     * the website and the ones generated from the queue manager, as
+     * well as to guarantee that the files can always be deleted.
+     * @param JobDescription $desc A JobDescription object.
+     * @param Fileserver $fileserver A Fileserver object.
+     * @todo Is this still used?
     */
     private function chmodJob(JobDescription $desc, Fileserver $fileserver ) {
 
@@ -211,10 +212,11 @@ class QueueManager {
         $this->chmodFiles(dirname($srcPreviews),0777);
     }
 
-    /*!
-    \brief  Changes file modes.
-    \param  $files An array of files or single file.
-    \param  $permission The requested file permission.
+    /**
+     * Changes file modes.
+     * @param array $files An array of files or single file.
+     * @param string $permission The requested file permission.
+     * @todo Is this still used?
     */
     private function chmodFiles($files, $permission) {
 
@@ -228,11 +230,11 @@ class QueueManager {
 
     }
 
-    /*!
-    \brief	Copies the images needed by a given Job to the processing server
-    \param	$job	A Job object
-    \param	$server_hostname	Name of the server to which to copy the files
-    \return	the full path to which the files were copied
+    /**
+     * Copies the images needed by a given Job to the processing server.
+     * @param Job $job A Job object.
+     * @param string $server_hostname Name of the server to which to copy the files.
+     * @return string The full path to which the files were copied.
     */
     public function copyImagesToServer( Job $job, $server_hostname) {
         global $huygens_user;
@@ -377,9 +379,9 @@ class QueueManager {
             $image_source . "/";
     }
 
-    /*!
-    \brief	Returns the next Job in the queue
-    \return	the next Job in the queue
+    /**
+     * Returns the next Job in the queue.
+     * @return Job the next Job in the queue.
     */
     public function nextJobFromQueue() {
         $queue = $this->queue;
@@ -414,9 +416,9 @@ class QueueManager {
         return $job;
     }
 
-    /*!
-    \brief	Deletes temporary Job files from the file server
-    \param	$job	A Job object
+    /**
+     * Deletes temporary Job files from the file server
+     * @param Job $job A Job object.
     */
     function cleanUpFileServer($job) {
         report("cleaning up file server", 1);
@@ -448,10 +450,11 @@ class QueueManager {
         report("stopped job (" . date("l d F Y H:i:s") . ")\n", 1);
     }
 
-    /*!
-    \brief	Sets ownership of the files in the user area to the user
- 	\param	$username	Name of the user (must be a valid linux user on
-                        the file server)
+    /**
+     * Sets ownership of the files in the user area to the user
+     * @param string $username Name of the user (must be a valid linux user on
+     * the file server).
+     * @todo Is this still used?
  	*/
  	function restoreOwnership($username) {
         global $image_user;
@@ -462,12 +465,12 @@ class QueueManager {
             " " . $image_folder . "/" . $username);
     }
 
-    /*!
-     \brief   Checks whether the processing server reacts on 'ping'.
-     \param   $server The server's name
-     \param   $outLog A string specific of the output log file name.
-     \param   $errLog A string specific of the error log file name.
-     \return  Boolean: true on success.
+    /**
+     * Checks whether the processing server reacts on 'ping'.
+     * @param string $server The server's name.
+     * @param string $outLog A string specific of the output log file name.
+     * @param string $errLog A string specific of the error log file name.
+     * @return bool True on success, false otherwise.
     */
     private function isProcessingServerReachable($server,
                                                  $outLog = NULL,
@@ -490,13 +493,13 @@ class QueueManager {
         return $isReachable;
     }
 
-    /*!
- 	\brief	Updates the Job and server status
-
- 	This methods kills all Jobs that are marked to be killed, checks whether
- 	Jobs are completed and create report files, write Parameter files,...
-
- 	\todo	This method is a mess!
+    /**
+     * Updates the Job and server status.
+     *
+     * This methods kills all Jobs that are marked to be killed, checks whether
+     * Jobs are completed and create report files, write Parameter files,...
+     *
+     * @todo	This method is a mess!
     */
     public function updateJobAndServerStatus() {
         global $imageProcessingIsOnQueueManager;
@@ -610,16 +613,17 @@ class QueueManager {
         }
     }
 
-    /*!
- 	 \brief	Assembles the job log to be displayed in the file manager.
-
- 	 The job log contains the HuCore output and error log and some additional
-     information.
-
- 	 \param	$job		A Job object
- 	 \param	$startTime	Start time of the Job
- 	 \param	$logFile	Full path to the log file
- 	 \param	$errorFile	Full path to the errorlog file
+    /**
+     * Assembles the job log to be displayed in the file manager.
+     *
+     * The job log contains the HuCore output and error log and some additional
+     * information.
+     *
+     * @param Job $job A Job object.
+     * @param string $startTime	Start time of the Job.
+     * @param string $logFile Full path to the log file.
+     * @param string $errorFile Full path to the errorlog file.
+     * @return string Job log to be displayed.
  	 */
  	public function assembleJobLogFile($job, $startTime, $logFile, $errorFile) {
         global $imageProcessingIsOnQueueManager;
@@ -660,10 +664,10 @@ class QueueManager {
         return $result;
     }
 
-    /*!
- 	\brief	Sends an e-mail to the User notifying a successful Job
- 	\param	$job		A Job object
-    \param	$startTime	Start time of the Job
+    /**
+     * Sends an e-mail to the User notifying a successful Job
+     * @param Job $job A Job object.
+     * @param string $startTime	Start time of the Job.
     */
  	public function notifySuccess($job, $startTime) {
         global $email_sender;
@@ -709,10 +713,10 @@ class QueueManager {
         $mail->send();
     }
 
-    /*!
-    \brief	Sends an e-mail to the User and Admin notifying a failed Job
-    \param	$job		A Job object
-    \param	$startTime	Start time of the Job
+    /**
+     * Sends an e-mail to the User and Admin notifying a failed Job.
+     * @param Job $job A Job object
+     * @param string $startTime	Start time of the Job.
     */
  	public function notifyError($job, $startTime) {
 	  global $email_sender;
@@ -797,12 +801,11 @@ class QueueManager {
 	  $mail->send();
 	}
 
-
-    /*!
- 	\brief	Sends an e-mail to the Admin notifying that a server could
-            not be pinged
- 	\param	$name	Name of the server that was (not) pinged
-    */
+    /**
+     * Sends an e-mail to the Admin notifying that a server could
+     * not be pinged.
+     * @param string $name Name of the server that was (not) pinged.
+     */
  	public function notifyPingError($name) {
         global $email_sender;
         global $email_admin;
@@ -816,10 +819,10 @@ class QueueManager {
         $mail->send();
     }
 
-    /*!
- 	\brief  Report (and internally store) the name of a free server that
-            can accept a Job
- 	\return name of a free server
+    /**
+     * Report (and internally store) the name of a free server that
+     * can accept a Job.
+     * @return string Name of a free server.
  	*/
  	public function getFreeServer() {
 
@@ -848,17 +851,16 @@ class QueueManager {
         return $this->freeServer;
     }
 
-    /*!
- 	\brief	Inform the QueueManager that it should stop
+    /**
+     * Inform the QueueManager that it should stop.
  	*/
  	public function stop() {
         $this->shallStop = True;
     }
 
-    /*!
- 	\brief	Check (in the database) if the QueueManager shall stop
-            (i.e. leave its main loop)
- 	\return true if the QueueManager shall stop
+    /**
+     * Check (in the database) if the QueueManager shall stop (i.e. leave its main loop)
+     * @return bool True if the QueueManager shall stop.
     */
  	public function shallStop() {
             if ($this->shallStop) {
@@ -870,9 +872,9 @@ class QueueManager {
             return $this->shallStop;
         }
 
-    /*!
- 	\brief	Waits until a DatabaseConnection could be established
- 	*/
+    /**
+     * Waits until a DatabaseConnection could be established.
+     */
  	public function waitForDatabaseConnection() {
         $isDatabaseReachable = False;
         while (!$isDatabaseReachable) {
@@ -883,7 +885,9 @@ class QueueManager {
         }
     }
 
-
+    /**
+     * Initialize the servers (mark the all as free).
+     */
     public function initializeServers( ) {
          $queue = $this->queue;
 
@@ -899,9 +903,9 @@ class QueueManager {
     }
 
 
-    /*!
- 	\brief	Runs the QueueManager
- 	*/
+    /**
+     * Runs the QueueManager.
+     */
  	public function run() {
         global $imageProcessingIsOnQueueManager;
         global $logdir;
@@ -987,15 +991,11 @@ class QueueManager {
                 . date("Y-m-d H:i:s"), 1);
     }
 
-    /*
-        PRIVATE FUNCTIONS
- 	*/
-
-    /*!
- 	\brief	Prepares the text with the summary of the Job parameters to be sent
-            to the user
- 	\param	$job		A Job object
- 	\return	the text to be later sent by email
+    /**
+     * Prepares the text with the summary of the Job parameters to be sent
+     * to the user.
+     * @param Job $job A Job object.
+     * @return string The text to be later sent by email.
     */
  	private function parameterText(Job $job) {
         $desc = $job->description();
@@ -1020,18 +1020,18 @@ class QueueManager {
         return $result;
     }
 
-    /*!
- 	\brief	Increment the number of attempts of pining a server with given name
- 	\param	$name 	Name of the server
+    /**
+     * Increment the number of attempts of pining a server with given name
+     * @param string $name Name of the server.
  	*/
  	private function incNPing($name) {
         $this->nping[$name]++;
     }
 
-    /*!
- 	\brief	Asks HuCore to provide its version number and store it in the DB
- 	\return true if asking the version and storing it in the database was
-            successful, false otherwise
+    /**
+     * Asks HuCore to provide its version number and store it in the DB
+     * @return bool True if asking the version and storing it in the database was
+     * successful, false otherwise.
     */
  	private function askHuCoreVersionAndStoreIntoDB() {
             $huversion = askHuCore("reportVersionNumberAsInteger");
@@ -1043,9 +1043,9 @@ class QueueManager {
             return true;
         }
 
-        /*!
-         \brief   Gets license details from HuCore and saves them into the db.
-         \return  Boolean: true if everything went OK.
+        /**
+         * Gets license details from HuCore and saves them into the db.
+         * @return bool True if everything went OK, false otherwise.
         */
         private function storeHuCoreLicenseDetailsIntoDB( ) {
             $licDetails = askHuCore("reportHuCoreLicense");
@@ -1061,11 +1061,11 @@ class QueueManager {
         }
 
 
-    /*!
- 	\brief	Store the confidence levels returned by huCore into the database
-            for faster retrieval
- 	\return true if asking the version and storing it in the database was
-            successful, false otherwise
+    /**
+     * Store the confidence levels returned by huCore into the database
+     * for faster retrieval.
+     * @return bool True if asking the version and storing it in the database was
+     * successful, false otherwise.
  	*/
 	private function storeConfidenceLevelsIntoDB() {
 
@@ -1086,11 +1086,12 @@ class QueueManager {
         return true;
     }
 
-    /*!
-    \brief	Parse the string returned by HuCore containing the confidence
-            levels for parameters and return them in an array
-    \return an array containing the parameter confidence levels
- 	*/
+    /**
+     * Parse the string returned by HuCore containing the confidence
+     * levels for parameters and return them in an array.
+     * @param string $confidenceLevelString Confidence level returned by hucore.
+     * @return array An array containing the parameter confidence levels.
+     */
 	private function parseConfidenceLevelString($confidenceLevelString) {
 
         // Break down the string into per-file substrings
@@ -1416,4 +1417,3 @@ class QueueManager {
     }
 
 }
-?>

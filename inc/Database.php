@@ -1883,7 +1883,7 @@ class DatabaseConnection {
      * Sets the end time of a job.
      * @param string $id Job id.
      * @param string $date Formatted date: YYYY-MM-DD hh:mm:ss.
-     * @return Re4sultSet Query result.
+     * @return ResultSet Query result.
      */
     public function setJobEndTime($id, $date) {
         $query = "update job_queue set stop='$date' where id='$id'";
