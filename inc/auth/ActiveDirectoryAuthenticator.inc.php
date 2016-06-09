@@ -171,6 +171,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
             return true;
         }
 
+        /*
+         * Temporarily disabled, as this should only be required for retrieving
+         * the email address!
+         * TODO: discuss with Aaron, test impact on group membership checking
         // If needed, process the user name suffix for subdomains
         $username .= $this->m_UsernameSuffix;
         if ($this->m_UsernameSuffixReplaceMatch != '') {
@@ -180,6 +184,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
                 $username);
             report("Processed AD user name: '$username'", 0);
         }
+        */
 
         // We need to retrieve the groups and compare them.
 
