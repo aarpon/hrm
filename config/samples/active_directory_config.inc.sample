@@ -19,45 +19,49 @@
     $AD_PORT = 389;
 
 
-    //////// ActiveDirectory User Name Processing ////////
+    //////// ActiveDirectory Multi-Domain User Name Processing ////////
 
-    // Append this string to the name specified by the user. Can be used to
-    // allow for "short" login names when the authentication service requires
-    // the full name, e.g. if this is set to "mydomain.local", the user
-    // "foo234@mydomain.local" can log on with the short name "foo234".
-    $AD_USERNAME_SUFFIX = "";
+    // SPECIAL SETTINGS to rewrite the username in case of an ActiveDirectory
+    // FOREST, where users from all different LEVELS of the forest's hierarchy
+    // should be allowed to log on using the "short" domain name variant (i.e.
+    // "foo123@saturn", "bar456@titan", ...).
+    // Setting the $ACCOUNT_SUFFIX above will not work in such a case due to
+    // the fact how the DNS names in an ActiveDirectory forest are structured,
+    // and therefore retrieving the user's email address would fail, even
+    // though authentication might succeed.
 
-    // SPECIAL SETTINGS to rewrite the username in case an ActiveDirectory
-    // forest is in use where users from different LEVELS of the forest's
-    // hierarchy should be allowed to log on. Assuming this AD-forest structure
-    // (NetBIOS names in captial letters, DNS names in brackets)
+    // Assuming this AD-forest structure (NetBIOS names in captial letters, DNS
+    // names in brackets)
     //
-    // MYDOMAIN                     (ads.mydomain.local)
-    // |__ TITAN              (titan.ads.mydomain.local)
-    // |__ EUROPE            (europe.ads.mydomain.local)
-    // \__ GANYMEDE        (ganymede.ads.mydomain.local)
+    // SATURN                       (ads.saturn.local)
+    // |__ TITAN              (titan.ads.saturn.local)
+    // |__ DIONE              (dione.ads.saturn.local)
+    // \__ MIMAS              (mimas.ads.saturn.local)
     //
     // and the following user names
     //
-    //          foo123@ads.mydomain.local
-    //    bar456@titan.ads.mydomain.local
-    //   zap789@europe.ads.mydomain.local
-    // cat963@ganymede.ads.mydomain.local
+    //          foo123@ads.saturn.local
+    //    bar456@titan.ads.saturn.local
+    //    zap789@dione.ads.saturn.local
+    //    cat963@mimas.ads.saturn.local
     //
-    // a configuration like this would allow all users from all domains to use
-    // the short versions "foo123@mydomain", "bar456@titan", "zap789@europe"
-    // and "cat963@ganymede" for logging in, instead of having to type their
-    // full DNS user names as shown above:
+    // the configuration settings below will allow all users from any domain to
+    // use the short versions "foo123@saturn", "bar456@titan", "zap789@dione"
+    // and "cat963@mimas" for logging in, instead of having to type their full
+    // DNS user names as shown above:
     //
-    // $AD_USERNAME_SUFFIX = ".ads.mydomain.local";
-    // $AD_USERNAME_SUFFIX_PATTERN = "@mydomain.ads.mydomain.local";
-    // $AD_USERNAME_SUFFIX_REPLACE = "@ads.mydomain.local";
+    // $AD_USERNAME_SUFFIX = ".ads.saturn.local";
+    // $AD_USERNAME_SUFFIX_PATTERN = "@saturn.ads.saturn.local";
+    // $AD_USERNAME_SUFFIX_REPLACE = "@ads.saturn.local";
 
-    // LEAVE EMPTY in a REGULAR ActiveDirectory setup!!
+    // LEAVE EMPTY in a REGULAR ActiveDirectory setup (i.e. no AD-forest)!!
+    $AD_USERNAME_SUFFIX = "";
     $AD_USERNAME_SUFFIX_PATTERN = "";
     $AD_USERNAME_SUFFIX_REPLACE = "";
+    // NOTE: if the AD_USERNAME_... settings are used, the ACCOUNT_SUFFIX above
+    // should generally be empty!!!
 
-    //////// ActiveDirectory User Name Processing ////////
+    //////// ActiveDirectory Multi-Domain User Name Processing ////////
 
 
     // Optional account with higher privileges for searching (otherwise
