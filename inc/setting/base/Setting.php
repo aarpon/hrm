@@ -202,7 +202,10 @@ abstract class Setting {
      * the standard (default) flag.
      *
      * This method must be reimplemented.
-    */
+     *
+     * @return string Table name.
+     * @throws \Exception This method must be reimplemented.
+     */
     static function table() {
         throw new \Exception('This method must be reimplemented!');
     }
@@ -212,6 +215,9 @@ abstract class Setting {
      * for the Settings stored in the table specified in table().
      *
      * This method must be reimplemented.
+     *
+     * @return string Table name.
+     * @throws \Exception This method must be reimplemented.
      *
      * @see table()
     */

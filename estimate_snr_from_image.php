@@ -6,10 +6,6 @@ use hrm\Nav;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/Util.inc.php");
-require_once("./inc/User.inc.php");
-require_once("./inc/Fileserver.inc.php");
-
 // Two private functions, for the two tasks of this script:
 
 // This configures and shows the file browser module inc/FileBrowser.inc.php.
@@ -192,6 +188,7 @@ function estimateSnrFromFile($file) {
             $series = "auto";
         }
 
+        /** @var \hrm\param\ImageFileFormat $formatParam */
         $formatParam = $_SESSION['setting']->parameter('ImageFileFormat');
         $format = $formatParam->value();
         if ($format == "tiff" || $format == "tiff-single") {
@@ -557,6 +554,7 @@ if ( isset($_POST['estimate'] ) && isset($_POST['userfiles'] ) ) {
     }
 
     // Now store the calculated values in the Parameter and back into the session
+    /** @var \hrm\param\SignalNoiseRatio $snrParam */
     $snrParam = $_SESSION['task_setting']->parameter('SignalNoiseRatio');
     $snrParam->setValue( $estSNR );
     $_SESSION['task_setting']->set( $snrParam );

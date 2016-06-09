@@ -56,7 +56,7 @@ class JobQueue
     /**
      * Returns all jobs from the queue, both compound and simple,
      * and the associated file names, ordered by priority.
-     * @return ResultSet All jobs.
+     * @return array All jobs.
      */
     function getContents()
     {

@@ -12,12 +12,15 @@ namespace hrm;
 
 use ADODB_mysql;
 use hrm\param\base\Parameter;
+use hrm\setting\AnalysisSetting;
 use hrm\setting\base\Setting;
+use hrm\setting\ParameterSetting;
+use hrm\setting\TaskSetting;
 use hrm\user\User;
 
 require_once dirname(__FILE__) . "/bootstrap.php";
 
-require_once dirname(__FILE__) . "/Util.inc.php" ;
+require_once dirname(__FILE__) . "/Util.inc.php";
 
 /**
  * Manages the database connection through the ADOdb library.
@@ -29,11 +32,12 @@ require_once dirname(__FILE__) . "/Util.inc.php" ;
  *
  * @package hrm
  */
-class DatabaseConnection {
+class DatabaseConnection
+{
 
     /**
      * Private ADOConnection object.
-     * @var ADODB_mysql
+     * @var ADODB_mysql|\ADODB_postgres8|\ADODB_postgres9
      */
     private $connection;
 
@@ -46,7 +50,8 @@ class DatabaseConnection {
     /**
      * DatabaseConnection constructor: creates a database connection.
      */
-    public function __construct() {
+    public function __construct()
+    {
         global $db_type;
         global $db_host;
         global $db_name;
@@ -57,42 +62,44 @@ class DatabaseConnection {
         $this->connection->Connect($db_host, $db_user, $db_password, $db_name);
 
         // Set the parameter name dictionary
-        $this-> parameterNameDictionary = array(
-            "CCDCaptorSizeX"       => "sampleSizesX",       // In HRM there is no distinction between x and y pixel size
-            "ZStepSize"            => "sampleSizesZ",
-            "TimeInterval"         => "sampleSizesT",
-            "PinholeSize"          => "pinhole",
-            "NumberOfChannels"     => "chanCnt",
-            "PinholeSpacing"       => "pinholeSpacing",
+        $this->parameterNameDictionary = array(
+            "CCDCaptorSizeX" => "sampleSizesX",       // In HRM there is no distinction between x and y pixel size
+            "ZStepSize" => "sampleSizesZ",
+            "TimeInterval" => "sampleSizesT",
+            "PinholeSize" => "pinhole",
+            "NumberOfChannels" => "chanCnt",
+            "PinholeSpacing" => "pinholeSpacing",
             "ExcitationWavelength" => "lambdaEx",
-            "EmissionWavelength"   => "lambdaEm",
-            "MicroscopeType"       => "mType",
-            "NumericalAperture"    => "NA",
-            "ObjectiveType"        => "RILens",
-            "SampleMedium"         => "RIMedia",
-            "unused1"              => "iFacePrim",          // PSFGenerationDepth?
-            "unused2"              => "iFaceScnd",
-            "unused3"              => "imagingDir",
-            "unused4"              => "objQuality",
-            "unused5"              => "photonCnt",
-            "unused6"              => "exBeamFill",
-            "StedDepletionMode"    => "stedMode",
-            "StedWavelength"       => "stedLambda",
+            "EmissionWavelength" => "lambdaEm",
+            "MicroscopeType" => "mType",
+            "NumericalAperture" => "NA",
+            "ObjectiveType" => "RILens",
+            "SampleMedium" => "RIMedia",
+            "unused1" => "iFacePrim",          // PSFGenerationDepth?
+            "unused2" => "iFaceScnd",
+            "unused3" => "imagingDir",
+            "unused4" => "objQuality",
+            "unused5" => "photonCnt",
+            "unused6" => "exBeamFill",
+            "StedDepletionMode" => "stedMode",
+            "StedWavelength" => "stedLambda",
             "StedSaturationFactor" => "stedSatFact",
-            "StedImmunity"         => "stedImmunity",
-            "Sted3D"               => "sted3D");
+            "StedImmunity" => "stedImmunity",
+            "Sted3D" => "sted3D");
     }
 
     /**
      * Checks whether a connection to the DB is possible.
      * @return boolean True if the connection is possible, false otherwise.
      */
-    public function isReachable() {
+    public function isReachable()
+    {
         global $db_type;
         global $db_host;
         global $db_name;
         global $db_user;
         global $db_password;
+        /** @var ADODB_mysql|\ADODB_postgres8|\ADODB_postgres9 $connection */
         $connection = ADONewConnection($db_type);
         $result = $connection->Connect($db_host, $db_user, $db_password, $db_name);
         return $result;
@@ -102,7 +109,8 @@ class DatabaseConnection {
      * Returns the type of the database (mysql, postgres)
      * @return string The type of the database (e.g. mysql, postgres)
      */
-    public function type() {
+    public function type()
+    {
         global $db_type;
         return $db_type;
     }
@@ -111,7 +119,8 @@ class DatabaseConnection {
      * Attempts to get the version of the underlying database.
      * @return string Version of the database (e.g. 2.2.14).
      */
-    public function version() {
+    public function version()
+    {
         try {
             $query = "SELECT version( );";
             $version = $this->queryLastValue($query);
@@ -125,7 +134,8 @@ class DatabaseConnection {
      * Returns the database host name.
      * @return string Name of the database host.
      */
-    public function host() {
+    public function host()
+    {
         global $db_host;
         return $db_host;
     }
@@ -134,7 +144,8 @@ class DatabaseConnection {
      * Returns the database name.
      * @return string Name of the database.
      */
-    public function name() {
+    public function name()
+    {
         global $db_name;
         return $db_name;
     }
@@ -143,34 +154,39 @@ class DatabaseConnection {
      * Returns the name of the database user.
      * @return string Name of the database user.
      */
-    public function user() {
+    public function user()
+    {
         global $db_user;
         return $db_user;
     }
 
     /**
-      Returns the password of the database user.
-      @return string Password of the database user.
-    */
-    public function password() {
+     * Returns the password of the database user.
+     * @return string Password of the database user.
+     */
+    public function password()
+    {
         global $db_password;
         return $db_password;
     }
 
     /**
-      Returns the ADOConnection object.
-      @return ADOConnection The connection object.
-    */
-    public function connection() {
+     * Returns the ADOConnection object.
+     * @return \ADORecordSet_mysql|\ADODB_postgres8|\ADODB_postgres9 The connection object.
+     */
+    public function connection()
+    {
         return $this->connection;
     }
 
     /**
      * Executes an SQL query.
-     * @param string $query  SQL query.
+     * @param string $query SQL query.
      * @return \ADORecordSet_empty|\ADORecordSet_mysql|False Query result.
      */
-    public function execute($query) {
+    public function execute($query)
+    {
+        /** @var ADODB_mysql|\ADODB_postgres8|\ADODB_postgres9 $connection */
         $connection = $this->connection();
         $result = $connection->Execute($query);
         return $result;
@@ -179,14 +195,16 @@ class DatabaseConnection {
     /**
      * Executes an SQL query and returns the results.
      * @param string $queryString SQL query.
-     * @return array Result of the query (rows).
-    */
-    public function query($queryString) {
+     * @return array|false Result of the query (rows).
+     */
+    public function query($queryString)
+    {
         $connection = $this->connection();
         $resultSet = $connection->Execute($queryString);
         if (!$resultSet) {
             return False;
         }
+        /** @var \ADORecordSet $resultSet */
         $rows = $resultSet->GetRows();
         return $rows;
     }
@@ -196,9 +214,12 @@ class DatabaseConnection {
      * @param string $queryString SQL query.
      * @return array Last row of the result of the query.
      */
-    public function queryLastRow($queryString) {
+    public function queryLastRow($queryString)
+    {
         $rows = $this->query($queryString);
-        if (!$rows) return False;
+        if (!$rows) {
+            return False;
+        }
         $result = end($rows);
         return $result;
     }
@@ -209,10 +230,13 @@ class DatabaseConnection {
      * @param string $queryString SQL query.
      * @return string Value of the last column of the last row of the result of
      * the query.
-    */
-    public function queryLastValue($queryString) {
+     */
+    public function queryLastValue($queryString)
+    {
         $rows = $this->queryLastRow($queryString);
-        if (!$rows) return False;
+        if (!$rows) {
+            return False;
+        }
         $result = end($rows);
         return $result;
     }
@@ -220,23 +244,24 @@ class DatabaseConnection {
     /**
      * Adds a new user to the database (all parameters are expected to be
      * already validated!
-     * @param string $username  The name of the user.
-     * @param string $password  Password (plain).
+     * @param string $username The name of the user.
+     * @param string $password Password (plain).
      * @param string $email E-mail address.
      * @param string $group Research group.
      * @param string $status Status or ID.
      * @return bool True if the user was added successfully; false otherwise.
-    */
-    public function addNewUser($username, $password, $email, $group, $status) {
+     */
+    public function addNewUser($username, $password, $email, $group, $status)
+    {
         $cryptPass = md5($password);
         $query = "INSERT INTO username (name, password, email, research_group, status) " .
             "VALUES ('$username', '$cryptPass', '$email', '$group', '$status');";
         $result = $this->execute($query);
-        if ( $result ) {
+        if ($result) {
             $query = "UPDATE username SET creation_date = CURRENT_TIMESTAMP WHERE name = '$username';";
             $result = $this->execute($query);
         }
-        if ( $result ) {
+        if ($result) {
             return true;
         } else {
             return false;
@@ -253,20 +278,21 @@ class DatabaseConnection {
      * @param string $group Research group.
      * @return bool True if the user was updated successfully; false otherwise.
      */
-    public function updateExistingUser( $isadmin, $username, $password, $email = "", $group = "" ) {
+    public function updateExistingUser($isadmin, $username, $password, $email = "", $group = "")
+    {
         // The admin user does not have a group and stores his password in the
         // configuration files. The only variable is the password.
-        if ( $isadmin === True ) {
-            $query = "UPDATE username SET password = '" . md5($password) ."' " .
+        if ($isadmin === True) {
+            $query = "UPDATE username SET password = '" . md5($password) . "' " .
                 "WHERE name = '$username';";
         } else {
             $query = "UPDATE username SET email ='$email', " .
-                "research_group ='$group', ".
-                "password = '" . md5($password) ."' " .
+                "research_group ='$group', " .
+                "password = '" . md5($password) . "' " .
                 "WHERE name = '$username';";
         }
         $result = $this->execute($query);
-        if ( $result ) {
+        if ($result) {
             return true;
         } else {
             return false;
@@ -283,10 +309,11 @@ class DatabaseConnection {
      * @param string $email E-mail address.
      * @param string $group Research group.
      * @return bool True if the user was updated successfully; false otherwise.
-    */
-    public function updateUserNoPassword($username, $email, $group) {
+     */
+    public function updateUserNoPassword($username, $email, $group)
+    {
 
-        if ($email == "" || $group=="") {
+        if ($email == "" || $group == "") {
             report("User data update: e-mail and group cannot be empty! " .
                 "No changes to the database!", 0);
             return false;
@@ -297,7 +324,7 @@ class DatabaseConnection {
             "research_group ='$group' WHERE name = '$username';";
 
         $result = $this->execute($query);
-        if ( $result ) {
+        if ($result) {
             return true;
         } else {
             return false;
@@ -311,11 +338,12 @@ class DatabaseConnection {
      * @param string $status One of 'd', 'a', ...
      * @return bool True if user status could be updated successfully; false
      * otherwise.
-    */
-    public function updateUserStatus($username, $status) {
+     */
+    public function updateUserStatus($username, $status)
+    {
         $query = "UPDATE username SET status = '$status' WHERE name = '$username'";
         $result = $this->execute($query);
-        if ( $result ) {
+        if ($result) {
             return true;
         } else {
             return false;
@@ -327,11 +355,12 @@ class DatabaseConnection {
      * @param string $status One of 'd', 'a', ...
      * @return bool True if the status of all users could be updated successfully;
      * false otherwise.
-    */
-    public function updateAllUsersStatus($status) {
+     */
+    public function updateAllUsersStatus($status)
+    {
         $query = "UPDATE username SET status = '$status' WHERE name NOT LIKE 'admin'";
         $result = $this->execute($query);
-        if ( $result ) {
+        if ($result) {
             return true;
         } else {
             return false;
@@ -343,9 +372,10 @@ class DatabaseConnection {
      * be already validated!
      * @param string $username The name of the user.
      * @return bool True if deleting all user data was successful; false otherwise.
-    */
-    public function deleteUser($username) {
-        if ( $username == 'admin' ) {
+     */
+    public function deleteUser($username)
+    {
+        if ($username == 'admin') {
             return false;
         }
         $query = "DELETE FROM username WHERE name = '$username'";
@@ -370,8 +400,9 @@ class DatabaseConnection {
      * Returns the password of a given user name.
      * @param string $name Name of the user.
      * @return string Password for the requested user.
-    */
-    public function passwordQueryString($name) {
+     */
+    public function passwordQueryString($name)
+    {
         $string = "select password from username where name='$name'";
         return $string;
     }
@@ -380,8 +411,9 @@ class DatabaseConnection {
      * Returns the e-mail address of a given user name.
      * @param string $username Name of the user.
      * @return string E-mail address for the requested user.
-    */
-    public function emailAddress($username) {
+     */
+    public function emailAddress($username)
+    {
         $query = "select email from username where name = '$username'";
         $result = $this->queryLastValue($query);
         return $result;
@@ -395,8 +427,9 @@ class DatabaseConnection {
      *
      * @param \hrm\setting\base\Setting $settings Settings object to be saved.
      * @return bool True if saving was successful, false otherwise.
-    */
-    public function saveParameterSettings(Setting $settings) {
+     */
+    public function saveParameterSettings(Setting $settings)
+    {
         $owner = $settings->owner();
         $user = $owner->name();
         $name = $settings->name();
@@ -408,8 +441,8 @@ class DatabaseConnection {
             $standard = "f";
         $result = True;
         if (!$this->existsSetting($settings)) {
-            $query  = "insert into $settingTable values ('$user', '$name'" .
-            ", '$standard')";
+            $query = "insert into $settingTable values ('$user', '$name'" .
+                ", '$standard')";
             $result = $result && $this->execute($query);
         }
         $existsAlready = $this->existsParametersFor($settings);
@@ -441,25 +474,25 @@ class DatabaseConnection {
                         }
                     }
                 }
-                $parameterValue = "#".implode("#", $parameterValue);
+                $parameterValue = "#" . implode("#", $parameterValue);
             }
 
             if (!$existsAlready) {
-                $query  = "INSERT INTO $table VALUES ('$user', '$name', " .
+                $query = "INSERT INTO $table VALUES ('$user', '$name', " .
                     "'$parameterName', '$parameterValue');";
             } else {
                 /* Check that the parameter itself exists. */
-                $query  = "SELECT name FROM $table WHERE owner='$user' AND " .
-                "setting='$name' AND name='$parameterName' LIMIT 1;";
+                $query = "SELECT name FROM $table WHERE owner='$user' AND " .
+                    "setting='$name' AND name='$parameterName' LIMIT 1;";
                 $newValue = $this->queryLastValue($query);
 
-                if ( $newValue != NULL ) {
-                     $query  = "UPDATE $table SET value = '$parameterValue' " .
+                if ($newValue != NULL) {
+                    $query = "UPDATE $table SET value = '$parameterValue' " .
                         "WHERE owner='$user' AND setting='$name' " .
                         "AND name='$parameterName';";
                 } else {
-                    $query  = "INSERT INTO $table VALUES ('$user', '$name', "
-                    . "'$parameterName', '$parameterValue');";
+                    $query = "INSERT INTO $table VALUES ('$user', '$name', "
+                        . "'$parameterName', '$parameterValue');";
                 }
             }
 
@@ -481,7 +514,8 @@ class DatabaseConnection {
      * to be shared with.
      * @return bool True if saving was successful, false otherwise.
      */
-    public function saveSharedParameterSettings($settings, $targetUserName) {
+    public function saveSharedParameterSettings($settings, $targetUserName)
+    {
         $owner = $settings->owner();
         $original_user = $owner->name();
         $name = $settings->name();
@@ -507,7 +541,7 @@ class DatabaseConnection {
             "owner='$targetUserName' AND previous_owner='$original_user' " .
             "AND name='$name'";
         $id = $this->queryLastValue($query);
-        if (! $id) {
+        if (!$id) {
             return False;
         }
 
@@ -553,7 +587,7 @@ class DatabaseConnection {
                         }
                     }
                 }
-                $parameterValue = "#".implode("#", $parameterValue);
+                $parameterValue = "#" . implode("#", $parameterValue);
             }
 
             $query = "insert into $table " .
@@ -572,10 +606,11 @@ class DatabaseConnection {
      *
      * If a value starts with # it is considered to be an array with the first
      * value at the index 0.
-      @param Setting $settings Setting object to be loaded.
-      @return Setting $settings Setting object with loaded values.
-    */
-    public function loadParameterSettings($settings) {
+     * @param Setting $settings Setting object to be loaded.
+     * @return Setting $settings Setting object with loaded values.
+     */
+    public function loadParameterSettings($settings)
+    {
         $user = $settings->owner();
         $user = $user->name();
         $name = $settings->name();
@@ -583,15 +618,15 @@ class DatabaseConnection {
 
         foreach ($settings->parameterNames() as $parameterName) {
             $parameter = $settings->parameter($parameterName);
-            $query  = "SELECT value FROM $table WHERE owner='$user' AND " .
-            "setting='$name' AND name='$parameterName';";
+            $query = "SELECT value FROM $table WHERE owner='$user' AND " .
+                "setting='$name' AND name='$parameterName';";
 
             $newValue = $this->queryLastValue($query);
 
             if ($newValue == NULL) {
 
                 // See if the Parameter has a usable default
-                $newValue = $parameter->defaultValue( );
+                $newValue = $parameter->defaultValue();
                 if ($newValue == NULL) {
                     continue;
                 }
@@ -599,48 +634,47 @@ class DatabaseConnection {
 
 
             if ($newValue{0} == '#') {
-                switch($parameterName) {
-                case "ExcitationWavelength":
-                case "EmissionWavelength":
-                case "PinholeSize":
-                case "PinholeSpacing":
-                case "SignalNoiseRatio":
-                case "BackgroundOffsetPercent":
-                case "ChromaticAberration":
-                case "StedDepletionMode":
-                case "StedWavelength":
-                case "StedSaturationFactor":
-                case "StedImmunity":
-                case "Sted3D":
-                case "SpimExcMode":
-                case "SpimGaussWidth":
-                case "SpimCenterOffset":
-                case "SpimFocusOffset":
-                case "SpimNA":
-                case "SpimFill":
-                case "SpimDir":
-                case "ColocChannel":
-                case "ColocThreshold":
-                case "ColocCoefficient":
-                    /* Extract and continue to explode. */
-                    $newValue = substr($newValue,1);
-                default:
-                    $newValues = explode("#", $newValue);
+                switch ($parameterName) {
+                    case "ExcitationWavelength":
+                    case "EmissionWavelength":
+                    case "PinholeSize":
+                    case "PinholeSpacing":
+                    case "SignalNoiseRatio":
+                    case "BackgroundOffsetPercent":
+                    case "ChromaticAberration":
+                    case "StedDepletionMode":
+                    case "StedWavelength":
+                    case "StedSaturationFactor":
+                    case "StedImmunity":
+                    case "Sted3D":
+                    case "SpimExcMode":
+                    case "SpimGaussWidth":
+                    case "SpimCenterOffset":
+                    case "SpimFocusOffset":
+                    case "SpimNA":
+                    case "SpimFill":
+                    case "SpimDir":
+                    case "ColocChannel":
+                    case "ColocThreshold":
+                    case "ColocCoefficient":
+                        /* Extract and continue to explode. */
+                        $newValue = substr($newValue, 1);
+                    default:
+                        $newValues = explode("#", $newValue);
                 }
 
-                if (strcmp( $parameterName, "PSF" ) != 0
-                    && strpos($newValue, "/")) {
+                if (strcmp($parameterName, "PSF") != 0
+                    && strpos($newValue, "/")
+                ) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
                         if (strpos($newValues[$i], "/")) {
                             $newValue[] = explode("/", $newValues[$i]);
-                        }
-                        else {
+                        } else {
                             $newValue[] = array($newValues[$i]);
                         }
                     }
-                }
-                else {
+                } else {
                     $newValue = $newValues;
                 }
             }
@@ -660,7 +694,8 @@ class DatabaseConnection {
      * @return Setting object with loaded values.
      * @throws \Exception
      */
-    public function loadSharedParameterSettings($id, $type) {
+    public function loadSharedParameterSettings($id, $type)
+    {
 
         // Get the correct objects
         switch ($type) {
@@ -711,25 +746,25 @@ class DatabaseConnection {
             $newValue = $this->queryLastValue($query);
             if ($newValue == NULL) {
                 // See if the Parameter has a usable default
-                $newValue = $parameter->defaultValue( );
+                $newValue = $parameter->defaultValue();
                 if ($newValue == NULL) {
                     continue;
                 }
             }
-            if ($newValue{0}=='#') {
-                switch($parameterName) {
-                case "ExcitationWavelength":
-                case "EmissionWavelength":
-                case "SignalNoiseRatio":
-                case "BackgroundOffsetPercent":
-                case "ChromaticAberration":
-                    /* Extract and continue to explode. */
-                    $newValue = substr($newValue,1);
-                default:
-                    $newValues = explode("#", $newValue);
+            if ($newValue{0} == '#') {
+                switch ($parameterName) {
+                    case "ExcitationWavelength":
+                    case "EmissionWavelength":
+                    case "SignalNoiseRatio":
+                    case "BackgroundOffsetPercent":
+                    case "ChromaticAberration":
+                        /* Extract and continue to explode. */
+                        $newValue = substr($newValue, 1);
+                    default:
+                        $newValues = explode("#", $newValue);
                 }
 
-                if (strcmp( $parameterName, "PSF" ) != 0 && strpos($newValue, "/")) {
+                if (strcmp($parameterName, "PSF") != 0 && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
                         //$val = explode("/", $newValues[$i]);
@@ -745,13 +780,11 @@ class DatabaseConnection {
                         */
                         if (strpos($newValues[$i], "/")) {
                             $newValue[] = explode("/", $newValues[$i]);
-                        }
-                        else {
+                        } else {
                             $newValue[] = array($newValues[$i]);
                         }
                     }
-                }
-                else {
+                } else {
                     $newValue = $newValues;
                 }
             }
@@ -774,9 +807,10 @@ class DatabaseConnection {
      * @param string $username Name of the user for whom to query for shared
      * templates.
      * @param string $table Name of the shared table to query.
-     * @return ResultSet List of shared jobs.
-    */
-    public function getTemplatesSharedWith($username, $table) {
+     * @return array List of shared jobs.
+     */
+    public function getTemplatesSharedWith($username, $table)
+    {
         $query = "SELECT * FROM $table WHERE owner='$username'";
         $result = $this->query($query);
         return $result;
@@ -788,8 +822,9 @@ class DatabaseConnection {
      * templates.
      * @param string $table Name of the shared table to query.
      * @return ResultSet List of shared jobs.
-    */
-    public function getTemplatesSharedBy($username, $table) {
+     */
+    public function getTemplatesSharedBy($username, $table)
+    {
         $query = "SELECT * FROM $table WHERE previous_owner='$username'";
         $result = $this->query($query);
         return $result;
@@ -805,7 +840,8 @@ class DatabaseConnection {
      * @return bool True if copying was successful; false otherwise.
      */
     public function copySharedTemplate($id, $sourceSettingTable,
-                                       $sourceParameterTable, $destSettingTable, $destParameterTable) {
+                                       $sourceParameterTable, $destSettingTable, $destParameterTable)
+    {
 
         // Get the name of the previous owner (the one sharing the setting).
         $query = "select previous_owner, owner, name from $sourceSettingTable where id=$id";
@@ -818,7 +854,7 @@ class DatabaseConnection {
         $setting_name = $rows["name"];
 
         // Compose the new name of the setting
-        $out_setting_name = $previous_owner  . "_" . $setting_name;
+        $out_setting_name = $previous_owner . "_" . $setting_name;
 
         // Check if a setting with this name already exists in the target tables
         $query = "select name from $destSettingTable where " .
@@ -826,12 +862,13 @@ class DatabaseConnection {
         if ($this->queryLastValue($query)) {
 
             // The setting already exists; we try adding numerical indices
-            $n = 1; $original_out_setting_name = $out_setting_name;
+            $n = 1;
+            $original_out_setting_name = $out_setting_name;
             while (1) {
 
                 $test_name = $original_out_setting_name . "_" . $n++;
                 $query = "select name from $destSettingTable where name='$test_name' and owner='$owner'";
-                if (! $this->queryLastValue($query)) {
+                if (!$this->queryLastValue($query)) {
                     $out_setting_name = $test_name;
                     break;
                 }
@@ -885,7 +922,7 @@ class DatabaseConnection {
                 $record);
             $status = $this->connection->Execute($insertSQL);
             $ok &= !(false === $status);
-            if (! $ok) {
+            if (!$ok) {
                 break;
             }
         }
@@ -954,7 +991,8 @@ class DatabaseConnection {
      * @return bool  True if deleting was successful; false otherwise.
      */
     public function deleteSharedTemplate($id, $sourceSettingTable,
-                                         $sourceParameterTable) {
+                                         $sourceParameterTable)
+    {
 
         // Initialize success
         $ok = True;
@@ -995,7 +1033,8 @@ class DatabaseConnection {
      * @param Setting $settings Settings object to be used to update the default.
      * @return ResultSet query result.
      */
-    public function updateDefault($settings) {
+    public function updateDefault($settings)
+    {
         $owner = $settings->owner();
         $user = $owner->name();
         $name = $settings->name();
@@ -1016,7 +1055,8 @@ class DatabaseConnection {
      * @return bool true if the setting and all parameters were deleted from the
      * database; false otherwise.
      */
-    public function deleteSetting($settings) {
+    public function deleteSetting($settings)
+    {
         $owner = $settings->owner();
         $user = $owner->name();
         $name = $settings->name();
@@ -1039,7 +1079,8 @@ class DatabaseConnection {
      * existence in the database.
      * @return bool True if the parameters exist in the database; false otherwise.
      */
-    public function existsParametersFor($settings) {
+    public function existsParametersFor($settings)
+    {
         $owner = $settings->owner();
         $user = $owner->name();
         $name = $settings->name();
@@ -1058,7 +1099,8 @@ class DatabaseConnection {
      * in the database.
      * @return bool  True if the parameters exist in the database; false otherwise.
      */
-    public function existsSharedParametersFor($settings) {
+    public function existsSharedParametersFor($settings)
+    {
         $owner = $settings->owner();
         $user = $owner->name();
         $name = $settings->name();
@@ -1079,7 +1121,8 @@ class DatabaseConnection {
      * settings).
      * @return bool True if the settings exist in the database; false otherwise.
      */
-    public function existsSetting(Setting $settings) {
+    public function existsSetting(Setting $settings)
+    {
         $owner = $settings->owner();
         $user = $owner->name();
         $name = $settings->name();
@@ -1099,7 +1142,8 @@ class DatabaseConnection {
      * settings)
      * @return bool True if the settings exist in the database; false otherwise.
      */
-    public function existsSharedSetting($settings) {
+    public function existsSharedSetting($settings)
+    {
         $owner = $settings->owner();
         $user = $owner->name();
         $name = $settings->name();
@@ -1120,7 +1164,8 @@ class DatabaseConnection {
      * @return bool True if the job files could be saved successfully; false
      * otherwise.
      */
-    public function saveJobFiles($id, $owner, $files, $autoseries) {
+    public function saveJobFiles($id, $owner, $files, $autoseries)
+    {
         $result = True;
         $username = $owner->name();
         $sqlAutoSeries = "";
@@ -1141,7 +1186,8 @@ class DatabaseConnection {
      * @param string $username Name of the user that owns the job.
      * @return ResultSet Query result.
      */
-    public function queueJob($id, $username) {
+    public function queueJob($id, $username)
+    {
         $query = "insert into job_queue (id, username, queued, status) values ('$id', '$username', NOW(), 'queued')";
         return $this->execute($query);
     }
@@ -1150,7 +1196,8 @@ class DatabaseConnection {
      * Assigns priorities to the jobs in the queue.
      * @return True if assigning priorities was successful.
      */
-    public function setJobPriorities( ) {
+    public function setJobPriorities()
+    {
 
         $result = True;
 
@@ -1161,26 +1208,26 @@ class DatabaseConnection {
         ////////////////////////////////////////////////////////////////////////////
 
         // Get the number of users that currently have jobs in the queue
-        $users    = $this->execute( "SELECT DISTINCT( username ) FROM job_queue;" );
-        $row      = $this->execute( "SELECT COUNT( DISTINCT( username ) ) FROM job_queue;" )->FetchRow( );
-        $numUsers = $row[ 0 ];
+        $users = $this->execute("SELECT DISTINCT( username ) FROM job_queue;");
+        $row = $this->execute("SELECT COUNT( DISTINCT( username ) ) FROM job_queue;")->FetchRow();
+        $numUsers = $row[0];
 
         // 'Highest' priority (i.e. lowest value) is 0
         $currentPriority = 0;
 
         // First, we make sure to give the highest priorities to paused and
         // broken jobs
-        $rs = $this->execute( "SELECT id FROM job_queue WHERE status = 'broken' OR status = 'paused';" );
-        if ( $rs ) {
-            while ( $row = $rs->FetchRow( ) ) {
+        $rs = $this->execute("SELECT id FROM job_queue WHERE status = 'broken' OR status = 'paused';");
+        if ($rs) {
+            while ($row = $rs->FetchRow()) {
 
                 // Update the priority for current job id
                 $query = "UPDATE job_queue SET priority = " . $currentPriority++ .
-                    " WHERE id = '" . $row[ 0 ] . "';";
+                    " WHERE id = '" . $row[0] . "';";
 
-                $rs = $this->execute( $query );
-                if ( !$rs ) {
-                    error_log( "Could not update priority for key " . $row[ 0 ] );
+                $rs = $this->execute($query);
+                if (!$rs) {
+                    error_log("Could not update priority for key " . $row[0]);
                     $result = False;
                     return $result;
                 }
@@ -1189,17 +1236,17 @@ class DatabaseConnection {
         }
 
         // Then, we go through to running jobs
-        $rs = $this->execute( "SELECT id FROM job_queue WHERE status = 'started';" );
-        if ( $rs ) {
-            while ( $row = $rs->FetchRow( ) ) {
+        $rs = $this->execute("SELECT id FROM job_queue WHERE status = 'started';");
+        if ($rs) {
+            while ($row = $rs->FetchRow()) {
 
                 // Update the priority for current job id
                 $query = "UPDATE job_queue SET priority = " . $currentPriority++ .
-                    " WHERE id = '" . $row[ 0 ] . "';";
+                    " WHERE id = '" . $row[0] . "';";
 
-                $rs = $this->execute( $query );
-                if ( !$rs ) {
-                    error_log( "Could not update priority for key " . $row[ 0 ] );
+                $rs = $this->execute($query);
+                if (!$rs) {
+                    error_log("Could not update priority for key " . $row[0]);
                     $result = False;
                     return $result;
                 }
@@ -1208,12 +1255,12 @@ class DatabaseConnection {
 
         // Then we organize the queued jobs in a way that lets us then assign
         // priorities easily in a second pass
-        $numJobsPerUser = array( );
-        $userJobs = array( );
-        for ( $i = 0; $i < $numUsers; $i++ ) {
+        $numJobsPerUser = array();
+        $userJobs = array();
+        for ($i = 0; $i < $numUsers; $i++) {
             // Get current username
-            $row = $users->FetchRow( );
-            $username = $row[ 0 ];
+            $row = $users->FetchRow();
+            $username = $row[0];
             $query = "SELECT id
         FROM job_queue, job_files
         WHERE job_queue.id = job_files.job AND
@@ -1221,31 +1268,31 @@ class DatabaseConnection {
           job_queue.username = '$username' AND
           status = 'queued'
         ORDER BY job_queue.queued asc, job_files.file asc";
-            $rs = $this->execute( $query );
-            if ( $rs ) {
-                $userJobs[ $i ] = array( );
+            $rs = $this->execute($query);
+            if ($rs) {
+                $userJobs[$i] = array();
                 $counter = 0;
-                while ( $row = $rs->FetchRow( ) ) {
-                    $userJobs[ $i ][ $counter++ ] = $row[ 0 ];
+                while ($row = $rs->FetchRow()) {
+                    $userJobs[$i][$counter++] = $row[0];
                 }
-                $numJobsPerUser[ $i ] = $counter;
+                $numJobsPerUser[$i] = $counter;
             }
         }
 
         // Now we can assign priorities to the queued jobs -- minimum priority is 1
         // above the priorities assigned to all other types of jobs
-        $maxNumJobs = max( $numJobsPerUser );
-        for ( $j = 0; $j < $maxNumJobs; $j++ ) {
-            for ( $i = 0; $i < $numUsers; $i++ ) {
-                if ( $j < count( $userJobs[ $i ] ) ) {
+        $maxNumJobs = max($numJobsPerUser);
+        for ($j = 0; $j < $maxNumJobs; $j++) {
+            for ($i = 0; $i < $numUsers; $i++) {
+                if ($j < count($userJobs[$i])) {
                     // Update the priority for current job id
                     $query = "UPDATE job_queue SET priority = " .
-                        $currentPriority ." WHERE id = '" .
-                        $userJobs[ $i ][ $j ] . "';";
+                        $currentPriority . " WHERE id = '" .
+                        $userJobs[$i][$j] . "';";
 
-                    $rs = $this->execute( $query );
-                    if ( !$rs ) {
-                        error_log( "Could not update priority for key " . $userJobs[ $i ][ $j ] );
+                    $rs = $this->execute($query);
+                    if (!$rs) {
+                        error_log("Could not update priority for key " . $userJobs[$i][$j]);
                         $result = False;
                         return $result;
                     }
@@ -1265,29 +1312,31 @@ class DatabaseConnection {
      * @param string $startTime Job start time.
      * @return void
      */
-    public function updateStatistics($job, $startTime) {
-
+    public function updateStatistics($job, $startTime)
+    {
+        /** @var JobDescription $desc */
         $desc = $job->description();
         $parameterSetting = $desc->parameterSetting();
-        $taskSetting      = $desc->taskSetting();
-        $analysisSetting  = $desc->analysisSetting();
+        $taskSetting = $desc->taskSetting();
+        $analysisSetting = $desc->analysisSetting();
 
         $stopTime = date("Y-m-d H:i:s");
-        $id       = $desc->id();
-        $user     = $desc->owner();
-        $owner    = $user->name();
-        $group    = $user->userGroup($owner);
+        $id = $desc->id();
+        /** @var User $user */
+        $user = $desc->owner();
+        $owner = $user->name();
+        $group = $user->userGroup();
 
-        $parameter      = $parameterSetting->parameter('ImageFileFormat');
-        $inFormat       = $parameter->value();
-        $parameter      = $parameterSetting->parameter('PointSpreadFunction');
-        $PSF            = $parameter->value();
-        $parameter      = $parameterSetting->parameter('MicroscopeType');
-        $microscope     = $parameter->value();
-        $parameter      = $taskSetting->parameter('OutputFileFormat');
-        $outFormat      = $parameter->value();
-        $parameter      = $analysisSetting->parameter('ColocAnalysis');
-        $colocAnalysis  = $parameter->value();
+        $parameter = $parameterSetting->parameter('ImageFileFormat');
+        $inFormat = $parameter->value();
+        $parameter = $parameterSetting->parameter('PointSpreadFunction');
+        $PSF = $parameter->value();
+        $parameter = $parameterSetting->parameter('MicroscopeType');
+        $microscope = $parameter->value();
+        $parameter = $taskSetting->parameter('OutputFileFormat');
+        $outFormat = $parameter->value();
+        $parameter = $analysisSetting->parameter('ColocAnalysis');
+        $colocAnalysis = $parameter->value();
 
         $query = "insert into statistics values ('$id', '$owner', '$group', " .
             "'$startTime', '$stopTime', '$inFormat', '$outFormat', " .
@@ -1302,7 +1351,8 @@ class DatabaseConnection {
      * @param array $anArray Multi-dimensional array.
      * @return array Flattened array.
      */
-    public function flatten($anArray) {
+    public function flatten($anArray)
+    {
         $result = array();
         foreach ($anArray as $row) {
             $result[] = end($row);
@@ -1315,7 +1365,8 @@ class DatabaseConnection {
      * @param Parameter $parameter Parameter object.
      * @return array Flattened array of possible values.
      */
-    public function readPossibleValues($parameter) {
+    public function readPossibleValues($parameter)
+    {
         $name = $parameter->name();
         $query = "select value from possible_values where parameter = '$name';";
         $answer = $this->query($query);
@@ -1328,7 +1379,8 @@ class DatabaseConnection {
      * @param Parameter $parameter Parameter object.
      * @return array Flattened array of translated possible values.
      */
-    public function readTranslatedPossibleValues($parameter) {
+    public function readTranslatedPossibleValues($parameter)
+    {
         $name = $parameter->name();
         $query = "select translation from possible_values where parameter = '$name';";
         $answer = $this->query($query);
@@ -1342,7 +1394,8 @@ class DatabaseConnection {
      * @param string $value Value for which a translation should be returned.
      * @return string Translated value.
      */
-    public function translationFor($parameterName, $value) {
+    public function translationFor($parameterName, $value)
+    {
         $query = "select translation from possible_values where parameter = '$parameterName' and value = '$value';";
         $result = $this->queryLastValue($query);
         return $result;
@@ -1354,8 +1407,9 @@ class DatabaseConnection {
      * @param string $hucorevalue Value name in HuCore.
      * @return string Expected value by HRM.
      */
-    public function hucoreTranslation($parameterName, $hucorevalue) {
-        $query = "select value from possible_values where parameter = '" .$parameterName . "' and translation = '" . $hucorevalue . "'";
+    public function hucoreTranslation($parameterName, $hucorevalue)
+    {
+        $query = "select value from possible_values where parameter = '" . $parameterName . "' and translation = '" . $hucorevalue . "'";
         $result = $this->queryLastValue($query);
         return $result;
     }
@@ -1364,7 +1418,8 @@ class DatabaseConnection {
      * Returns an array of all file extensions.
      * @return array Array of file extensions.
      */
-    public function allFileExtensions( ) {
+    public function allFileExtensions()
+    {
         $query = "select distinct extension from file_extension";
         $answer = $this->query($query);
         $result = $this->flatten($answer);
@@ -1375,7 +1430,8 @@ class DatabaseConnection {
      * Returns an array of all extensions for multi-dataset files.
      * @return array Array of file extensions for multi-dataset files.
      */
-    public function allMultiFileExtensions( ) {
+    public function allMultiFileExtensions()
+    {
         $query = "SELECT name FROM file_format, file_extension
         WHERE file_format.name = file_extension.file_format
         AND file_format.ismultifile LIKE 't'";
@@ -1389,7 +1445,8 @@ class DatabaseConnection {
      * @param string $imageFormat File format.
      * @return array Array of file extensions.
      */
-    public function fileExtensions($imageFormat) {
+    public function fileExtensions($imageFormat)
+    {
         $query = "select distinct extension from file_extension where file_format = '$imageFormat';";
         $answer = $this->query($query);
         $result = $this->flatten($answer);
@@ -1401,12 +1458,13 @@ class DatabaseConnection {
      * @param Parameter $parameter Parameter (object).
      * @return array Array of restrictions.
      */
-    public function readNumericalValueRestrictions(Parameter $parameter) {
+    public function readNumericalValueRestrictions(Parameter $parameter)
+    {
         $name = $parameter->name();
         $query = "select min, max, min_included, max_included, standard from boundary_values where parameter = '$name';";
         $result = $this->queryLastRow($query);
-        if ( !$result ) {
-            $result = array( null, null, null, null, null );
+        if (!$result) {
+            $result = array(null, null, null, null, null);
         }
         return $result;
     }
@@ -1423,10 +1481,11 @@ class DatabaseConnection {
      * @return array Array of file formats.
      * @todo Check if this method is still used.
      */
-    public function fileFormatsWith($isSingleChannel, $isVariableChannel, $isFixedGeometry) {
+    public function fileFormatsWith($isSingleChannel, $isVariableChannel, $isFixedGeometry)
+    {
         $isSingleChannelValue = 'f';
         $isVariableChannelValue = 'f';
-        $isFixedGeometryValue ='f';
+        $isFixedGeometryValue = 'f';
         if ($isSingleChannel) {
             $isSingleChannelValue = 't';
         }
@@ -1437,13 +1496,13 @@ class DatabaseConnection {
             $isFixedGeometryValue = 't';
         }
         $conditions = array();
-        if ($isSingleChannel!=NULL) {
+        if ($isSingleChannel != NULL) {
             $conditions['isSingleChannel'] = $isSingleChannelValue;
         }
-        if ($isVariableChannel!=NULL) {
+        if ($isVariableChannel != NULL) {
             $conditions['isVariableChannel'] = $isVariableChannelValue;
         }
-        if ($isFixedGeometry!=NULL) {
+        if ($isFixedGeometry != NULL) {
             $conditions['isFixedGeometry'] = $isFixedGeometryValue;
         }
         return $this->retrieveColumnFromTableWhere('name', 'file_format', $conditions);
@@ -1457,7 +1516,8 @@ class DatabaseConnection {
      * @return array Array of geometries.
      * @todo Check if this method is still used.
      */
-    public function geometriesWith($isThreeDimensional, $isTimeSeries) {
+    public function geometriesWith($isThreeDimensional, $isTimeSeries)
+    {
         $isThreeDimensionalValue = 'f';
         $isTimeSeriesValue = 'f';
         if ($isThreeDimensional) {
@@ -1467,10 +1527,10 @@ class DatabaseConnection {
             $isTimeSeriesValue = 't';
         }
         $conditions = array();
-        if ($isThreeDimensional!=NULL) {
+        if ($isThreeDimensional != NULL) {
             $conditions['isThreeDimensional'] = $isThreeDimensionalValue;
         }
-        if ($isTimeSeries!=NULL) {
+        if ($isTimeSeries != NULL) {
             $conditions['isTimeSeries'] = $isTimeSeriesValue;
         }
         return $this->retrieveColumnFromTableWhere("name", "geometry", $conditions);
@@ -1486,7 +1546,8 @@ class DatabaseConnection {
      * as content.
      * @return array Array of values.
      */
-    public function retrieveColumnFromTableWhere($column, $table, $conditions) {
+    public function retrieveColumnFromTableWhere($column, $table, $conditions)
+    {
         $query = "select distinct $column from $table where ";
         foreach ($conditions as $eachName => $eachValue) {
             $query = $query . $eachName . " = '" . $eachValue . "' and ";
@@ -1495,7 +1556,7 @@ class DatabaseConnection {
         $answer = $this->query($query);
         $result = array();
 
-        if ( !empty($answer) ) {
+        if (!empty($answer)) {
             foreach ($answer as $row) {
                 $result[] = end($row);
             }
@@ -1509,7 +1570,8 @@ class DatabaseConnection {
      * @param string $parameterName Name of the parameter.
      * @return string Default value.
      */
-    public function defaultValue($parameterName) {
+    public function defaultValue($parameterName)
+    {
         $query = "SELECT value FROM possible_values WHERE " .
             "parameter='$parameterName' AND isDefault='t'";
         $result = $this->queryLastValue($query);
@@ -1524,7 +1586,8 @@ class DatabaseConnection {
      * Returns the id for next job from the queue, sorted by priority.
      * @return string Job id.
      */
-    public function getNextIdFromQueue() {
+    public function getNextIdFromQueue()
+    {
         // For the query we join job_queue and job_files, since we want to sort also by file name
         $query = "SELECT id
     FROM job_queue, job_files
@@ -1543,7 +1606,8 @@ class DatabaseConnection {
      * priority.
      * @return ResultSet All jobs.
      */
-    public function getQueueJobs() {
+    public function getQueueJobs()
+    {
         // Get jobs as they are in the queue, compound or not, without splitting
         // them.
         $query = "SELECT id, username, queued, start, server, process_info, status
@@ -1556,9 +1620,10 @@ class DatabaseConnection {
     /**
      * Returns all jobs from the queue, both compound and simple, and the
      * associated file names, ordered by priority.
-     * @return ResultSet All jobs.
+     * @return array All jobs.
      */
-    public function getQueueContents() {
+    public function getQueueContents()
+    {
         // For the query we join job_queue and job_files, since we want to sort also by file name
         $query = "SELECT id, username, queued, start, stop, server, process_info, status, file
     FROM job_queue, job_files
@@ -1574,7 +1639,8 @@ class DatabaseConnection {
      * @param string $id Id of the job.
      * @return Array All jobs for the id
      */
-    public function getQueueContentsForId($id) {
+    public function getQueueContentsForId($id)
+    {
         $query = "select id, username, queued, start, server, process_info, status from job_queue where id='$id';";
         $result = $this->queryLastRow($query);  // it is supposed that just one job exists with a given id
         return $result;
@@ -1585,7 +1651,8 @@ class DatabaseConnection {
      * @param string $id Job id.
      * @return array Array of file names.
      */
-    public function getJobFilesFor($id) {
+    public function getJobFilesFor($id)
+    {
         $query = "select file from job_files where job = '" . $id . "'";
         $result = $this->query($query);
         $result = $this->flatten($result);
@@ -1594,10 +1661,11 @@ class DatabaseConnection {
 
     /**
      * Returns the file series mode of a job with given id.
-      @param string $id Job id
-      @return bool True if file series, false otherwise.
-    */
-    public function getSeriesModeForId($id) {
+     * @param string $id Job id
+     * @return bool True if file series, false otherwise.
+     */
+    public function getSeriesModeForId($id)
+    {
         $query = "select autoseries from job_files where job = '$id';";
         $result = $this->queryLastValue($query);
 
@@ -1609,20 +1677,22 @@ class DatabaseConnection {
      * @param string $username Name of the user
      * @return int Number of jobs in queue.
      */
-    public function getNumberOfQueuedJobsForUser($username) {
+    public function getNumberOfQueuedJobsForUser($username)
+    {
         $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $username . "';";
-        $row = $this->Execute( $query )->FetchRow( );
-        return $row[ 0 ];
+        $row = $this->Execute($query)->FetchRow();
+        return $row[0];
     }
 
     /**
      * Returns the total number of jobs currently in the queue.
      * @return int Total number of jobs in queue.
      */
-    public function getTotalNumberOfQueuedJobs() {
+    public function getTotalNumberOfQueuedJobs()
+    {
         $query = "SELECT COUNT(id) FROM job_queue;";
-        $row = $this->Execute( $query )->FetchRow( );
-        return $row[ 0 ];
+        $row = $this->Execute($query)->FetchRow();
+        return $row[0];
     }
 
     /**
@@ -1630,7 +1700,8 @@ class DatabaseConnection {
      * @param string $id SId of the job.
      * @return string Name of the user.
      */
-    public function userWhoCreatedJob($id) {
+    public function userWhoCreatedJob($id)
+    {
         $query = "select username from job_queue where id = '$id';";
         $result = $this->queryLastValue($query);
         if (!$result) {
@@ -1644,7 +1715,8 @@ class DatabaseConnection {
      * @param string $id Id of the job.
      * @return bool True if success, false otherwise.
      */
-    public function deleteJobFromTables($id) {
+    public function deleteJobFromTables($id)
+    {
         // TODO: Use foreign keys in the database!
         $result = True;
         $result = $result && $this->execute(
@@ -1672,7 +1744,8 @@ class DatabaseConnection {
      * @return string Full path to hucore.
      * @todo Better management of multiple hosts.
      */
-    function huscriptPathOn($host) {
+    function huscriptPathOn($host)
+    {
         $query = "SELECT huscript_path FROM server where name = '$host'";
         $result = $this->queryLastValue($query);
         if (!$result) {
@@ -1685,7 +1758,8 @@ class DatabaseConnection {
      * Get the name of a free server.
      * @return string Name of the free server.
      */
-    public function freeServer() {
+    public function freeServer()
+    {
         $query = "select name from server where status='free'";
         $result = $this->queryLastValue($query);
         return $result;
@@ -1696,7 +1770,8 @@ class DatabaseConnection {
      * @param string $name Name of the server.
      * @return string Status (one of 'free', 'busy', or 'paused').
      */
-    public function statusOfServer($name) {
+    public function statusOfServer($name)
+    {
         $query = "select status from server where name='$name'";
         $result = $this->queryLastValue($query);
         return $result;
@@ -1704,10 +1779,11 @@ class DatabaseConnection {
 
     /**
      * Checks whether server is busy.
-      @param string $name     Name of the server.
-      @return bool True if the server is busy, false otherwise
-    */
-    public function isServerBusy($name) {
+     * @param string $name Name of the server.
+     * @return bool True if the server is busy, false otherwise
+     */
+    public function isServerBusy($name)
+    {
         $status = $this->statusOfServer($name);
         $result = ($status == 'busy');
         return $result;
@@ -1717,7 +1793,8 @@ class DatabaseConnection {
      * Checks whether the switch in the queue manager is 'on'.
      * @return bool True if switch is on, false otherwise.
      */
-    public function isSwitchOn() {
+    public function isSwitchOn()
+    {
         // Handle some back-compatibility issue
         if ($this->doGlobalVariablesExist()) {
             $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
@@ -1729,8 +1806,7 @@ class DatabaseConnection {
                 notifyRuntimeError("hrmd stopped",
                     "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
             }
-        }
-        else {
+        } else {
             $query = "select switch from queuemanager";
             $answer = $this->queryLastValue($query);
             $result = True;
@@ -1749,12 +1825,12 @@ class DatabaseConnection {
      * Gets the status of the queue manager's switch.
      * @return string 'on' or 'off'
      */
-    public function getSwitchStatus() {
+    public function getSwitchStatus()
+    {
         if ($this->doGlobalVariablesExist()) {
             $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
             $answer = $this->queryLastValue($query);
-        }
-        else {
+        } else {
             $query = "select switch from queuemanager";
             $answer = $this->queryLastValue($query);
         }
@@ -1764,9 +1840,10 @@ class DatabaseConnection {
     /**
      * Sets the status of the queue manager's switch.
      * @param string $status Either 'on' or 'off'
-     * @return ResultSet Query result.
+     * @return array Query result.
      */
-    public function setSwitchStatus( $status ) {
+    public function setSwitchStatus($status)
+    {
         $result = $this->execute("UPDATE queuemanager SET value = '$status' WHERE field = 'switch'");
         return $result;
     }
@@ -1775,9 +1852,10 @@ class DatabaseConnection {
      * Sets the state of the server to 'busy' and the pid for a running job.
      * @param string $name Server name.
      * @param string $pid Process identifier associated with a running job.
-     * @return ResultSet Query result.
+     * @return array Query result.
      */
-    public function reserveServer($name, $pid) {
+    public function reserveServer($name, $pid)
+    {
         $query = "update server set status='busy', job='$pid' where name='$name'";
         $result = $this->execute($query);
         return $result;
@@ -1787,9 +1865,10 @@ class DatabaseConnection {
      * Sets the state of the server to 'free' and deletes the the pid.
      * @param string $name Server name.
      * @param string $pid Process identifier associated with a running job (UNUSED!).
-     * @return ResultSet Query result.
+     * @return array Query result.
      */
-    public function resetServer($name, $pid) {
+    public function resetServer($name, $pid)
+    {
         $query = "update server set status='free', job=NULL where name='$name'";
         $result = $this->execute($query);
         return $result;
@@ -1798,9 +1877,10 @@ class DatabaseConnection {
     /**
      * Starts a job.
      * @param Job $job Job object.
-     * @return ResultSet Query result.
+     * @return array Query result.
      */
-    public function startJob($job) {
+    public function startJob($job)
+    {
         $desc = $job->description();
         $id = $desc->id();
         $server = $job->server();
@@ -1814,7 +1894,8 @@ class DatabaseConnection {
      * Get all running jobs.
      * @return array Array of Job objects.
      */
-    public function getRunningJobs() {
+    public function getRunningJobs()
+    {
         $result = array();
         $query = "select id, process_info, server from job_queue where status = 'started'";
         $rows = $this->query($query);
@@ -1837,7 +1918,8 @@ class DatabaseConnection {
      * Get names of all processing servers (independent of their status).
      * @return array Array of server names.
      */
-    public function availableServer() {
+    public function availableServer()
+    {
         $query = "select name from server";
         $result = $this->query($query);
         $result = $this->flatten($result);
@@ -1849,7 +1931,8 @@ class DatabaseConnection {
      * @param Job $job Job object.
      * @return string Start time.
      */
-    public function startTimeOf( Job $job ) {
+    public function startTimeOf(Job $job)
+    {
         $desc = $job->description();
         $id = $desc->id();
         $query = "select start from job_queue where id = '$id';";
@@ -1862,7 +1945,8 @@ class DatabaseConnection {
      * @param string $timestamp Unix timestamp.
      * @return string Formatted time string: YYYY-MM-DD hh:mm:ss.
      */
-    public function fromUnixTime($timestamp) {
+    public function fromUnixTime($timestamp)
+    {
         $query = "select FROM_UNIXTIME($timestamp)";
         $result = $this->queryLastValue($query);
         return $result;
@@ -1873,7 +1957,8 @@ class DatabaseConnection {
      * @param string $id Job id
      * @return ResultSet query result.
      */
-    public function pauseJob($id) {
+    public function pauseJob($id)
+    {
         $query = "update job_queue set status='paused' where id='$id';";
         $result = $this->execute($query);
         return $result;
@@ -1885,7 +1970,8 @@ class DatabaseConnection {
      * @param string $date Formatted date: YYYY-MM-DD hh:mm:ss.
      * @return ResultSet Query result.
      */
-    public function setJobEndTime($id, $date) {
+    public function setJobEndTime($id, $date)
+    {
         $query = "update job_queue set stop='$date' where id='$id'";
         $result = $this->execute($query);
         return $result;
@@ -1895,7 +1981,8 @@ class DatabaseConnection {
      * Changes status of 'paused' jobs to 'queued'.
      * @return ResultSet Query result
      */
-    public function restartPausedJobs() {
+    public function restartPausedJobs()
+    {
         $query = "update job_queue set status='queued' where status='paused'";
         $result = $this->execute($query);
         return $result;
@@ -1904,9 +1991,10 @@ class DatabaseConnection {
     /**
      * Marks a job with given id as 'broken' (i.e. to be removed).
      * @param string $id Job id.
-     * @return ResultSet Query result.
+     * @return array Query result.
      */
-    public function markJobAsRemoved($id) {
+    public function markJobAsRemoved($id)
+    {
         $query = "update job_queue set status='broken' where (status='queued' or status='paused') and id='$id';";
         // $query = "update job_queue set status='broken' where id='" . $id . "'";
         $result = $this->execute($query);
@@ -1918,9 +2006,10 @@ class DatabaseConnection {
     /**
      * Set the server status to free.
      * @param string $server Server name.
-     * @return ResultSet Query result.
+     * @return array Query result.
      */
-    public function markServerAsFree($server) {
+    public function markServerAsFree($server)
+    {
         $query = "update server set status='free', job=NULL where name='$server'";
         $result = $this->execute($query);
         return $result;
@@ -1930,7 +2019,8 @@ class DatabaseConnection {
      * Get all jobs with status 'broken'.
      * @return array Array of ids for broken jobs.
      */
-    public function getMarkedJobIds() {
+    public function getMarkedJobIds()
+    {
         $conditions['status'] = 'broken';
         $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
         return $ids;
@@ -1940,7 +2030,8 @@ class DatabaseConnection {
      * Get all jobs with status 'kill' to be killed by the Queue Manager.
      * @return array Array of ids for jobs to be killed.
      */
-    public function getJobIdsToKill() {
+    public function getJobIdsToKill()
+    {
         $conditions['status'] = 'kill';
         $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
         return $ids;
@@ -1951,7 +2042,8 @@ class DatabaseConnection {
      * @param string $name Name of the user.
      * @return bool True if the user exists, false otherwise.
      */
-    public function checkUser($name) {
+    public function checkUser($name)
+    {
         $query = "select status from username where name = '$name'";
         $result = $this->queryLastValue($query);
         if ($result) $result = true;
@@ -1963,7 +2055,8 @@ class DatabaseConnection {
      * @param string $name Name of the user.
      * @return string status ('a', 'd', ...).
      */
-    public function getUserStatus($name) {
+    public function getUserStatus($name)
+    {
         $query = "select status from username where name = '$name'";
         $result = $this->queryLastValue($query);
         return $result;
@@ -1974,7 +2067,8 @@ class DatabaseConnection {
      * @param string String User name to filter out from the list (optional).
      * @return array Filtered array of users.
      */
-    public function getUserList($name) {
+    public function getUserList($name)
+    {
         $query = "select name from username where name != '$name' " .
             " and name != 'admin';";
         $result = $this->query($query);
@@ -1986,7 +2080,8 @@ class DatabaseConnection {
      * @param string $id Job id.
      * @return string Name of the user who owns the job.
      */
-    public function getJobOwner($id) {
+    public function getJobOwner($id)
+    {
         $query = "select username from job_queue where id = '$id'";
         $result = $this->queryLastValue($query);
         return $result;
@@ -1996,7 +2091,8 @@ class DatabaseConnection {
      * Returns current database (!) date and time.
      * @return string formatted date (YYYY-MM-DD hh:mm:ss).
      */
-    public function now() {
+    public function now()
+    {
         $query = "select now()";
         $result = $this->queryLastValue($query);
         return $result;
@@ -2007,7 +2103,8 @@ class DatabaseConnection {
      * @param string $userName Name of the user
      * @return string Group name.
      */
-    public function getGroup($userName) {
+    public function getGroup($userName)
+    {
         $query = "SELECT research_group FROM username WHERE name= '$userName'";
         $result = $this->queryLastValue($query);
         return $result;
@@ -2019,7 +2116,8 @@ class DatabaseConnection {
      * @param string $email E-mail address.
      * @return ResultSet Query result.
      */
-    public function updateMail($userName, $email) {
+    public function updateMail($userName, $email)
+    {
         $cmd = "UPDATE username SET email = '$email' WHERE name = '$userName'";
         $result = $this->execute($cmd);
         return $result;
@@ -2030,7 +2128,8 @@ class DatabaseConnection {
      * @param string $userName Name of the user.
      * @return ResultSet Query result.
      */
-    public function updateLastAccessDate($userName) {
+    public function updateLastAccessDate($userName)
+    {
         $query = "UPDATE username SET last_access_date = CURRENT_TIMESTAMP WHERE name = '$userName'";
         $result = $this->execute($query);
         return $result;
@@ -2041,10 +2140,11 @@ class DatabaseConnection {
      * Gets the maximum number of channels from the database.
      * @return int The number of channels.
      */
-    public function getMaxChanCnt() {
-       $query  = "SELECT MAX(CAST(value AS unsigned)) as \"\"";
-       $query .= "FROM possible_values WHERE parameter='NumberOfChannels'";
-       $result = trim($this->execute($query));
+    public function getMaxChanCnt()
+    {
+        $query = "SELECT MAX(CAST(value AS unsigned)) as \"\"";
+        $query .= "FROM possible_values WHERE parameter='NumberOfChannels'";
+        $result = trim($this->execute($query));
 
         if (!is_numeric($result)) {
             $result = 5;
@@ -2063,9 +2163,10 @@ class DatabaseConnection {
      * @param string $table Name of the settings table.
      * @return ResultSet Array of settings
      */
-    public function getSettingList( $username, $table ) {
+    public function getSettingList($username, $table)
+    {
         $query = "select name, standard from $table where owner ='$username' order by name";
-        return ($this->query( $query ));
+        return ($this->query($query));
     }
 
     /**
@@ -2077,10 +2178,11 @@ class DatabaseConnection {
      * should be returned.
      * @return string Parameter confidence level.
      */
-    public function getParameterConfidenceLevel( $fileFormat, $parameterName ) {
+    public function getParameterConfidenceLevel($fileFormat, $parameterName)
+    {
         // Some Parameters MUST be provided by the user and cannot be overridden
         // by the file metadata
-        switch ( $parameterName ) {
+        switch ($parameterName) {
             case 'ImageFileFormat' :
             case 'NumberOfChannels' :
             case 'PointSpreadFunction':
@@ -2103,37 +2205,39 @@ class DatabaseConnection {
             default:
 
                 // For the other Parameters, the $fileFormat must be specified
-                if ( ( $fileFormat == '' ) && ( $fileFormat == null ) ) {
-                    exit( "Error: please specify a file format!" . "\n" );
+                if (($fileFormat == '') && ($fileFormat == null)) {
+                    exit("Error: please specify a file format!" . "\n");
                 }
 
                 // The wavelength and voxel size parameters have a common
                 // confidence in the HRM but two independent confidences
                 // in hucore
-                if ( ( $parameterName == "ExcitationWavelength" ) ||
-                    ( $parameterName == "EmissionWavelength" ) ) {
+                if (($parameterName == "ExcitationWavelength") ||
+                    ($parameterName == "EmissionWavelength")
+                ) {
 
                     $confidenceLevelEx = $this->huCoreConfidenceLevel(
-                        $fileFormat, "ExcitationWavelength" );
+                        $fileFormat, "ExcitationWavelength");
                     $confidenceLevelEm = $this->huCoreConfidenceLevel(
-                        $fileFormat, "EmissionWavelength" );
-                    $confidenceLevel   = $this->minConfidenceLevel(
-                        $confidenceLevelEx, $confidenceLevelEm );
+                        $fileFormat, "EmissionWavelength");
+                    $confidenceLevel = $this->minConfidenceLevel(
+                        $confidenceLevelEx, $confidenceLevelEm);
 
-                } elseif ( ( $parameterName == "CCDCaptorSizeX" ) ||
-                    ( $parameterName == "ZStepSize" ) ) {
+                } elseif (($parameterName == "CCDCaptorSizeX") ||
+                    ($parameterName == "ZStepSize")
+                ) {
 
                     $confidenceLevelX = $this->huCoreConfidenceLevel(
-                        $fileFormat, "CCDCaptorSizeX" );
+                        $fileFormat, "CCDCaptorSizeX");
                     $confidenceLevelZ = $this->huCoreConfidenceLevel(
-                        $fileFormat, "ZStepSize" );
-                    $confidenceLevel  = $this->minConfidenceLevel(
-                        $confidenceLevelX, $confidenceLevelZ );
+                        $fileFormat, "ZStepSize");
+                    $confidenceLevel = $this->minConfidenceLevel(
+                        $confidenceLevelX, $confidenceLevelZ);
 
                 } else {
 
                     $confidenceLevel = $this->huCoreConfidenceLevel(
-                        $fileFormat, $parameterName );
+                        $fileFormat, $parameterName);
 
                 }
 
@@ -2151,12 +2255,13 @@ class DatabaseConnection {
      * @return bool True if the module is supported by the license, false
      * otherwise.
      */
-    public function hasLicense ( $feature ) {
+    public function hasLicense($feature)
+    {
 
         $query = "SELECT feature FROM hucore_license WHERE " .
             "feature LIKE '$feature' LIMIT 1;";
 
-        if ( $this->queryLastValue($query) === FALSE ) {
+        if ($this->queryLastValue($query) === FALSE) {
             return false;
         } else {
             return true;
@@ -2167,17 +2272,19 @@ class DatabaseConnection {
      * Checks whether Huygens Core has a valid license.
      * @return bool True if the license is valid, false otherwise.
      */
-    public function hucoreHasValidLicense( ) {
+    public function hucoreHasValidLicense() 
+    {
 
         // We (ab)use the hasLicense() method
-        return ( $this->hasLicense("freeware") == false);
+        return ($this->hasLicense("freeware") == false);
     }
 
     /**
      * Gets the licensed server type for Huygens Core.
      * @return string One of desktop, small, medium, large, extreme.
      */
-    public function hucoreServerType() {
+    public function hucoreServerType()
+    {
 
         $query = "SELECT feature FROM hucore_license WHERE feature LIKE 'server=%';";
         $server = $this->queryLastValue($query);
@@ -2193,16 +2300,18 @@ class DatabaseConnection {
      * @return bool True if the license details were successfully saved, false
      * otherwise.
      */
-    public function storeLicenseDetails ( $licDetails ) {
+    public function storeLicenseDetails($licDetails)
+    {
 
         $licStored = true;
 
         // Make sure that the hucore_license table exists.
         $tables = $this->connection->MetaTables("TABLES");
-        if (!in_array("hucore_license", $tables) ) {
+        if (!in_array("hucore_license", $tables)) {
             $msg = "Table hucore_license does not exist! " .
                 "Please update the database!";
-            report( $msg, 1 ); exit( $msg );
+            report($msg, 1);
+            exit($msg);
         }
 
         // Empty table: remove existing values from older licenses.
@@ -2219,7 +2328,7 @@ class DatabaseConnection {
         $features = explode(" ", $licDetails);
         foreach ($features as $feature) {
 
-            switch( $feature ) {
+            switch ($feature) {
                 case 'desktop':
                 case 'small':
                 case 'medium':
@@ -2256,44 +2365,50 @@ class DatabaseConnection {
      * @return bool True if storing (or updating) the database was successful,
      * false otherwise.
      */
-    public function storeConfidenceLevels( $confidenceLevels ) {
+    public function storeConfidenceLevels($confidenceLevels)
+    {
 
         // Make sure that the confidence_levels table exists
         $tables = $this->connection->MetaTables("TABLES");
-        if (!in_array("confidence_levels", $tables) ) {
+        if (!in_array("confidence_levels", $tables)) {
             $msg = "Table confidence_levels does not exist! " .
                 "Please update the database!";
-            report( $msg, 1 ); exit( $msg );
+            report($msg, 1);
+            exit($msg);
         }
 
         // Get the file formats
-        $fileFormats = array_keys( $confidenceLevels );
+        $fileFormats = array_keys($confidenceLevels);
 
         // Go over all $confidenceLevels and set the values
-        foreach ( $fileFormats as $format ) {
+        foreach ($fileFormats as $format) {
 
             // If the row for current $fileFormat does not exist, INSERT a new
             // row with all parameters, otherwise UPDATE the existing one.
             $query = "SELECT fileFormat FROM confidence_levels WHERE " .
                 "fileFormat = '" . $format . "' LIMIT 1;";
 
-            if ( $this->queryLastValue($query) === FALSE ) {
+            if ($this->queryLastValue($query) === FALSE) {
 
                 // INSERT
-                if ( !$this->connection->AutoExecute( "confidence_levels",
-                    $confidenceLevels[ $format ], "INSERT" ) ) {
+                if (!$this->connection->AutoExecute("confidence_levels",
+                    $confidenceLevels[$format], "INSERT")
+                ) {
                     $msg = "Could not insert confidence levels for file format $format!";
-                    report( $msg, 1 ); exit( $msg );
+                    report($msg, 1);
+                    exit($msg);
                 }
 
             } else {
 
                 // UPDATE
-                if ( !$this->connection->AutoExecute( "confidence_levels",
-                    $confidenceLevels[ $format ], 'UPDATE',
-                    "fileFormat = '$format'" ) ) {
+                if (!$this->connection->AutoExecute("confidence_levels",
+                    $confidenceLevels[$format], 'UPDATE',
+                    "fileFormat = '$format'")
+                ) {
                     $msg = "Could not update confidence levels for file format $format!";
-                    report( $msg, 1 ); exit( $msg);
+                    report($msg, 1);
+                    exit($msg);
                 }
 
             }
@@ -2312,13 +2427,14 @@ class DatabaseConnection {
      *
      * @return bool True if a user with given seed exists, false otherwise.
      */
-    public function existsUserRequestWithSeed($seed) {
+    public function existsUserRequestWithSeed($seed)
+    {
         $query = "SELECT status FROM username WHERE status = '$seed';";
         $value = $this->queryLastValue($query);
         if ($value == false) {
             return false;
         } else {
-            return ( $value == $seed );
+            return ($value == $seed);
         }
 
     }
@@ -2328,22 +2444,23 @@ class DatabaseConnection {
      * @param string $newState One of 'on' or 'off'.
      * @return string Status or error message.
      */
-    public function switchGPUState( $newState ) {
-       if ( $newState == "On" ) {
-           $value = TRUE;
-       } else if ( $newState == "Off" ) {
-           $value = FALSE;
-       } else {
-           return "Impossible to change the GPU configuration. Unknown value.";
-       }
+    public function switchGPUState($newState)
+    {
+        if ($newState == "On") {
+            $value = TRUE;
+        } else if ($newState == "Off") {
+            $value = FALSE;
+        } else {
+            return "Impossible to change the GPU configuration. Unknown value.";
+        }
 
         $query = "UPDATE global_variables SET value = '$value' " .
-                 "WHERE name = 'GPUenabled';";
+            "WHERE name = 'GPUenabled';";
 
         $result = $this->execute($query);
-        if ( $result ) {
+        if ($result) {
             return "GPU processing has been turned " .
-                strtolower($newState) . ".";
+            strtolower($newState) . ".";
         } else {
             return "Impossible to change the GPU configuration.";
         }
@@ -2353,7 +2470,8 @@ class DatabaseConnection {
      * Get the state of GPU acceleration (as string).
      * @return string One "true" or "false".
      */
-    public function getGPUStateAsString( ) {
+    public function getGPUStateAsString()
+    {
         $query = "SELECT value FROM global_variables " .
             "WHERE name = 'GPUenabled';";
 
@@ -2380,15 +2498,16 @@ class DatabaseConnection {
      * 'verified', 'asIs'.
      * @return string The minimum of the two confidence levels.
      */
-    private function minConfidenceLevel( $level1, $level2 ) {
-        $levels = array( );
-        $levels[ 'default' ]   = 0;
-        $levels[ 'estimated' ] = 1;
-        $levels[ 'reported' ]  = 2;
-        $levels[ 'verified' ]  = 3;
-        $levels[ 'asIs' ]      = 3;
+    private function minConfidenceLevel($level1, $level2)
+    {
+        $levels = array();
+        $levels['default'] = 0;
+        $levels['estimated'] = 1;
+        $levels['reported'] = 2;
+        $levels['verified'] = 3;
+        $levels['asIs'] = 3;
 
-        if ( $levels[ $level1 ] <= $levels[ $level2 ] ) {
+        if ($levels[$level1] <= $levels[$level2]) {
             return $level1;
         } else {
             return $level2;
@@ -2402,14 +2521,15 @@ class DatabaseConnection {
      * @param string $parameterName Name of the HRM Parameter.
      * @return string HuCore's raw confidence level.
      */
-    private function huCoreConfidenceLevel( $fileFormat, $parameterName ) {
+    private function huCoreConfidenceLevel($fileFormat, $parameterName)
+    {
 
         // Get the mapped file format
         $query = "SELECT hucoreName FROM file_format WHERE name = '" .
             $fileFormat . "' LIMIT 1";
-        $hucoreFileFormat = $this->queryLastValue( $query );
-        if ( !$hucoreFileFormat ) {
-            report( "Could not get the mapped file name for " . $fileFormat ."!", 1 );
+        $hucoreFileFormat = $this->queryLastValue($query);
+        if (!$hucoreFileFormat) {
+            report("Could not get the mapped file name for " . $fileFormat . "!", 1);
             return "default";
         }
 
@@ -2417,12 +2537,12 @@ class DatabaseConnection {
         if (!array_key_exists($parameterName, $this->parameterNameDictionary)) {
             return "default";
         }
-        $query = "SELECT " . $this->parameterNameDictionary[ $parameterName ] .
+        $query = "SELECT " . $this->parameterNameDictionary[$parameterName] .
             " FROM confidence_levels WHERE fileFormat = '" . $hucoreFileFormat .
             "' LIMIT 1;";
-        $confidenceLevel = $this->queryLastValue( $query );
-        if ( !$confidenceLevel ) {
-            report( "Could not get the confidence level for " . $fileFormat ."!", 1 );
+        $confidenceLevel = $this->queryLastValue($query);
+        if (!$confidenceLevel) {
+            report("Could not get the confidence level for " . $fileFormat . "!", 1);
             return "default";
         }
 
@@ -2433,8 +2553,9 @@ class DatabaseConnection {
     /**
      * Ugly hack to check for old table structure.
      * @return bool True if global variables table exists, false otherwise.
-    */
-    private function doGlobalVariablesExist() {
+     */
+    private function doGlobalVariablesExist()
+    {
         global $db_type;
         global $db_host;
         global $db_name;
@@ -2443,9 +2564,9 @@ class DatabaseConnection {
 
         $test = False;
 
-        $dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
+        $dsn = $db_type . "://" . $db_user . ":" . $db_password . "@" . $db_host . "/" . $db_name;
         $db = ADONewConnection($dsn);
-        if(!$db)
+        if (!$db)
             return;
         $tables = $db->MetaTables("TABLES");
         if (in_array("global_variables", $tables))
