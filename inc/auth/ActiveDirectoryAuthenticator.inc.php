@@ -225,7 +225,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         $this->m_AdLDAP->close();
         if (!$info) {
-            report('No email address found for username "' . $username . '"', 2);
+            report("No email address found for username '$username'!", 2);
             return "";
         }
         report('Email for username "' . $username . '": ' . $info->mail, 2);
