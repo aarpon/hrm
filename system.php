@@ -3,11 +3,10 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\System;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/User.inc.php");
-require_once("./inc/System.php");
 
 session_start();
 

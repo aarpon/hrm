@@ -6,8 +6,6 @@ use hrm\Nav;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/User.inc.php");
-
 session_start();
 
 if (isset($_GET['home'])) {

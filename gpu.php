@@ -2,13 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
 use hrm\Nav;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
-
-require_once("./inc/User.inc.php");
-require_once("./inc/Util.inc.php");
-require_once("./inc/System.php");
 
 session_start();
 
@@ -26,11 +23,11 @@ $message = "";
 
 if (isset($_GET["turnon"])) {
     $db = new DatabaseConnection();
-    $message = $db->SwitchGPUState( "On" );
+    $message = $db->switchGPUState( "On" );
 }
 if (isset($_GET["turnoff"])) {
     $db = new DatabaseConnection();
-    $message = $db->SwitchGPUState( "Off" );
+    $message = $db->switchGPUState( "Off" );
 }
 
 

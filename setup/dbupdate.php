@@ -35,8 +35,11 @@
 //    it is simply updated to the last revision.
 
 // Include hrm_config.inc.php
-require_once( dirname( __FILE__ ) . "/../inc/hrm_config.inc.php" );
-require_once(dirname(__FILE__) . "/../inc/System.php");
+use ADODB2_mysql;
+use ADODB2_postgres;
+use hrm\System;
+
+require_once  dirname( __FILE__ ) . '/../inc/bootstrap.php';
 
 // Database last revision
 $LAST_REVISION = System::getDBLastRevision( );
