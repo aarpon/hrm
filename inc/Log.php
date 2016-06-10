@@ -19,6 +19,12 @@ require_once dirname(__FILE__) . '/bootstrap.php';
 /**
  * Singleton class that sets up the logging facility (using Monolog) once.
  *
+ * Usage:
+ *
+ * Log::info("An info message.");
+ * Log::warning("A warning message.");
+ * Log::error("An error message.");
+ * 
  * @package hrm
  */
 class Log
@@ -43,6 +49,7 @@ class Log
      */
     private function __construct()
     {
+        // Retrieve settings from configuration files
         global $log_verbosity, $logdir, $logfile;
 
         // Debug level

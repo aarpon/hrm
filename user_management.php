@@ -6,11 +6,12 @@ use hrm\Mail;
 use hrm\Nav;
 use hrm\user\mngm\UserManagerFactory;
 use hrm\user\User;
+use hrm\Util;
 use hrm\Validator;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once(dirname(__FILE__) . "/inc/Util.inc.php");
+require_once(dirname(__FILE__) . "/inc/Util.php");
 
 
 global $hrm_url;
@@ -222,7 +223,7 @@ include("header.inc.php");
         <ul>
             <?php
                 echo(Nav::textUser($_SESSION['user']->name()));
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>

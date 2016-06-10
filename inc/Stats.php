@@ -15,7 +15,7 @@ use hrm\user\User;
 require_once dirname(__FILE__) . '/bootstrap.php';
 
 require_once("Database.php");
-require_once("Util.inc.php");
+require_once("Util.php");
 
 /**
  * Type of display to be generated from the statistics.
@@ -900,7 +900,7 @@ class Stats
             header("Content-Type: $type; name=\"$dlname\"");
             ob_clean();
             flush();
-            readfile_chunked($fullFileName);
+            Util::readfile_chunked($fullFileName);
             unlink($fullFileName);
             return "";
         } else {

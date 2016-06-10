@@ -4,10 +4,11 @@
 
 use hrm\Nav;
 use hrm\System;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once dirname(__FILE__) . '/inc/Util.inc.php';
+require_once dirname(__FILE__) . '/inc/Util.php';
 
 session_start();
 
@@ -47,7 +48,7 @@ include("header.inc.php");
         <ul>
             <?php
                 echo(Nav::textUser($_SESSION['user']->name()));
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>

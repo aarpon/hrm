@@ -6,6 +6,7 @@ use hrm\Fileserver;
 use hrm\JobDescription;
 use hrm\Nav;
 use hrm\System;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -100,7 +101,7 @@ include("header.inc.php");
                     echo(Nav::linkRawImages());
                 }
                 echo(Nav::linkJobQueue());
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>

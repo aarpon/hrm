@@ -6,10 +6,11 @@ use hrm\Nav;
 use hrm\setting\AnalysisSetting;
 use hrm\setting\AnalysisSettingEditor;
 use hrm\user\User;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/Util.inc.php");
+require_once("./inc/Util.php");
 
 /* *****************************************************************************
  *
@@ -220,7 +221,7 @@ include("header.inc.php");
                 if ( !$_SESSION['user']->isAdmin()) {
                     echo(Nav::linkRawImages());
                 }
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>

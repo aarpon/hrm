@@ -5,10 +5,11 @@
 use hrm\DatabaseConnection;
 use hrm\Nav;
 use hrm\setting\TaskSetting;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/Util.inc.php");
+require_once("./inc/Util.php");
 
 /* *****************************************************************************
  *
@@ -762,7 +763,7 @@ if ( !( strpos( $_SERVER[ 'HTTP_REFERER' ],
 }
 
 // Workaround for IE
-if ( using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
+if ( Util::using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
 ?>
         <script type="text/javascript">
             $(document).ready( retrieveValues( ) );

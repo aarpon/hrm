@@ -1,7 +1,12 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
-
+/**
+ * UserManagerFactory
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
 namespace hrm\user\mngm;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';

@@ -2,6 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\HuygensTools;
 use hrm\Nav;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
@@ -242,13 +243,13 @@ function estimateSnrFromFile($file) {
       <div id="controls"
            class=""
            onmouseover="smoothChangeDivCond('general', 'thumb',
-            '<?php echo escapeJavaScript($defaultView);?>', 200);">
+            '<?php echo Util::escapeJavaScript($defaultView);?>', 200);">
       </div>
       </div> <!-- content -->
 
       <div id="rightpanel"
            onmouseover="smoothChangeDivCond('general','thumb',
-           '<?php echo escapeJavaScript($defaultView);?>', 200);">
+           '<?php echo Util::escapeJavaScript($defaultView);?>', 200);">
       <div id="info">
       <?php // echo $defaultView;  ?>
       </div>
@@ -269,7 +270,7 @@ function estimateSnrFromFile($file) {
     // write the JPEG images in a predefined location for this script to
     // display them.
 
-    $estimation = askHuCore("estimateSnrFromImage", $opt);
+    $estimation = HuygensTools::askHuCore("estimateSnrFromImage", $opt);
     // No line-breaks in the output, it is going to be escaped for JavaScript.
     $output =
         "<h3><img alt=\"SNR\" src=\"./images/results_title.png\" " .
@@ -342,7 +343,7 @@ function estimateSnrFromFile($file) {
                     $tag = "$tag (Optimistic estimate)";
                 }
             }
-            $zoomImg =  escapeJavaScript(
+            $zoomImg =  Util::escapeJavaScript(
                     "<p><b>Portion of channel $ch:</b></p>".
                     "<p>$tag</p><img src=\"file_management.php?getThumbnail=".
                     $zoomFile."&amp;dir=src\" alt=\"SNR $snr\" id=\"ithumb\"".
@@ -460,11 +461,11 @@ function estimateSnrFromFile($file) {
 
          // Show the results with a nice JavaScript smooth transition.
          smoothChangeDiv('info',
-             '<?php echo escapeJavaScript($message); ?>',1300);
+             '<?php echo Util::escapeJavaScript($message); ?>',1300);
          smoothChangeDiv('output',
-             '<?php echo escapeJavaScript($output); ?>',1000);
+             '<?php echo Util::escapeJavaScript($output); ?>',1000);
          smoothChangeDiv('controls',
-             '<?php echo escapeJavaScript($buttons); ?>',1500);
+             '<?php echo Util::escapeJavaScript($buttons); ?>',1500);
          changeDiv('tmp','');
 
     function getScrollTop() {

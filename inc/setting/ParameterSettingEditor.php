@@ -9,6 +9,7 @@
  */
 namespace hrm\setting;
 
+use hrm\HuygensTools;
 use hrm\setting\base\SettingEditor;
 use hrm\user\User;
 
@@ -71,7 +72,7 @@ class ParameterSettingEditor extends SettingEditor
         /* If it doesn't work, just do the same as create new. */
         $opts = "-path \"" . $dirName . "\" -filename \"$fileName\"";
 
-        $data = askHuCore('getMetaDataFromImage', $opts);
+        $data = HuygensTools::askHuCore('getMetaDataFromImage', $opts);
 
         $setting->parseParamsFromHuCore($data);
         $this->message = $setting->message();

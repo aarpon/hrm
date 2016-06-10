@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -58,7 +59,7 @@ $info = preg_replace('%<img border="0" src=%s', "<img src=", $info );
             <?php
                 echo(Nav::textUser($_SESSION['user']->name()));
                 echo(Nav::linkBack($_SESSION['referer']));
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>

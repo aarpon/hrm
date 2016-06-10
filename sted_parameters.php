@@ -14,7 +14,7 @@ use hrm\param\StedWavelength;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/Util.inc.php");
+require_once("./inc/Util.php");
 
 /* *****************************************************************************
  *

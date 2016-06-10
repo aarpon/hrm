@@ -10,6 +10,7 @@
 namespace hrm\setting;
 
 
+use hrm\HuygensTools;
 use hrm\setting\base\SettingEditor;
 use hrm\user\User;
 
@@ -71,7 +72,7 @@ class TaskSettingEditor extends SettingEditor
 
         $opts = "-huTemplate \"" . $huTemplate . "\"";
 
-        $data = askHuCore('getDeconDataFromHuTemplate', $opts);
+        $data = HuygensTools::askHuCore('getDeconDataFromHuTemplate', $opts);
 
         $setting->parseParamsFromHuCore($data);
         $this->message = $setting->message();

@@ -4,10 +4,11 @@
 
 use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/Util.inc.php");
+require_once("./inc/Util.php");
 
 
 /* *****************************************************************************
@@ -646,7 +647,7 @@ echo "<p>$message</p>";
 include("footer.inc.php");
 
 // Another horrible hack to work around an inexplicable IE8 behavior
-if (using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
+if (Util::using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
     ?>
         <script type="text/javascript">
             $(document).ready( retrieveValues( ) );

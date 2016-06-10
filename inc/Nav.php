@@ -1,6 +1,12 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
+/**
+ * Nav
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
 
 namespace hrm;
 
@@ -133,7 +139,7 @@ class Nav
      * Generate HTML code to link to the home page.
      *
      * This function requires the URL of the current page. You can
-     * use the getThisPageName() function from Util.inc.php to get it.
+     * use the Util::getThisPageName() to get it.
      *
      * @param string $currentPage URL of the current page.
      * @return string HTML code to link to the home page.
@@ -150,7 +156,7 @@ class Nav
      * Generate HTML code to the logout link.
      *
      * This function requires the URL of the current page. You can
-     * use the getThisPageName() function from Util.inc.php to get it.
+     * use the Util::getThisPageName() to get it.
      *
      * @param string $currentPage URL of the current page.
      * @return string HTML code to the logout link.
@@ -201,6 +207,8 @@ class Nav
     }
 
     /**
+     * Generate HTML code to link back (exit) to the login page.
+     *
      * @return string HTML code to link back to the login page.
      */
     public static function exit_to_login()
@@ -210,6 +218,8 @@ class Nav
     }
 
     /**
+     * Generate HTML code to trigger the check for updates action.
+     *
      * @return string HTML code to trigger the check for updates action.
      */
     public static function actionCheckForUpdates()

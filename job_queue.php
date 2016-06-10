@@ -4,6 +4,7 @@
 
 use hrm\JobQueue;
 use hrm\Nav;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -66,7 +67,7 @@ include("header.inc.php");
             <?php
                 echo(Nav::textUser($_SESSION['user']->name()));
                 echo(Nav::linkBack($_SESSION['referer']));
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>

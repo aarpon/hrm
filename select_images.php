@@ -6,6 +6,7 @@ use hrm\Fileserver;
 use hrm\Nav;
 use hrm\setting\ParameterSetting;
 use hrm\System;
+use hrm\Util;
 
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
@@ -350,7 +351,7 @@ $info = "<h3>Quick help</h3>" .
                 if ( !$_SESSION['user']->isAdmin()) {
                     echo(Nav::linkRawImages());
                 }
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>
@@ -580,7 +581,7 @@ else echo "                        <option>&nbsp;</option>\n";
 
     <script type="text/javascript">
         <!--
-            window.pageInstructions='<?php echo escapeJavaScript($info); ?>';
+            window.pageInstructions='<?php echo Util::escapeJavaScript($info); ?>';
             window.infoShown = true;
             window.previewSelected = -1;
         //-->

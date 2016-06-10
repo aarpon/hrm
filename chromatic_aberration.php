@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -232,7 +233,7 @@ initChromaticChannelReference();
 include("footer.inc.php");
 
 // Workaround for IE
-if ( using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
+if ( Util::using_IE() && !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
 ?>
         <script type="text/javascript">
             $(document).ready( retrieveValues( ) );

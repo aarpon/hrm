@@ -8,7 +8,7 @@ use hrm\Validator;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/Util.inc.php");
+require_once("./inc/Util.php");
 
 session_start();
 
@@ -79,7 +79,7 @@ if (isset($_POST['add'])) {
                 $db = new DatabaseConnection();
                 // Is the user name already taken?
                 if ($db->emailAddress($clean['username']) == "") {
-                    $password = get_rand_id(8);
+                    $password = Util::get_rand_id(8);
                     $result = $db->addNewUser($clean["username"],
                         $password, $clean["email"],
                         $clean["group"], 'a');

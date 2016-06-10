@@ -189,7 +189,7 @@ if ( System::isUploadEnabled() == "enabled" ) {
                 $browse_folder);
 
     } else if (isset($_GET['upload'])) {
-        $max = getMaxPostSize() / 1024 / 1024;
+        $max = Util::getMaxPostSize() / 1024 / 1024;
         $maxPost = "$max MB";
         $operationResult = "<b>Nothing uploaded!</b> Probably total post ".
             "exceeds maximum allowed size of $maxPost.<br>\n";

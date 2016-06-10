@@ -294,7 +294,7 @@ class JobDescription
             $db = new DatabaseConnection();
             $result = $db->setJobPriorities();
             if (!$result) {
-                error_log("Could not set job priorities!");
+                Log::error("Could not set job priorities!");
             }
         }
 
@@ -633,7 +633,7 @@ class JobDescription
     {
         $result = True;
         foreach ($this->files as $file) {
-            // error_log("file=".$file);
+            // Log::error("file=".$file);
             $newJobDescription = new JobDescription();
             $newJobDescription->copyFrom($this);
             $newJobDescription->setFiles(array($file), $this->autoseries);
@@ -644,7 +644,9 @@ class JobDescription
 
     /**
      * Checks whether a string ends with a number.
+     * @param string $string String to be checked.
      * @return bool True if the string ends with a number, false otherwise.
+     * @todo This seems to be unused. Can it be removed?
      */
     private function endsWithNumber($string)
     {

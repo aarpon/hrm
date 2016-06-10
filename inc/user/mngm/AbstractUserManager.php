@@ -1,9 +1,15 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
-
+/**
+ * AbstractUserManager
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
 namespace hrm\user\mngm;;
 
+use hrm\Log;
 use hrm\user\auth\AuthenticatorFactory;
 use hrm\DatabaseConnection;
 use hrm\System;
@@ -137,9 +143,9 @@ abstract class AbstractUserManager {
 
         // TODO Use the Shell classes!
 
-        report("Creating directories for '" . $username . "'.", 1);
+        Log::info("Creating directories for '" . $username . "'.");
         global $userManagerScript;
-        report(shell_exec($userManagerScript . " create " . $username), 1);
+        Log::info(shell_exec($userManagerScript . " create " . $username));
     }
 
     /**
@@ -150,8 +156,8 @@ abstract class AbstractUserManager {
 
         // TODO Use the Shell classes!
 
-        report("Removing directories for '" . $username . "'.", 1);
+        Log::info("Removing directories for '" . $username . "'.");
         global $userManagerScript;
-        report(shell_exec($userManagerScript . " delete " . $username), 1);
+        Log::info(shell_exec($userManagerScript . " delete " . $username));
     }
 };

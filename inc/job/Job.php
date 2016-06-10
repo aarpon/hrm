@@ -283,22 +283,22 @@ class Job
         if ($desc->isCompound()) {
             $result = $result && $desc->createSubJobs();
             if ($result) {
-                report("created sub jobs", 1);
+                Log::info("created sub jobs");
             }
             if ($result) {
                 $queue = new JobQueue();
                 $result = $result && $queue->removeJob($desc);
                 if ($result)
-                    report("removed compound job\n", 1);
+                    Log::info("removed compound job\n");
                 // TODO: check if this does fix compound job processing
                 $result = False;
             }
         } else {
-            report("Job is elementary", 1);
+            Log::info("Job is elementary");
 
             $this->createHuygensTemplate();
             $result = $result && $this->writeHuTemplate();
-            report("Created Huygens template", 1);
+            Log::info("Created Huygens template");
         }
         return $result;
     }
@@ -319,14 +319,13 @@ class Job
         $templateFile = $templatePath . "/" . $templateName;
         $file = fopen($templateFile, "w");
         if (!$file) {
-            report("Error opening file $templateFile, verify permissions!", 0);
-            report("Waiting 15 seconds...", 1);
+            Log::error("Error opening file $templateFile, verify permissions! Waiting 15 seconds...");
             sleep(15);
             return False;
         } else {
             $result = $result && (fwrite($file, $this->huTemplate) > 0);
             fclose($file);
-            report("Wrote template $templateFile", 1);
+            Log::info("Wrote template $templateFile");
         }
         return $result;
     }
@@ -388,7 +387,7 @@ class Job
                 "/hrm_previews && sudo scp " . $huygens_user . "@" .
                 $server_hostname . ":" . escapeshellarg($previews) . " .)");
 
-            //error_log($result);
+            //Log::error($result);
         }
 
         // TODO is checking for job id only a good idea?
@@ -400,9 +399,9 @@ class Job
         $result = $fileNameExists/* || $newFileWritten*/
         ;
         if (!$result) {
-            report("Problem: no result file $destFileName in destination directory $path", 0);
+            Log::error("Problem: no result file $destFileName in destination directory $path");
         } else {
-            report("File $destFileName available", 2);
+            Log::info("File $destFileName available");
         }
         return $result;
     }
@@ -463,9 +462,9 @@ class Job
                 $server_hostname . " ls " . $marker);
 
             // Old code: to be removed.
-            //error_log("ssh " . $huygens_user . "@" . $server_hostname . "
+            //Log::error("ssh " . $huygens_user . "@" . $server_hostname . "
             //ls " . $marker);
-            //error_log($result);
+            //Log::error($result);
 
             // TODO: is the queue manager a sudoer?
             if ($remoteFile == $marker) {
@@ -497,7 +496,7 @@ class Job
 
             // Tasks may report an estimated end time, whenever they can.
             $estEndTime = file_get_contents($path . '/' . $endTimeMarker);
-            report("Estimated end time for " . $desc->id() . ": $estEndTime", 1);
+            Log::info("Estimated end time for " . $desc->id() . ": $estEndTime");
             $queue = new JobQueue();
             $queue->updateEstimatedEndTime($desc->id(), $estEndTime);
 
@@ -1085,7 +1084,7 @@ class Job
         /* Extract the two channels involved in this coloc run. */
         $pattern = "/channels {([0-9]) ([0-9])}/";
         if (!preg_match($pattern, $colocReport, $matches)) {
-            error_log("Impossible to retrieve channel data from coloc report");
+            Log::error("Impossible to retrieve channel data from coloc report");
         } else {
             $chanR = $matches[1];
             $chanG = $matches[2];
@@ -1118,7 +1117,7 @@ class Job
      * Adds a new cell to an html table.
      * @param string $content The data that will be shown in the cell.
      * @param string $style One of the cell styles specified in the CSS files.
-     * @colspan int $colspan The number of columns that will be taken up by the cell.
+     * @param int $colspan The number of columns that will be taken up by the cell.
      * @return string A string with the formatted html code.
      */
     private function insertCell($content, $style, $colspan = null)

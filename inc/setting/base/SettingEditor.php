@@ -10,11 +10,12 @@
 namespace hrm\setting\base;
 
 use hrm\DatabaseConnection;
+use hrm\HuygensTools;
 use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
-require_once dirname(__FILE__) . '/../../Util.inc.php';
+require_once dirname(__FILE__) . '/../../Util.php';
 
 
 /**
@@ -220,7 +221,7 @@ abstract class SettingEditor
 
         $opts = "-huTemplate \"" . $huTemplate . "\"";
 
-        $data = askHuCore('getMetaDataFromHuTemplate', $opts);
+        $data = HuygensTools::askHuCore('getMetaDataFromHuTemplate', $opts);
 
         // @todo Not all settings have this method!
         $setting->parseParamsFromHuCore($data);

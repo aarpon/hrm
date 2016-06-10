@@ -17,10 +17,11 @@ use hrm\setting\base\Setting;
 use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
 use hrm\user\User;
+use hrm\Log;
 
 require_once dirname(__FILE__) . "/bootstrap.php";
 
-require_once dirname(__FILE__) . "/Util.inc.php";
+require_once dirname(__FILE__) . "/Util.php";
 
 /**
  * Manages the database connection through the ADOdb library.
@@ -314,8 +315,8 @@ class DatabaseConnection
     {
 
         if ($email == "" || $group == "") {
-            report("User data update: e-mail and group cannot be empty! " .
-                "No changes to the database!", 0);
+            Log::warning("User data update: e-mail and group cannot be empty! " .
+                "No changes to the database!");
             return false;
         }
 
@@ -1228,7 +1229,7 @@ class DatabaseConnection
 
                 $rs = $this->execute($query);
                 if (!$rs) {
-                    error_log("Could not update priority for key " . $row[0]);
+                    Log::error("Could not update priority for key " . $row[0]);
                     $result = False;
                     return $result;
                 }
@@ -1247,7 +1248,7 @@ class DatabaseConnection
 
                 $rs = $this->execute($query);
                 if (!$rs) {
-                    error_log("Could not update priority for key " . $row[0]);
+                    Log::error("Could not update priority for key " . $row[0]);
                     $result = False;
                     return $result;
                 }
@@ -1293,7 +1294,7 @@ class DatabaseConnection
 
                     $rs = $this->execute($query);
                     if (!$rs) {
-                        error_log("Could not update priority for key " . $userJobs[$i][$j]);
+                        Log::error("Could not update priority for key " . $userJobs[$i][$j]);
                         $result = False;
                         return $result;
                     }
@@ -1803,8 +1804,8 @@ class DatabaseConnection
             $result = True;
             if ($answer == 'off') {
                 $result = False;
-                report("$query; returned '$answer'", 1);
-                notifyRuntimeError("hrmd stopped",
+                Log::warning("$query; returned '$answer'");
+                Util::notifyRuntimeError("hrmd stopped",
                     "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
             }
         } else {
@@ -1813,8 +1814,8 @@ class DatabaseConnection
             $result = True;
             if ($answer == 'off') {
                 $result = False;
-                report("$query; returned '$answer'", 1);
-                notifyRuntimeError("hrmd stopped",
+                Log::warning("$query; returned '$answer'");
+                Util::notifyRuntimeError("hrmd stopped",
                     "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
             }
         }
@@ -2311,7 +2312,7 @@ class DatabaseConnection
         if (!in_array("hucore_license", $tables)) {
             $msg = "Table hucore_license does not exist! " .
                 "Please update the database!";
-            report($msg, 1);
+            Log::error($msg);
             exit($msg);
         }
 
@@ -2320,7 +2321,7 @@ class DatabaseConnection
         $result = $this->execute($query);
 
         if (!$result) {
-            report("Could not store license details in the database!\n", 1);
+            Log::error("Could not store license details in the database!\n");
             $licStored = false;
             return $licStored;
         }
@@ -2336,17 +2337,17 @@ class DatabaseConnection
                 case 'large':
                 case 'extreme':
                     $feature = "server=" . $feature;
-                    report("Licensed server: $feature", 1);
+                    Log::info("Licensed server: $feature");
                 default:
-                    report("Licensed feature: $feature", 1);
+                    Log::info("Licensed feature: $feature");
             }
 
             $query = "INSERT INTO hucore_license (feature) VALUES ('$feature')";
             $result = $this->execute($query);
 
             if (!$result) {
-                report("Could not store license feature
-                    '$feature' in the database!\n", 1);
+                Log::error("Could not store license feature
+                    '$feature' in the database!\n");
                 $licStored = false;
                 break;
             }
@@ -2374,7 +2375,7 @@ class DatabaseConnection
         if (!in_array("confidence_levels", $tables)) {
             $msg = "Table confidence_levels does not exist! " .
                 "Please update the database!";
-            report($msg, 1);
+            Log::error($msg);
             exit($msg);
         }
 
@@ -2396,7 +2397,7 @@ class DatabaseConnection
                     $confidenceLevels[$format], "INSERT")
                 ) {
                     $msg = "Could not insert confidence levels for file format $format!";
-                    report($msg, 1);
+                    Log::error($msg);
                     exit($msg);
                 }
 
@@ -2408,7 +2409,7 @@ class DatabaseConnection
                     "fileFormat = '$format'")
                 ) {
                     $msg = "Could not update confidence levels for file format $format!";
-                    report($msg, 1);
+                    Log::error($msg);
                     exit($msg);
                 }
 
@@ -2531,7 +2532,7 @@ class DatabaseConnection
             $fileFormat . "' LIMIT 1";
         $hucoreFileFormat = $this->queryLastValue($query);
         if (!$hucoreFileFormat) {
-            report("Could not get the mapped file name for " . $fileFormat . "!", 1);
+            Log::warning("Could not get the mapped file name for " . $fileFormat . "!");
             return "default";
         }
 
@@ -2544,7 +2545,7 @@ class DatabaseConnection
             "' LIMIT 1;";
         $confidenceLevel = $this->queryLastValue($query);
         if (!$confidenceLevel) {
-            report("Could not get the confidence level for " . $fileFormat . "!", 1);
+            Log::warning("Could not get the confidence level for " . $fileFormat . "!");
             return "default";
         }
 

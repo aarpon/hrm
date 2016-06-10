@@ -21,9 +21,6 @@ require_once dirname(__FILE__) . '/bootstrap.php';
   this can not be so easily used. This is an interface to the Fileserver.
 */
 
-require_once( "inc/Util.inc.php" );
-require_once( "inc/OmeroConnection.inc.php");
-
 
 /**
  * Generates basic buttons for the image file browser
@@ -51,9 +48,9 @@ function fileButton($type) {
       break;
 
     case "upload":
-      $max = getMaxFileSize() / 1024 / 1024;
+      $max = Util::getMaxFileSize() / 1024 / 1024;
       $maxFile = "$max MB";
-      $max = getMaxPostSize() / 1024 / 1024;
+      $max = Util::getMaxPostSize() / 1024 / 1024;
       $maxPost = "$max MB";
       $validExtensions =
               $_SESSION['fileserver']->getValidArchiveTypesAsString();
@@ -426,7 +423,7 @@ include("header.inc.php");
                 echo(Nav::linkResults());
             }
             echo(Nav::textUser($_SESSION['user']->name()));
-            echo(Nav::linkHome(getThisPageName()));
+            echo(Nav::linkHome(Util::getThisPageName()));
             ?>
             </ul>
         </div>
@@ -512,7 +509,7 @@ include("header.inc.php");
 
 
     <script type="text/javascript">
-            window.pageInstructions='<?php echo escapeJavaScript($info); ?>';
+            window.pageInstructions='<?php echo Util::escapeJavaScript($info); ?>';
             window.infoShown = true;
             window.previewSelected = -1;
     </script>

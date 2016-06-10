@@ -281,7 +281,7 @@ class ExternalProcess {
 
         $ret = fwrite($this->pipes[0], $cmd);
         fflush($this->pipes[0]);
-        report("$cmd: $ret", 2);
+        Log::info("$cmd: $ret");
 
         if ($ret) {
             // Why exiting here? This is commented out by now.
@@ -426,7 +426,7 @@ class ExternalProcess {
         
         //Report
         if (isset($result) && $result == -1) {
-            report("Error releasing shell.", 0);
+            Log::error("Error releasing shell.");
         }
     }
 
@@ -442,14 +442,14 @@ class ExternalProcess {
         $noChild = $this->killHucoreChild($pid);
 
         if ($noChild == False) {
-            report('Failed killing child process.', 0);
+            Log::error('Failed killing child process.');
         }
 
         // Kill the parent.
         $noParent = posix_kill($pid, 15);
         
         if ($noParent == False) {
-            report('Failed killing parent process.', 0);
+            Log::error('Failed killing parent process.');
         }
 
         return ($noParent && $noChild);

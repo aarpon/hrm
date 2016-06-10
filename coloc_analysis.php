@@ -5,10 +5,11 @@
 use hrm\DatabaseConnection;
 use hrm\Nav;
 use hrm\setting\AnalysisSetting;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/Util.inc.php");
+require_once("./inc/Util.php");
 
 /* *****************************************************************************
  *
@@ -180,7 +181,7 @@ $selectedValues = $parameterColocChannel->value();
     for ($chan=0;
          $chan< $_SESSION['analysis_setting']->numberOfChannels();
          $chan++) {
-        if (true == isValueInArray($selectedValues, $chan)) {
+        if (true == Util::isValueInArray($selectedValues, $chan)) {
             $checked = "checked";
         } else {
             $checked = "";

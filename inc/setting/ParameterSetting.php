@@ -10,6 +10,7 @@
 namespace hrm\setting;
 
 use hrm\DatabaseConnection;
+use hrm\HuygensTools;
 use hrm\param\base\Parameter;
 use hrm\param\MicroscopeType;
 use hrm\param\PinholeSize;
@@ -1909,7 +1910,7 @@ class ParameterSetting extends Setting {
             return false;
         }
         $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt -ril $ril";
-        $ideal = askHuCore("calculateNyquistRate", $opt);
+        $ideal = HuygensTools::askHuCore("calculateNyquistRate", $opt);
         // print_r($ideal);
         return array($ideal['xy'], $ideal['z']);
     }

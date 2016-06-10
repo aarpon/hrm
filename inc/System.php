@@ -12,7 +12,7 @@ namespace hrm;
 
 require_once dirname(__FILE__) . '/bootstrap.php';
 
-require_once("Util.inc.php");
+require_once("Util.php");
 
 /**
  * Commodity class for inspecting the System.
@@ -460,7 +460,7 @@ class System
     public static function getMemoryLimit($unit = 'M')
     {
         return System::formatMemoryStringByUnit(
-            let_to_num(ini_get('memory_limit')), $unit);
+            Util::let_to_num(ini_get('memory_limit')), $unit);
     }
 
     /**
@@ -473,7 +473,7 @@ class System
     public static function getPostMaxSizeFromIni($unit = 'M')
     {
         return System::formatMemoryStringByUnit(
-            let_to_num(ini_get('post_max_size')), $unit);
+            Util::let_to_num(ini_get('post_max_size')), $unit);
     }
 
     /**
@@ -490,7 +490,7 @@ class System
                 return "limited by php.ini.";
             } else {
                 return System::formatMemoryStringByUnit(
-                    let_to_num(ini_get('$max_post_limit')), $unit);
+                    Util::let_to_num(ini_get('$max_post_limit')), $unit);
             }
         } else {
             return "Not defined!";
@@ -505,7 +505,7 @@ class System
      */
     public static function getPostMaxSize($unit = 'M')
     {
-        return System::formatMemoryStringByUnit(getMaxPostSize(), $unit);
+        return System::formatMemoryStringByUnit(Util::getMaxPostSize(), $unit);
     }
 
     /**
@@ -577,7 +577,7 @@ class System
     public static function isUploadMaxFileSizeFromIni($unit = 'M')
     {
         return System::formatMemoryStringByUnit(
-            let_to_num(ini_get('upload_max_filesize')), $unit);
+            Util::let_to_num(ini_get('upload_max_filesize')), $unit);
     }
 
     /**
@@ -594,7 +594,7 @@ class System
                 return "limited by php.ini.";
             } else {
                 return System::formatMemoryStringByUnit(
-                    let_to_num($max_upload_limit), $unit);
+                    Util::let_to_num($max_upload_limit), $unit);
             }
         } else {
             return "Not defined!";
@@ -609,8 +609,7 @@ class System
      */
     public static function getUploadMaxFileSize($unit = 'M')
     {
-        return System::formatMemoryStringByUnit(
-            getMaxFileSize(), $unit);
+        return System::formatMemoryStringByUnit(Util::getMaxFileSize(), $unit);
     }
 
     /**

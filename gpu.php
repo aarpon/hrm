@@ -4,6 +4,7 @@
 
 use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -47,7 +48,7 @@ include("header.inc.php");
         <ul>
             <?php
                 echo(Nav::textUser($_SESSION['user']->name()));
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>

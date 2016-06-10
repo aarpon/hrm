@@ -12,6 +12,7 @@ use hrm\param\MicroscopeType;
 use hrm\param\NumericalAperture;
 use hrm\param\ObjectiveType;
 use hrm\param\SampleMedium;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -145,7 +146,7 @@ include("header.inc.php");
         <ul>
             <?php
                 echo(Nav::textUser($_SESSION['user']->name()));
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>

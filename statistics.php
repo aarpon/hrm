@@ -4,6 +4,7 @@
 
 use hrm\Nav;
 use hrm\Stats;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -86,7 +87,7 @@ $script = array(
 
 require_once("./inc/extern/calendar/classes/tc_calendar.php");
 
-if ( using_IE() ) {
+if ( Util::using_IE() ) {
     $meta = '<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>';
 }
 include("header.inc.php");
@@ -105,7 +106,7 @@ include("header.inc.php");
         <ul>
             <?php
                 echo(Nav::textUser($_SESSION['user']->name()));
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>

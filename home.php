@@ -2,7 +2,9 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Log;
 use hrm\Nav;
+use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -13,7 +15,7 @@ session_start();
 
 if (isset($_GET['exited'])) {
     if (session_id() && isset($_SESSION['user'])) {
-        report("User " . $_SESSION['user']->name() . " logged off.", 1);
+        Log::info("User " . $_SESSION['user']->name() . " logged off.");
         $_SESSION['user']->logout();
         $_SESSION = array();
         session_unset();
@@ -51,7 +53,7 @@ include("header.inc.php");
         <ul>
             <?php
                 echo(Nav::textUser($_SESSION['user']->name()));
-                echo(Nav::linkLogOut(getThisPageName()));
+                echo(Nav::linkLogOut(Util::getThisPageName()));
             ?>
         </ul>
     </div>

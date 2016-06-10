@@ -35,6 +35,7 @@ class QueueManager {
 
     /**
      * A Job object.
+     * @todo This seems to be unused. Confirm and remove.
      * @var Job
      */
     private $job;
@@ -120,20 +121,20 @@ class QueueManager {
         // failed jobs.
         $this->removeHuygensOutputFiles($desc, $server_hostname);
 
-        report(">>>>> Executing template: " .
+        Log::info(">>>>> Executing template: " .
             $imageProcessingIsOnQueueManager . " " .
-                $copy_images_to_huygens_server, 2);
+                $copy_images_to_huygens_server);
         if (!$imageProcessingIsOnQueueManager &&
                 $copy_images_to_huygens_server) {
             $clientTemplatePath =
                 $this->copyImagesToServer($job, $server_hostname);
-            report("images copied to IP server", 1);
+            Log::info("images copied to IP server");
         }
 
         $proc = newExternalProcessFor($server,
                                       $server . "_" .$job->id() . "_out.txt",
                                       $server . "_" . $job->id(). "_error.txt");
-        report("shell process created", 1);
+        Log::info("shell process created");
 
             /* Check whether the shell is ready to accept further execution. If
              not, the shell will be released internally, no need to release it
@@ -142,10 +143,10 @@ class QueueManager {
             return False;
         }
 
-        report("running shell: $clientTemplatePath$templateName", 1);
+        Log::info("running shell: $clientTemplatePath$templateName");
         $pid = $proc->runHuygensTemplate($clientTemplatePath . $templateName);
 
-        report("running template (pid $pid)", 1);
+        Log::info("running template (pid $pid)");
 
             /* The template in the background will keep running after release. */
         $proc->release();
@@ -243,7 +244,7 @@ class QueueManager {
         global $image_destination;
         global $huygens_server_image_folder;
 
-        report("Copying images to IP server", 2);
+        Log::info("Copying images to IP server");
 
         $desc = $job->description();
         $user = $desc->owner();
@@ -360,7 +361,7 @@ class QueueManager {
         $batch .= "-mkdir \"" . $image_destination . "\"\n";
         $batch .= "quit\n";
 
-        // report("\nBATCH \n$batch", 2);
+        // Log::info("\nBATCH \n$batch", 2);
 
         $batch_filename = $image_folder . "/" . $user->name() . "/" .
             "batchfile_" . $desc->id();
@@ -397,8 +398,8 @@ class QueueManager {
             } else {
                 $src = $fileserver->sourceFolder();
                 $dest = $fileserver->destinationFolder();
-                report("fileserver not reachable: $src or $dest".
-                    "do not exist", 1);
+                Log::error("fileserver not reachable: $src or $dest".
+                    "do not exist");
                 $pausedJobs = True;
                 $queue->pauseJob($jobDescription);
                 return NULL;
@@ -421,7 +422,7 @@ class QueueManager {
      * @param Job $job A Job object.
     */
     function cleanUpFileServer($job) {
-        report("cleaning up file server", 1);
+        Log::warning("cleaning up file server");
         $server = $job->server();
         // server name without proc number
         $s = split(" ", $server);
@@ -437,17 +438,17 @@ class QueueManager {
         $id = $desc->id();
         $finishedMarker = $path . '/' . '.finished_' . "$id";
         if (file_exists($finishedMarker)) {
-            report("removing finished marker", 1);
+            Log::warning("removing finished marker");
             unlink($finishedMarker);
         }
         $endTimeMarker = $path . '/' . '.EstimatedEndTime_' . "$id";
         if (file_exists($endTimeMarker)) {
-            report("removing EstimatedEndTime report", 1);
+            Log::warning("removing EstimatedEndTime report");
             unlink($endTimeMarker);
         }
         // remove job
         $this->stopTime = $queue->stopJob($job);
-        report("stopped job (" . date("l d F Y H:i:s") . ")\n", 1);
+        Log::info("stopped job (" . date("l d F Y H:i:s") . ")\n");
     }
 
     /**
@@ -512,12 +513,12 @@ class QueueManager {
         $queue->killMarkedJobs();
         // Remove broken jobs
         if ($queue->removeMarkedJobs()) {
-            report("broken jobs removed", 2);
+            Log::info("broken jobs removed");
         }
         $runningJobs = $queue->runningJobs();
         if (count($runningJobs) > 0) {
-            report(count($runningJobs) . " job" .
-                (count($runningJobs) == 1 ? " is" : "s are") . " running", 2);
+            Log::info(count($runningJobs) . " job" .
+                (count($runningJobs) == 1 ? " is" : "s are") . " running");
             // Because something is running, we are not in a hurry to continue.
             // Delay execution.
             sleep(5);
@@ -543,12 +544,12 @@ class QueueManager {
                 continue;
             }
 
-            report("checked finished process", 2);
+            Log::info("checked finished process");
 
             // Check result image
             $resultSaved = $job->checkResultImage();
 
-            report("checked result image", 2);
+            Log::info("checked result image");
 
             // Notify user
             $startTime = $queue->startTime($job);
@@ -558,8 +559,8 @@ class QueueManager {
                 "_" . $job->id() . "_out.txt";
 
             if (!$resultSaved) {
-                report("finishing job " . $desc->id() .
-                        " with error on " . $job->server(), 1);
+                Log::error("finishing job " . $desc->id() .
+                        " with error on " . $job->server());
 
                 // Clean up server
                 $this->cleanUpFileServer($job);
@@ -585,8 +586,8 @@ class QueueManager {
                     unlink($logFile);
                 }
             } else {
-                report("job " . $desc->id() . " completed on " .
-                    $job->server(), 1);
+                Log::info("job " . $desc->id() . " completed on " .
+                    $job->server());
 
                 // Report information to statistics table
                 $db = new DatabaseConnection();
@@ -809,7 +810,7 @@ class QueueManager {
  	public function notifyPingError($name) {
         global $email_sender;
         global $email_admin;
-        report("Ping error notification sent", 1);
+        Log::info("Ping error notification sent");
         $text = "Huygens Remote Manager warning:\n"
                 . $name . " could not be pinged on " . date("r", time());
         $mail = new Mail($email_sender);
@@ -914,21 +915,21 @@ class QueueManager {
         $this->waitForDatabaseConnection();
         $this->initializeServers();
 
-        report("Huygens Remote Manager started on "
-                . date("Y-m-d H:i:s") . "\n", 1);
+        Log::info("Huygens Remote Manager started on "
+                . date("Y-m-d H:i:s") . "\n");
 
         if (!$this->askHuCoreVersionAndStoreIntoDB()) {
-            error_log("An error occurred while reading HuCore version");
+            Log::error("An error occurred while reading HuCore version");
             return;
         }
 
         if (!$this->storeHuCoreLicenseDetailsIntoDB()) {
-            error_log("An error occurred while saving HuCore license details");
+            Log::error("An error occurred while saving HuCore license details");
             return;
         }
 
         if (!$this->storeConfidenceLevelsIntoDB()) {
-            error_log("An error occurred while storing the confidence " .
+            Log::error("An error occurred while storing the confidence " .
                 "levels in the database");
             return;
         }
@@ -956,22 +957,22 @@ class QueueManager {
                     break;
                 }
 
-                report("using Huygens server: " . $this->freeServer, 2);
+                Log::info("using Huygens server: " . $this->freeServer);
 
                 // Read in a queued job
                 $desc = $job->description();
                 $id = $desc->id();
-                report("processing job " . $id . " on " . $job->server(), 1);
+                Log::info("processing job " . $id . " on " . $job->server());
 
                 // TODO check this <<
                 // If the job is compound create sub jobs and
                 // remove job otherwise create template
                 $result = $job->createSubJobsOrHuTemplate();
                 if (!$result || $desc->isCompound()) {
-                    error_log("error or compound job");
+                    Log::error("error or compound job");
                     continue;
                 }
-                report("template has been created", 1);
+                Log::info("template has been created");
 
                 // Execute the template on the Huygens server and
                 // update the database state
@@ -981,14 +982,14 @@ class QueueManager {
                     continue;
                 }
 
-                report("Template has been executed", 1);
+                Log::info("Template has been executed");
                 $result = $result && $queue->startJob($job);
-                report("job has been started ("
-                        . date("Y-m-d H:i:s") . ")", 1);
+                Log::info("job has been started ("
+                        . date("Y-m-d H:i:s") . ")");
             }
         }
-        report("Huygens Remote Manager stopped via database switch on "
-                . date("Y-m-d H:i:s"), 1);
+        Log::warning("Huygens Remote Manager stopped via database switch on "
+                . date("Y-m-d H:i:s"));
     }
 
     /**
@@ -1034,9 +1035,9 @@ class QueueManager {
      * successful, false otherwise.
     */
  	private function askHuCoreVersionAndStoreIntoDB() {
-            $huversion = askHuCore("reportVersionNumberAsInteger");
+            $huversion = HuygensTools::askHuCore("reportVersionNumberAsInteger");
             $huversion = $huversion["version"];
-            report("HuCore version = " . $huversion . "\n", 2);
+            Log::info("HuCore version = " . $huversion . "\n");
             if (!System::setHuCoreVersion($huversion)) {
                 return false;
             }
@@ -1048,12 +1049,12 @@ class QueueManager {
          * @return bool True if everything went OK, false otherwise.
         */
         private function storeHuCoreLicenseDetailsIntoDB( ) {
-            $licDetails = askHuCore("reportHuCoreLicense");
+            $licDetails = HuygensTools::askHuCore("reportHuCoreLicense");
 
             // Store the license details in the database.
             $db = new DatabaseConnection();
             if (!$db->storeLicenseDetails($licDetails['license'])) {
-                report("Could not store license details in the database!\n", 1);
+                Log::error("Could not store license details in the database!\n");
                 return false;
             }
 
@@ -1070,7 +1071,7 @@ class QueueManager {
 	private function storeConfidenceLevelsIntoDB() {
 
         // Get the confidence levels string from HuCore
-        $result = askHuCore("reportFormatInfo");
+        $result = HuygensTools::askHuCore("reportFormatInfo");
         $confidenceLevelString = $result["formatInfo"];
 
         // Parse the confidence levels string
@@ -1080,7 +1081,7 @@ class QueueManager {
         // Store the confidence levels in the database
         $db = new DatabaseConnection();
         if (!$db->storeConfidenceLevels($confidenceLevels)) {
-            report("Could not store confidence levels to the database!\n", 1);
+            Log::error("Could not store confidence levels to the database!\n");
             return false;
         }
         return true;
@@ -1116,7 +1117,7 @@ class QueueManager {
             // Get the parts
             if ((!isset($match[1]) ) || (!isset($match[3]) )) {
                 $msg = "Could not parse confidence levels!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
             $fileFormat = $match[1];
@@ -1171,7 +1172,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter sampleSizesX!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
             if (isset($match[2])) {
@@ -1179,7 +1180,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter sampleSizesY!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
             if (isset($match[3])) {
@@ -1187,7 +1188,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter sampleSizesZ!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
             if (isset($match[4])) {
@@ -1195,7 +1196,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter sampleSizesT!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1208,7 +1209,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter iFacePrim!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1221,7 +1222,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter iFaceScnd!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1234,7 +1235,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter pinhole!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1247,7 +1248,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter chanCnt!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1260,7 +1261,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter imagingDir!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1273,7 +1274,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter pinholeSpacing!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1286,7 +1287,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter objQuality!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1299,7 +1300,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter lambdaEx\!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1312,7 +1313,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter lambdaEm\!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1325,7 +1326,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter mType\!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1338,7 +1339,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter NA\!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1351,7 +1352,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter RIMedia\!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1364,7 +1365,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter RILens\!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1377,7 +1378,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter photonCnt\!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1390,7 +1391,7 @@ class QueueManager {
             } else {
                 $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter exBeamFill\!";
-                report($msg, 1);
+                Log::error($msg);
                 exit($msg);
             }
 
@@ -1404,7 +1405,7 @@ class QueueManager {
                 } else {
                     $msg = "Could not find confidence level for file format " .
                         $fileFormat . " and parameter $stedParam\!";
-                    report($msg, 1);
+                    Log::error($msg);
                     exit($msg);
                 }
             }

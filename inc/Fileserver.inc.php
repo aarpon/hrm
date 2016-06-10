@@ -6,8 +6,6 @@ namespace hrm;
 
 require_once dirname(__FILE__) . '/bootstrap.php';
 
-require_once("Util.inc.php");
-require_once("OmeroConnection.inc.php");
 
 /*!
   \class Fileserver
@@ -688,7 +686,7 @@ class Fileserver {
           header ("Content-Type: $type; name=\"$dlname\"");
           ob_clean();
           flush();
-          readfile_chunked($zipfile);
+          Util::readfile_chunked($zipfile);
           unlink($zipfile);
           return "<p>OK</p>";
       } else {
@@ -885,7 +883,7 @@ class Fileserver {
           $uploadDir =  $this->destinationFolder();
       }
 
-      $max = getMaxFileSize() / 1024 / 1024;
+      $max = Util::getMaxFileSize() / 1024 / 1024;
       $maxFile = "$max MB";
 
       $ok = "";
@@ -1172,7 +1170,7 @@ class Fileserver {
 
       $opt = "-count $i $imgList -dir \"". $this->sourceFolder() ."\"";
 
-      $answer = huCoreTools( "reportSubImages", $opt);
+      $answer = HuygensTools::huCoreTools( "reportSubImages", $opt);
 
       if (! $answer ) return;
 
@@ -1247,7 +1245,7 @@ class Fileserver {
         }
 
         $opt = "-count $i $imgList -dir \"". $this->sourceFolder() ."\"";
-        $answer = huCoreTools( "getMetaData", $opt);
+        $answer = HuygensTools::huCoreTools( "getMetaData", $opt);
         if (! $answer ) return;
 
         $lines = count($answer);
@@ -1336,7 +1334,7 @@ class Fileserver {
       }
 
       $opt = "-count $i $imgList -dir \"". $this->sourceFolder() ."\"";
-      $answer = huCoreTools( "getMetaData", $opt);
+      $answer = HuygensTools::huCoreTools( "getMetaData", $opt);
       if (! $answer ) return;
 
       $lines = count($answer);
@@ -1502,7 +1500,7 @@ class Fileserver {
       }
 
       if ($escape) {
-          return escapeJavaScript($ret);
+          return Util::escapeJavaScript($ret);
       } else {
           return $ret;
       }
@@ -2254,7 +2252,7 @@ echo '</body></html>';
 
       $opt = "-filename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
              "-scheme auto -sizes \{$sizes\} -series $series $extra";
-      $answer = huCoreTools( "generateImagePreview", $opt);
+      $answer = HuygensTools::huCoreTools( "generateImagePreview", $opt);
 
       $lines = count($answer);
       $html = "";
@@ -2321,9 +2319,9 @@ echo '</body></html>';
       echo "\n\n<script type=\"text/javascript\"> ";
       if ($ok) {
           echo "\nsetPrevGen($index, $nMode);";
-          echo "\nchangeOpenerDiv('info','". escapeJavaScript($img). "'); ";
+          echo "\nchangeOpenerDiv('info','". Util::escapeJavaScript($img). "'); ";
       } else {
-          echo "\nchangeOpenerDiv('info','Preview generation failed.<br /><br /><kbd>".escapeJavaScript($html)."</kbd>'); ";
+          echo "\nchangeOpenerDiv('info','Preview generation failed.<br /><br /><kbd>".Util::escapeJavaScript($html)."</kbd>'); ";
       }
       // Close the popup after a short delay, otherwise the image may not load
       // in the parent window, with some browsers.
@@ -2661,7 +2659,7 @@ echo '</body></html>';
                 // Delete the file. If the file does not exist or cannot be
                 // deleted, log it and continue.
                 if (! unlink($f)) {
-                    report("Could not delete " . $f, 0);
+                    Log::warning("Could not delete " . $f);
                 }
 
                 // Get companion file
@@ -2670,7 +2668,7 @@ echo '</body></html>';
                     // Delete the companion file. If the file does not exist or
                     // cannot be deleted, log it and continue.
                     if (! unlink($c)) {
-                        report("Could not delete " . $c, 0);
+                        Log::warning("Could not delete " . $c);
                     }
                 }
 
@@ -3413,7 +3411,7 @@ echo '</body></html>';
               $colocHtml = $this->showColocMapsTab($colocHtml);
               break;
           default:
-              error_log("Coloc tab '$postedTab' not yet implemented.");
+              Log::error("Coloc tab '$postedTab' not yet implemented.");
       }
 
           /* Create the forms associated to the coloc tabs to convey the user
@@ -3520,7 +3518,7 @@ echo '</body></html>';
            should be shown. */
       $pattern = "/Hook chan ([0-9]) - chan ([0-9])/";
       if (!preg_match_all($pattern,$coefficientsTab,$matches)) {
-          error_log("Impossible to retrieve channels from coloc report.");
+          Log::error("Impossible to retrieve channels from coloc report.");
       }
 
           /* Insert the histograms. */
@@ -3598,7 +3596,7 @@ echo '</body></html>';
            combinations should display colocalization maps. */
       $pattern = "/Hook chan ([0-9]) - chan ([0-9])/";
       if (!preg_match_all($pattern,$colocHtml,$channels)) {
-          error_log("Impossible to retrieve channels from coloc report.");
+          Log::error("Impossible to retrieve channels from coloc report.");
       }
 
           /* Loop over the channel combinations and add their coloc maps. */
@@ -3711,7 +3709,7 @@ echo '</body></html>';
       $pattern .= "_chan" . $chanG . "(|\.Deconvolved)\.jpg/";
 
       if (!preg_match($pattern,$colocMapFile,$coefficient)) {
-          error_log("Impossible to find coefficient type from map.");
+          Log::error("Impossible to find coefficient type from map.");
           return false;
       }
 
@@ -3795,7 +3793,7 @@ echo '</body></html>';
               $html .= "</td>";
               break;
           default:
-              error_log("Html section not yet implemented.");
+              Log::error("Html section not yet implemented.");
       }
 
       return $html;

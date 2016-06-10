@@ -227,10 +227,10 @@ class JobQueue
         $ids = $db->getJobIdsToKill();
         if ($ids != null && count($ids) > 0) {
             if ($this->killJobs($ids)) {
-                report("running broken jobs killed and removed", 2);
+                Log::info("running broken jobs killed and removed");
                 return True;
             } else {
-                report("killing running broken jobs failed", 2);
+                Log::error("killing running broken jobs failed");
                 return False;
             }
         } else {

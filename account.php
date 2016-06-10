@@ -3,12 +3,13 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\Util;
 use hrm\Validator;
 use hrm\user\mngm\UserManagerFactory;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once(dirname(__FILE__) . "/inc/Util.inc.php");
+require_once(dirname(__FILE__) . "/inc/Util.php");
 
 global $email_sender;
 
@@ -178,7 +179,7 @@ include("header.inc.php");
         <ul>
             <?php
                 echo(Nav::textUser($_SESSION['user']->name()));
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>
