@@ -28,5 +28,3 @@ if (isset($_GET['node'])) {
 
 // fetch the child nodes and return the JSON:
 print($omeroConnection->getChildren($node_id));
-
-?>

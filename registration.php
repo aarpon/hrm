@@ -2,6 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
 use hrm\Mail;
 use hrm\Nav;
 use hrm\Validator;
@@ -40,7 +41,7 @@ $clean = array(
 
 // Username
 if (isset($_POST["username"])) {
-    if (Validator::isUsernameValid($_POST["username"])) {
+    if (Validator::isUserNameValid($_POST["username"])) {
         $clean["username"] = $_POST["username"];
     }
 }

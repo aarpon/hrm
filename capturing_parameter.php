@@ -4,6 +4,14 @@
 
 use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\param\base\Parameter;
+use hrm\param\CCDCaptorSizeX;
+use hrm\param\ImageFileFormat;
+use hrm\param\NumericalAperture;
+use hrm\param\PinholeSize;
+use hrm\param\PinholeSpacing;
+use hrm\param\TimeInterval;
+use hrm\param\ZStepSize;
 use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';

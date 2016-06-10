@@ -4,6 +4,7 @@
 
 use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\param\DeconvolutionAlgorithm;
 use hrm\setting\TaskSetting;
 use hrm\Util;
 

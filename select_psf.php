@@ -2,12 +2,12 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\Fileserver;
 use hrm\Nav;
+use hrm\param\PSF;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Fileserver.inc.php");
 
 /* *****************************************************************************
  *
@@ -35,6 +35,7 @@ $message = "";
  *
  **************************************************************************** */
 
+/** @var PSF $psfParam */
 $psfParam = $_SESSION['setting']->parameter("PSF");
 $psfParam->setNumberOfChannels( $_SESSION['setting']->numberOfChannels() );
 $psf = $psfParam->value();
@@ -123,7 +124,8 @@ include("header.inc.php");
 <?php
 
 for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
-  $parameter = $_SESSION['setting']->parameter("PSF");
+    /** @var PSF $parameter */
+    $parameter = $_SESSION['setting']->parameter("PSF");
   $value = $parameter->value();
   $missing = False;
   $_SESSION['fileserver']->imageExtensions();

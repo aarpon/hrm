@@ -3,11 +3,11 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\param\Binning;
+use hrm\param\CCDCaptorSize;
+use hrm\param\CCDCaptorSizeX;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
-
-require_once("./inc/User.inc.php");
-
 
 /* *****************************************************************************
  *
@@ -55,7 +55,8 @@ if ( $_SESSION[ 'setting' ]->checkPostedCalculatePixelSizeParameters( $_POST ) )
 	$parameter = new CCDCaptorSizeX();
 	$parameter->setValue( $pixelSize );
 	if ( $parameter->check(  ) ) {
-		$parameter = $_SESSION['setting']->parameter('CCDCaptorSizeX');
+        /** @var CCDCaptorSizeX $parameter */
+        $parameter = $_SESSION['setting']->parameter('CCDCaptorSizeX');
 		$parameter->setValue($pixelSize);
 		$_SESSION['setting']->set($parameter);
 
@@ -123,7 +124,8 @@ include ("header.inc.php");
 
 $textForCaptorSize = "physical pixel size on CCD chip (nm)";
 $value = '';
-$parameter = $_SESSION['setting']->parameter("CCDCaptorSize");
+    /** @var CCDCaptorSize $parameter */
+    $parameter = $_SESSION['setting']->parameter("CCDCaptorSize");
 $value = $parameter->value();
 
 ?>
@@ -150,6 +152,7 @@ $value = $parameter->value();
 <?php
 
 
+/** @var Binning $parameter */
 $parameter = $_SESSION['setting']->parameter("Binning");
 foreach ($parameter->possibleValues() as $possibleValue) {
 	$flag = "";

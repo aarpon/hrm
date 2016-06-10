@@ -4,6 +4,8 @@
 
 
 // This is for the 'OMERO Data' button.
+use hrm\OmeroConnection;
+
 if ($omero_transfers && !$_SESSION['user']->isAdmin()) {
 
     if ( $browse_folder == "src" ) {
@@ -63,5 +65,3 @@ if (isset($_POST['exportToOmero'])) {
         $_SESSION['fileserver']->resetDestFiles();
     }
 }
-
-?>

@@ -6,6 +6,7 @@ use hrm\Nav;
 use hrm\setting\AnalysisSetting;
 use hrm\setting\TaskSettingEditor;
 use hrm\System;
+use hrm\setting\TaskSetting;
 use hrm\user\User;
 use hrm\Util;
 
@@ -356,9 +357,10 @@ if (!$_SESSION['user']->isAdmin()) {
     echo "                        <option>&nbsp;</option>\n";
   }
   else {
-      /** @var \hrm\TaskSetting $set */
+      /** @var TaskSetting $set */
       foreach ($settings as $set) {
-      echo "                        <option>".$set->name()."</option>\n";
+          /** @var TaskSetting $set */
+          echo "                        <option>".$set->name()."</option>\n";
     }
   }
 
@@ -403,7 +405,7 @@ if (!$_SESSION['user']->isAdmin()) {
               <div id="settings">
 <?php
 
-/** @var \hrm\TaskSetting $settings */
+/** @var TaskSetting $settings */
 $settings = $_SESSION['taskeditor']->settings();
 $size = "8";
 if ($_SESSION['user']->isAdmin()) $size = "12";
@@ -422,7 +424,7 @@ if (sizeof($settings) == 0) {
   echo "                        <option>&nbsp;</option>\n";
 }
 else {
-    /** @var \hrm\TaskSetting $set */
+    /** @var TaskSetting $set */
     foreach ($settings as $set) {
     echo "                        <option";
     if ($set->isDefault()) {

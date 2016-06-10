@@ -4,10 +4,8 @@
 
 use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\param\base\Parameter;
 use hrm\setting\ParameterSetting;
-use hrm\user\User;
-use hrm\setting\Setting;
-use hrm\System;
 use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
@@ -159,7 +157,8 @@ include("header.inc.php");
 <?php
 
 function check($parameter, $value) {
-  if ($value == $parameter->value()) echo "checked=\"checked\" ";
+    /** @var Parameter $parameter */
+    if ($value == $parameter->value()) echo "checked=\"checked\" ";
   return "";
 }
 
@@ -294,7 +293,7 @@ for ($i = 0; $i <= $db->getMaxChanCnt(); $i++) {
             </fieldset>
 
             <div id="controls"
-                 onmouseover="javascript:changeQuickHelp( 'default' )">
+                 onmouseover="changeQuickHelp( 'default' )">
 
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"

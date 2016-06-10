@@ -14,8 +14,6 @@ use hrm\param\StedWavelength;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/Util.php");
-
 /* *****************************************************************************
  *
  * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED

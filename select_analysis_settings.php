@@ -5,6 +5,7 @@
 use hrm\Nav;
 use hrm\setting\AnalysisSetting;
 use hrm\setting\AnalysisSettingEditor;
+use hrm\setting\base\Setting;
 use hrm\user\User;
 use hrm\Util;
 
@@ -313,7 +314,8 @@ if (!$_SESSION['user']->isAdmin()) {
   }
   else {
     foreach ($settings as $set) {
-      echo "<option>".$set->name()."</option>\n";
+        /** @var Setting $set */
+        echo "<option>".$set->name()."</option>\n";
     }
   }
 

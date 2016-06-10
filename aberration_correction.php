@@ -4,6 +4,13 @@
 
 use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\param\AberrationCorrectionMode;
+use hrm\param\AdvancedCorrectionOptions;
+use hrm\param\base\Parameter;
+use hrm\param\CoverslipRelativePosition;
+use hrm\param\ImageFileFormat;
+use hrm\param\PerformAberrationCorrection;
+use hrm\param\PSFGenerationDepth;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 

@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\param\ChromaticAberration;
 use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
@@ -26,6 +27,7 @@ $message = "";
  *
  **************************************************************************** */
 
+/** @var ChromaticAberration $parameter */
 $parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
 $chanCnt   = $_SESSION['task_setting']->numberOfChannels();
 $componentCnt = $parameter->componentCnt();
@@ -104,10 +106,10 @@ include("header.inc.php");
 
 
     <fieldset class="setting provided"
-    onmouseover="javascript:changeQuickHelp( 'chromatic' );" >
+    onmouseover="changeQuickHelp( 'chromatic' );" >
 
     <legend>
-        <a href="javascript:openWindow(
+        <a href="openWindow(
                        'http://www.svi.nl/ChromaticAberrationCorrector')">
                         <img src="images/help.png" alt="?" />
         </a>
@@ -122,8 +124,8 @@ include("header.inc.php");
 
     <select name="ReferenceChannel"
     id = "ReferenceChannel"
-    onclick="javascript:changeChromaticChannelReference(this)"
-    onchange="javascript:changeChromaticChannelReference(this)">
+    onclick="changeChromaticChannelReference(this)"
+    onchange="changeChromaticChannelReference(this)">
 <?php
 for($chan = 0; $chan < $chanCnt; $chan++) {
 ?>
@@ -184,7 +186,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
-                 onmouseover="javascript:changeQuickHelp( 'default' )">
+                 onmouseover="changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
@@ -192,7 +194,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
               <input type="button" value="" class="icon up"
                   onmouseover="TagToTip('ttSpanCancel' )"
                   onmouseout="UnTip()"
-                  onclick="javascript:deleteValuesAndRedirect(
+                  onclick="deleteValuesAndRedirect(
                     'select_task_settings.php' );" />
               <input type="submit" value="" class="icon save"
                   onmouseover="TagToTip('ttSpanSave' )"
@@ -203,7 +205,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
        </form>
 </div> <!-- content -->
 
-<div id="rightpanel" onmouseover="javascript:changeQuickHelp( 'default' )">
+<div id="rightpanel" onmouseover="changeQuickHelp( 'default' )">
       <div id="info">
       <h3>Quick help</h3>
         <div id="contextHelp">

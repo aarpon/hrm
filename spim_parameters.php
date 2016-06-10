@@ -2,15 +2,20 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
 use hrm\Nav;
+use hrm\param\base\Parameter;
+use hrm\param\ImageFileFormat;
+use hrm\param\SpimCenterOffset;
+use hrm\param\SpimDir;
+use hrm\param\SpimExcMode;
+use hrm\param\SpimFill;
+use hrm\param\SpimFocusOffset;
+use hrm\param\SpimGaussWidth;
+use hrm\param\SpimNA;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Parameter.inc.php");
-require_once("./inc/Setting.inc.php");
-require_once("./inc/Util.php");
-require_once("./inc/Database.php");
 
 /* *****************************************************************************
  *
@@ -33,11 +38,13 @@ $chanCnt = $_SESSION['setting']->numberOfChannels();
  *
  **************************************************************************** */
 
+/** @var ImageFileFormat $fileFormat */
 $fileFormat = $_SESSION['setting']->parameter( "ImageFileFormat" );
 $parameterNames = $_SESSION['setting']->spimParameterNames();
 $db = new DatabaseConnection();
 foreach ( $parameterNames as $name ) {
-  $parameter = $_SESSION['setting']->parameter( $name );
+    /** @var Parameter $parameter */
+    $parameter = $_SESSION['setting']->parameter( $name );
   $confidenceLevel =
     $db->getParameterConfidenceLevel( $fileFormat->value(), $name );
   $parameter->setConfidenceLevel( $confidenceLevel );
@@ -51,6 +58,7 @@ foreach ( $parameterNames as $name ) {
  *
  **************************************************************************** */
 
+/** @var SpimExcMode $spimExcModeParam */
 $spimExcModeParam = $_SESSION['setting']->parameter("SpimExcMode");
 $spimExcMode = $spimExcModeParam->value();
 for ($i=0; $i < $chanCnt; $i++) {
@@ -68,6 +76,7 @@ $_SESSION['setting']->set($spimExcModeParam);
  *
  **************************************************************************** */
 
+/** @var SpimGaussWidth $spimGaussWidthParam */
 $spimGaussWidthParam = $_SESSION['setting']->parameter("SpimGaussWidth");
 $spimGaussWidthParam->setNumberOfChannels($chanCnt);
 $spimGaussWidth = $spimGaussWidthParam->value();
@@ -90,6 +99,7 @@ $_SESSION['setting']->set($spimGaussWidthParam);
  *
  **************************************************************************** */
 
+/** @var SpimFocusOffset $spimFocusOffsetParam */
 $spimFocusOffsetParam = $_SESSION['setting']->parameter("SpimFocusOffset");
 $spimFocusOffsetParam->setNumberOfChannels($chanCnt);
 $spimFocusOffset = $spimFocusOffsetParam->value();
@@ -111,6 +121,7 @@ $_SESSION['setting']->set($spimFocusOffsetParam);
  *
  **************************************************************************** */
 
+/** @var SpimCenterOffset $spimCenterOffsetParam */
 $spimCenterOffsetParam = $_SESSION['setting']->parameter("SpimCenterOffset");
 $spimCenterOffsetParam->setNumberOfChannels($chanCnt);
 $spimCenterOffset = $spimCenterOffsetParam->value();
@@ -132,6 +143,7 @@ $_SESSION['setting']->set($spimCenterOffsetParam);
  *
  **************************************************************************** */
 
+/** @var SpimNA $spimNAParam */
 $spimNAParam = $_SESSION['setting']->parameter("SpimNA");
 $spimNAParam->setNumberOfChannels($chanCnt);
 $spimNA = $spimNAParam->value();
@@ -153,6 +165,7 @@ $_SESSION['setting']->set($spimNAParam);
  *
  **************************************************************************** */
 
+/** @var SpimFill $spimFillParam */
 $spimFillParam = $_SESSION['setting']->parameter("SpimFill");
 $spimFillParam->setNumberOfChannels($chanCnt);
 $spimFill = $spimFillParam->value();
@@ -174,6 +187,7 @@ $_SESSION['setting']->set($spimFillParam);
  *
  **************************************************************************** */
 
+/** @var SpimDir $spimDirParam */
 $spimDirParam = $_SESSION['setting']->parameter("SpimDir");
 $spimDirParam->setNumberOfChannels($chanCnt);
 $spimDir = $spimDirParam->value();
@@ -340,15 +354,16 @@ include("header.inc.php");
 
 ***************************************************************************/
 
+/** @var SpimExcMode $parameterSpimExcMode */
 $parameterSpimExcMode = $_SESSION['setting']->parameter("SpimExcMode");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterSpimExcMode->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'excMode' );" >
+            onmouseover="changeQuickHelp( 'excMode' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -378,7 +393,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
     <td>
     <select name="SpimExcMode<?php echo $chan;?>"
-    onchange="javascript:changeSpimEntryProperties(this,<?php echo $chan;?>)">
+    onchange="changeSpimEntryProperties(this,<?php echo $chan;?>)">
 
 <?php
                         /* Loop for select options. */
@@ -426,16 +441,17 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
 ***************************************************************************/
 
+/** @var SpimGaussWidth $parameterSpimGaussWidth */
 $parameterSpimGaussWidth =
     $_SESSION['setting']->parameter("SpimGaussWidth");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterSpimGaussWidth->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'gaussWidth' );" >
+            onmouseover="changeQuickHelp( 'gaussWidth' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -485,16 +501,17 @@ if ( $i == 3 ) {
 
 ***************************************************************************/
 
+/** @var SpimFocusOffset $parameterSpimFocusOffset */
 $parameterSpimFocusOffset =
     $_SESSION['setting']->parameter("SpimFocusOffset");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterSpimFocusOffset->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'focusOffset' );" >
+            onmouseover="changeQuickHelp( 'focusOffset' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -545,16 +562,17 @@ if ( $i == 3 ) {
 
 ***************************************************************************/
 
+/** @var SpimCenterOffset $parameterSpimCenterOffset */
 $parameterSpimCenterOffset =
     $_SESSION['setting']->parameter("SpimCenterOffset");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterSpimCenterOffset->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'centerOffset' );" >
+            onmouseover="changeQuickHelp( 'centerOffset' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -605,15 +623,16 @@ if ( $i == 3 ) {
 
 ***************************************************************************/
 
+/** @var SpimNA $parameterSpimNA */
 $parameterSpimNA = $_SESSION['setting']->parameter("SpimNA");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterSpimNA->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'NA' );" >
+            onmouseover="changeQuickHelp( 'NA' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -663,15 +682,16 @@ if ( $i == 3 ) {
 
 ***************************************************************************/
 
+/** @var SpimFill $parameterSpimFill */
 $parameterSpimFill = $_SESSION['setting']->parameter("SpimFill");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterSpimFill->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'fillFactor' );" >
+            onmouseover="changeQuickHelp( 'fillFactor' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -721,15 +741,16 @@ if ( $i == 3 ) {
 
     ***************************************************************************/
 
-    $parameterSpimDir = $_SESSION['setting']->parameter("SpimDir");
+/** @var SpimDir $parameterSpimDir */
+$parameterSpimDir = $_SESSION['setting']->parameter("SpimDir");
 ?>
 
             <fieldset class="setting <?php
             echo $parameterSpimDir->confidenceLevel(); ?>"
-            onmouseover="javascript:changeQuickHelp( 'direction' );" >
+            onmouseover="changeQuickHelp( 'direction' );" >
 
                 <legend>
-                    <a href="javascript:openWindow(
+                    <a href="openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                         <img src="images/help.png" alt="?" />
                     </a>
@@ -809,7 +830,7 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
            <div><input name="OK" type="hidden" /></div>
 
             <div id="controls"
-                 onmouseover="javascript:changeQuickHelp( 'default' )">
+                 onmouseover="changeQuickHelp( 'default' )">
               <input type="button" value="" class="icon previous"
                   onmouseover="TagToTip('ttSpanBack' )"
                   onmouseout="UnTip()"
@@ -842,14 +863,14 @@ for ($chan = 0; $chan < $chanCnt; $chan++) {
 
 
    <div id="rightpanel"
-         onmouseover="javascript:changeQuickHelp( 'default' );" >
+         onmouseover="changeQuickHelp( 'default' );" >
 
         <div id="info">
 
           <h3>Quick help</h3>
 
             <div id="contextHelp"
-             onmouseover="javascript:changeQuickHelp( 'default' )">
+             onmouseover="changeQuickHelp( 'default' )">
             </div>
 
       <?php
