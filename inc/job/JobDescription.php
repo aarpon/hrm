@@ -19,7 +19,7 @@ use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
-require_once dirname(__FILE__) . '/../Shell.inc.php';
+require_once dirname(__FILE__) . '/../Shell.php';
 
 
 /**

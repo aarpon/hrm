@@ -45,7 +45,7 @@ class Mail
 
     /**
      * Mail constructor.
-     * @param string $sender Sender's e-mai address.
+     * @param string $sender Sender's e-mail address.
      */
     public function __construct($sender)
     {

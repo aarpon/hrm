@@ -11,7 +11,7 @@ namespace hrm;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
-require_once dirname(__FILE__) . '/../Shell.inc.php';
+require_once dirname(__FILE__) . '/../Shell.php';
 
 /**
  * Stores all information for a deconvolution Job.
@@ -97,7 +97,7 @@ class Job
     }
 
     /**
-     * Sets general class properties to initial values
+     * Sets general class properties to initial values.
      * @param JobDescription $jobDescription A jobDescription object.
      */
     private function initialize(JobDescription $jobDescription)
@@ -262,7 +262,7 @@ class Job
 
     /**
      * Returns the Huygens template name (it contains the unique id)
-     * @return HuygensTemplate The template name.
+     * @return string The template name.
      */
     public function huTemplateName()
     {
@@ -1109,7 +1109,7 @@ class Job
 
      Notice that the variable names are chosen to keep larger widgets on the
      left hand side of the '=' and smaller widgets on the right hand side.
-     The fictious widget 'html' being the largest one.
+     The fictitious widget 'html' being the largest one.
     */
 
 

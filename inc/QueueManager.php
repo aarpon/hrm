@@ -11,9 +11,6 @@ namespace hrm;
 
 require_once dirname(__FILE__) . '/bootstrap.php';
 
-require_once dirname(__FILE__) . '/Shell.inc.php';
-
-
 /**
  * Creates Jobs from JobDescriptions and manages them in a priority queue.
  *
@@ -72,7 +69,7 @@ class QueueManager {
      * If existing, delete debris from previously run jobs.
      * @param JobDescription $desc A JobDescription object.
      * @param string $server_hostname The server where the job will be run.
-     * @todo Move to Shell.inc.php.
+     * @todo Move to Shell.php.
     */
     public function removeHuygensOutputFiles($desc, $server_hostname ) {
         global $imageProcessingIsOnQueueManager;

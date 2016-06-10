@@ -1,7 +1,69 @@
 <?php
-
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
+/**
+ * json-rpc-server
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ *
+ * Server implementing the JSON-RPC (version 2.0) protocol.
+ *
+ * This is an example Javascript code to interface with json-rpc-server.php:
+ *
+ * ```
+ * 01:    <script type="text/javascript">
+ * 02:        $(document).ready($('#button').click(function() {
+ * 03:            JSONRPCRequest({
+ * 04:                method : 'jsonGetParameter',
+ * 05:                params : { parameterName : 'ExcitationWavelength'}
+ * 06:            }, function(response) {
+ * 07:                $('#report').html("<b>" + response['message'] + "</b>");
+ * 08:            });
+ * 09:        }));
+ * 10:    </script>
+ * ```
+ *
+ * Passing parameters to the Ajax method is very flexible (line 5). The recommended method is:
+ *
+ * ```
+ * params : {parameter : 'value'}
+ * ```
+ *
+ *
+ * for one parameter, and:
+ *
+ * ```
+ * params : {parameterOne : 'valueOne', parameterTwo : 'valueTwo'}
+ * ```
+ *
+ * for more parameters. If a parameter is an array, use:
+ *
+ * ```
+ * params : {parameter : ['valueOne', 'valueTwo', 'valueThree']}
+ * ```
+ *
+ * In PHP, the parameters can then be retrieved with:
+ *
+ * ```
+ * $params = $_POST['params'];
+ * ```
+ *
+ * ===
+ *
+ * For illustration, the following is also possible:
+ *
+ * For a single value:
+ *
+ * Javascript:   params : 'ExcitationWavelength'
+ * PHP:          $params := "ExcitationWavelength"
+ *
+ * For a vector:
+ *
+ * Javascript:   params : ['ExcitationWavelength', 'EmissionWavelength']
+ * PHP:          $params[0] := "ExcitationWavelength"
+ * $params[1] := "EmissionWavelength"
+ */
 
 use hrm\param\base\Parameter;
 use hrm\setting\AnalysisSetting;

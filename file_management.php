@@ -300,7 +300,7 @@ $control_buttons = '
 
 include("omero_actions.php");
 
-include("./inc/FileBrowser.inc.php");
+include("./inc/FileBrowser.php");
 
 include("footer.inc.php");
 

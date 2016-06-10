@@ -9,7 +9,7 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 // Two private functions, for the two tasks of this script:
 
-// This configures and shows the file browser module inc/FileBrowser.inc.php.
+// This configures and shows the file browser module inc/FileBrowser.php.
 // The Signal-to-noise estimator works only on raw images, so the listed
 // directory is the source ('src') one.
 function showFileBrowser() {
@@ -127,7 +127,7 @@ function showFileBrowser() {
             <p>Click <b>Help</b> on the top menu for more details.</p>
                ';
 
-    include("./inc/FileBrowser.inc.php");
+    include("./inc/FileBrowser.php");
 }
 
 
