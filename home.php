@@ -495,7 +495,7 @@ include("footer.inc.php");
                     openWindow("http://huygens-rm.org/home/?q=node/4");
                 });
                 $("#update").show();
-                return;
+                
             }
         )
     }

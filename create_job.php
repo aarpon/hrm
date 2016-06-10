@@ -423,7 +423,7 @@ echo "<p>$message</p>";
 
 <!-- Short script to make sure the user does not navigate away until he has submitted.
  We just set a variable canLeave to true when we should not display the warning.
- The warning comes from the onbeforeunload funciton. This is hard-coded into Firefox so
+ The warning comes from the onbeforeunload function. This is hard-coded into Firefox so
  the custom message does not display. In other browsers, the message here should show. -->
 <script type="text/javascript" >
     var canLeave = false;
@@ -439,7 +439,7 @@ echo "<p>$message</p>";
     // Check if the user is quitting it
     window.onbeforeunload = function(e) {
         if (!canLeave) {
-        document.forms['createjob'].is
+        document.forms['createjob'].is;
         return 'You did not submit the job. Are you sure you want to exit?';
         }
     };

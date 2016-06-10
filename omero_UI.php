@@ -84,7 +84,7 @@ if (isset($omeroConnection)) {
             $( "#activeTransfer" ).dialog({
                   modal: true,
             })
-      };
+      }
 
     </script>
 
