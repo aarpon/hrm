@@ -193,21 +193,6 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
             return true;
         }
 
-        /*
-         * Temporarily disabled, as this should only be required for retrieving
-         * the email address!
-         * TODO: discuss with Aaron, test impact on group membership checking
-        // If needed, process the user name suffix for subdomains
-        $username .= $this->m_UsernameSuffix;
-        if ($this->m_UsernameSuffixReplaceMatch != '') {
-            $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
-            $username = preg_replace($pattern,
-                $this->m_UsernameSuffixReplaceString,
-                $username);
-            report("Processed AD user name: '$username'", 0);
-        }
-        */
-
         // We need to retrieve the groups and compare them.
 
         // Get the user groups from AD
