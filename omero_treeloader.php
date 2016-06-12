@@ -12,9 +12,10 @@ require_once("inc/OmeroConnection.php");
 session_start();
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
-  $req = $_SERVER['REQUEST_URI'];
-  $_SESSION['request'] = $req;
-  header("Location: " . "login.php"); exit();
+    $req = $_SERVER['REQUEST_URI'];
+    $_SESSION['request'] = $req;
+    header("Location: " . "login.php");
+    exit();
 }
 
 $omeroConnection = $_SESSION['omeroConnection'];

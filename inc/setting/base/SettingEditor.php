@@ -15,8 +15,6 @@ use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
-require_once dirname(__FILE__) . '/../../Util.php';
-
 
 /**
  * Abstract class for a SettingEditor.

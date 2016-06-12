@@ -5,7 +5,7 @@
 use hrm\Util;
 use hrm\System;
 
-require_once("./inc/Util.php");
+require_once("./inc/bootstrap.php");
 
 ?>
 

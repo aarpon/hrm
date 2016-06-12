@@ -7,9 +7,10 @@ use hrm\Mail;
 use hrm\Util;
 use hrm\Validator;
 
-require_once dirname(__FILE__) . '/inc/bootstrap.php';
+// Settings
+global $hrm_url, $image_folder, $image_host, $email_sender, $userManagerScript;
 
-require_once("./inc/Util.php");
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 session_start();
 

@@ -6,34 +6,41 @@ namespace hrm;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
+// Settings
+global $allowHttpTransfer;
+
 session_start();
 
 if (isset($_GET['home'])) {
-  header("Location: " . "home.php"); exit();
+    header("Location: " . "home.php");
+    exit();
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
-  $req = $_SERVER['REQUEST_URI'];
-  $_SESSION['request'] = $req;
-  header("Location: " . "login.php"); exit();
+    $req = $_SERVER['REQUEST_URI'];
+    $_SESSION['request'] = $req;
+    header("Location: " . "login.php");
+    exit();
 }
 
 // Keep track of who the referer is: the filemanager (src) will allow returning
 // to some selected pages
-if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
-    if ( strpos( $_SERVER['HTTP_REFERER'], 'home.php' ) ||
-         strpos( $_SERVER['HTTP_REFERER'], 'select_parameter_settings.php' ) ||
-         strpos( $_SERVER['HTTP_REFERER'], 'select_task_settings.php' ) ||
-         strpos( $_SERVER['HTTP_REFERER'], 'select_analysis_settings.php' ) ||
-         strpos( $_SERVER['HTTP_REFERER'], 'select_images.php' ) ||
-         strpos( $_SERVER['HTTP_REFERER'], 'create_job.php' ) ) {
+if (isset($_SERVER['HTTP_REFERER'])) {
+    if (strpos($_SERVER['HTTP_REFERER'], 'home.php') ||
+        strpos($_SERVER['HTTP_REFERER'], 'select_parameter_settings.php') ||
+        strpos($_SERVER['HTTP_REFERER'], 'select_task_settings.php') ||
+        strpos($_SERVER['HTTP_REFERER'], 'select_analysis_settings.php') ||
+        strpos($_SERVER['HTTP_REFERER'], 'select_images.php') ||
+        strpos($_SERVER['HTTP_REFERER'], 'create_job.php')
+    ) {
         $_SESSION['filemanager_referer'] = $_SERVER['HTTP_REFERER'];
     }
 }
 
 if (isset($_SERVER['HTTP_REFERER']) &&
-        !strstr($_SERVER['HTTP_REFERER'], 'job_queue')) {
-  $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
+    !strstr($_SERVER['HTTP_REFERER'], 'job_queue')
+) {
+    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
 
 if (isset($_GET['ref'])) {
@@ -41,7 +48,7 @@ if (isset($_GET['ref'])) {
 } else if (isset($_POST['ref'])) {
     $_SESSION['referer'] = $_POST['ref'];
 } else {
-    if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+    if (isset($_SERVER['HTTP_REFERER'])) {
         $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
     }
 }
@@ -58,8 +65,8 @@ if (isset($_GET['getThumbnail'])) {
     } else {
         $dir = "dest";
     }
-    $_SESSION['fileserver']->getThumbnail( rawurldecode($_GET['getThumbnail']),
-         $dir );
+    $_SESSION['fileserver']->getThumbnail(rawurldecode($_GET['getThumbnail']),
+        $dir);
     exit;
 }
 
@@ -69,8 +76,8 @@ if (isset($_GET['getMovie'])) {
     } else {
         $dir = "dest";
     }
-    $_SESSION['fileserver']->getMovie( rawurldecode($_GET['getMovie']),
-         $dir );
+    $_SESSION['fileserver']->getMovie(rawurldecode($_GET['getMovie']),
+        $dir);
     exit;
 }
 
@@ -92,8 +99,8 @@ if (isset($_GET['viewStrip'])) {
         $embed = false;
     }
 
-    $_SESSION['fileserver']->viewStrip( $_GET['viewStrip'],
-        $type, $src, $embed );
+    $_SESSION['fileserver']->viewStrip($_GET['viewStrip'],
+        $type, $src, $embed);
     exit;
 
 }
@@ -126,8 +133,8 @@ if (isset($_GET['genPreview'])) {
     }
 
 
-    $_SESSION['fileserver']->genPreview( $_GET['genPreview'],
-        $src, $dest, $index, $size, $data );
+    $_SESSION['fileserver']->genPreview($_GET['genPreview'],
+        $src, $dest, $index, $size, $data);
     exit;
 }
 
@@ -159,7 +166,7 @@ if (isset($_GET['compareResult'])) {
 # $browse_folder can be 'src' or 'dest'.
 $browse_folder = "dest";
 
-if (isset($_GET['folder']) ) {
+if (isset($_GET['folder'])) {
     $browse_folder = $_GET['folder'];
 }
 
@@ -168,22 +175,22 @@ if ($allowHttpTransfer) {
     $message = "";
     if (isset($_POST['download'])) {
         if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-           $message =
-            $_SESSION['fileserver']->downloadResults($_POST['userfiles']);
-           exit;
+            $message =
+                $_SESSION['fileserver']->downloadResults($_POST['userfiles']);
+            exit;
         }
-    } else if (isset($_GET['download']) ) {
-        $downloadArr = array ( $_GET['download'] );
-           $message = $_SESSION['fileserver']->downloadResults($downloadArr);
-           exit;
+    } else if (isset($_GET['download'])) {
+        $downloadArr = array($_GET['download']);
+        $message = $_SESSION['fileserver']->downloadResults($downloadArr);
+        exit;
     }
 }
 
 $operationResult = "";
 
-if ( System::isUploadEnabled() == "enabled" ) {
+if (System::isUploadEnabled() == "enabled") {
 
-    if (isset($_POST['uploadForm']) && isset($_FILES) ) {
+    if (isset($_POST['uploadForm']) && isset($_FILES)) {
         $operationResult =
             $_SESSION['fileserver']->uploadFiles($_FILES['upfile'],
                 $browse_folder);
@@ -191,7 +198,7 @@ if ( System::isUploadEnabled() == "enabled" ) {
     } else if (isset($_GET['upload'])) {
         $max = Util::getMaxPostSize() / 1024 / 1024;
         $maxPost = "$max MB";
-        $operationResult = "<b>Nothing uploaded!</b> Probably total post ".
+        $operationResult = "<b>Nothing uploaded!</b> Probably total post " .
             "exceeds maximum allowed size of $maxPost.<br>\n";
     }
 }
@@ -199,30 +206,30 @@ if ( System::isUploadEnabled() == "enabled" ) {
 
 if (isset($_POST['delete'])) {
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-        if ( $browse_folder == "dest" ) {
+        if ($browse_folder == "dest") {
             $message =
                 $_SESSION['fileserver']->deleteFiles($_POST['userfiles'],
-                        "dest");
+                    "dest");
         } else {
             $message =
                 $_SESSION['fileserver']->deleteFiles($_POST['userfiles'],
-                        "src");
+                    "src");
         }
     }
-} else if (isset($_GET['delete']) ) {
+} else if (isset($_GET['delete'])) {
     # This method is only for result files.
-    $deleteArr = array ( $_GET['delete'] );
+    $deleteArr = array($_GET['delete']);
     $message = $_SESSION['fileserver']->deleteFiles($deleteArr);
     exit;
 } else if (isset($_POST['update'])) {
-        if ( $browse_folder == "dest" ) {
-            $_SESSION['fileserver']->resetDestFiles();
-        } else {
-            $_SESSION['fileserver']->resetFiles();
-        }
-} else if (!isset($_POST['update']) && isset($_GET) && isset($_GET['folder'])){
-        // Force an update in the file browser
-        $_POST['update'] = "1";
+    if ($browse_folder == "dest") {
+        $_SESSION['fileserver']->resetDestFiles();
+    } else {
+        $_SESSION['fileserver']->resetFiles();
+    }
+} else if (!isset($_POST['update']) && isset($_GET) && isset($_GET['folder'])) {
+    // Force an update in the file browser
+    $_POST['update'] = "1";
 }
 
 
@@ -232,13 +239,13 @@ if (isset($_POST['delete'])) {
 $useTemplateData = 0;
 $file_buttons = array();
 
-if ( $browse_folder == "dest" ) {
+if ($browse_folder == "dest") {
     // Number of displayed files.
     $size = 15;
     $multiple_files = true;
     $page_title = "Results";
     $explanation_text = "These are the <b>processed image files</b> " .
-    "currently in your file area.";
+        "currently in your file area.";
     $form_title = "Your result files";
 
     $info = "<h3>Quick help</h3>
@@ -258,14 +265,14 @@ if ( $browse_folder == "dest" ) {
         $file_buttons[] = "download";
     }
     $info .= "<p><strong>Move your mouse pointer over the action buttons at " .
-      "the bottom to redisplay this help.</strong></p>";
+        "the bottom to redisplay this help.</strong></p>";
 } else {
     $browse_folder = "src";
     $size = 15;
     $multiple_files = true;
     $page_title = "Raw images";
     $explanation_text = "These are the <b>original image files</b> currently " .
-      "in your file area.";
+        "in your file area.";
     $form_title = "Your raw files";
 
     $info = "<h3>Quick help</h3>
@@ -278,8 +285,8 @@ if ( $browse_folder == "dest" ) {
 
     if (System::isUploadEnabled() == "enabled") {
 
-        $validExtensions = str_replace( " ", ", ",
-          $_SESSION['fileserver']->getValidArchiveTypesAsString() );
+        $validExtensions = str_replace(" ", ", ",
+            $_SESSION['fileserver']->getValidArchiveTypesAsString());
         $info .= "<p>You can also upload files to deconvolve. To upload
         multiple files, it may be convenient to pack them first in a single
         <b>archive ($validExtensions)</b>, that will be unpacked
@@ -287,7 +294,7 @@ if ( $browse_folder == "dest" ) {
         $file_buttons[] = "upload";
     }
     $info .= "<p><strong>Move your mouse pointer over the action buttons at " .
-      "the bottom to redisplay this help.</strong></p>";
+        "the bottom to redisplay this help.</strong></p>";
 }
 
 $file_buttons[] = "delete";

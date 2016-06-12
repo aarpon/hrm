@@ -14,9 +14,6 @@ use hrm\user\User;
 
 require_once dirname(__FILE__) . '/bootstrap.php';
 
-require_once("Database.php");
-require_once("Util.php");
-
 /**
  * Type of display to be generated from the statistics.
  *
@@ -93,7 +90,7 @@ class Type
 
     /**
      * Get the JS/PHP script to display the statistics.
-     * @param \hrm\DatabaseConnection $db DatabaseConnection object.
+     * @param DatabaseConnection $db DatabaseConnection object.
      * @param boolean $admin True if the user is the admin.
      * @param string $fromDate Start date for filtering in the form "YYYY-mm-dd"
      *    (or generally "YYYY-mm-dd hh:mm:ss").
@@ -246,7 +243,7 @@ class Type
      * @param string $dateFilter Filter on date, @see  getDateFilter().
      * @param string $groupFilter Filter on group, @see  getGroupFilter().
      * @param string $userNameFilter Filter on username, @see  getUsernameFilter().
-     * @return strign The html code for the total run time per user/group table.
+     * @return string The html code for the total run time per user/group table.
      * @todo    remove $statsType
      */
     private function getTable(DatabaseConnection $db, $statsType, $group,
@@ -906,7 +903,6 @@ class Stats
         } else {
             return ("<h3>Error serving the file " . $fileName . ".</h3>");
         }
-        return ("<h3>Nothing to download!</h3>");;
     }
 
 }  // End of Stats class

@@ -17,11 +17,8 @@ use hrm\setting\base\Setting;
 use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
 use hrm\user\User;
-use hrm\Log;
 
 require_once dirname(__FILE__) . "/bootstrap.php";
-
-require_once dirname(__FILE__) . "/Util.php";
 
 /**
  * Manages the database connection through the ADOdb library.
@@ -523,6 +520,7 @@ class DatabaseConnection
         $new_owner = new User();
         $new_owner->setName($targetUserName);
         $settings->setOwner($new_owner);
+        /** @var ParameterSetting|TaskSetting|AnalysisSetting $settings */
         $settingTable = $settings->sharedTable();
         $table = $settings->sharedParameterTable();
         $result = True;
@@ -822,7 +820,7 @@ class DatabaseConnection
      * @param string $username Name of the user for whom to query for shared
      * templates.
      * @param string $table Name of the shared table to query.
-     * @return ResultSet List of shared jobs.
+     * @return array List of shared jobs.
      */
     public function getTemplatesSharedBy($username, $table)
     {
@@ -1032,7 +1030,7 @@ class DatabaseConnection
      * Updates the default entry in the database according to the default
      * value in the setting.
      * @param Setting $settings Settings object to be used to update the default.
-     * @return ResultSet query result.
+     * @return array query result.
      */
     public function updateDefault($settings)
     {
@@ -1096,7 +1094,7 @@ class DatabaseConnection
 
     /**
      * Checks whether parameters are already stored for a given shared setting.
-     * @param Setting $settings Settings object to be used to check for existence
+     * @param ParameterSetting|TaskSetting|AnalysisSetting $settings Settings object to be used to check for existence
      * in the database.
      * @return bool  True if the parameters exist in the database; false otherwise.
      */
@@ -1138,7 +1136,7 @@ class DatabaseConnection
 
     /**
      * Checks whether shared settings exist in the database for a given owner.
-     * @param Setting $settings Settings object to be used to check for
+     * @param ParameterSetting|TaskSetting|AnalysisSetting $settings $settings Settings object to be used to check for
      * existence in the database (the name of the owner must be set in the
      * settings)
      * @return bool True if the settings exist in the database; false otherwise.
@@ -1169,6 +1167,7 @@ class DatabaseConnection
     public function saveJobFiles($id, $owner, $files, $autoseries)
     {
         $result = True;
+        /** @var User $owner */
         $username = $owner->name();
         $sqlAutoSeries = "";
         foreach ($files as $file) {
@@ -1186,7 +1185,7 @@ class DatabaseConnection
      * Adds a job for a given job id and user to the queue.
      * @param string $id Job id.
      * @param string $username Name of the user that owns the job.
-     * @return ResultSet Query result.
+     * @return array Query result.
      */
     public function queueJob($id, $username)
     {
@@ -1606,7 +1605,7 @@ class DatabaseConnection
     /**
      * Returns all jobs from the queue, both compound and simple, ordered by
      * priority.
-     * @return ResultSet All jobs.
+     * @return array All jobs.
      */
     public function getQueueJobs()
     {
@@ -1639,7 +1638,7 @@ class DatabaseConnection
     /**
      * Returns all jobs from the queue for a given id (that must be unique!)
      * @param string $id Id of the job.
-     * @return Array All jobs for the id
+     * @return array All jobs for the id
      */
     public function getQueueContentsForId($id)
     {
@@ -1682,7 +1681,7 @@ class DatabaseConnection
     public function getNumberOfQueuedJobsForUser($username)
     {
         $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $username . "';";
-        $row = $this->Execute($query)->FetchRow();
+        $row = $this->execute($query)->FetchRow();
         return $row[0];
     }
 
@@ -1693,7 +1692,7 @@ class DatabaseConnection
     public function getTotalNumberOfQueuedJobs()
     {
         $query = "SELECT COUNT(id) FROM job_queue;";
-        $row = $this->Execute($query)->FetchRow();
+        $row = $this->execute($query)->FetchRow();
         return $row[0];
     }
 
@@ -1957,7 +1956,7 @@ class DatabaseConnection
     /**
      * Pauses a job of given id.
      * @param string $id Job id
-     * @return ResultSet query result.
+     * @return array query result.
      */
     public function pauseJob($id)
     {
@@ -1970,7 +1969,7 @@ class DatabaseConnection
      * Sets the end time of a job.
      * @param string $id Job id.
      * @param string $date Formatted date: YYYY-MM-DD hh:mm:ss.
-     * @return ResultSet Query result.
+     * @return array Query result.
      */
     public function setJobEndTime($id, $date)
     {
@@ -1981,7 +1980,7 @@ class DatabaseConnection
 
     /**
      * Changes status of 'paused' jobs to 'queued'.
-     * @return ResultSet Query result
+     * @return array Query result
      */
     public function restartPausedJobs()
     {
@@ -2116,7 +2115,7 @@ class DatabaseConnection
      * Updates the e-mail address of a user.
      * @param string $userName Name of the user.
      * @param string $email E-mail address.
-     * @return ResultSet Query result.
+     * @return array Query result.
      */
     public function updateMail($userName, $email)
     {
@@ -2128,7 +2127,7 @@ class DatabaseConnection
     /**
      * Updates the last access date of a user.
      * @param string $userName Name of the user.
-     * @return ResultSet Query result.
+     * @return array Query result.
      */
     public function updateLastAccessDate($userName)
     {
@@ -2163,7 +2162,7 @@ class DatabaseConnection
      * The Parameter values are not loaded.
      * @param string $username Name of the user.
      * @param string $table Name of the settings table.
-     * @return ResultSet Array of settings
+     * @return array Array of settings
      */
     public function getSettingList($username, $table)
     {
@@ -2274,7 +2273,7 @@ class DatabaseConnection
      * Checks whether Huygens Core has a valid license.
      * @return bool True if the license is valid, false otherwise.
      */
-    public function hucoreHasValidLicense() 
+    public function hucoreHasValidLicense()
     {
 
         // We (ab)use the hasLicense() method
@@ -2568,9 +2567,10 @@ class DatabaseConnection
         $test = False;
 
         $dsn = $db_type . "://" . $db_user . ":" . $db_password . "@" . $db_host . "/" . $db_name;
+        /** @var ADODB_mysql|\ADODB_postgres8|\ADODB_postgres9 $db */
         $db = ADONewConnection($dsn);
         if (!$db)
-            return;
+            return False;
         $tables = $db->MetaTables("TABLES");
         if (in_array("global_variables", $tables))
             $test = True;

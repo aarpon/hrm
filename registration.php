@@ -244,13 +244,13 @@ include("header.inc.php");
                 </div>
             </div>
         </form>
-    <?php
+        <?php
 
     } else {
 
         ?>
         <div id="notice"><?php echo "<p>$notice</p>"; ?></div>
-    <?php
+        <?php
 
     }
 
@@ -271,7 +271,7 @@ include("header.inc.php");
             <p>* Required fields.</p>
 
         </div>
-    <?php
+        <?php
 
     }
 

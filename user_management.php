@@ -11,9 +11,6 @@ use hrm\Validator;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once(dirname(__FILE__) . "/inc/Util.php");
-
-
 global $hrm_url;
 global $email_sender;
 global $email_admin;
@@ -177,7 +174,7 @@ if (isset($_POST['accept'])) {
 } else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
     if ($clean['username'] != "admin") {
         $result = $userManager->deleteUser($clean['username']);
-        if (! $result) {
+        if (!$result) {
             $message = "Database error, please inform the administrator";
         }
     } else {
@@ -215,15 +212,15 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpUserManagement'));
+            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpUserManagement'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                echo(Nav::textUser($_SESSION['user']->name()));
-                echo(Nav::linkHome(Util::getThisPageName()));
+            echo(Nav::textUser($_SESSION['user']->name()));
+            echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>
@@ -232,303 +229,308 @@ include("header.inc.php");
 
 <div id="content">
 
-<h3><img alt="ManageUsers" src="./images/users.png"
-         width="40"/>&nbsp;&nbsp;Manage users</h3>
+    <h3><img alt="ManageUsers" src="./images/users.png"
+             width="40"/>&nbsp;&nbsp;Manage users</h3>
 
-<?php
+    <?php
 
-$rows = $userManager->getAllUserDBRows();
-$i = 0;
-foreach ($rows as $row) {
-    $name = $row["name"];
-    $email = $row["email"];
-    $group = $row["research_group"];
-    $creation_date = date("j M Y, G:i", strtotime($row["creation_date"]));
-    $status = $row["status"];
-    if ($status != "a" && $status != "d") {
+    $rows = $userManager->getAllUserDBRows();
+    $i = 0;
+    foreach ($rows as $row) {
+        $name = $row["name"];
+        $email = $row["email"];
+        $group = $row["research_group"];
+        $creation_date = date("j M Y, G:i", strtotime($row["creation_date"]));
+        $status = $row["status"];
+        if ($status != "a" && $status != "d") {
 
-        ?>
-        <form method="post" action="">
-            <div>
-                <fieldset>
-                    <legend>pending request</legend>
-                    <table>
-                        <tr class="upline">
-                            <td class="name">
+            ?>
+            <form method="post" action="">
+                <div>
+                    <fieldset>
+                        <legend>pending request</legend>
+                        <table>
+                            <tr class="upline">
+                                <td class="name">
                                 <span class="title">
                                     <?php echo $name ?>
                                 </span>
-                            </td>
-                            <td class="group">
-                                <?php echo $group ?>
-                            </td>
-                            <td class="email">
-                                <a href="mailto:<?php echo $email ?>"
-                                   class="normal">
-                                    <?php echo $email ?>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr class="bottomline">
-                            <td colspan="2" class="date">
-                                request date: <?php echo $creation_date . "\n" ?>
-                            </td>
-                            <td class="operations">
-                                <div>
-                                    <input type="hidden"
-                                           name="username"
-                                           value="<?php echo $name ?>"/>
-                                    <input type="submit"
-                                           name="accept"
-                                           value="accept"/>
-                                    <input type="submit"
-                                           name="reject"
-                                           value="reject"/>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </fieldset>
-            </div>
-        </form>
-        <br/>
+                                </td>
+                                <td class="group">
+                                    <?php echo $group ?>
+                                </td>
+                                <td class="email">
+                                    <a href="mailto:<?php echo $email ?>"
+                                       class="normal">
+                                        <?php echo $email ?>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr class="bottomline">
+                                <td colspan="2" class="date">
+                                    request
+                                    date: <?php echo $creation_date . "\n" ?>
+                                </td>
+                                <td class="operations">
+                                    <div>
+                                        <input type="hidden"
+                                               name="username"
+                                               value="<?php echo $name ?>"/>
+                                        <input type="submit"
+                                               name="accept"
+                                               value="accept"/>
+                                        <input type="submit"
+                                               name="reject"
+                                               value="reject"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </div>
+            </form>
+            <br/>
+            <?php
+
+            $i++;
+        }
+    }
+
+    if (!$i) {
+
+        ?>
+        <p>There are no pending requests.</p>
         <?php
 
-        $i++;
     }
-}
-
-if (!$i) {
 
     ?>
-    <p>There are no pending requests.</p>
-<?php
 
-}
+    <div id="listusers">
+        <fieldset>
+            <?php
 
-?>
+            // All users (independent of their status), including the administrator
+            $count = $userManager->getTotalNumberOfUsers();
 
-<div id="listusers">
-<fieldset>
-<?php
+            // Active users
+            $rows = $userManager->getAllActiveUserDBRows();
+            $emails = array();
+            foreach ($rows as $row) {
+                $e = trim($row['email']);
+                if (strlen($e) > 0) {
+                    array_push($emails, $e);
+                }
+            }
+            $emails = array_unique($emails);
+            sort($emails);
 
-// All users (independent of their status), including the administrator
-$count = $userManager->getTotalNumberOfUsers();
-
-// Active users
-$rows = $userManager->getAllActiveUserDBRows();
-$emails = array();
-foreach ($rows as $row) {
-    $e = trim($row['email']);
-    if (strlen($e) > 0) {
-        array_push($emails, $e);
-    }
-}
-$emails = array_unique($emails);
-sort($emails);
-
-?>
-<legend>
-    Existing users (<?php echo $count - 1; // Ignore admin ?>)
-</legend>
-<p class="menu">
-    <a href="javascript:openPopup('add_user')">
-        add new user
-    </a> |
-    <a href="mailto:<?php echo $email_admin; ?>?bcc=
+            ?>
+            <legend>
+                Existing users (<?php echo $count - 1; // Ignore admin ?>)
+            </legend>
+            <p class="menu">
+                <a href="javascript:openPopup('add_user')">
+                    add new user
+                </a> |
+                <a href="mailto:<?php echo $email_admin; ?>?bcc=
                     <?php echo implode($email_list_separator, $emails); ?>">
-        distribution list
-    </a>
-    <br/>
-    <a href="javascript:disableUsers()">
-        disable
-    </a>/
-    <a href="javascript:enableUsers()">
-        enable
-    </a> all users
-</p>
-
-<?php
-
-    /* Get the number of users with names starting with each of the letters
-    of the alphabet. */
-    $counts = $userManager->getNumberCountPerInitialLetter();
-    $letters = array_keys($counts);
-?>
-
-<form method="post" action="" id="user_management">
-    <div><input type="hidden" name="action"/></div>
-</form>
-<table>
-    <tr>
-        <td colspan="3" class="menu">
-            <div class="line">
-            <?php
-
-            $style = "filled";
-            if ($_SESSION['index'] == "all") {
-                $style = "selected";
-            }
-            ?>
-
-            [<a href="?index=all" class="<?php echo($style); ?>">&nbsp;all&nbsp;</a>]&nbsp;[
+                    distribution list
+                </a>
+                <br/>
+                <a href="javascript:disableUsers()">
+                    disable
+                </a>/
+                <a href="javascript:enableUsers()">
+                    enable
+                </a> all users
+            </p>
 
             <?php
-            for ($i = 0; $i < count($counts); $i++) {
-                $c = $letters[$i];
-                if ($_SESSION['index'] == $c) {
-                    $style = "selected";
-                } else if ($counts[$c] == 0) {
-                    $style = "empty";
-                } else {
-                    $style = "filled";
-                }
 
-                echo "<a href=\"?index=$c\" class=\"$style\">&nbsp;" .
-                    strtoupper($c) . "&nbsp;</a>";
-            }
+            /* Get the number of users with names starting with each of the letters
+            of the alphabet. */
+            $counts = $userManager->getNumberCountPerInitialLetter();
+            $letters = array_keys($counts);
             ?>
-            ]</div>
-        </td>
-    </tr>
-    <tr>
-        <td>&nbsp;</td>
-    </tr>
-    <?php
 
-    if ($_SESSION['index'] != "") {
-        if ($_SESSION['index'] != "all") {
-            $rows = $userManager->getAllUserDBRowsByInitialLetter($_SESSION['index']);
-        } else {
-            $rows = $userManager->getAllUserDBRows();
-        }
-        $i = 0;
-        foreach ($rows as $row) {
-            if ($row['name'] != "admin") {
-                $name = $row['name'];
-                $email = $row['email'];
-                $group = $row['research_group'];
-                $last_access_date = date("j M Y, G:i",
-                    strtotime($row['last_access_date']));
-                if ($last_access_date == "30 Nov 1999, 0:00") {
-                    $last_access_date = "never";
-                }
-                $status = $row['status'];
-                if ($status == "a" || $status == "d") {
-                    if ($i > 0) {
-                        echo "                    " .
-                            "<tr><td colspan=\"3\" class=\"hr\">&nbsp;</td></tr>\n";
-                    }
+            <form method="post" action="" id="user_management">
+                <div><input type="hidden" name="action"/></div>
+            </form>
+            <table>
+                <tr>
+                    <td colspan="3" class="menu">
+                        <div class="line">
+                            <?php
 
-                    ?>
-                    <tr class="upline<?php
-                    if ($status == "d") {
-                        echo " disabled";
+                            $style = "filled";
+                            if ($_SESSION['index'] == "all") {
+                                $style = "selected";
+                            }
+                            ?>
+
+                            [<a href="?index=all"
+                                class="<?php echo($style); ?>">
+                                &nbsp;all&nbsp;</a>]&nbsp;[
+
+                            <?php
+                            for ($i = 0; $i < count($counts); $i++) {
+                                $c = $letters[$i];
+                                if ($_SESSION['index'] == $c) {
+                                    $style = "selected";
+                                } else if ($counts[$c] == 0) {
+                                    $style = "empty";
+                                } else {
+                                    $style = "filled";
+                                }
+
+                                echo "<a href=\"?index=$c\" class=\"$style\">&nbsp;" .
+                                    strtoupper($c) . "&nbsp;</a>";
+                            }
+                            ?>
+                            ]
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+                <?php
+
+                if ($_SESSION['index'] != "") {
+                    if ($_SESSION['index'] != "all") {
+                        $rows = $userManager->getAllUserDBRowsByInitialLetter($_SESSION['index']);
+                    } else {
+                        $rows = $userManager->getAllUserDBRows();
                     }
-                    ?>">
-                        <td class="name">
+                    $i = 0;
+                    foreach ($rows as $row) {
+                        if ($row['name'] != "admin") {
+                            $name = $row['name'];
+                            $email = $row['email'];
+                            $group = $row['research_group'];
+                            $last_access_date = date("j M Y, G:i",
+                                strtotime($row['last_access_date']));
+                            if ($last_access_date == "30 Nov 1999, 0:00") {
+                                $last_access_date = "never";
+                            }
+                            $status = $row['status'];
+                            if ($status == "a" || $status == "d") {
+                                if ($i > 0) {
+                                    echo "                    " .
+                                        "<tr><td colspan=\"3\" class=\"hr\">&nbsp;</td></tr>\n";
+                                }
+
+                                ?>
+                                <tr class="upline<?php
+                                if ($status == "d") {
+                                    echo " disabled";
+                                }
+                                ?>">
+                                    <td class="name">
                             <span class="title">
                                 <?php echo $name ?>
                             </span>
-                        </td>
-                        <td class="group">
-                            <?php echo $group ?>
-                        </td>
-                        <td class="email">
-                            <a href="mailto:<?php echo $email ?>"
-                               class="normal"><?php echo $email ?>
-                            </a>
-                        </td>
-                    </tr>
-                    <tr class="bottomline<?php
-                    if ($status == "d") {
-                        echo " disabled";
-                    }
-                    ?>">
-                        <td colspan="2" class="date">
-                            last access: <?php echo $last_access_date . "\n" ?>
-                        </td>
-                        <td class="operations">
-                            <form method="post" action="">
-                                <div>
-                                    <input type="hidden"
-                                           name="username"
-                                           value="<?php echo $name ?>"/>
-                                    <input type="hidden"
-                                           name="email"
-                                           value="<?php echo $email ?>"/>
-                                    <input type="hidden"
-                                           name="group"
-                                           value="<?php echo $group ?>"/>
-                                    <input type="submit"
-                                           name="edit"
-                                           value="edit"
-                                           class="submit"/>
-                                    <?php
+                                    </td>
+                                    <td class="group">
+                                        <?php echo $group ?>
+                                    </td>
+                                    <td class="email">
+                                        <a href="mailto:<?php echo $email ?>"
+                                           class="normal"><?php echo $email ?>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr class="bottomline<?php
+                                if ($status == "d") {
+                                    echo " disabled";
+                                }
+                                ?>">
+                                    <td colspan="2" class="date">
+                                        last
+                                        access: <?php echo $last_access_date . "\n" ?>
+                                    </td>
+                                    <td class="operations">
+                                        <form method="post" action="">
+                                            <div>
+                                                <input type="hidden"
+                                                       name="username"
+                                                       value="<?php echo $name ?>"/>
+                                                <input type="hidden"
+                                                       name="email"
+                                                       value="<?php echo $email ?>"/>
+                                                <input type="hidden"
+                                                       name="group"
+                                                       value="<?php echo $group ?>"/>
+                                                <input type="submit"
+                                                       name="edit"
+                                                       value="edit"
+                                                       class="submit"/>
+                                                <?php
 
-                                    if ($name != $_SESSION['user']->getAdminName()) {
-                                        if ($status == "d") {
+                                                if ($name != $_SESSION['user']->getAdminName()) {
+                                                    if ($status == "d") {
 
-                                            ?>
-                                            <input type="submit"
-                                                   name="enable"
-                                                   value="enable"
-                                                   class="submit"/>
-                                        <?php
+                                                        ?>
+                                                        <input type="submit"
+                                                               name="enable"
+                                                               value="enable"
+                                                               class="submit"/>
+                                                        <?php
 
-                                        } else {
+                                                    } else {
 
-                                            ?>
-                                            <input type="submit"
-                                                   name="disable"
-                                                   value="disable"
-                                                   class="submit"/>
-                                        <?php
+                                                        ?>
+                                                        <input type="submit"
+                                                               name="disable"
+                                                               value="disable"
+                                                               class="submit"/>
+                                                        <?php
 
-                                        }
+                                                    }
 
-                                        ?>
+                                                    ?>
 
-                                        <input type="hidden"
-                                               name="annihilate"/>
-                                        <input type="button"
-                                               name="delete"
-                                               value="delete"
-                                               onclick="warn(this.form,
+                                                    <input type="hidden"
+                                                           name="annihilate"/>
+                                                    <input type="button"
+                                                           name="delete"
+                                                           value="delete"
+                                                           onclick="warn(this.form,
                                            'Do you really want to delete this user?')"
-                                               class="submit"/>
-                                    <?php
+                                                           class="submit"/>
+                                                    <?php
 
-                                    }
+                                                }
 
-                                    ?>
-                                </div>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php
+                                                ?>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <?php
 
-                    $i++;
+                                $i++;
+                            }
+                        }
+                    }
+                    if (!$i) {
+
+                        ?>
+                        <tr>
+                            <td colspan="3" class="notice">
+                                n/a
+                            </td>
+                        </tr>
+                        <?php
+
+                    }
                 }
-            }
-        }
-        if (!$i) {
 
-            ?>
-            <tr>
-                <td colspan="3" class="notice">
-                    n/a
-                </td>
-            </tr>
-        <?php
-
-        }
-    }
-
-    ?>
-</table>
-</fieldset>
-</div>
+                ?>
+            </table>
+        </fieldset>
+    </div>
 
 </div> <!-- content -->
 

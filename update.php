@@ -8,18 +8,19 @@ use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-require_once dirname(__FILE__) . '/inc/Util.php';
-
 session_start();
 
 if (isset($_GET['home'])) {
-  header("Location: " . "home.php"); exit();
+    header("Location: " . "home.php");
+    exit();
 }
 
 // The admin must be logged on
-if ( ( !isset( $_SESSION[ 'user' ] ) ) ||
-    ( !$_SESSION[ 'user' ]->isAdmin() ) ) {
-        header("Location: " . "login.php"); exit();
+if ((!isset($_SESSION['user'])) ||
+    (!$_SESSION['user']->isAdmin())
+) {
+    header("Location: " . "login.php");
+    exit();
 }
 
 $message = "";
@@ -40,85 +41,85 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpUpdate'));
+            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpUpdate'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                echo(Nav::textUser($_SESSION['user']->name()));
-                echo(Nav::linkHome(Util::getThisPageName()));
+            echo(Nav::textUser($_SESSION['user']->name()));
+            echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>
     <div class="clear"></div>
 </div>
 
-    <div id="content">
+<div id="content">
 
-        <h3><img alt="UpdateDatabase" src="./images/updatedb.png"
-                 width="40"/>&nbsp;&nbsp;Update database</h3>
+    <h3><img alt="UpdateDatabase" src="./images/updatedb.png"
+             width="40"/>&nbsp;&nbsp;Update database</h3>
 
     <?php
-    if ( System::isDBUpToDate( ) == true ) {
-    	echo "<h4>The database is up-to-date.</h4>";
+    if (System::isDBUpToDate() == true) {
+        echo "<h4>The database is up-to-date.</h4>";
     } else {
         echo "<h4>The database must be updated.</h4>";
     }
     ?>
 
-        <fieldset>
-            <legend>log</legend>
-            <textarea rows="15" readonly="readonly">
+    <fieldset>
+        <legend>log</legend>
+            <textarea rows="15" title="Update log" readonly="readonly">
 <?php
 
 echo $message;
 
 ?>
             </textarea>
-        </fieldset>
+    </fieldset>
 
-    </div> <!-- content -->
+</div> <!-- content -->
 
-    <div id="rightpanel">
+<div id="rightpanel">
 
-        <div id="info">
+    <div id="info">
 
-            <h3>Quick help</h3>
+        <h3>Quick help</h3>
 
-            <p>
-                This page allows you to verify and patch the database after an
-                update to a new release. The interface might not function
-                properly until you do so.
-            </p>
+        <p>
+            This page allows you to verify and patch the database after an
+            update to a new release. The interface might not function
+            properly until you do so.
+        </p>
 
-            <p>
-                New HRM releases are available from the project
-                <a href="javascript:openWindow(
+        <p>
+            New HRM releases are available from the project
+            <a href="javascript:openWindow(
                    'http://sourceforge.net/projects/hrm')">website</a>.
-            </p>
+        </p>
 
-            <br>
+        <br>
 
-            <form method="GET" action="" id="dbupdate">
-                <input type="hidden" name="action" value="dbupdate">
-            </form>
+        <form method="GET" action="" id="dbupdate">
+            <input type="hidden" name="action" value="dbupdate">
+        </form>
 
-            <input type="button" name="" value="update"
-                   onclick="document.forms['dbupdate'].submit()" />
+        <input type="button" name="" value="update"
+               onclick="document.forms['dbupdate'].submit()"/>
 
-        </div>
+    </div>
 
-        <div id="message">
-<?php
+    <div id="message">
+        <?php
 
-//echo $message;
+        //echo $message;
 
-?>
-        </div>
+        ?>
+    </div>
 
-    </div> <!-- rightpanel -->
+</div> <!-- rightpanel -->
 
 <?php
 

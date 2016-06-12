@@ -19,9 +19,6 @@ use hrm\user\User;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
-require_once dirname(__FILE__) . '/../Shell.php';
-
-
 /**
  * Collects all information for a deconvolution Job to be created.
  *
@@ -360,6 +357,7 @@ class JobDescription
     /**
      * Loads a JobDescription from the database for the user set in
      * this JobDescription.
+     * @todo Check that the ParameterSeggins->numberOfChannels() exists!
      */
     public function load()
     {

@@ -11,7 +11,6 @@ namespace hrm;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
-require_once dirname(__FILE__) . '/../Shell.php';
 
 /**
  * Stores all information for a deconvolution Job.
@@ -535,7 +534,7 @@ class Job
         /* The Huygens job main file will be given a job id name. */
         $this->shell->renameFile($huygensOut, $tmpFile);
 
-        /* TODO: find workaround. The multiserver configuration has latency 
+        /* TODO: find workaround. The multiserver configuration has latency
          between renaming and reading files. A sleep(1) fixes it. The single
          server configuration seems to be benefited from it as well. */
         sleep(1);
@@ -1099,7 +1098,7 @@ class Job
 
     /* The standard followed above builds html code using functions that
      create little html 'widgets' and which build up into larger ones.
-     
+
      For example:
      cell   = "contents"
      row   .= insertCell(cell)

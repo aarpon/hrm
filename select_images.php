@@ -14,15 +14,17 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 session_start();
 
 if (isset($_GET['home'])) {
-  header("Location: " . "home.php"); exit();
+    header("Location: " . "home.php");
+    exit();
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
-  header("Location: " . "login.php"); exit();
+    header("Location: " . "login.php");
+    exit();
 }
 
 if (isset($_SESSION['jobcreated'])) {
-  unset($_SESSION['jobcreated']);
+    unset($_SESSION['jobcreated']);
 }
 
 if (System::hasLicense("coloc")) {
@@ -31,20 +33,20 @@ if (System::hasLicense("coloc")) {
     $numberSteps = 4;
 }
 $currentStep = 1;
-$nextStep    = $currentStep + 1;
-$goNextMessage  = "Continue to step $nextStep/$numberSteps - ";
+$nextStep = $currentStep + 1;
+$goNextMessage = "Continue to step $nextStep/$numberSteps - ";
 $goNextMessage .= "Select image template.";
 
 if (!isset($_SESSION['fileserver'])) {
-  # session_register("fileserver");
-  $name = $_SESSION['user']->name();
-  $_SESSION['fileserver'] = new Fileserver($name);
+    # session_register("fileserver");
+    $name = $_SESSION['user']->name();
+    $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-if (!isset($_SESSION[ 'parametersetting' ])) {
-    $_SESSION[ 'parametersetting' ] = new ParameterSetting();
+if (!isset($_SESSION['parametersetting'])) {
+    $_SESSION['parametersetting'] = new ParameterSetting();
 }
-$fileFormat = $_SESSION[ 'parametersetting' ]->parameter("ImageFileFormat");
+$fileFormat = $_SESSION['parametersetting']->parameter("ImageFileFormat");
 
 $message = "";
 if (isset($_POST['down'])) {
@@ -66,8 +68,7 @@ if (isset($_POST['down'])) {
         }
         $_SESSION['fileserver']->addFilesToSelection($fileNames);
     }
-}
-else if (isset($_POST['up'])) {
+} else if (isset($_POST['up'])) {
     if (isset($_POST['autoseries'])) {
         $_SESSION['autoseries'] = $_POST['autoseries'];
     } else {
@@ -85,25 +86,24 @@ else if (isset($_POST['up'])) {
         }
         $_SESSION['fileserver']->removeFilesFromSelection($fileNames);
     }
-}
-else if (isset($_POST['update'])) {
+} else if (isset($_POST['update'])) {
     if (isset($_POST['autoseries'])) {
         $_SESSION['autoseries'] = $_POST['autoseries'];
     } else {
         $_SESSION['autoseries'] = "";
     }
     $_SESSION['fileserver']->resetFiles();
-}
-else if (isset($_POST['OK'])) {
+} else if (isset($_POST['OK'])) {
 
     if (!$_SESSION['fileserver']->hasSelection()) {
         $message = "Please add at least one image to your selection";
     } else {
-        header("Location: " . "select_parameter_settings.php"); exit();
+        header("Location: " . "select_parameter_settings.php");
+        exit();
     }
 }
 
-$script = array( "settings.js","ajax_utils.js" );
+$script = array("settings.js", "ajax_utils.js");
 
 $_SESSION['fileserver']->resetFiles();
 
@@ -160,7 +160,7 @@ function filterImages (format,series) {
     foreach ($allFiles as $key => $file) {
 
         /* Escape here the string that will be passed to JavaScript only. */
-        $file = str_replace("'","\'",$file);
+        $file = str_replace("'", "\'", $file);
         if ($_SESSION['fileserver']->isPartOfFileSeries($file)) {
 
             $generatedScript .= "
@@ -169,7 +169,7 @@ function filterImages (format,series) {
               if(autoseries.checked) {
               ";
 
-            if (in_array($file,$condensedSeries)) {
+            if (in_array($file, $condensedSeries)) {
                 $generatedScript .= "
                   if(checkAgainstFormat('$file', selectedFormat)) {
                     var f = \"$file\";
@@ -292,8 +292,8 @@ function imageAction (list) {
     foreach ($allFiles as $key => $file) {
         $generatedScript .= "
         case \"$file\" :
-            ". $_SESSION['fileserver']->getImageAction($file,
-                $key, "src", "preview", 0, 1). "
+            " . $_SESSION['fileserver']->getImageAction($file,
+                $key, "src", "preview", 0, 1) . "
             break;
             ";
     }
@@ -308,301 +308,304 @@ function imageAction (list) {
 include("header.inc.php");
 
 $info = "<h3>Quick help</h3>" .
-        "<p>Here you can select the files to be restored from the list " .
-        "of available images. The file names are filtered by the selected " .
-        "file format. Use SHIFT- and CTRL-click to select multiple files.</p>" .
-        "<p>Where applicable, the files belonging to a series can be condensed " .
-        "into one file name by checking the 'autoseries' option. These files " .
-        "will be loaded and deconvolved as one large dataset. Unchecking " .
-        "'autoseries' causes each file to be deconvolved independently.</p>" .
-        "<p>Click on a file name in any of the fields to get (or to create) " .
-        "a preview.</p>";
+    "<p>Here you can select the files to be restored from the list " .
+    "of available images. The file names are filtered by the selected " .
+    "file format. Use SHIFT- and CTRL-click to select multiple files.</p>" .
+    "<p>Where applicable, the files belonging to a series can be condensed " .
+    "into one file name by checking the 'autoseries' option. These files " .
+    "will be loaded and deconvolved as one large dataset. Unchecking " .
+    "'autoseries' causes each file to be deconvolved independently.</p>" .
+    "<p>Click on a file name in any of the fields to get (or to create) " .
+    "a preview.</p>";
 
 ?>
 
-    <!--
-      Tooltips
-    -->
-    <span class="toolTip" id="ttSpanDown">
+<!--
+  Tooltips
+-->
+<span class="toolTip" id="ttSpanDown">
         Add files to the list of selected images.
     </span>
-    <span class="toolTip"  id="ttSpanUp">
+<span class="toolTip" id="ttSpanUp">
         Remove files from the list of selected images.
     </span>
-    <span class="toolTip"  id="ttSpanRefresh">
+<span class="toolTip" id="ttSpanRefresh">
         Refresh the list of available images on the server.
     </span>
-    <span class="toolTip"  id="ttSpanForward">
-    <?php echo $goNextMessage;?>
+<span class="toolTip" id="ttSpanForward">
+    <?php echo $goNextMessage; ?>
     </span>
 
 <div id="nav">
     <div id="navleft">
         <ul>
             <?php
-                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpSelectImages'));
+            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpSelectImages'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                echo(Nav::textUser($_SESSION['user']->name()));
-                if ( !$_SESSION['user']->isAdmin()) {
-                    echo(Nav::linkRawImages());
-                }
-                echo(Nav::linkHome(Util::getThisPageName()));
+            echo(Nav::textUser($_SESSION['user']->name()));
+            if (!$_SESSION['user']->isAdmin()) {
+                echo(Nav::linkRawImages());
+            }
+            echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>
     <div class="clear"></div>
 </div>
 
-    <div id="content">
-       <h3><img alt="SelectImages" src="./images/select_images.png"
-           width="40"/>
-           &nbsp;Step
-           <?php echo $currentStep . "/" . $numberSteps; ?>
-           - Select images
-       </h3>
+<div id="content">
+    <h3><img alt="SelectImages" src="./images/select_images.png"
+             width="40"/>
+        &nbsp;Step
+        <?php echo $currentStep . "/" . $numberSteps; ?>
+        - Select images
+    </h3>
 
-                    <form method="post" action="" id="select">
-                    <fieldset class="setting" >
+    <form method="post" action="" id="select">
+        <fieldset class="setting">
 
-                <legend>
-                    <a href="openWindow(
+            <legend>
+                <a href="openWindow(
                        'http://www.svi.nl/FileFormats')">
-                        <img src="images/help.png" alt="?" />
-                    </a>
-                    Image file format
-                </legend>
+                    <img src="images/help.png" alt="?"/>
+                </a>
+                Image file format
+            </legend>
 
-                    <select name="ImageFileFormat" id="ImageFileFormat"
-                     size="1"
-                     onclick="storeFileFormatSelection(this,autoseries)"
-                     onchange="storeFileFormatSelection(this,autoseries)"
-                     onkeyup="this.blur();this.focus();" >
-
-
-<option name = '' value = '' format = ''>
-Please choose a file format...
-</option>
-
-<?php
-
-// File formats support
-$formats = $fileFormat->possibleValues();
-sort($formats);
+            <select name="ImageFileFormat" id="ImageFileFormat"
+                    title="Supported image file formats"
+                    size="1"
+                    onclick="storeFileFormatSelection(this,autoseries)"
+                    onchange="storeFileFormatSelection(this,autoseries)"
+                    onkeyup="this.blur();this.focus();">
 
 
+                <option name='' value='' format=''>
+                    Please choose a file format...
+                </option>
 
-foreach($formats as $key => $format) {
-  $translation = $fileFormat->translatedValueFor($format);
+                <?php
 
-    if ($format == $fileFormat->value()) {
-        $selected = " selected=\"selected\"";
-    } else {
-        $selected = "";
-    }
-?>
-      <option <?php echo "name = \"" . $format . "\"  value = \"" .
-           $format  . "\"" . $selected ?>><?php echo $translation ?>
-      </option>
-<?php
+                // File formats support
+                $formats = $fileFormat->possibleValues();
+                sort($formats);
 
-}
 
-?>
+                foreach ($formats as $key => $format) {
+                    $translation = $fileFormat->translatedValueFor($format);
 
-</select>
-</fieldset>
-
-            <fieldset>
-                <legend>Images available on server</legend>
-                <div id="userfiles" onmouseover="showPreview()">
-<?php
-
-$flag = "";
-if ($allFiles == null) {
-    $flag = " disabled=\"disabled\"";
-    $message .= "";
-}
-
-?>
-
-                    <select onchange="imageAction(this)"
-                            id = "filesPerFormat"
-                            name="userfiles[]"
-                            size="10"
-                            multiple="multiple"<?php echo $flag ?>>
-<?php
-$keyArr = array();
-if ($allFiles == null) {
-    echo "                        <option>&nbsp;</option>\n";
-} else {
-    if ($fileFormat->value() != "") {
-        $format = $fileFormat->value();
-
-        if (isset($_SESSION['autoseries']) &&
-            $_SESSION['autoseries'] == "TRUE") {
-            $files = $condensedSeries;
-        } else {
-            $files = $allFiles;
-
-        }
-        $selectedFiles = $_SESSION['fileserver']->selectedFiles();
-
-        foreach ($files as $key => $file) {
-            if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
-                // Consecutive spaces are collapsed into one space in HTML.
-                // Hence '&#32;' to correct this when the file has more spaces.
-                $filteredFile = str_replace(' ', '&#32;', $file);
-                $exists = false;
-                foreach ($selectedFiles as $skey => $sfile) {
-                    if (strcmp($sfile, $file) == 0) {
-                        $exists=true;
+                    if ($format == $fileFormat->value()) {
+                        $selected = " selected=\"selected\"";
+                    } else {
+                        $selected = "";
                     }
+                    ?>
+                    <option <?php echo "name = \"" . $format . "\"  value = \"" .
+                        $format . "\"" . $selected ?>><?php echo $translation ?>
+                    </option>
+                    <?php
+
                 }
-                if(!$exists){
-                    echo "<option>" . $filteredFile . "</option>\n";
-                    $keyArr[$file] = $key;
+
+                ?>
+
+            </select>
+        </fieldset>
+
+        <fieldset>
+            <legend>Images available on server</legend>
+            <div id="userfiles" onmouseover="showPreview()">
+                <?php
+
+                $flag = "";
+                if ($allFiles == null) {
+                    $flag = " disabled=\"disabled\"";
+                    $message .= "";
                 }
-                $keyArr[$file] = $key;
-            }
-        }
-    }
-}
+
+                ?>
+
+                <select onchange="imageAction(this)"
+                        title="List of available images"
+                        id="filesPerFormat"
+                        name="userfiles[]"
+                        size="10"
+                        multiple="multiple"<?php echo $flag ?>>
+                    <?php
+                    $keyArr = array();
+                    if ($allFiles == null) {
+                        echo "                        <option>&nbsp;</option>\n";
+                    } else {
+                        if ($fileFormat->value() != "") {
+                            $format = $fileFormat->value();
+
+                            if (isset($_SESSION['autoseries']) &&
+                                $_SESSION['autoseries'] == "TRUE"
+                            ) {
+                                $files = $condensedSeries;
+                            } else {
+                                $files = $allFiles;
+
+                            }
+                            $selectedFiles = $_SESSION['fileserver']->selectedFiles();
+
+                            foreach ($files as $key => $file) {
+                                if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
+                                    // Consecutive spaces are collapsed into one space in HTML.
+                                    // Hence '&#32;' to correct this when the file has more spaces.
+                                    $filteredFile = str_replace(' ', '&#32;', $file);
+                                    $exists = false;
+                                    foreach ($selectedFiles as $skey => $sfile) {
+                                        if (strcmp($sfile, $file) == 0) {
+                                            $exists = true;
+                                        }
+                                    }
+                                    if (!$exists) {
+                                        echo "<option>" . $filteredFile . "</option>\n";
+                                        $keyArr[$file] = $key;
+                                    }
+                                    $keyArr[$file] = $key;
+                                }
+                            }
+                        }
+                    }
 
 
-?>
-                    </select>
-                </div>
-
-                <label id="autoseries_label">
-
-                    <input type="checkbox"
-                           name="autoseries"
-                           class="autoseries"
-                           id="autoseries"
-                           value="TRUE"
-                           <?php
-                           if (isset($_SESSION['autoseries']) &&
-                                   $_SESSION['autoseries'] == "TRUE") {
-                               echo " checked=\"checked\" ";
-                           }
-                           ?>
-                           onclick="storeFileFormatSelection(ImageFileFormat,this)"
-                           onchange="storeFileFormatSelection(ImageFileFormat,this)"
-    />
-
-                    Automatically load file series if supported
-
-                </label>
-
-            </fieldset>
-
-            <div id="selection">
-
-              <input name="down"
-                type="submit"
-                value=""
-                class="icon down"
-                onmouseover="TagToTip('ttSpanDown')"
-                onmouseout="UnTip()" />
-
-              <input name="up"
-                type="submit"
-                value=""
-                class="icon remove"
-                onmouseover="TagToTip('ttSpanUp')"
-                onmouseout="UnTip()" />
-
+                    ?>
+                </select>
             </div>
 
-            <fieldset>
-                <legend>Selected images</legend>
-                <div id="selectedfiles" onmouseover="showPreview()">
-<?php
+            <label id="autoseries_label">
 
-$selectedFiles = $_SESSION['fileserver']->selectedFiles();
+                <input type="checkbox"
+                       name="autoseries"
+                       class="autoseries"
+                       id="autoseries"
+                       value="TRUE"
+                    <?php
+                    if (isset($_SESSION['autoseries']) &&
+                        $_SESSION['autoseries'] == "TRUE"
+                    ) {
+                        echo " checked=\"checked\" ";
+                    }
+                    ?>
+                       onclick="storeFileFormatSelection(ImageFileFormat,this)"
+                       onchange="storeFileFormatSelection(ImageFileFormat,this)"
+                />
 
-$flag = "";
-if ($selectedFiles == null) {
-    $flag = " disabled=\"disabled\"";
-}
+                Automatically load file series if supported
 
-?>
-                    <select onclick="imageAction(this)"
-                            onchange="imageAction(this)"
-                            id = "selectedimages"
-                            name="selectedfiles[]"
-                            size="5"
-                            multiple="multiple"<?php echo $flag ?>>
-<?php
-if ($selectedFiles != null) {
-  foreach ($selectedFiles as $filename) {
-          $key = $keyArr[$filename];
-          echo $_SESSION['fileserver']->getImageOptionLine($filename,
-              $key, "src", "preview", 0, 1) ;
-  }
-}
-else echo "                        <option>&nbsp;</option>\n";
+            </label>
 
-?>
-                    </select>
-                </div>
-            </fieldset>
+        </fieldset>
 
-            <div id="actions" class="imageselection"
-                 onmouseover="showInstructions()">
-                <input name="update"
-                       type="submit"
-                       value=""
-                       class="icon update"
-                       onmouseover="TagToTip('ttSpanRefresh')"
-                       onmouseout="UnTip()"
-                       />
-                <input name="OK" type="hidden" />
+        <div id="selection">
+
+            <input name="down"
+                   type="submit"
+                   value=""
+                   class="icon down"
+                   onmouseover="TagToTip('ttSpanDown')"
+                   onmouseout="UnTip()"/>
+
+            <input name="up"
+                   type="submit"
+                   value=""
+                   class="icon remove"
+                   onmouseover="TagToTip('ttSpanUp')"
+                   onmouseout="UnTip()"/>
+
+        </div>
+
+        <fieldset>
+            <legend>Selected images</legend>
+            <div id="selectedfiles" onmouseover="showPreview()">
+                <?php
+
+                $selectedFiles = $_SESSION['fileserver']->selectedFiles();
+
+                $flag = "";
+                if ($selectedFiles == null) {
+                    $flag = " disabled=\"disabled\"";
+                }
+
+                ?>
+                <select onclick="imageAction(this)"
+                        onchange="imageAction(this)"
+                        title="List of selected images"
+                        id="selectedimages"
+                        name="selectedfiles[]"
+                        size="5"
+                        multiple="multiple"<?php echo $flag ?>>
+                    <?php
+                    if ($selectedFiles != null) {
+                        foreach ($selectedFiles as $filename) {
+                            $key = $keyArr[$filename];
+                            echo $_SESSION['fileserver']->getImageOptionLine($filename,
+                                $key, "src", "preview", 0, 1);
+                        }
+                    } else echo "                        <option>&nbsp;</option>\n";
+
+                    ?>
+                </select>
             </div>
+        </fieldset>
 
-            <div id="controls"
-                 onmouseover="showInstructions()">
-              <input type="submit"
-                     value=""
-                     class="icon next"
-                     onclick="process()"
-                     onmouseover="TagToTip('ttSpanForward')"
-                     onmouseout="UnTip()" />
-            </div>
+        <div id="actions" class="imageselection"
+             onmouseover="showInstructions()">
+            <input name="update"
+                   type="submit"
+                   value=""
+                   class="icon update"
+                   onmouseover="TagToTip('ttSpanRefresh')"
+                   onmouseout="UnTip()"
+            />
+            <input name="OK" type="hidden"/>
+        </div>
 
-        </form>
+        <div id="controls"
+             onmouseover="showInstructions()">
+            <input type="submit"
+                   value=""
+                   class="icon next"
+                   onclick="process()"
+                   onmouseover="TagToTip('ttSpanForward')"
+                   onmouseout="UnTip()"/>
+        </div>
 
-    </div> <!-- content -->
+    </form>
 
-    <script type="text/javascript">
-        <!--
-            window.pageInstructions='<?php echo Util::escapeJavaScript($info); ?>';
-            window.infoShown = true;
-            window.previewSelected = -1;
-        //-->
-    </script>
+</div> <!-- content -->
+
+<script type="text/javascript">
+    <!--
+    window.pageInstructions = '<?php echo Util::escapeJavaScript($info); ?>';
+    window.infoShown = true;
+    window.previewSelected = -1;
+    //-->
+</script>
 
 
-    <div id="rightpanel">
+<div id="rightpanel">
 
-        <div id="info">
+    <div id="info">
         <?php echo $info; ?>
-        </div>
+    </div>
 
-        <div id="message">
-<?php
+    <div id="message">
+        <?php
 
-echo "<p>$message</p>";
+        echo "<p>$message</p>";
 
-?>
-        </div>
+        ?>
+    </div>
 
-    </div> <!-- rightpanel -->
+</div> <!-- rightpanel -->
 
 <?php
 

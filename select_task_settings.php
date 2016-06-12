@@ -347,7 +347,7 @@ if (!$_SESSION['user']->isAdmin()) {
   }
 
 ?>
-<select name="public_setting" title="Public setting"
+<select name="public_setting" title="Admin templates"
      onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
      onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
      size="5"<?php echo $flag ?>>
@@ -413,7 +413,7 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-<select name="task_setting" id="setting" title="Task setting"
+<select name="task_setting" id="setting" title="Your templates"
     onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
     onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
     size="<?php echo $size ?>"
@@ -550,7 +550,7 @@ if (!$_SESSION['user']->isAdmin()) {
             <div id="users">
 
                 <select id="usernameselect" name="usernameselect[]"
-                        size="5" multiple="multiple" title="Select user names">
+                        size="5" multiple="multiple" title="Users">
                     <option>&nbsp;</option>
                 </select>
             </div>
