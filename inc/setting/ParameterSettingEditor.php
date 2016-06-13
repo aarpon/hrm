@@ -59,6 +59,9 @@ class ParameterSettingEditor extends SettingEditor
      * @param string $fileName File name without path.
      * @return bool True if the new template creation was successful, false
      * otherwise.
+     * @todo This method always returns false: it should return true at the end
+     * and also interpret the output of the call to HuygensTools::askHuCore()
+     * to decide whether it was successful or not!
      *
      */
     public function image2hrmTemplate(ParameterSetting $setting, $dirName, $fileName)

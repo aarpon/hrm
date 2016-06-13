@@ -105,6 +105,7 @@ else if (isset($_POST['huTotemplate'])) {
                 $_SESSION['taskeditor']->createNewSetting($hrmTemplateName);
 
             $tmpName = $_FILES["upfile"]["tmp_name"];
+            // @todo This should react appropriately to the return status of huTemplate2hrmTemplate()
             $_SESSION['taskeditor']->huTemplate2hrmTemplate($task_setting,
                                                             $tmpName[0]);
             $message = $_SESSION['taskeditor']->message();

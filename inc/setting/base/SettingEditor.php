@@ -207,6 +207,9 @@ abstract class SettingEditor
      * @param string $huTemplate The raw contents of the template file.
      * @return bool True if the new template creation was successful, false
      * otherwise.
+     * @todo This method always returns false: it should return true at the end
+     * and also interpret the output of the call to HuygensTools::askHuCore()
+     * to decide whether it was successful or not!
      */
     public function huTemplate2hrmTemplate($setting, $huTemplate)
     {

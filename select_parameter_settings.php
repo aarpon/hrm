@@ -118,6 +118,7 @@ if (isset($_POST['copy_public'])) {
         $path_parts = pathinfo($filestring);
         $hrmtemplatename = 'Based on ' . $path_parts['filename'];
         $setting = $_SESSION['editor']->createNewSetting($hrmtemplatename);
+        // @todo This should react appropriately to the return status of image2hrmTemplate()
         $result = $_SESSION['editor']->image2hrmTemplate($setting,
             $_SESSION['fileserver']->sourceFolder(), $filestring);
         $message = $_SESSION['editor']->message();
@@ -142,6 +143,7 @@ if (isset($_POST['copy_public'])) {
             $setting = $_SESSION['editor']->createNewSetting($hrmTemplateName);
 
             $tmpName = $_FILES["upfile"]["tmp_name"];
+            // @todo This should react appropriately to the return status of huTemplate2hrmTemplate()
             $_SESSION['editor']->huTemplate2hrmTemplate($setting, $tmpName[0]);
             $message = $_SESSION['editor']->message();
         } else {
