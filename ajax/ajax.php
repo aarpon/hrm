@@ -9,7 +9,7 @@
  */
 
 use hrm\DatabaseConnection;
-use hrm\JobQueue;
+use hrm\job\JobQueue;
 use hrm\setting\ParameterSettingEditor;
 use hrm\user\User;
 

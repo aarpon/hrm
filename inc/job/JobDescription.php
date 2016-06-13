@@ -7,8 +7,10 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
-namespace hrm;
+namespace hrm\job;
 
+use hrm\DatabaseConnection;
+use hrm\Log;
 use hrm\setting\AnalysisSetting;
 use hrm\setting\JobAnalysisSetting;
 use hrm\setting\JobParameterSetting;
@@ -422,8 +424,8 @@ class JobDescription
      */
     public function createSubJobs()
     {
-        $parameterSetting = $this->parameterSetting;
-        $numberOfChannels = $parameterSetting->numberOfChannels();
+        //$parameterSetting = $this->parameterSetting;
+        //$numberOfChannels = $parameterSetting->numberOfChannels();
         return $this->createSubJobsforFiles();
     }
 
@@ -489,9 +491,9 @@ class JobDescription
         // remove file extension
         //$inputFile = explode(".", end($inputFile));
         //$inputFile = $inputFile[0];
-        $parameterSetting = $this->parameterSetting;
-        $parameter = $parameterSetting->parameter('ImageFileFormat');
-        $fileFormat = $parameter->value();
+        //$parameterSetting = $this->parameterSetting;
+        //$parameter = $parameterSetting->parameter('ImageFileFormat');
+        //$fileFormat = $parameter->value();
         if (preg_match("/^(.*)\.(lif|czi)\s\((.*)\)/i", $inputFile[0], $match)) {
             $inputFile = $match[1] . '_' . $match[2];
         } else {
@@ -525,8 +527,8 @@ class JobDescription
     public function destinationImageName()
     {
         $taskSetting = $this->taskSetting();
-        $files = $this->files();
-        $outputFile = $this->sourceImageShortName();
+        //$files = $this->files();
+        //$outputFile = $this->sourceImageShortName();
         // work around the fact that end() requires a reference, but the result of
         // explode() cannot be turned into one, so use a temporary variable instead
         // (see http://stackoverflow.com/questions/4636166/ for more details)

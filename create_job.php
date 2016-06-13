@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Fileserver;
-use hrm\JobDescription;
+use hrm\job\JobDescription;
 use hrm\Nav;
 use hrm\System;
 use hrm\Util;

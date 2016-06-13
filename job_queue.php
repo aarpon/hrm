@@ -2,7 +2,7 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-use hrm\JobQueue;
+use hrm\job\JobQueue;
 use hrm\Nav;
 use hrm\Util;
 

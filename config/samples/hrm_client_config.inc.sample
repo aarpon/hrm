@@ -235,4 +235,3 @@ $ping_parameter = '';	        // use this on linux systems
 
 // Switch on/off (true/false) data transfers between HRM and Omero.
 $omero_transfers = false;
-?>

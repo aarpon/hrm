@@ -31,13 +31,13 @@ class Log
 {
     /**
      * Log instance (singleton)
-     * @var Logger
+     * @var Log
      */
     private static $instance;
 
     /**
      * Instance of the Monolog::Logger class.
-     * @var Monolog::Logger
+     * @var Logger
      */
     private static $monologger;
 

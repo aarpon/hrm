@@ -88,4 +88,3 @@
 			echo "Check completed with errors! Please fix your configuration!" . PHP_EOL;
 		}
     }
-?>

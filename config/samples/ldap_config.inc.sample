@@ -124,5 +124,3 @@
 
     // Groups authorized to log in to HRM.
     $ldap_authorized_groups = array();
-
-?>

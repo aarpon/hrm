@@ -11,6 +11,8 @@
 namespace hrm;
 
 use ADODB_mysql;
+use hrm\job\Job;
+use hrm\job\JobDescription;
 use hrm\param\base\Parameter;
 use hrm\setting\AnalysisSetting;
 use hrm\setting\base\Setting;
@@ -607,6 +609,7 @@ class DatabaseConnection
      * value at the index 0.
      * @param Setting $settings Setting object to be loaded.
      * @return Setting $settings Setting object with loaded values.
+     * @todo Debug the switch blog (possibly buggy!)
      */
     public function loadParameterSettings($settings)
     {
@@ -692,6 +695,7 @@ class DatabaseConnection
      * @param string $type Setting type (one of "parameter", "task", "analysis").
      * @return Setting object with loaded values.
      * @throws \Exception
+     * @todo Debug the second switch block (probably buggy!)
      */
     public function loadSharedParameterSettings($id, $type)
     {
@@ -1313,7 +1317,7 @@ class DatabaseConnection
      * @param string $startTime Job start time.
      * @return void
      */
-    public function updateStatistics($job, $startTime)
+    public function updateStatistics(Job $job, $startTime)
     {
         /** @var JobDescription $desc */
         $desc = $job->description();
@@ -1880,7 +1884,7 @@ class DatabaseConnection
      * @param Job $job Job object.
      * @return array Query result.
      */
-    public function startJob($job)
+    public function startJob(Job $job)
     {
         $desc = $job->description();
         $id = $desc->id();

@@ -12,6 +12,7 @@ namespace hrm\setting;
 use hrm\DatabaseConnection;
 use hrm\HuygensTools;
 use hrm\param\base\Parameter;
+use hrm\param\CCDCaptorSizeX;
 use hrm\param\MicroscopeType;
 use hrm\param\PinholeSize;
 use hrm\param\PSF;

@@ -10,6 +10,7 @@
 
 namespace hrm;
 
+use hrm\job\JobDescription;
 use hrm\param\ChromaticAberration;
 use hrm\setting\AnalysisSetting;
 use hrm\setting\ParameterSetting;

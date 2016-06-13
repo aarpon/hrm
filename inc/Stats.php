@@ -903,6 +903,7 @@ class Stats
                 return ("<h3>Error serving the file " . $fileName . ".</h3>");
             }
         }
+        return "<h3>No statistics to report.</h3>";
     }
 
 }

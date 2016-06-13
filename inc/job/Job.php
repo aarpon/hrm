@@ -7,7 +7,12 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
-namespace hrm;
+namespace hrm\job;
+
+use hrm\ExternalProcess;
+use hrm\Fileserver;
+use hrm\HuygensTemplate;
+use hrm\Log;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
@@ -20,7 +25,7 @@ class Job
 
     /**
      * Contains a Huygens Batch template.
-     * @var HuygensTemplate
+     * @var string
      */
     private $huTemplate;
 
@@ -196,7 +201,7 @@ class Job
 
     /**
      * Returns the Huygens template generated for the Job.
-     * @return HuygensTemplate    Huygens Template.
+     * @return string Huygens Template.
      */
     public function getHuTemplate()
     {

@@ -7,7 +7,11 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
-namespace hrm;
+namespace hrm\job;
+
+use hrm\DatabaseConnection;
+use hrm\ExternalProcessFactory;
+use hrm\Log;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
@@ -78,7 +82,7 @@ class JobQueue
 
     /**
      * Adds a Job for a JobDescription to the queue.
-     * @param \hrm\JobDescription $jobDescription A JobDescription object.
+     * @param JobDescription $jobDescription A JobDescription object.
      * @return bool True if queuing the Job succeeded, false otherwise.
      */
     public function queueJob(JobDescription $jobDescription)
@@ -115,7 +119,7 @@ class JobQueue
         if ($id == NULL) {
             return NULL;
         }
-        $jobDescription = new JobDescription;
+        $jobDescription = new JobDescription();
         $jobDescription->setId($id);
         $jobDescription->load();
         return $jobDescription;
@@ -131,7 +135,7 @@ class JobQueue
         $jobDescriptions = array();
         $rows = $db->getQueueJobs();
         foreach ($rows as $row) {
-            $jobDescription = new JobDescription;
+            $jobDescription = new JobDescription();
             $jobDescription->setId($row['id']);
             $jobDescription->load();
             if ($jobDescription->isCompound()) {

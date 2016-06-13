@@ -1244,7 +1244,9 @@ class Fileserver
 
         $answer = HuygensTools::huCoreTools("reportSubImages", $opt);
 
-        if (!$answer) return;
+        if (!$answer) {
+            return array();
+        }
 
         $lines = count($answer);
 
@@ -1319,7 +1321,9 @@ class Fileserver
 
         $opt = "-count $i $imgList -dir \"" . $this->sourceFolder() . "\"";
         $answer = HuygensTools::huCoreTools("getMetaData", $opt);
-        if (!$answer) return;
+        if (!$answer) {
+            return array();
+        }
 
         $lines = count($answer);
 
@@ -1408,7 +1412,9 @@ class Fileserver
 
         $opt = "-count $i $imgList -dir \"" . $this->sourceFolder() . "\"";
         $answer = HuygensTools::huCoreTools("getMetaData", $opt);
-        if (!$answer) return;
+        if (!$answer) {
+            return array();
+        }
 
         $lines = count($answer);
 
@@ -2126,7 +2132,7 @@ class Fileserver
     /**
      * Shows original/result previews side by side.
      * @param string $file Image file name.
-     * @param int $size Size of the thumbnail. Default is 400
+     * @param int|string $size Size of the thumbnail. Default is 400
      * @param string $op Operation, one of 'close' or 'home'. Default is "close".
      * @param string $mode Display mode. One of "MIP, "SFP", "stack", "tSeries", "log",
      * "history", "remarks". Default is "MIP".

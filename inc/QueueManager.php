@@ -9,6 +9,10 @@
  */
 namespace hrm;
 
+use hrm\job\Job;
+use hrm\job\JobDescription;
+use hrm\job\JobQueue;
+
 require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
@@ -73,7 +77,7 @@ class QueueManager
      * @param string $server_hostname The server where the job will be run.
      * @todo Move to Shell.php.
      */
-    public function removeHuygensOutputFiles($desc, $server_hostname)
+    public function removeHuygensOutputFiles(JobDescription $desc, $server_hostname)
     {
         global $imageProcessingIsOnQueueManager;
         global $huygens_user;
@@ -753,7 +757,7 @@ class QueueManager
         $id = $desc->id();
         $pid = $job->pid();
         $server = $job->server();
-        $template = $job->createHuygensTemplate();
+        $job->createHuygensTemplate();
 
         /* Email destination. */
         $user = $desc->owner();

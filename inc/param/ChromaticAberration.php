@@ -46,6 +46,8 @@ class ChromaticAberration extends Parameter
     /**
      * ChromaticAberration constructor.
      *
+     * This method does NOT call the parent constructor!
+     *
      * @todo: Provide an input argument $chanCnt with the number of channels of
      * the data set.
      */
