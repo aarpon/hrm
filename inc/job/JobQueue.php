@@ -197,7 +197,7 @@ class JobQueue
             $row = $db->getQueueContentsForId($id);
             $pid = $row['process_info'];
             $server = $row['server'];
-            $proc = newExternalProcessFor($server,
+            $proc = ExternalProcessFactory::getExternalProcess($server,
                 $server . "_" . $id . "_out.txt",
                 $server . "_" . $id . "_error.txt");
             $killed = $proc->killHucoreProcess($pid);

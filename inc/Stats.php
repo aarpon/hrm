@@ -881,28 +881,28 @@ class Stats
 
             // Close the file
             fclose($fileHandle);
-        }
 
-        // Now serve the file
-        $size = filesize($fullFileName);
-        $type = "Content-Type: text/plain";
-        $dlname = $fileName;
+            // Now serve the file
+            $size = filesize($fullFileName);
+            $type = "Content-Type: text/plain";
+            $dlname = $fileName;
 
-        if ($size) {
-            header("Accept-Ranges: bytes");
-            header("Connection: close");
-            header("Content-Disposition-type: attachment");
-            header("Content-Disposition: attachment; filename=\"$dlname\"");
-            header("Content-Length: $size");
-            header("Content-Type: $type; name=\"$dlname\"");
-            ob_clean();
-            flush();
-            Util::readfile_chunked($fullFileName);
-            unlink($fullFileName);
-            return "";
-        } else {
-            return ("<h3>Error serving the file " . $fileName . ".</h3>");
+            if ($size) {
+                header("Accept-Ranges: bytes");
+                header("Connection: close");
+                header("Content-Disposition-type: attachment");
+                header("Content-Disposition: attachment; filename=\"$dlname\"");
+                header("Content-Length: $size");
+                header("Content-Type: $type; name=\"$dlname\"");
+                ob_clean();
+                flush();
+                Util::readfile_chunked($fullFileName);
+                unlink($fullFileName);
+                return "";
+            } else {
+                return ("<h3>Error serving the file " . $fileName . ".</h3>");
+            }
         }
     }
 
-}  // End of Stats class
+}

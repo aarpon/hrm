@@ -419,7 +419,7 @@ class Job
 
         clearstatcache();
 
-        $this->shell = newExternalProcessFor(
+        $this->shell = ExternalProcessFactory::getExternalProcess(
             $this->server(),
             $this->server() . "_" . $this->id() . "_out.txt",
             $this->server() . "_" . $this->id() . "_error.txt");

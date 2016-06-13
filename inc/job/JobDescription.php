@@ -357,13 +357,13 @@ class JobDescription
     /**
      * Loads a JobDescription from the database for the user set in
      * this JobDescription.
-     * @todo Check that the ParameterSeggins->numberOfChannels() exists!
+     * @todo Check that the ParameterSetting->numberOfChannels() exists!
      */
     public function load()
     {
         $db = new DatabaseConnection();
 
-        $parameterSetting = new JobParameterSetting;
+        $parameterSetting = new JobParameterSetting();
         $owner = new User();
         $name = $db->userWhoCreatedJob($this->id);
         $owner->setName($name);
@@ -372,14 +372,14 @@ class JobDescription
         $parameterSetting = $parameterSetting->load();
         $this->setParameterSetting($parameterSetting);
 
-        $taskSetting = new JobTaskSetting;
+        $taskSetting = new JobTaskSetting();
         $taskSetting->setNumberOfChannels($parameterSetting->numberOfChannels());
         $taskSetting->setName($this->id);
         $taskSetting->setOwner($owner);
         $taskSetting = $taskSetting->load();
         $this->setTaskSetting($taskSetting);
 
-        $analysisSetting = new JobAnalysisSetting;
+        $analysisSetting = new JobAnalysisSetting();
         $analysisSetting->setNumberOfChannels($parameterSetting->numberOfChannels());
         $analysisSetting->setName($this->id);
         $analysisSetting->setOwner($owner);

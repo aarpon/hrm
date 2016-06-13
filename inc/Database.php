@@ -2337,6 +2337,7 @@ class DatabaseConnection
                 case 'extreme':
                     $feature = "server=" . $feature;
                     Log::info("Licensed server: $feature");
+                    break;
                 default:
                     Log::info("Licensed feature: $feature");
             }
