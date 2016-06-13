@@ -17,6 +17,7 @@ fi
     --source ../inc --destination ${dest} \
     --access-levels="${levels}" \
     --todo \
+    --exclude="extern" \
     --title="Huygens Remote Manager" \
     --no-source-code \
     --tree \
