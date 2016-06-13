@@ -2,8 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once( "./inc/System.inc.php" );
-require_once( "./inc/Util.inc.php" );
+use hrm\Util;
+use hrm\System;
+
+require_once("./inc/bootstrap.php");
 
 ?>
 
@@ -14,7 +16,7 @@ require_once( "./inc/Util.inc.php" );
     <meta charset="utf-8">
 <?php
 
-if (using_IE()) {
+if (Util::using_IE()) {
     echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>';
 }
 

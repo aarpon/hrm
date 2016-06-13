@@ -2,12 +2,16 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Parameter.inc.php");
-require_once("./inc/Setting.inc.php");
-require_once("./inc/SettingEditor.inc.php");
-require_once("./inc/System.inc.php");
-require_once("./inc/Nav.inc.php");
+use hrm\Nav;
+use hrm\setting\AnalysisSetting;
+use hrm\setting\TaskSettingEditor;
+use hrm\System;
+use hrm\setting\TaskSetting;
+use hrm\user\User;
+use hrm\Util;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
+
 
 /* *****************************************************************************
  *
@@ -93,22 +97,23 @@ else if (isset($_POST['huTotemplate'])) {
     $file = $_FILES["upfile"]["name"];
     $fileName = pathinfo($file[0], PATHINFO_BASENAME);
     $extension = pathinfo($file[0], PATHINFO_EXTENSION);
-    
+
     if ($extension == "hgsd") {
         if($fileName != '') {
             $hrmTemplateName = 'From ' . $fileName;
             $task_setting =
                 $_SESSION['taskeditor']->createNewSetting($hrmTemplateName);
-            
+
             $tmpName = $_FILES["upfile"]["tmp_name"];
+            // @todo This should react appropriately to the return status of huTemplate2hrmTemplate()
             $_SESSION['taskeditor']->huTemplate2hrmTemplate($task_setting,
                                                             $tmpName[0]);
-            $message = $_SESSION['taskeditor']->message();  
+            $message = $_SESSION['taskeditor']->message();
         } else {
             $message = "Please upload a valid Huygens deconvolution template " .
                 "(extension .hgsd)";
         }
-        
+
         if ($task_setting != NULL) {
             $_SESSION['task_setting'] = $task_setting;
             header("Location: " . "task_parameter.php"); exit();
@@ -263,7 +268,7 @@ include("header.inc.php");
                 if ( !$_SESSION['user']->isAdmin()) {
                     echo(Nav::linkRawImages());
                 }
-                echo(Nav::linkHome(getThisPageName()));
+                echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>
@@ -343,7 +348,7 @@ if (!$_SESSION['user']->isAdmin()) {
   }
 
 ?>
-<select name="public_setting"
+<select name="public_setting" title="Admin templates"
      onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
      onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
      size="5"<?php echo $flag ?>>
@@ -353,8 +358,10 @@ if (!$_SESSION['user']->isAdmin()) {
     echo "                        <option>&nbsp;</option>\n";
   }
   else {
-    foreach ($settings as $set) {
-      echo "                        <option>".$set->name()."</option>\n";
+      /** @var TaskSetting $set */
+      foreach ($settings as $set) {
+          /** @var TaskSetting $set */
+          echo "                        <option>".$set->name()."</option>\n";
     }
   }
 
@@ -399,6 +406,7 @@ if (!$_SESSION['user']->isAdmin()) {
               <div id="settings">
 <?php
 
+/** @var TaskSetting $settings */
 $settings = $_SESSION['taskeditor']->settings();
 $size = "8";
 if ($_SESSION['user']->isAdmin()) $size = "12";
@@ -406,7 +414,7 @@ $flag = "";
 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
-<select name="task_setting" id="setting"
+<select name="task_setting" id="setting" title="Your templates"
     onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
     onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
     size="<?php echo $size ?>"
@@ -417,7 +425,8 @@ if (sizeof($settings) == 0) {
   echo "                        <option>&nbsp;</option>\n";
 }
 else {
-  foreach ($settings as $set) {
+    /** @var TaskSetting $set */
+    foreach ($settings as $set) {
     echo "                        <option";
     if ($set->isDefault()) {
       echo " class=\"default\"";
@@ -542,14 +551,15 @@ if (!$_SESSION['user']->isAdmin()) {
             <div id="users">
 
                 <select id="usernameselect" name="usernameselect[]"
-                        size="5" multiple="multiple">
+                        size="5" multiple="multiple" title="Users">
                     <option>&nbsp;</option>
                 </select>
             </div>
         </fieldset>
 
         <!-- Hidden input where to store the selected template -->
-        <input hidden id="templateToShare" name="templateToShare" value="">
+        <input hidden id="templateToShare" name="templateToShare" value=""
+               title="Template to share">
 
         <div id="actions" class="userSelection">
 

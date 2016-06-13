@@ -35,7 +35,8 @@
     "php": ">5.5.0",
     "adodb/adodb-php": "v5.20.4",
     "adldap2/adldap2": "4.0.5",
-    "fineuploader/php-traditional-server": "1.0.1"
+    "fineuploader/php-traditional-server": "1.0.1",
+    "monolog/monolog": "1.19.0"
   },
   "require-dev": {
     "phpunit/phpunit": "4.8.24",

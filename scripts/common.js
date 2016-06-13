@@ -4,11 +4,11 @@
 // Copyright and license notice: see license.txt
 
 var popup;
-var generated = new Array();
+var generated = [];
 var debug = '';
 var control = '';
 var filemenu = '<div class="inputFile" name="inputFile"><input type="file" name="upfile" size="30" accept=" .HGSM,.hgsm" ></div>';
-;
+
 function clean() {
     if (popup != null) {
         popup.close();
@@ -584,7 +584,7 @@ function confirmUpload() {
     form = document.getElementById("uploadForm");
 
     if ( form.elements[0].value == '' ) {
-        alert("Please choose a file to upload, or cancel.")
+        alert("Please choose a file to upload, or cancel.");
         return false;
     }
 
@@ -592,7 +592,7 @@ function confirmUpload() {
     changeDiv('upMsg', 'Please wait until your browser finishes the file transfer: do not reload or go away from this page.');
 
     spin =  '<center><img src="images/spin.gif" '
-        +     'alt="busy"><br />Please wait...</center>'
+        +     'alt="busy"><br />Please wait...</center>';
     changeDiv('info', spin);
     changeDiv('actions', '');
     changeDiv('buttonUpload',

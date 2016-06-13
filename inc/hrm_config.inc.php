@@ -1,6 +1,13 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
+/**
+ * hrm_config.inc.php
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
+namespace hrm;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -13,18 +20,16 @@ if (!isset($isServer)) {
 }
 
 if ($isServer == true) {
-    require_once(dirname(__FILE__) . "/../config/hrm_server_config.inc");
+    require_once dirname(__FILE__) . '/../config/hrm_server_config.inc';
 } else {
-    require_once(dirname( __FILE__ ) . "/../config/hrm_client_config.inc");
+    require_once dirname(__FILE__) . '/../config/hrm_client_config.inc';
 }
 
 // This is a hidden parameter for advanced users
 if (!isset($userManagerScript)) {
-    
+
     // This default user manager script can be replaced in the configuration.
     // A demo server, for example, may use links to a demo directory instead of
     // creating an empty directory for each new user.
-    $userManagerScript = dirname(__FILE__) . "/../bin/hrm_user_manager";
+    $userManagerScript = dirname(__FILE__) . '/../bin/hrm_user_manager';
 }
-
-?>

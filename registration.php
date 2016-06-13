@@ -2,13 +2,14 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Database.inc.php");
-require_once("./inc/hrm_config.inc.php");
-require_once("./inc/Mail.inc.php");
-require_once("./inc/Util.inc.php");
-require_once("./inc/Validator.inc.php");
-require_once("./inc/Nav.inc.php");
+use hrm\DatabaseConnection;
+use hrm\Mail;
+use hrm\Nav;
+use hrm\Validator;
+use hrm\Util;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
+
 
 global $hrm_url;
 global $email_sender;
@@ -40,7 +41,7 @@ $clean = array(
 
 // Username
 if (isset($_POST["username"])) {
-    if (Validator::isUsernameValid($_POST["username"])) {
+    if (Validator::isUserNameValid($_POST["username"])) {
         $clean["username"] = $_POST["username"];
     }
 }
@@ -98,7 +99,7 @@ if (isset($_POST["OK"])) {
                         $db = new DatabaseConnection();
                         if ($db->isReachable()) {
                             if ($db->emailAddress($clean["username"]) == "") {
-                                $id = get_rand_id(10);
+                                $id = Util::get_rand_id(10);
                                 $result = $db->addNewUser($clean["username"],
                                     $clean["pass1"], $clean["email"], $clean["group"], $id);
 
@@ -243,13 +244,13 @@ include("header.inc.php");
                 </div>
             </div>
         </form>
-    <?php
+        <?php
 
     } else {
 
         ?>
         <div id="notice"><?php echo "<p>$notice</p>"; ?></div>
-    <?php
+        <?php
 
     }
 
@@ -270,7 +271,7 @@ include("header.inc.php");
             <p>* Required fields.</p>
 
         </div>
-    <?php
+        <?php
 
     }
 

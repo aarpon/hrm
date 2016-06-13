@@ -33,7 +33,7 @@ function omeroTransfer(form, fileSelection, browseFolder) {
         form.OmeDatasetId.value = getSelectedDataset();
 
         // assemble a JSON array with the selected files:
-        var filelist = new Array();
+        var filelist = [];
         for (i=0; i < fileSelection.options.length; i++) {
             if (fileSelection.options[i].selected) {
                 filelist.push(fileSelection.options[i].text);
@@ -47,13 +47,13 @@ function getSelectedImages() {
     // return an array of image-dicts as a JSON object or an empty string
     // if no image node was selected in the tree
     var selected = $("#omeroTree").tree('getSelectedNodes');
-    var images = new Array();
+    var images = [];
     selected.forEach(function(node) {
         if (node.class == 'Image') {
             var image = {
                 'id' : node.id,
                 'name' : node.name
-            }
+            };
             images.push(image);
         }
     });
@@ -92,12 +92,12 @@ function processNodeHTML(node, li) {
         'Project' : 'images/omero_project.png',
         'Dataset' : 'images/omero_dataset.png',
         'Image' : 'images/omero_image.png'
-    }
+    };
     // matching patterns for node types:
     var pat = {
         'folder' : 'jqtree-title-folder">',
         'terminal' : 'jqtree_common">',
-    }
+    };
     var context = li.find('.jqtree-element').context;
     var orig = context.innerHTML;
     var css_class = 'jqtree-' + node.class;

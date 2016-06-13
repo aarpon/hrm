@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 // Bootstrap
-require_once dirname(__FILE__) . '/../inc/bootstrap.inc.php';
+require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 
 /**
  * This test makes sure that the structure of the project is correct.

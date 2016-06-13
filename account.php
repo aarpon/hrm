@@ -2,12 +2,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once(dirname(__FILE__) . "/inc/User.inc.php");
-require_once(dirname(__FILE__) . "/inc/hrm_config.inc.php");
-require_once(dirname(__FILE__) . "/inc/Util.inc.php");
-require_once(dirname(__FILE__) . "/inc/Validator.inc.php");
-require_once(dirname(__FILE__) . "/inc/Nav.inc.php");
-require_once(dirname(__FILE__) . "/inc/user_mngm/UserManagerFactory.inc.php");
+use hrm\Nav;
+use hrm\Util;
+use hrm\Validator;
+use hrm\user\mngm\UserManagerFactory;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
+
 
 global $email_sender;
 
@@ -74,7 +75,8 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if (isset($_SERVER['HTTP_REFERER']) &&
-        !strstr($_SERVER['HTTP_REFERER'], 'account')) {
+    !strstr($_SERVER['HTTP_REFERER'], 'account')
+) {
     $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
 
@@ -169,15 +171,15 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-                echo(Nav::linkWikiPage('HuygensRemoteManagerHelpAccount'));
+            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpAccount'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                echo(Nav::textUser($_SESSION['user']->name()));
-                echo(Nav::linkHome(getThisPageName()));
+            echo(Nav::textUser($_SESSION['user']->name()));
+            echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>
@@ -187,76 +189,78 @@ include("header.inc.php");
 <div id="content">
 
     <h3><img alt="SelectImages" src="./images/account_title.png"
-              width="40"/>&nbsp;Your account</h3>
+             width="40"/>&nbsp;Your account</h3>
 
     <form method="post" action="" id="useraccount">
 
         <div id="adduser">
             <?php
             if (isset($_SESSION['account_user']) ||
-                !$_SESSION['user']->isAdmin()) {
-            ?>
+                !$_SESSION['user']->isAdmin()
+            ) {
+                ?>
                 <label for="email">E-mail address: </label>
-<?php
+                <?php
                 if ($clean['email'] != "") {
-?>
+                    ?>
                     <input name="email"
                            id="email"
                            type="text"
-                           value="<?php echo $clean['email'] ?>" />
-<?php
+                           value="<?php echo $clean['email'] ?>"/>
+                    <?php
                 } else {
-?>
-             <input name="email"
-                    id="email"
-                    type="text"
-                    value="<?php echo $edit_user->emailAddress() ?>" />
-<?php
+                    ?>
+                    <input name="email"
+                           id="email"
+                           type="text"
+                           value="<?php echo $edit_user->emailAddress() ?>"/>
+                    <?php
                 }
-?>
+                ?>
 
-            <br />
-<?php
+                <br/>
+                <?php
             }
 
             if (isset($_SESSION['account_user']) ||
-                !$_SESSION['user']->isAdmin()) {
-?>
+                !$_SESSION['user']->isAdmin()
+            ) {
+                ?>
                 <label for="group">Research group: </label>
-            <?php
+                <?php
                 if ($clean['group'] != "") {
-            ?>
+                    ?>
                     <input name="group"
                            id="group"
                            type="text"
-                           value="<?php echo $clean['group'] ?>" />
-            <?php
+                           value="<?php echo $clean['group'] ?>"/>
+                    <?php
                 } else {
-            ?>
+                    ?>
                     <input name="group"
                            id="group"
                            type="text"
-                           value="<?php echo $edit_user->userGroup() ?>" />
-            <?php
+                           value="<?php echo $edit_user->userGroup() ?>"/>
+                    <?php
                 }
-            ?>
-                <br />
-            <?php
+                ?>
+                <br/>
+                <?php
             }
             ?>
-            <br />
+            <br/>
             <label for="pass1">New password: </label>
-            <input name="pass1" id="pass1" type="password" />
-            <br />
+            <input name="pass1" id="pass1" type="password"/>
+            <br/>
             <label for="pass2">(verify) New password: </label>
-            <input name="pass2" id="pass2" type="password" />
-            <input name="modify" type="hidden" value="modify" />
+            <input name="pass2" id="pass2" type="password"/>
+            <input name="modify" type="hidden" value="modify"/>
 
             <p>&nbsp;</p>
 
-<?php
+            <?php
             $referer = $_SESSION['referer'];
-?>
+            ?>
         </div>
 
         <div id="controls">
@@ -264,12 +268,12 @@ include("header.inc.php");
                    class="icon cancel"
                    onmouseover="TagToTip('ttSpanCancel' )"
                    onmouseout="UnTip()"
-                   onclick="document.location.href='<?php echo $referer ?>'" />
+                   onclick="document.location.href='<?php echo $referer ?>'"/>
             <input type="button" name="save" value=""
                    class="icon save"
                    onmouseover="TagToTip('ttSpanSave' )"
                    onmouseout="UnTip()"
-                   onclick="document.forms['useraccount'].submit()" />
+                   onclick="document.forms['useraccount'].submit()"/>
         </div>
 
     </form>
@@ -287,9 +291,9 @@ include("header.inc.php");
     </div>
 
     <div id="message">
-<?php
-            echo "<p>$message</p>";
-?>
+        <?php
+        echo "<p>$message</p>";
+        ?>
     </div>
 
 </div> <!-- rightpanel -->
