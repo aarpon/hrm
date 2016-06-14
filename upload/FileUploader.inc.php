@@ -35,7 +35,7 @@ require_once "../inc/extern/fineuploader/php-traditional-server/handler.php";
 require_once "../inc/FileserverV2.inc.php";
 require_once "../inc/Util.inc.php";
 
-global $httpUploadTempChunksDir, $httpUploadTempFilesDir;
+global $httpUploadTempChunksDir, $httpUploadTempFilesDir, $max_upload_limit;
 
 // Required folders. Make sure they exist and have proper permissions.
 // The check is done by the Queue Manager on startup.
@@ -47,8 +47,12 @@ $uploader = new UploadHandler();
 // Specify the list (array) of valid extensions (all files types allowed by default)
 $uploader->allowedExtensions = FileserverV2::getAllValidExtensions();
 
-// Specify max file size in bytes.
-$uploader->sizeLimit = null;
+// Specify max file size in bytes (FineUploader uses 1MB = 1e6 bytes).
+if (isset($max_upload_limit) && $max_upload_limit > 0) {
+    $uploader->sizeLimit = $max_upload_limit * 1e6;
+} else {
+    $uploader->sizeLimit = null;
+}
 
 // Specify the input name set in the javascript.
 $uploader->inputName = "qqfile"; // matches Fine Uploader's default inputName value by default

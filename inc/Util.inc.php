@@ -413,16 +413,20 @@ function getMaxSingleUploadSize() {
 function getMaxPostSize() {
 
     global $max_post_limit;
-    $ini_value = let_to_num(ini_get('post_max_size'));
-    if (!isset($max_post_limit)) {
-        $max_post_limit == 0;
+
+    // Do not touch the global value of $max_upload_limit!
+    $local_max_post_limit = 0;
+    if (isset($max_post_limit)) {
+        $local_max_post_limit = $max_post_limit;
     }
-    if ($max_post_limit == 0) {
+
+    $ini_value = let_to_num(ini_get('post_max_size'));
+    if ($local_max_post_limit == 0) {
         return $ini_value;
     }
-    $max_post_limit = 1024 * 1024 * $max_post_limit;
-    if ($max_post_limit < $ini_value) {
-        return $max_post_limit;
+    $local_max_post_limit = 1024 * 1024 * $local_max_post_limit;
+    if ($local_max_post_limit < $ini_value) {
+        return $local_max_post_limit;
     } else {
         return $ini_value;
     }
@@ -435,16 +439,20 @@ function getMaxPostSize() {
 function getMaxFileSize() {
 
     global $max_upload_limit;
-    $ini_value = let_to_num(ini_get('upload_max_filesize'));
-    if (!isset($max_upload_limit)) {
-        $max_upload_limit == 0;
+
+    // Do not touch the global value of $max_upload_limit!
+    $local_max_upload_limit = 0;
+    if (isset($max_upload_limit)) {
+        $local_max_upload_limit = $max_upload_limit;
     }
-    if ($max_upload_limit == 0) {
+
+    $ini_value = let_to_num(ini_get('upload_max_filesize'));
+    if ($local_max_upload_limit == 0) {
         return $ini_value;
     }
-    $max_upload_limit = 1024 * 1024 * $max_upload_limit;
-    if ($max_upload_limit < $ini_value) {
-        return $max_upload_limit;
+    $local_max_upload_limit = 1024 * 1024 * $local_max_upload_limit;
+    if ($local_max_upload_limit < $ini_value) {
+        return $local_max_upload_limit;
     } else {
         return $ini_value;
     }

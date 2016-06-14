@@ -533,7 +533,12 @@ include("header_fb.inc.php");
                         ".tif,.tiff,.ome.tif,.ome.tiff,.ics,.ids,.zip,.tgz,.tar,.tar.gz",
                     allowedExtensions: ['dv', 'ims', 'lif', 'lsm', 'oif', 'pic', 'r3d', 'stk',
                         'zvi', 'czi', 'nd2', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
-                        'ome.tiff', 'ome', 'ics', 'ids', 'zip', 'tgz', 'tar', 'tar.gz']
+                        'ome.tiff', 'ome', 'ics', 'ids', 'zip', 'tgz', 'tar', 'tar.gz'],
+                    sizeLimit: <?php
+                    // FineUploader uses 1MB = 1e6 bytes
+                    global $max_upload_limit;
+                    echo ((isset($max_upload_limit)) ? $max_upload_limit * 1e6 : 0);
+                    ?>
                 },
                 resume: {
                     enabled: true
