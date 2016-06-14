@@ -414,7 +414,7 @@ class FileserverV2
             if (!is_dir($httpDownloadTempFilesDir)) {
 
                 // Try creating it
-                $result &= mkdir($httpDownloadTempFilesDir, 0777);
+                $result &= mkdir($httpDownloadTempFilesDir, 0775);
                 if (! $result) {
                     // @todo Report!
                     return false;
@@ -444,7 +444,7 @@ class FileserverV2
             if (!is_dir($httpUploadTempChunksDir)) {
 
                 // Try creating it
-                $result &= mkdir($httpUploadTempChunksDir, 0777);
+                $result &= mkdir($httpUploadTempChunksDir, 0775);
                 if (! $result) {
                     // @todo Report!
                     return false;
@@ -468,7 +468,7 @@ class FileserverV2
             if (!is_dir($httpUploadTempFilesDir)) {
 
                 // Try creating it
-                $result &= mkdir($httpUploadTempFilesDir, 0777);
+                $result &= mkdir($httpUploadTempFilesDir, 0775);
                 if (! $result) {
                     // @todo Report!
                     return false;
