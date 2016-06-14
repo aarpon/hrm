@@ -65,17 +65,15 @@ class UtilV2
         // Get max post size from php.ini
         $post_max_size = let_to_num(ini_get('post_max_size'));
 
-        // Use $max_post_limit from the configuration files if set and larger than 0
-        if (isset($max_post_limit) && $max_post_limit > 0) {
-            $post_max_size = min($max_post_limit * 1024 * 1024, $post_max_size);
-        }
-
         // Divide it in (n+1) parts
         $theoretical_limit = intval(floor((
             floatval($post_max_size) / ($nConcurrentUploads + 1))));
 
-        // Cap it
+        // Cap it: use $max_post_limit from the configuration files, if set and larger than 0
         $capSize = 16777216;
+        if (isset($max_post_limit) && $max_post_limit > 0) {
+            $capSize = min($max_post_limit * 1024 * 1024, $capSize);
+        }
         if ($theoretical_limit > $capSize) {
             $theoretical_limit = $capSize;
         }
