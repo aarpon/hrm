@@ -303,6 +303,7 @@ class OmeroConnection
      * Simple wrapper function to unify log messages from this module.
      * @param string $text Text to be logged
      * @param int $level Severity level.
+     * @todo Is this wrapper necessary?
      */
     private function omelog($text, $level = 0)
     {
@@ -318,7 +319,7 @@ class OmeroConnection
                 Log::info("OMERO connector: " . $text);
                 break;
             default:
-                Log::info("OMERO connector: " . $text);
+                Log::warning("OMERO connector: " . $text);
                 break;
         }
     }

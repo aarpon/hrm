@@ -55,16 +55,16 @@ class Log
         // Debug level
         switch ($log_verbosity) {
             case 0:
-                $level = Logger::INFO;
+                $level = Logger::ERROR;
                 break;
             case 1:
                 $level = Logger::WARNING;
                 break;
             case 2:
-                $level = Logger::DEBUG;
+                $level = Logger::INFO;
                 break;
             default:
-                $level = Logger::DEBUG;
+                $level = Logger::WARNING;
                 break;
         }
 
