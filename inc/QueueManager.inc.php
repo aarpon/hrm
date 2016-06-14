@@ -7,6 +7,7 @@ require_once ("Database.inc.php");
 require_once ("JobDescription.inc.php");
 require_once ("hrm_config.inc.php");
 require_once ("Fileserver.inc.php");
+require_once ("FileserverV2.inc.php");
 require_once ("Shell.inc.php");
 require_once ("Mail.inc.php");
 require_once ("Job.inc.php");
@@ -911,7 +912,7 @@ class QueueManager {
                 . date("Y-m-d H:i:s") . "\n", 1);
 
 
-        if (!$this->checkDownUploadFolders()) {
+        if (!FileserverV2::createUpDownloadFolderIfMissing()) {
             error_log("The upload and download folders do not exist or are not writable!");
             return;
         }
@@ -994,106 +995,6 @@ class QueueManager {
         PRIVATE FUNCTIONS
  	*/
 
-
-    /*!
- 	\brief	Checks for existence of and write access to the folders needed for upload
-            and download operations.
- 	\return	true if the folders exist and can be accessed, false otherwise.
-    */
-    private function checkDownUploadFolders() {
-
-        global $httpUploadTempChunksDir, $httpUploadTempFilesDir, $httpDownloadTempFilesDir;
-        global $allowHttpTransfer, $allowHttpUpload;
-
-        // Random file name to test access
-        $fname = uniqid();
-
-        // Check download folder if needed
-        if ($allowHttpTransfer === true) {
-
-            // Get the folder path from the configuration files
-            if (! isset($httpDownloadTempFilesDir)) {
-
-                // Log
-                error_log("The download folder is not defined!");
-
-                return false;
-            }
-
-            // Check if the $httpUploadTempFilesDir exists and is writable.
-            if (is_dir($httpDownloadTempFilesDir) ) {
-
-                // Try writing to the $httpUploadTempChunksDir folder
-                $fid = @fopen("$httpDownloadTempFilesDir/$fname", "w");
-                if (false === $fid) {
-                    return false;
-                } else {
-                    fclose($fid);
-                    unlink("$httpDownloadTempFilesDir/$fname");
-                }
-
-            } else {
-
-                // Log
-                error_log("The folder $httpDownloadTempFilesDir does not exist.");
-                return false;
-
-            }
-
-        }
-
-        // Check upload folders if needed
-        if ($allowHttpUpload === true) {
-
-            // Get the folder paths from the configuration files
-            if (! isset($httpUploadTempChunksDir) || ! isset($httpUploadTempFilesDir)) {
-
-                // Log
-                error_log("The upload folders are not defined!");
-
-                return false;
-            }
-
-            // Check if the $httpUploadTempChunksDir exists and is writable.
-            if (is_dir($httpUploadTempChunksDir) ) {
-
-                // Try writing to the $httpUploadTempChunksDir folder
-                $fid = @fopen("$httpUploadTempChunksDir/$fname", "w");
-                if (false === $fid) {
-                    return false;
-                } else {
-                    fclose($fid);
-                    unlink("$httpUploadTempChunksDir/$fname");
-                }
-
-            } else {
-                // Log
-                error_log("The folder $httpUploadTempChunksDir does not exist.");
-                return false;
-            }
-
-            // Check if the $httpUploadTempFilesDir exists and is writable.
-            if (is_dir($httpUploadTempFilesDir) ) {
-
-                // Try writing to the $httpUploadTempChunksDir folder
-                $fid = @fopen("$httpUploadTempFilesDir/$fname", "w");
-                if (false === $fid) {
-                    return false;
-                } else {
-                    fclose($fid);
-                    unlink("$httpUploadTempFilesDir/$fname");
-                }
-
-            } else {
-                // Log
-                error_log("The folder $httpUploadTempFilesDir does not exist.");
-                return false;
-            }
-
-        }
-
-        return true;
-    }
 
     /*!
  	\brief	Prepares the text with the summary of the Job parameters to be sent

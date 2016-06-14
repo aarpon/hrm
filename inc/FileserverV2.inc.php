@@ -388,4 +388,108 @@ class FileserverV2
         return $destDir . "/" . $fileOrDirBodyName . $extension;
 
     }
+
+    /**
+     * Create the download and upload (chunk and files) folder if they do not exist.
+     * 
+     * The folder paths are taken from inc/hrm_config.inc.php (advanced parameters).
+     */
+    public static function createUpDownloadFolderIfMissing() {
+
+        global $allowHttpTransfer, $allowHttpUpload;
+        global $httpDownloadTempFilesDir, $httpUploadTempChunksDir, $httpUploadTempFilesDir;
+
+        // Initialize result
+        $result = true;
+
+        // Random file name to test access
+        $fname = uniqid();
+
+        // Download folder
+
+        // Are downloads active?
+        if (isset($allowHttpTransfer) && $allowHttpTransfer == true) {
+
+            // Does the download directory exist?
+            if (!is_dir($httpDownloadTempFilesDir)) {
+
+                // Try creating it
+                $result &= mkdir($httpDownloadTempFilesDir, 0777);
+                if (! $result) {
+                    // @todo Report!
+                    return false;
+                }
+
+            }
+
+            // Check that the download directory is writable
+            $fid = @fopen("$httpDownloadTempFilesDir/$fname", "w");
+            if (false === $fid) {
+                return false;
+            } else {
+                fclose($fid);
+                unlink("$httpDownloadTempFilesDir/$fname");
+                $result &= true;
+            }
+        }
+
+        // Upload chunk and files folders
+
+        // Are uploads active?
+        if (isset($allowHttpUpload) && $allowHttpUpload == true) {
+
+            // Chunk upload directory
+
+            // Does the chunk upload directory exist?
+            if (!is_dir($httpUploadTempChunksDir)) {
+
+                // Try creating it
+                $result &= mkdir($httpUploadTempChunksDir, 0777);
+                if (! $result) {
+                    // @todo Report!
+                    return false;
+                }
+
+            }
+
+            // Check that the chunk upload directory is writable
+            $fid = @fopen("$httpUploadTempChunksDir/$fname", "w");
+            if (false === $fid) {
+                return false;
+            } else {
+                fclose($fid);
+                unlink("$httpUploadTempChunksDir/$fname");
+                $result &= true;
+            }
+
+            // Files upload directory
+
+            // Does the file upload directory exist?
+            if (!is_dir($httpUploadTempFilesDir)) {
+
+                // Try creating it
+                $result &= mkdir($httpUploadTempFilesDir, 0777);
+                if (! $result) {
+                    // @todo Report!
+                    return false;
+                }
+
+            }
+
+            // Check that the file upload directory is writable
+            $fid = @fopen("$httpUploadTempFilesDir/$fname", "w");
+            if (false === $fid) {
+                return false;
+            } else {
+                fclose($fid);
+                unlink("$httpUploadTempFilesDir/$fname");
+                $result &= true;
+            }
+
+        }
+
+        // Return global result
+        return $result;
+    }
+
 }
