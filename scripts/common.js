@@ -723,6 +723,22 @@ function uploadImages(maxFile, maxPost, archiveExt) {
 
 }
 
+/**
+ * Display the new uploader based on FineUploader (http://fineuploader.com/).
+ */
+function uploadImagesAlt() {
+
+    // Cancel the OMERO selection
+    cancelOmeroSelection();
+
+    // Show the uploader
+    var upFormID = $("#up_form");
+
+    // Clear the div
+    upFormID.show();
+
+}
+
 function downloadImages() {
 
     changeDiv('omeroSelection','');

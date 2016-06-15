@@ -1,6 +1,6 @@
 <?php
 /**
- * FileBrowser
+ * Fileserver
  *
  * @package hrm
  *
@@ -694,26 +694,29 @@ class Fileserver
     /**
      * Packs a series of files to download.
      * @param array $files List of files to be added.
+     * @return string Success/error message.
      * @todo This will be replaced soon!
      */
     public function downloadResults(array $files)
     {
-        global $compressBin, $compressExt, $dlMimeType, $packExcludePath;
+        global $compressBin, $compressExt, $dlMimeType, $packExcludePath, $httpDownloadTempFilesDir;
 
         // Make sure that the script doesn't timeout before zipping and
         // reading the file to serve is completed.
         set_time_limit(0);
 
-        // If the 'upload_tmp_dir' configuration option is defined in php.ini
-        // we use that, otherwise we fall back to /tmp.
-        $tmpDir = ini_get('upload_tmp_dir');
-        if ($tmpDir == null) {
+        // We use the $httpDownloadTempFilesDir property from the configuration files. If it is not
+        // defined, we fall back to /tmp (and inform).
+        if (isset($httpDownloadTempFilesDir)) {
+            $tmpDir = $httpDownloadTempFilesDir;
+        } else {
             $tmpDir = "/tmp";
+            Log::error("The setting httpDownloadTempFilesDir is not defined! Falling back to /tmp.");
         }
+
         $date = date("Y-m-d_His");
         $zipfile = $tmpDir . "/download_" . session_id() . $date . $compressExt;
-        $command = str_replace("%DEST%",
-            $this->destinationFolder(), $compressBin);
+        $command = str_replace("%DEST%", $this->destinationFolder(), $compressBin);
         $command .= " " . $zipfile;
 
         foreach ($files as $file) {
@@ -947,7 +950,7 @@ class Fileserver
             $uploadDir = $this->destinationFolder();
         }
 
-        $max = Util::getMaxFileSize() / 1024 / 1024;
+        $max = UtilV2::getMaxFileSize() / 1024 / 1024;
         $maxFile = "$max MB";
 
         $ok = "";

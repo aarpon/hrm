@@ -5,7 +5,7 @@
 use hrm\Util;
 use hrm\System;
 
-require_once("./inc/bootstrap.php");
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 ?>
 

@@ -48,15 +48,14 @@ function fileButton($type) {
       break;
 
     case "upload":
-      $max = Util::getMaxFileSize() / 1024 / 1024;
+      $max = UtilV2::getMaxFileSize() / 1024 / 1024;
       $maxFile = "$max MB";
-      $max = Util::getMaxPostSize() / 1024 / 1024;
+      $max = UtilV2::getMaxPostSize() / 1024 / 1024;
       $maxPost = "$max MB";
       $validExtensions =
               $_SESSION['fileserver']->getValidArchiveTypesAsString();
-      $onClick = "uploadImages('$maxFile', '$maxPost', " .
-              "'$validExtensions')";
-      $tip = 'Upload a file (or a compressed archive of files) to the ' .
+      $onClick = "uploadImagesAlt()";
+      $tip = 'Upload one or more files (or compressed archives of files) to the ' .
               'server';
       $name = "upload";
       break;
@@ -181,6 +180,7 @@ $script = array("settings.js",
                 "jqTree/tree.jquery.js",
                 "jquery-ui/jquery-ui-1.9.1.custom.js",
                 "jquery-ui/jquery.bgiframe-2.1.2.js",
+                "fineuploader/jquery.fine-uploader.js",
                 "omero.js");
 
 if (!isset($operationResult)) {
@@ -386,7 +386,7 @@ if ($files == null) {
   $flag = " disabled=\"disabled\"";
 }
 
-include("header.inc.php");
+include("header_fb.inc.php");
 
 
 
@@ -498,13 +498,88 @@ include("header.inc.php");
       include("./omero_UI.php");
       ?>
 
+        <div id="upMsg">
+            <!-- Do not remove -->
+        </div>
 
-  <div id="upMsg"><!-- do not remove !--></div>
+      <div id="up_form" onmouseover="showInstructions()">
+        <div id="fine-uploader-manual-trigger"></div>
+	  </div>
 
+        <script type="text/javascript">
+            $('#fine-uploader-manual-trigger').fineUploader({
+                template: 'qq-template-manual-trigger',
+                cors: {
+                    expected: false,
+                    sendCredentials: false
+                },
+                maxConnections: <?php echo(UtilV2::getNumberConcurrentUploads()); ?>,
+                folders: false,
+                request: {
+                    endpoint: "<?php echo(UtilV2::getRelativePathToFileUploader());?>",
+                    forceMultipart: true,
+                    customHeaders: {
+                        "DestinationFolder" : "<?php echo($_SESSION['fileserver']->sourceFolder()); ?>",
+                        "ImageExtensions" : ['dv', 'ims', 'lif', 'lsm', 'oif', 'pic', 'r3d', 'stk',
+                            'zvi', 'czi', 'nd2', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
+                            'ome.tiff', 'ome', 'ics', 'ids']
+                    }
+                },
+                chunking: {
+                    enabled: true,
+                    concurrent: {
+                        enabled: true
+                    },
+                    mandatory: true,
+                    partSize: <?php echo(UtilV2::getMaxConcurrentUploadSize(
+                        UtilV2::getNumberConcurrentUploads())); ?>,
+                    success: {
+                        endpoint: "<?php echo(UtilV2::getRelativePathToFileUploader() . "?done"); ?>"
+                    }
+                },
+                validation: {
+                    sizeLimit: <?php
+                        // FineUploader uses 1MB = 1e6 bytes
+                        global $max_upload_limit;
+                        echo ((isset($max_upload_limit)) ? $max_upload_limit * 1e6 : 0);
+                        ?>,
+                    acceptFiles: ".dv,.ims,.lif,.lsm,.oif,.pic,.3rd,.stk,.zvi,.czi,.nd2,.tf2,.tf8,.btf,.h5," +
+                        ".tif,.tiff,.ome.tif,.ome.tiff,.ics,.ids,.zip,.tgz,.tar,.tar.gz",
+                    allowedExtensions: ['dv', 'ims', 'lif', 'lsm', 'oif', 'pic', 'r3d', 'stk',
+                        'zvi', 'czi', 'nd2', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
+                        'ome.tiff', 'ome', 'ics', 'ids', 'zip', 'tgz', 'tar', 'tar.gz'],
+                },
+                resume: {
+                    enabled: true
+                },
+                retry: {
+                    enableAuto: true,
+                    showButton: true
+                },
+                autoUpload: false,
+                display: {
+                    fileSizeOnSubmit: true
+                },
+                callbacks: {
+                    onAllComplete: function(succeeded, failed) {
+                        // Rescan the source folder only if everything was uploaded successfully.
+                        // If not the user can still interact with the files.
+                        if (failed.length == 0) {
+                            setActionToUpdate();
+                            $("form#file_browser").submit();
+                        }
+                    }
+                }
+            });
 
-  <div id="up_form" onmouseover="showInstructions()">
-      <!-- do not remove !-->
-  </div>
+            $('#trigger-upload').click(function() {
+                $('#fine-uploader-manual-trigger').fineUploader('uploadStoredFiles');
+            });
+
+            // Hide the uploader until requested by the user
+            $("#up_form").hide();
+        </script>
+
     </div> <!-- content -->
 
 

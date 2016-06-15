@@ -458,7 +458,7 @@ class System
     public static function getMemoryLimit($unit = 'M')
     {
         return System::formatMemoryStringByUnit(
-            Util::let_to_num(ini_get('memory_limit')), $unit);
+            UtilV2::let_to_num(ini_get('memory_limit')), $unit);
     }
 
     /**
@@ -471,7 +471,7 @@ class System
     public static function getPostMaxSizeFromIni($unit = 'M')
     {
         return System::formatMemoryStringByUnit(
-            Util::let_to_num(ini_get('post_max_size')), $unit);
+            UtilV2::let_to_num(ini_get('post_max_size')), $unit);
     }
 
     /**
@@ -488,7 +488,7 @@ class System
                 return "limited by php.ini.";
             } else {
                 return System::formatMemoryStringByUnit(
-                    Util::let_to_num(ini_get('$max_post_limit')), $unit);
+                    UtilV2::let_to_num(ini_get('$max_post_limit')), $unit);
             }
         } else {
             return "Not defined!";
@@ -503,7 +503,7 @@ class System
      */
     public static function getPostMaxSize($unit = 'M')
     {
-        return System::formatMemoryStringByUnit(Util::getMaxPostSize(), $unit);
+        return System::formatMemoryStringByUnit(UtilV2::getMaxPostSize(), $unit);
     }
 
     /**
@@ -575,7 +575,7 @@ class System
     public static function isUploadMaxFileSizeFromIni($unit = 'M')
     {
         return System::formatMemoryStringByUnit(
-            Util::let_to_num(ini_get('upload_max_filesize')), $unit);
+            UtilV2::let_to_num(ini_get('upload_max_filesize')), $unit);
     }
 
     /**
@@ -592,7 +592,7 @@ class System
                 return "limited by php.ini.";
             } else {
                 return System::formatMemoryStringByUnit(
-                    Util::let_to_num($max_upload_limit), $unit);
+                    UtilV2::let_to_num($max_upload_limit), $unit);
             }
         } else {
             return "Not defined!";
@@ -607,7 +607,7 @@ class System
      */
     public static function getUploadMaxFileSize($unit = 'M')
     {
-        return System::formatMemoryStringByUnit(Util::getMaxFileSize(), $unit);
+        return System::formatMemoryStringByUnit(UtilV2::getMaxFileSize(), $unit);
     }
 
     /**

@@ -944,6 +944,12 @@ class QueueManager
         Log::info("Huygens Remote Manager started on "
             . date("Y-m-d H:i:s") . "\n");
 
+
+        if (!FileserverV2::createUpDownloadFolderIfMissing()) {
+            error_log("The upload and download folders do not exist or are not writable!");
+            return;
+        }
+
         if (!$this->askHuCoreVersionAndStoreIntoDB()) {
             Log::error("An error occurred while reading HuCore version");
             return;
