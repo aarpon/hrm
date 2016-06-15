@@ -13,6 +13,7 @@ use hrm\job\Job;
 use hrm\job\JobDescription;
 use hrm\job\JobQueue;
 use hrm\user\User;
+use hrm\shell\ExternalProcessFactory;
 
 require_once dirname(__FILE__) . '/bootstrap.php';
 

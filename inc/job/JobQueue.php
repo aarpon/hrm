@@ -10,7 +10,7 @@
 namespace hrm\job;
 
 use hrm\DatabaseConnection;
-use hrm\ExternalProcessFactory;
+use hrm\shell\ExternalProcessFactory;
 use hrm\Log;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';

@@ -3,7 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
-use hrm\Stats;
+use hrm\stats\Stats;
 use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';

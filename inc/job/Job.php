@@ -9,8 +9,8 @@
  */
 namespace hrm\job;
 
-use hrm\ExternalProcess;
-use hrm\ExternalProcessFactory;
+use hrm\shell\ExternalProcessFactory;
+use hrm\shell\ExternalProcess;
 use hrm\Fileserver;
 use hrm\HuygensTemplate;
 use hrm\Log;
