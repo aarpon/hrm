@@ -55,11 +55,16 @@ class UtilV2
     /**
      * Report maximum upload size, in bytes, for concurrent uploads.
      *
-     *    The maximum (chunk) concurrent upload file is calculated as a
-     *    function of the max post size (from php.ini) and the configured
-     *    number of concurrent uploads. To avoid choking the server when
-     *    several users are uploading at the same size, the upload size is
-     *    capped to 16MB.
+     * The maximum (chunk) concurrent upload file is calculated as a
+     * function of the max post size (from php.ini) and the configured
+     * number of concurrent uploads. To avoid choking the server when
+     * several users are uploading at the same size, the upload size is
+     * capped to 16MB.
+     *
+     * Additionally, if the variable $max_post_limit is > 0, this will
+     * also be used. However, if both are set, the smallest will be
+     * returned (i.e. 16MB is a hard cap).
+     *
      * @param int $nConcurrentUploads Maximum number of concurrent uploads
      *                                (optional, default is 4).
      * @return int maximum upload size in bytes.
@@ -89,19 +94,26 @@ class UtilV2
 
 
     /**
-     * This function transforms the php.ini notation for memory amount (e.g.
-     * '2M') to an integer (2*1024*1024 in this case) number of bytes.
+     * This function transforms the php.ini notation for memory amount to an
+     * integer number of bytes.
      *
-     * Notice that the switch cases do not have a break statement to
-     * cause cascade multiplication all the way down to bytes.
+     * @example
+     *
+     * '2M' -> 2 x 1024 x 1024 = 2,097,152
      *
      * @param string @v Memory amount in php.ini notation
      * @return int Integer version in bytes
      */
     public static function let_to_num($v)
     {
+        // Extract the unit
         $l = substr($v, -1);
+
+        // Extract the amount
         $ret = substr($v, 0, -1);
+
+        // Notice that the switch cases do not have a break statement to
+        // cause cascade multiplication all the way down to bytes.
         switch (strtoupper($l)) {
             case 'P':
                 $ret *= 1024;
@@ -115,12 +127,22 @@ class UtilV2
                 $ret *= 1024;
                 break;
         }
+
+        // Return the number of bytes
         return $ret;
     }
 
     /**
      * Report maximum file size that can be uploaded, in bytes.
+     *
+     * The value is defined by 'upload_max_filesize' from php.ini and (optionally)
+     * from the variable $max_upload_limit from the configuration files, if it
+     * is > 0. If both are set, the smallest will be returned.
+
      * @return int Maximum file size that can be uploaded in bytes.
+     *
+     * @todo Does the php.ini value play a role in the chunk uploader
+     * (i.e., does it apply to the file **chunk** size)?
      */
     public static function getMaxFileSize()
     {
@@ -145,8 +167,13 @@ class UtilV2
     }
 
     /**
-     * Report maximum post size, in bytes
-     * @return int Maximum upload post in bytes
+     * Report maximum post size, in bytes.
+     *
+     * The value is defined by 'post_max_size' from php.ini and (optionally)
+     * from the variable $max_post_limit from the configuration files, if it
+     * is > 0. If both are set, the smallest will be returned.
+     *
+     * @return int Maximum upload post in bytes.
      */
     public static function getMaxPostSize()
     {
