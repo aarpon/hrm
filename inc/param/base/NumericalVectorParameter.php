@@ -55,6 +55,8 @@ class NumericalVectorParameter extends NumericalParameter
      * optionally have to be larger than or equal to a given minimum value and
      * smaller than or equal to a given maximum.
      * @return bool True if all values are valid, false otherwise.
+     * @todo This method calls parent::check() passing one argument, but
+     * parent::check() does not take input arguments!
      */
     public function check()
     {

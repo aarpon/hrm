@@ -10,6 +10,7 @@
 namespace hrm\job;
 
 use hrm\ExternalProcess;
+use hrm\ExternalProcessFactory;
 use hrm\Fileserver;
 use hrm\HuygensTemplate;
 use hrm\Log;

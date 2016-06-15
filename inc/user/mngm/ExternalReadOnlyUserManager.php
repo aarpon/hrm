@@ -44,7 +44,8 @@ class ExternalReadOnlyUserManager extends AbstractUserManager {
      */
     public function storeUser(User $user) {
 
-        // Make sure the user is in the database, otherwise add it
+        // Make sure the user is in the database, otherwise add it with
+        // a random string as password (for security).
         if (! $this->existsInHRM($user)) {
             $randomPasswd = substr(md5(microtime()), rand(0, 26), 12);
             $this->createUser($user->name(), $randomPasswd,

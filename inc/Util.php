@@ -170,7 +170,6 @@ class Util
     public static function readfile_chunked($filename, $retbytes = true)
     {
         $chunksize = 1 * (1024 * 1024); // how many bytes per chunk
-        $buffer = '';
         $cnt = 0;
         $handle = fopen($filename, 'rb');
         if ($handle === false) {

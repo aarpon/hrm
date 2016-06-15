@@ -323,7 +323,7 @@ class ExternalProcess
 
     /**
      * Attempts to remove a file, if existing.
-     * @param string The name of the file including its path.
+     * @param string $fileName The name of the file including its path.
      */
     public function removeFile($fileName)
     {
@@ -339,8 +339,8 @@ class ExternalProcess
 
     /**
      * Attempts to rename a file, if existing.
-     * @param string The name of the file including its path.
-     * @param string The new name of the file including its path.
+     * @param string $oldName The name of the file including its path.
+     * @param string $newName The new name of the file including its path.
      */
     public function renameFile($oldName, $newName)
     {

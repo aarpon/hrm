@@ -265,7 +265,7 @@ function setFileFormat($format)
 /**
  * Calls the requested action and collects the output
  * @param String $action Action to be performed
- * @param Reference $data String to be returned
+ * @param string& $data String to be returned
  * @return true if the call was successful, false otherwise
  */
 function act($action, &$data)

@@ -10,6 +10,8 @@
 
 namespace hrm;
 
+use hrm\job\JobDescription;
+
 require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
@@ -1083,7 +1085,7 @@ class Fileserver
                         "directory permissions are correctly set!<br>\n";
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $err .= "Error uploading files: " . $e->getMessage();
         }
 

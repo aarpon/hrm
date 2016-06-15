@@ -3027,6 +3027,8 @@ class HuygensTemplate
 
     /**
      * Sets the name of the source image with subimages, if any.
+     *
+     * @todo This method seems to dynamically create the $this->subImage field. Check!
      */
     private function setSrcImage()
     {

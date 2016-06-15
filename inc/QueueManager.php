@@ -12,6 +12,7 @@ namespace hrm;
 use hrm\job\Job;
 use hrm\job\JobDescription;
 use hrm\job\JobQueue;
+use hrm\user\User;
 
 require_once dirname(__FILE__) . '/bootstrap.php';
 
@@ -539,13 +540,17 @@ class QueueManager
             sleep(5);
         }
         foreach ($runningJobs as $job) {
+            /** @var Job $job */
             $desc = $job->description();
+            /** @var JobDescription $desc */
             $user = $desc->owner();
 
+            /** @var User $user */
             $fileserver = new Fileserver($user->name());
             if (!$fileserver->isReachable())
                 continue;
 
+            /** @var Job $job */
             if (!$this->isProcessingServerReachable($job->server(),
                 $job->id(),
                 $job->id())

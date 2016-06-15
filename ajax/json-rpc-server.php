@@ -615,7 +615,7 @@ function jsonGetUserList($username) {
 /**
  * Return the list of shared templates with the given user.
  * @param  string $username Name of the user for which to query for shared templates.
- * @param strinf $type Template type: one of 'parameter', 'task', analysis'.
+ * @param string $type Template type: one of 'parameter', 'task', analysis'.
  * @return string $type JSON-encoded array of shared templates.
  */
 function jsonGetSharedTemplateList($username, $type) {
@@ -818,7 +818,7 @@ function jsonPreviewSharedTemplate($template, $type) {
     $db = new DatabaseConnection();
 
     // Read the settings from the shared table and prepare the preview
-    /** @var hrm\ParameterSetting $settings */
+    /** @var hrm\setting\ParameterSetting $settings */
     $settings = $db->loadSharedParameterSettings($template["id"], $type);
     if (! $settings) {
 
