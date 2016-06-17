@@ -952,7 +952,7 @@ class QueueManager
 
 
         if (!FileserverV2::createUpDownloadFolderIfMissing()) {
-            error_log("The upload and download folders do not exist or are not writable!");
+            Log::error("The upload and download folders do not exist or are not writable!");
             return;
         }
 
