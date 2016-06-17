@@ -59,19 +59,36 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
     private $m_AuthorizedGroups;
 
     /**
-     * User name suffix for Active Directory forests.
+     * Append this to usernames in AD-forests to request the email address.
+     *
+     * Suffix that should be appended to usernames for retrieving the email
+     * address in an ActiveDirectory FOREST (multi-domain setup). See the
+     * configuration file "active_directory_config.inc" for a detailed example.
+     *
      * @var string
-     */
+    */
     private $m_UsernameSuffix;
 
     /**
-     * User name suffix replace match for Active Directory forests.
+     * Matching string for username processing in an AD-forest.
+     *
+     * The matching string for the match-replace operation on usernames in an
+     * ActiveDirectory FOREST (multi-domain setup) for retrieving the email
+     * address. See the configuration file "active_directory_config.inc" for a
+     * detailed example.
+     *
      * @var string
      */
     private $m_UsernameSuffixReplaceMatch;
 
     /**
-     * User name suffix replace string for Active Directory forests.
+     * Replacement string for username processing in an AD-forest.
+     *
+     * The replacement string for the match-replace operation on usernames in an
+     * ActiveDirectory FOREST (multi-domain setup) for retrieving the email
+     * address. See the configuration file "active_directory_config.inc" for a
+     * detailed example.
+     *
      * @var string
      */
     private $m_UsernameSuffixReplaceString;
@@ -128,10 +145,15 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         $this->m_UsernameSuffixReplaceMatch = $AD_USERNAME_SUFFIX_PATTERN;
         $this->m_UsernameSuffixReplaceString = $AD_USERNAME_SUFFIX_REPLACE;
 
+        // Check if we have conflicting username settings
+        if (!empty($ACCOUNT_SUFFIX) && !empty($AD_USERNAME_SUFFIX)) {
+            Log::error('$AD_USERNAME_SUFFIX and $ACCOUNT_SUFFIX are both set!');
+        }
+
         try {
             $this->m_AdLDAP = new adLDAP($options);
         } catch (adLDAPException $e) {
-            // Make sure to clean stack traces
+            // Make sure to clean stack traces
             $pos = stripos($e, 'AD said:');
             if ($pos !== false) {
                 $e = substr($e, 0, $pos);
@@ -166,6 +188,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // Make sure the user is active
         if (!$this->isActive($username)) {
+            Log::info("User '$username': account is INACTIVE!");
             return false;
         }
 
@@ -175,6 +198,7 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // If authentication failed, we can return here.
         if ($b === false) {
+            Log::info("User '$username': authentication FAILED!");
             $this->m_AdLDAP->close();
             return false;
         }
@@ -187,15 +211,6 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // We need to retrieve the groups and compare them.
 
-        // If needed, process the user name suffix for subdomains
-        $username .= $this->m_UsernameSuffix;
-        if ($this->m_UsernameSuffixReplaceMatch != '') {
-            $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
-            $username = preg_replace($pattern,
-                $this->m_UsernameSuffixReplaceString,
-                $username);
-        }
-
         // Get the user groups from AD
         $userGroups = $this->m_AdLDAP->user()->groups($username);
         $this->m_AdLDAP->close();
@@ -203,9 +218,9 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         // Test for intersection
         $b = count(array_intersect($userGroups, $this->m_AuthorizedGroups)) > 0;
         if ($b === true) {
-            Log::info("User $username: group authentication succeeded.");
+            Log::info("User '$username': group authentication succeeded.");
         } else {
-            Log::info("User $username: user rejected by failed group authentication.");
+            Log::info("User '$username': user rejected by failed group authentication.");
         }
         return $b;
     }
@@ -221,9 +236,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         $username .= $this->m_UsernameSuffix;
         if ($this->m_UsernameSuffixReplaceMatch != '') {
             $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
-            $username = preg_replace($pattern,
-                                     $this->m_UsernameSuffixReplaceString,
-                                     $username);
+            $replace = $this->m_UsernameSuffixReplaceString;
+            Log::info("getEmailAddress(): preg_replace($pattern, $replace, $username)");
+            $username = preg_replace($pattern, $replace, $username);
+            Log::info("Processed AD user name: '$username'");
         }
 
         // Get the email from AD
@@ -249,9 +265,10 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         $username .= $this->m_UsernameSuffix;
         if ($this->m_UsernameSuffixReplaceMatch != '') {
             $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
-            $username = preg_replace($pattern,
-                                     $this->m_UsernameSuffixReplaceString,
-                                     $username);
+            $replace = $this->m_UsernameSuffixReplaceString;
+            Log::info("getEmailAddress(): preg_replace($pattern, $replace, $username)");
+            $username = preg_replace($pattern, $replace, $username);
+            Log::info("Processed AD user name: '$username'");
         }
 
         // Get the user groups from AD

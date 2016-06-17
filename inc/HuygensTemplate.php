@@ -12,6 +12,7 @@ namespace hrm;
 
 use hrm\job\JobDescription;
 use hrm\param\ChromaticAberration;
+use hrm\param\OutputFileFormat;
 use hrm\setting\AnalysisSetting;
 use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
@@ -1933,6 +1934,7 @@ class HuygensTemplate
      */
     private function getSnrValue($channel)
     {
+        /** @var TaskSetting $deconSetting */
         $deconSetting = $this->deconSetting;
         $snrRate = $deconSetting->parameter("SignalNoiseRatio")->value();
         $snrValue = $snrRate[$channel];
@@ -2040,6 +2042,7 @@ class HuygensTemplate
             return $channelsArray;
         }
 
+        /** @var ChromaticAberration $chromaticParam */
         $chromaticParam = $this->deconSetting->parameter("ChromaticAberration");
 
         for ($chan = 0; $chan < $chanCnt; $chan++) {
@@ -2446,7 +2449,6 @@ class HuygensTemplate
      */
     private function getParameterConfidence($paramName)
     {
-
         switch ($paramName) {
             case 'pr':
             case 'micr':
@@ -3107,6 +3109,7 @@ class HuygensTemplate
      */
     private function getOutputFileType()
     {
+        /** @var OutputFileFormat $outFileFormat */
         $outFileFormat = $this->deconSetting->parameter('OutputFileFormat');
         return $outFileFormat->translatedValue();
     }
@@ -3117,11 +3120,10 @@ class HuygensTemplate
      */
     private function getOutputFileExtension()
     {
+        /** @var OutputFileFormat $outFileFormat */
         $outFileFormat = $this->deconSetting->parameter('OutputFileFormat');
         return $outFileFormat->extension();
     }
 
     /* ----------------------------------------------------------------------- */
 }
-
-;
