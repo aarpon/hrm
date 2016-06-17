@@ -173,5 +173,3 @@
 
     // Groups authorized to log in to HRM.
     $AUTHORIZED_GROUPS = array();
-
-?>

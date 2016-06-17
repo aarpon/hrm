@@ -3,9 +3,9 @@
 // Copyright and license notice: see license.txt
 
 global $isServer;
+use hrm\QueueManager;
+
 $isServer = true;
-require_once('../inc/hrm_config.inc.php');
-require_once('../inc/QueueManager.inc.php');
+require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 $manager = new QueueManager();
 $manager->run();
-?>

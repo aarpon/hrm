@@ -2,17 +2,21 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Database.inc.php");
-require_once("./inc/hrm_config.inc.php");
-require_once("./inc/Mail.inc.php");
-require_once("./inc/Util.inc.php");
-require_once("./inc/Validator.inc.php");
+use hrm\DatabaseConnection;
+use hrm\Mail;
+use hrm\Util;
+use hrm\Validator;
+
+// Settings
+global $hrm_url, $image_folder, $image_host, $email_sender, $userManagerScript;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 session_start();
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
-  header("Location: " . "login.php"); exit();
+    header("Location: " . "login.php");
+    exit();
 }
 
 $message = "";
@@ -30,35 +34,35 @@ $added = False;
  *
  */
 
-  // Here we store the cleaned variables
-  $clean = array(
+// Here we store the cleaned variables
+$clean = array(
     "username" => "",
-    "email"    => '',
-    "group"    => "",
-    "pass1"    => "",
-    "pass2"    => "",
-    "note"     => "" );
+    "email" => '',
+    "group" => "",
+    "pass1" => "",
+    "pass2" => "",
+    "note" => "");
 
-  // Username
-  if ( isset( $_POST["username"] ) ) {
-    if ( Validator::isUsernameValid( $_POST["username"] ) ) {
-      $clean["username"] = $_POST["username"];
+// Username
+if (isset($_POST["username"])) {
+    if (Validator::isUserNameValid($_POST["username"])) {
+        $clean["username"] = $_POST["username"];
     }
-  }
+}
 
-  // Email
-  if ( isset( $_POST["email"] ) ) {
-    if ( Validator::isEmailValid( $_POST["email"] ) ) {
-      $clean["email"] = $_POST["email"];
+// Email
+if (isset($_POST["email"])) {
+    if (Validator::isEmailValid($_POST["email"])) {
+        $clean["email"] = $_POST["email"];
     }
-  }
+}
 
-  // Group name
-  if ( isset( $_POST["group"] ) ) {
-    if ( Validator::isGroupNameValid( $_POST["group"] ) ) {
-      $clean["group"] = $_POST["group"];
+// Group name
+if (isset($_POST["group"])) {
+    if (Validator::isGroupNameValid($_POST["group"])) {
+        $clean["group"] = $_POST["group"];
     }
-  }
+}
 
 /*
  *
@@ -68,71 +72,63 @@ $added = False;
 
 // TODO refactor from here
 if (isset($_POST['add'])) {
-  //$user = new User();
-  //$user->setName( $clean['username'] );
+    //$user = new User();
+    //$user->setName( $clean['username'] );
 
-  if ( $clean["username"] != "" ) {
-    if ( $clean["email"] != "" ) {
-      if ($clean['group'] != "") {
-        $db = new DatabaseConnection();
-        // Is the user name already taken?
-        if ($db->emailAddress($clean['username']) == "") {
-          $password = get_rand_id(8);
-          $result = $db->addNewUser( $clean["username"],
-                                     $password, $clean["email"], 
-                                     $clean["group"], 'a' );
+    if ($clean["username"] != "") {
+        if ($clean["email"] != "") {
+            if ($clean['group'] != "") {
+                $db = new DatabaseConnection();
+                // Is the user name already taken?
+                if ($db->emailAddress($clean['username']) == "") {
+                    $password = Util::get_rand_id(8);
+                    $result = $db->addNewUser($clean["username"],
+                        $password, $clean["email"],
+                        $clean["group"], 'a');
 
-          // TODO refactor
-          if ($result) {
-            $text = "Your account has been activated:\n\n";
-            $text .= "\t      Username: ".$clean["username"]."\n";
-            $text .= "\t      Password: ".$password."\n\n";
-            $text .= "Login here\n";
-            $text .= $hrm_url."\n\n";
-            $folder = $image_folder . "/" . $clean["username"];
-            $text .= "Source and destination folders for your images are " .
-                "located on server ".$image_host." under ".$folder.".";
-            $mail = new Mail($email_sender);
-            $mail->setReceiver($clean['email']);
-            $mail->setSubject('Account activated');
-            $mail->setMessage($text);
-            $mail->send();
-            //$user->setName( '' );
-            $message = "New user successfully added to the system";
-            shell_exec("$userManagerScript create \"" . $clean["username"] . "\"" );
-            $added = True;
-          }
-          else $message = "Database error, please inform the person in charge";
-        }
-        else $message = "This user name is already in use";
-      }
-      else $message = "Please fill in group field";
-    }
-    else $message = "Please fill in email field with a valid address";
-  }
-  else $message = "Please fill in name field";
+                    // TODO refactor
+                    if ($result) {
+                        $text = "Your account has been activated:\n\n";
+                        $text .= "\t      Username: " . $clean["username"] . "\n";
+                        $text .= "\t      Password: " . $password . "\n\n";
+                        $text .= "Login here\n";
+                        $text .= $hrm_url . "\n\n";
+                        $folder = $image_folder . "/" . $clean["username"];
+                        $text .= "Source and destination folders for your images are " .
+                            "located on server " . $image_host . " under " . $folder . ".";
+                        $mail = new Mail($email_sender);
+                        $mail->setReceiver($clean['email']);
+                        $mail->setSubject('Account activated');
+                        $mail->setMessage($text);
+                        $mail->send();
+                        //$user->setName( '' );
+                        $message = "New user successfully added to the system";
+                        shell_exec("$userManagerScript create \"" . $clean["username"] . "\"");
+                        $added = True;
+                    } else $message = "Database error, please inform the person in charge";
+                } else $message = "This user name is already in use";
+            } else $message = "Please fill in group field";
+        } else $message = "Please fill in email field with a valid address";
+    } else $message = "Please fill in name field";
 }
 
-echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-
 ?>
 
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+    <meta charset="utf-8">
     <title>Huygens Remote Manager</title>
     <script type="text/javascript">
-    <!--
-<?php
+        <!--
+        <?php
 
-if ($added) echo "        var added = true;\n";
-else echo "        var added = false;\n";
+        if ($added) echo "        var added = true;\n";
+        else echo "        var added = false;\n";
 
-?>
-    -->
+        ?>
+        -->
     </script>
     <style type="text/css">
         @import "css/default.css";
@@ -143,69 +139,69 @@ else echo "        var added = false;\n";
 
 <div>
 
-  <form method="post" action="">
+    <form method="post" action="">
 
-    <div id="box">
+        <div id="box">
 
-      <fieldset>
+            <fieldset>
 
-        <legend>account details</legend>
+                <legend>account details</legend>
 
-        <div id="adduser">
+                <div id="adduser">
 
-          <label for="username">Username: </label>
-          <input type="text" 
-                 name="username"
-                 id="username"
-                 value=""
-                 class="texfield" />
+                    <label for="username">Username: </label>
+                    <input type="text"
+                           name="username"
+                           id="username"
+                           value=""
+                           class="texfield"/>
 
-          <br />
+                    <br/>
 
-          <label for="email">E-mail address: </label>
-          <input type="text" 
-                 name="email"
-                 id="email"
-                 value=""
-                 class="texfield" />
+                    <label for="email">E-mail address: </label>
+                    <input type="text"
+                           name="email"
+                           id="email"
+                           value=""
+                           class="texfield"/>
 
-          <br />
+                    <br/>
 
-          <label for="group">Research group: </label>
-          <input type="text" 
-                 name="group"
-                 id="group"
-                 value=""
-                 class="texfield" />
+                    <label for="group">Research group: </label>
+                    <input type="text"
+                           name="group"
+                           id="group"
+                           value=""
+                           class="texfield"/>
 
-          <br />
+                    <br/>
 
-          <input name="add"
-                 type="submit"
-                 value="add"
-                 class="button" />
+                    <input name="add"
+                           type="submit"
+                           value="add"
+                           class="button"/>
 
+                </div>
+
+            </fieldset>
+
+            <div>
+                <input type="button"
+                       value="close"
+                       onclick="window.close();"/>
+            </div>
+
+        </div> <!-- box -->
+
+        <div id="notice">
+            <?php
+
+            echo "<p>$message</p>";
+
+            ?>
         </div>
 
-      </fieldset>
-
-      <div>
-        <input type="button" 
-               value="close"
-               onclick="window.close();" />
-      </div>
-
-    </div> <!-- box -->
-
-    <div id="notice">
-<?php
-
-  echo "<p>$message</p>";
-
-?>
-    </div>
-
-  </form>
+    </form>
 
 </div>
 

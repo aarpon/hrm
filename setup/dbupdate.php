@@ -12,7 +12,7 @@
 //
 // When you want to change something in the database, that is, to create a new
 // database release, it is necessary to insert the modifications in the last part
-// of the script and to update the constant DB_LAST_REVISION in System.inc.php.
+// of the script and to update the constant DB_LAST_REVISION in System.php.
 //
 // When running the script, three situations are possible:
 // 1) a new user of HRM run the script from command line, the database does not
@@ -35,8 +35,11 @@
 //    it is simply updated to the last revision.
 
 // Include hrm_config.inc.php
-require_once( dirname( __FILE__ ) . "/../inc/hrm_config.inc.php" );
-require_once( dirname( __FILE__ ) . "/../inc/System.inc.php" );
+use ADODB2_mysql;
+use ADODB2_postgres;
+use hrm\System;
+
+require_once  dirname( __FILE__ ) . '/../inc/bootstrap.php';
 
 // Database last revision
 $LAST_REVISION = System::getDBLastRevision( );
@@ -143,7 +146,7 @@ function insert_records($records,$tabname) {
         foreach($keys as $key)
             $record[$key] = $records[$key][$i];
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if(!$db->execute($insertSQL)) {
             $msg = error_message($tabname);
             write_message($msg);
             write_to_error($msg);
@@ -166,7 +169,7 @@ function insert_record($tabname, $array, $colnames) {
         $record[$colnames[$i]] = $array[$i];
 
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if(!$db->execute($insertSQL)) {
         $msg = error_message($tabname);
         write_message($msg);
         write_to_error($msg);
@@ -241,7 +244,7 @@ function update_dbrevision($n) {
 function check_number_gates($tabname, $value, $fields_set, $primary_key) {
     global $db;
 
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name = '" . $value . "'");
+    $rs = $db->execute("SELECT * FROM " . $tabname . " WHERE name = '" . $value . "'");
     if($rs) {
         while ($row = $rs->FetchRow()) {
             $test = substr_count($row[3], '#');
@@ -288,7 +291,7 @@ function manage_enum($tabname, $field, $values_string, $default) {
     else
         $SQLquery = "ALTER TABLE " . $tabname ." CHANGE " . $field . " " . $field . " ENUM(" . $values_string . ")";
 
-    if(!$db->Execute($SQLquery)) {
+    if(!$db->execute($SQLquery)) {
         $msg = "An error occurred while updating the table " . $tabname . ".";
         write_message($msg);
         write_to_error($msg);
@@ -4980,4 +4983,3 @@ fclose($fh);
 
 return;
 
-?>

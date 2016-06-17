@@ -1,0 +1,50 @@
+{
+  "name": "hrm/hrm",
+  "description": "The Huygens Remote Manager is an easy to use interface to the Huygens Software by Scientific Volume Imaging B.V. that allows for multi-user, large-scale deconvolution and analysis",
+  "license": "GPL-2.0+",
+  "keywords": [
+    "deconvolution",
+    "batch",
+    "multi-user"
+  ],
+  "authors": [
+    {
+      "name": "Aaron Ponti",
+      "email": "aarpon@gmail.com"
+    },
+    {
+      "name": "Daniel Sevilla",
+      "email": "daniel@svi.nl"
+    },
+    {
+      "name": "Niko Ehrenfeuchter",
+      "email": "nikolaus.ehrenfeuchter@unibas.ch"
+    },
+    {
+      "name": "Torsten Stoeter",
+      "email": "torsten.stoeter@ifn-magdeburg.de"
+    },
+    {
+      "name": "Olivier Burri",
+      "email": "olivier.burri@epfl.ch"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">5.5.0",
+    "adodb/adodb-php": "v5.20.4",
+    "adldap2/adldap2": "4.0.5",
+    "fineuploader/php-traditional-server": "1.0.1",
+    "monolog/monolog": "1.19.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.8.24",
+    "phpdocumentor/phpdocumentor": "2.8.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "hrm\\": "inc/"
+    }
+  }
+}

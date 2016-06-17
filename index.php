@@ -3,5 +3,3 @@
 // Copyright and license notice: see license.txt
 
 include("login.php");
-
-?>

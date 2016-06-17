@@ -2,255 +2,264 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/User.inc.php");
-require_once("./inc/Fileserver.inc.php");
-require_once("./inc/Setting.inc.php");
-require_once("./inc/JobDescription.inc.php");
-require_once("./inc/System.inc.php");
-require_once("./inc/wiki_help.inc.php");
+use hrm\Fileserver;
+use hrm\job\JobDescription;
+use hrm\Nav;
+use hrm\System;
+use hrm\Util;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 session_start();
 
 if (isset($_GET['home'])) {
-  header("Location: " . "home.php"); exit();
+    header("Location: " . "home.php");
+    exit();
 }
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
-  header("Location: " . "login.php"); exit();
+    header("Location: " . "login.php");
+    exit();
 }
 
 if (!isset($_SESSION['fileserver'])) {
-  # session_register('fileserver');
-  $name = $_SESSION['user']->name();
-  $_SESSION['fileserver'] = new Fileserver($name);
+    $name = $_SESSION['user']->name();
+    $_SESSION['fileserver'] = new Fileserver($name);
 }
 
 if (System::hasLicense("coloc")) {
-    $currentStep   = 5;
-    $goBackLink    = "select_analysis_settings.php";
+    $currentStep = 5;
+    $goBackLink = "select_analysis_settings.php";
     $goBackMessage = "Analysis parameters.";
 } else {
-    $currentStep   = 4;
-    $goBackLink    = "select_task_settings.php";
+    $currentStep = 4;
+    $goBackLink = "select_task_settings.php";
     $goBackMessage = "Processing parameters.";
 }
 
-$previousStep   = $currentStep - 1;
-$goBackMessage  = "Go back to step $previousStep/$currentStep - " . $goBackMessage;
-
+$previousStep = $currentStep - 1;
+$goBackMessage = "Go back to step $previousStep/$currentStep - " . $goBackMessage;
 
 
 $message = "";
 
 if (isset($_POST['create'])) {
-  $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
-  $parameter->setValue($_POST['OutputFileFormat']);
-  $_SESSION['task_setting']->set($parameter);
-  // save preferred output file format
-  if ($_SESSION['task_setting']->save()) {
-    // TODO source/destination folder names should be given to JobDescription
-    $job = new JobDescription();
-    $job->setParameterSetting($_SESSION['setting']);
-    $job->setTaskSetting($_SESSION['task_setting']);
-    $job->setAnalysisSetting($_SESSION['analysis_setting']);
-    $job->setFiles($_SESSION['fileserver']->selectedFiles(),$_SESSION['autoseries']);
+    /** @var \hrm\param\OutputFileFormat $parameter */
+    $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
+    $parameter->setValue($_POST['OutputFileFormat']);
+    $_SESSION['task_setting']->set($parameter);
+    // save preferred output file format
+    if ($_SESSION['task_setting']->save()) {
+        // TODO source/destination folder names should be given to JobDescription
+        $job = new JobDescription();
+        $job->setParameterSetting($_SESSION['setting']);
+        $job->setTaskSetting($_SESSION['task_setting']);
+        $job->setAnalysisSetting($_SESSION['analysis_setting']);
+        $job->setFiles($_SESSION['fileserver']->selectedFiles(), $_SESSION['autoseries']);
 
-    if ($job->addJob()) {
-      $_SESSION['jobcreated'] = True;
-      $_SESSION['numberjobadded'] = count( $job->files() );
-      header("Location: " . "home.php");
-      exit();
-    }
-    else {
-      $message = $job->message();
-    }
-  }
-  else $message = "An unknown error has occured. " .
-      "Please inform the administrator";
-}
-else if (isset($_POST['OK'])) {
-  header("Location: " . "select_parameter_settings.php"); exit();
+        if ($job->addJob()) {
+            $_SESSION['jobcreated'] = True;
+            $_SESSION['numberjobadded'] = count($job->files());
+            header("Location: " . "home.php");
+            exit();
+        } else {
+            $message = $job->message();
+        }
+    } else $message = "An unknown error has occurred. " .
+        "Please inform the administrator";
+} else if (isset($_POST['OK'])) {
+    header("Location: " . "select_parameter_settings.php");
+    exit();
 }
 
 include("header.inc.php");
 
 ?>
-    <!--
-      Tooltips
-    -->
-    <span class="toolTip" id="ttSpanBack">
+<!--
+  Tooltips
+-->
+<span class="toolTip" id="ttSpanBack">
     <?php echo $goBackMessage; ?>
     </span>
-    <span class="toolTip" id="ttSpanCreateJob">
+<span class="toolTip" id="ttSpanCreateJob">
         Create job, add it to the queue, and go back to your home page.
     </span>
-    
+
 <div id="nav">
     <div id="navleft">
         <ul>
             <?php
-                wiki_link('HuygensRemoteManagerHelpCreateJob');
+            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpCreateJob'));
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-                include("./inc/nav/user.inc.php");
-                include("./inc/nav/raw_images.inc.php");
-                include("./inc/nav/job_queue.inc.php");
-                include("./inc/nav/home.inc.php");
+            echo(Nav::textUser($_SESSION['user']->name()));
+            if (!$_SESSION['user']->isAdmin()) {
+                echo(Nav::linkRawImages());
+            }
+            echo(Nav::linkJobQueue());
+            echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>
     <div class="clear"></div>
 </div>
 
-    <div id="content">
+<div id="content">
 
-        <h3><img alt="Launch" src="./images/launch.png" width="40"/>
-                              &nbsp;Step
-                              <?php echo $currentStep . "/" . $currentStep; ?>
-                              - Launch the job</h3>
+    <h3><img alt="Launch" src="./images/launch.png" width="40"/>
+        &nbsp;Step
+        <?php echo $currentStep . "/" . $currentStep; ?>
+        - Launch the job</h3>
 
-        <form method="post" action="" id="createjob">
+    <form method="post" action="" id="createjob">
 
-          <fieldset class="setting">
+        <fieldset class="setting">
 
-          <legend>
-            <a href="javascript:openWindow(
-               'http://www.svi.nl/FileFormats')">
-                <img src="images/help.png" alt="?" />
-            </a>
-              Output file format
+            <legend>
+                <a href="openWindow('http://www.svi.nl/FileFormats')">
+                    <img src="images/help.png" alt="?"/>
+                </a>
+                Output file format
             </legend>
 
-<?php
+            <?php
 
-$parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
-$value = $parameter->value();
+            /** @var \hrm\param\OutputFileFormat $parameter */
+            $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
+            $value = $parameter->value();
 
-$timeParameter = $_SESSION['setting']->parameter("TimeInterval");
-$timeValue = $timeParameter->value();
+            /** @var \hrm\param\TimeInterval $timeParameter */
+            $timeParameter = $_SESSION['setting']->parameter("TimeInterval");
+            $timeValue = $timeParameter->value();
 
-// Make sure that if we had TIFF (8 or 16 bit) as output file format and a
-// multichannel dataset, we reset the value to ics
-if ( ( $value == 'TIFF 18-bit' ) || ( $value == 'TIFF 16-bit' ) ) {
-  $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
-  $numberOfChannels = $nChannelsParameter->value( );
-  if ( $numberOfChannels > 1 ) {
-    $parameter->setValue("ICS (Image Cytometry Standard)");
-    $_SESSION['first_visit'] = False;
-  }
-}
+            // Make sure that if we had TIFF (8 or 16 bit) as output file format and a
+            // multichannel dataset, we reset the value to ics
+            if (($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')) {
+                /** @var \hrm\param\NumberOfChannels $nChannelsParameter */
+                $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+                $numberOfChannels = $nChannelsParameter->value();
+                if ($numberOfChannels > 1) {
+                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    $_SESSION['first_visit'] = False;
+                }
+            }
 
-// Make sure that if we had RGB-TIFF 8 bit as output file format and a
-// single-channel dataset or more than 3 channels, we reset the value to ics
-if ( $value == 'RGB TIFF 8-bit' ) {
-  $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
-  $numberOfChannels = $nChannelsParameter->value( );
-  if ( ( $numberOfChannels == 1 || $numberOfChannels > 3 ) ) {
-    $parameter->setValue("ICS (Image Cytometry Standard)");
-    $_SESSION['first_visit'] = False;
-  }
-}
+            // Make sure that if we had RGB-TIFF 8 bit as output file format and a
+            // single-channel dataset or more than 3 channels, we reset the value to ics
+            if ($value == 'RGB TIFF 8-bit') {
+                $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+                $numberOfChannels = $nChannelsParameter->value();
+                if (($numberOfChannels == 1 || $numberOfChannels > 3)) {
+                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    $_SESSION['first_visit'] = False;
+                }
+            }
 
-// Make sure that if we had Imaris Classic, TIFF 8, or TIFF 16 
-// as output file format and a time-series dataset, we reset 
-// the value to ics
-if (($value == 'IMS (Imaris Classic)') ||
-        ($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')) {
-  if ( ($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0) ) {
-    $parameter->setValue("ICS (Image Cytometry Standard)");
-    $_SESSION['first_visit'] = False;
-  }
-}
+            // Make sure that if we had Imaris Classic, TIFF 8, or TIFF 16
+            // as output file format and a time-series dataset, we reset
+            // the value to ics
+            if (($value == 'IMS (Imaris Classic)') ||
+                ($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')
+            ) {
+                if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0)) {
+                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    $_SESSION['first_visit'] = False;
+                }
+            }
 
-?>
-                <select name="OutputFileFormat" id="OutputFileFormat" size="1">
-<?php
+            ?>
+            <select name="OutputFileFormat"
+                    id="OutputFileFormat"
+                    title="Output file format"
+                    size="1">
+                <?php
 
-// FILTER POSSIBLE OUTPUT FILE FORMATS
+                // FILTER POSSIBLE OUTPUT FILE FORMATS
 
-// Extract possible values for OutputFileFormat
-$possibleValues = $parameter->possibleValues();
-sort( $possibleValues );
+                // Extract possible values for OutputFileFormat
+                $possibleValues = $parameter->possibleValues();
+                sort($possibleValues);
 
-// If the dataset is multi-channel, we remove the TIFF-16 bit
-// options from the list
-$nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
-$numberOfChannels = $nChannelsParameter->value( );
-if ( $numberOfChannels > 1 ) {
-  $possibleValues = array_diff($possibleValues, array( 'TIFF 16-bit' ) );
-  $possibleValues = array_diff($possibleValues, array( 'TIFF 8-bit' ) );
-  $possibleValues = array_values( $possibleValues );
-}
+                // If the dataset is multi-channel, we remove the TIFF-16 bit
+                // options from the list
 
-// If the dataset is single-channel or has more than 3 channels, we remove 
-// the RGB TIFF 8-bit option from the list
-$nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
-$numberOfChannels = $nChannelsParameter->value( );
-if ( ( $numberOfChannels == 1 ) || ( $numberOfChannels > 3) ) {
-  $possibleValues = array_diff($possibleValues, array( 'RGB TIFF 8-bit' ) );
-  $possibleValues = array_values( $possibleValues );
-}
+                /** @var \hrm\param\NumberOfChannels $nChannelsParameter */
+                $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+                $numberOfChannels = $nChannelsParameter->value();
+                if ($numberOfChannels > 1) {
+                    $possibleValues = array_diff($possibleValues, array('TIFF 16-bit'));
+                    $possibleValues = array_diff($possibleValues, array('TIFF 8-bit'));
+                    $possibleValues = array_values($possibleValues);
+                }
 
-// If the dataset is a time series, we remove Imaris classic, TIFF 8,
-// TIFF RGB and TIFF 16 from the list
-if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0) ) {
-    $possibleValues =
-        array_diff($possibleValues, array( 'IMS (Imaris Classic)' ) );
-    $possibleValues = array_diff($possibleValues, array( 'TIFF 16-bit' ) );
-    $possibleValues = array_diff($possibleValues, array( 'TIFF 8-bit' ) );
-    $possibleValues = array_diff($possibleValues, array( 'RGB TIFF 8-bit' ) );
-    $possibleValues = array_values( $possibleValues );
-}
+                // If the dataset is single-channel or has more than 3 channels, we remove
+                // the RGB TIFF 8-bit option from the list
+                $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
+                $numberOfChannels = $nChannelsParameter->value();
+                if (($numberOfChannels == 1) || ($numberOfChannels > 3)) {
+                    $possibleValues = array_diff($possibleValues, array('RGB TIFF 8-bit'));
+                    $possibleValues = array_values($possibleValues);
+                }
 
-// if 'first visit' is not set, set the OutputFileFormat as ICS
-if (!isset($_SESSION['first_visit'])) {
-  $parameter->setValue("ICS (Image Cytometry Standard)");
-  $_SESSION['first_visit'] = False;
-}
+                // If the dataset is a time series, we remove Imaris classic, TIFF 8,
+                // TIFF RGB and TIFF 16 from the list
+                if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0)) {
+                    $possibleValues =
+                        array_diff($possibleValues, array('IMS (Imaris Classic)'));
+                    $possibleValues = array_diff($possibleValues, array('TIFF 16-bit'));
+                    $possibleValues = array_diff($possibleValues, array('TIFF 8-bit'));
+                    $possibleValues = array_diff($possibleValues, array('RGB TIFF 8-bit'));
+                    $possibleValues = array_values($possibleValues);
+                }
 
-// Set the OutputFileFormat in the TaskSetting object
-$_SESSION['task_setting']->set($parameter);
+                // if 'first visit' is not set, set the OutputFileFormat as ICS
+                if (!isset($_SESSION['first_visit'])) {
+                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    $_SESSION['first_visit'] = False;
+                }
 
-foreach ($possibleValues as $possibleValue) {
-  if ($possibleValue == $parameter->value()) {
-    $selected = "selected=\"selected\"";
-  }
-  else {
-    $selected = "";
-  }
+                // Set the OutputFileFormat in the TaskSetting object
+                $_SESSION['task_setting']->set($parameter);
 
-?>
+                foreach ($possibleValues as $possibleValue) {
+                    if ($possibleValue == $parameter->value()) {
+                        $selected = "selected=\"selected\"";
+                    } else {
+                        $selected = "";
+                    }
+
+                    ?>
                     <option <?php echo $selected ?>>
                         <?php echo $possibleValue ?>
                     </option>
-<?php
+                    <?php
 
-}
+                }
 
-?>
-                </select>
+                ?>
+            </select>
 
-                <input name="create" type="hidden" value="create" />
+            <input name="create" type="hidden" value="create"/>
 
-          </fieldset>
+        </fieldset>
 
-        </form>
+    </form>
 
-        <fieldset class="report">
-            <legend>
-                <a href="javascript:openWindow('
-                   http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
-                    <img src="images/help.png" alt="?" />
-                </a>
-                <a href="select_parameter_settings.php">
-                    Image parameters
-                </a>: <?php print $_SESSION['setting']->name() ?>
-            </legend>
+    <fieldset class="report">
+        <legend>
+            <a href="openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                <img src="images/help.png" alt="?"/>
+            </a>
+            <a href="select_parameter_settings.php">
+                Image parameters
+            </a>: <?php print $_SESSION['setting']->name() ?>
+        </legend>
             <textarea name="parameter_settings_report"
+                      title="Summary"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -260,19 +269,20 @@ echo $_SESSION['setting']->displayString();
 
 ?>
             </textarea>
-        </fieldset>
+    </fieldset>
 
-        <fieldset class="report">
-            <legend>
-                <a href="javascript:openWindow('
+    <fieldset class="report">
+        <legend>
+            <a href="openWindow('
                    http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
-                    <img src="images/help.png" alt="?" />
-                </a>
-                <a href="select_task_settings.php">
-                    Processing parameters
-                </a>: <?php echo $_SESSION['task_setting']->name() ?>
-            </legend>
+                <img src="images/help.png" alt="?"/>
+            </a>
+            <a href="select_task_settings.php">
+                Processing parameters
+            </a>: <?php echo $_SESSION['task_setting']->name() ?>
+        </legend>
             <textarea name="task_settings_report"
+                      title="Summary"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -280,29 +290,29 @@ echo $_SESSION['setting']->displayString();
 
 $numberOfChannels = $_SESSION['setting']->numberOfChannels();
 $micrType = $_SESSION['setting']->microscopeType();
-    echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType);
+echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType);
 
 ?>
             </textarea>
-        </fieldset>
+    </fieldset>
 
-            
-   <fieldset class="report">
-            <legend>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
-                    <img src="images/help.png" alt="?" />
-                </a>
-            
+
+    <fieldset class="report">
+        <legend>
+            <a href="openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                <img src="images/help.png" alt="?"/>
+            </a>
+
             <?php if (System::hasLicense("coloc")) { ?>
-                <a href="select_analysis_settings.php">
-            <?php } else { ?>
+            <a href="select_analysis_settings.php">
+                <?php } else { ?>
                 <a>
-            <?php } ?>
+                    <?php } ?>
                     Analysis parameters
-    </a>: <?php echo $_SESSION['analysis_setting']->name() ?>
-            </legend>
+                </a>: <?php echo $_SESSION['analysis_setting']->name() ?>
+        </legend>
             <textarea name="analysis_settings_report"
+                      title="Summary"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -313,20 +323,20 @@ echo $_SESSION['analysis_setting']->displayString();
 ?>
             </textarea>
 
-        </fieldset>
-            
+    </fieldset>
 
-        <fieldset class="report">
-            <legend>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
-                    <img src="images/help.png" alt="?" />
-                </a>
-                <a href="select_images.php">
-                    Selected images
-                </a>
-            </legend>
+
+    <fieldset class="report">
+        <legend>
+            <a href="openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+                <img src="images/help.png" alt="?"/>
+            </a>
+            <a href="select_images.php">
+                Selected images
+            </a>
+        </legend>
             <textarea name="task_settings_report"
+                      title="Summary"
                       cols="50"
                       rows="3"
                       readonly="readonly">
@@ -334,88 +344,89 @@ echo $_SESSION['analysis_setting']->displayString();
 
 $files = $_SESSION['fileserver']->selectedFiles();
 foreach ($files as $file) {
-  echo " ".$file."\n";
+    echo " " . $file . "\n";
 }
 
 ?>
             </textarea>
 
-        </fieldset>
-            
-
-        <form method="post" action="">
-
-          <div id="controls">
-
-<?php
-
-if (!isset($_SESSION['jobcreated'])) {
-
-?>
-            <input type="button" name="previous" value="" class="icon previous"
-              onclick="goBack()"
-              onmouseover="TagToTip('ttSpanBack' )"
-              onmouseout="UnTip()" />
-            <input type="button" name="create job" value=""
-              class="icon launch_start"
-              onclick="submitJob()"
-              onmouseover="TagToTip('ttSpanCreateJob' )"
-              onmouseout="UnTip()" />
+    </fieldset>
 
 
-<?php
+    <form method="post" action="">
 
-}
+        <div id="controls">
 
-?>
-          </div>
+            <?php
 
-            </form>
+            if (!isset($_SESSION['jobcreated'])) {
 
-    </div> <!-- content -->
+                ?>
+                <input type="button" name="previous" value=""
+                       class="icon previous"
+                       onclick="goBack()"
+                       onmouseover="TagToTip('ttSpanBack' )"
+                       onmouseout="UnTip()"/>
+                <input type="button" name="create job" value=""
+                       class="icon launch_start"
+                       onclick="submitJob()"
+                       onmouseover="TagToTip('ttSpanCreateJob' )"
+                       onmouseout="UnTip()"/>
 
-    <div id="rightpanel">
 
-        <div id="info">
+                <?php
 
-          <h3>Quick help</h3>
+            }
 
-            <p>As a last step, please choose the output file format for your
+            ?>
+        </div>
+
+    </form>
+
+</div> <!-- content -->
+
+<div id="rightpanel">
+
+    <div id="info">
+
+        <h3>Quick help</h3>
+
+        <p>As a last step, please choose the output file format for your
             restored images.</p>
 
-            <p>Also, use this as summary to check your parameters. If you spot
+        <p>Also, use this as summary to check your parameters. If you spot
             a mistake, use the links on the left to go back and fix it.</p>
 
-            <p>Once you are okay with the parameters, press the
+        <p>Once you are okay with the parameters, press the
             <img src="images/launch_start.png" alt="Create job" width="30"
-                 height="22" /> <b>launch job</b> button to add the job to the
+                 height="22"/> <b>launch job</b> button to add the job to the
             queue and go back to
             the home page.</p>
 
-            <?php
-              if ( $numberOfChannels > 1 ) {
-                echo "<p>Please notice that is not possible to save " .
-                  "multichannel datasets in TIFF-16 bit format.</p>";
-              }
-            ?>
+        <?php
+        if ($numberOfChannels > 1) {
+            echo "<p>Please notice that is not possible to save " .
+                "multichannel datasets in TIFF-16 bit format.</p>";
+        }
+        ?>
 
-        </div>
+    </div>
 
-        <div id="message">
-<?php
+    <div id="message">
+        <?php
 
-echo "<p>$message</p>";
+        echo "<p>$message</p>";
 
-?>
-        </div>
+        ?>
+    </div>
 
-    </div> <!-- rightpanel -->
+</div> <!-- rightpanel -->
 
 <!-- Short script to make sure the user does not navigate away until he has submitted.
  We just set a variable canLeave to true when we should not display the warning.
- The warning comes from the onbeforeunload funciton. This is hard-coded into Firefox so
+ The warning comes from the onbeforeunload function. This is hard-coded into Firefox so
  the custom message does not display. In other browsers, the message here should show. -->
-<script type="text/javascript" >
+<script type="text/javascript">
     var canLeave = false;
     function submitJob() {
         canLeave = true;
@@ -424,13 +435,13 @@ echo "<p>$message</p>";
     }
     function goBack() {
         canLeave = true;
-        document.location.href='<?php echo $goBackLink; ?>';
+        document.location.href = '<?php echo $goBackLink; ?>';
     }
     // Check if the user is quitting it
-    window.onbeforeunload = function(e) {
+    window.onbeforeunload = function (e) {
         if (!canLeave) {
-        document.forms['createjob'].is
-        return 'You did not submit the job. Are you sure you want to exit?';
+            document.forms['createjob'].is
+            return 'You did not submit the job. Are you sure you want to exit?';
         }
     };
 
