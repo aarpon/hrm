@@ -7,18 +7,20 @@ if ($query_u == '') {
     exit();
 }
 
-$dir = dirname(__FILE__);
 
-$adLDAP_path = $dir . "/../inc/extern/adLDAP4/src/adLDAP.php";
-$ad_config = $dir . "/../config/active_directory_config.inc";
+use adLDAP\adLDAP;
+use adLDAP\adLDAPException;
 
-print "directory: $dir\n";
-print "path to adLDAP: $adLDAP_path\n";
-print "path to AD config: $ad_config\n";
+require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 
-require_once($adLDAP_path);
-require_once($ad_config);
-
+$ad_config = dirname(__FILE__) . "/../config/active_directory_config.inc";
+try {
+    /** @noinspection PhpIncludeInspection */
+    require_once $ad_config;
+} catch(\Exception $e) {
+    print("Configuration file '$ad_config' not found!");
+    exit(-1);
+}
 
 print "AD username: $AD_USERNAME\n";
 
@@ -67,4 +69,3 @@ print_r($info);
 print_r($userGroups);
 
 $m_AdLDAP->close();
-?>
