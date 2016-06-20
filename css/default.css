@@ -118,12 +118,6 @@ table {
     color: white;
 }
 
-/* Added by Oli for the image name */
-
-#title h2 {
-    position: relative;
-    margin-top: -20px;
-}
 #logo {
     position: absolute;
     top: 0px;
@@ -531,6 +525,14 @@ input.edit {
     background: url("../images/edit.png") no-repeat center;
 }
 
+input.imageTotemplate {
+    background: url("../images/template_from_file.png") no-repeat center;
+}
+
+input.huygens {
+    background: url("../images/huygens_template.png") no-repeat center;   
+}
+
 input.clone {
     background: url("../images/clone.png") no-repeat center;
 }
@@ -832,6 +834,29 @@ input.save {
 
 #queue input {
   vertical-align: middle;
+}
+
+#cac table {
+    font-size: 90%;
+    padding-bottom: 1em;
+}
+
+#cac td.header {
+    font-weight: bold;
+}
+
+#cac select {
+    width: 15%;
+    text-align: center;
+    margin-top: 1em;
+    margin-bottom: 2em;
+}
+
+#cac p.info {
+    text-align: center;
+    margin-bottom: 0em;
+    color: #4988DE;
+    font-size: 90%;
 }
 
 #jobParameters {
@@ -1354,7 +1379,7 @@ input {
 }
 
 input.icon {
-    width: 60px;
+    width: 50px;
     height: 60px;
     color: #fff;
     font-size: 0;
@@ -1490,7 +1515,7 @@ span.multichannel {
 
 div.multichannel {
     padding-top: 5px;
-    text-align: center;
+    text-align: justify;
 }
 
 .nowrap {
@@ -1731,10 +1756,6 @@ div.StedDeplModeValues {
 	background: url("../images/param_default.png") repeat-y left;
 }
 
-.provided {
-    background: url("../images/param_provided.png") repeat-y left;
-}
-
 .message_confidence_asIs {
     border: none;
     height: 30px;
@@ -1787,13 +1808,6 @@ div.StedDeplModeValues {
     margin-bottom: -5px;
     background: url("../images/text_provided.png") no-repeat bottom;
     color: #555A43;
-}
-
-.message_confidence_override {
-    border: none;
-    height: 15px;
-    margin-top: 5px;
-    margin-bottom: -5px;
 }
 
 #login_user {

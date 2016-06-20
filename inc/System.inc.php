@@ -24,8 +24,8 @@ class System {
      */
 
     const HRM_VERSION_MAJOR = 3;
-    const HRM_VERSION_MINOR = 2;
-    const HRM_VERSION_MAINTENANCE = 2;
+    const HRM_VERSION_MINOR = 3;
+    const HRM_VERSION_MAINTENANCE = 0;
 
     /* !
       \var 	DB_LAST_REVISION
@@ -33,7 +33,7 @@ class System {
 
       This value has to be set by the developers!
      */
-    const DB_LAST_REVISION = 13;
+    const DB_LAST_REVISION = 14;
 
     /* !
       \var 	MIN_HUCORE_VERSION_{MAJOR|MINOR|MAINTENANCE|PATCH}

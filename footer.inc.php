@@ -88,21 +88,22 @@ $loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
         ?>
 
         and released under the terms of the
-        <a href="http://huygens-rm.org/home/?q=node/26">CeCILL license</a>
-		<br />extended 2006-2014 by
+        <a href="http://www.huygens-rm.org/wp/?page_id=81">CeCILL license</a>
+		<br />extended 2006-2016 by
 		<?php
             $name_list = array("Asheesh Gulati", "Alessandra Griffa",
                 "Jos&eacute; Vi&ntilde;a", "Daniel Sevilla",
                 "Niko Ehrenfeuchter", "Torsten St&ouml;ter",
-                "Aaron Ponti");
+                "Olivier Burri", "Aaron Ponti");
             if ($loggedIn == true) {
                 // Previous developers have their email address hidden for privacy
                 $email_list = array("", "", "", "daniel@svi.nl",
                 "nikolaus.ehrenfeuchter@unibas.ch",
                 "torsten.stoeter@ifn-magdeburg.de",
+                "olivier.burri@epfl.ch",
                 "aaron.ponti@bsse.ethz.ch");
             } else {
-                $email_list = array_pad(array(""), 7, "");
+                $email_list = array_pad(array(""), count($name_list), "");
             }
             echo addDevelopers($name_list, $email_list);
         ?>

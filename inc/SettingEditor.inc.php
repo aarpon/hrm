@@ -5,6 +5,7 @@
 require_once("Setting.inc.php");
 require_once("Database.inc.php");
 require_once("User.inc.php");
+require_once("Util.inc.php");
 
 /*!
   \class    BaseSettingEditor
@@ -177,6 +178,60 @@ abstract class BaseSettingEditor {
         $result = $newSetting->save();
         $this->message = $newSetting->message();
         return $result;
+    }
+
+    /*!
+      \brief    Creates a new setting based on parsing the given file
+                through HuCore.
+      \param    $setting  The setting object to fill.
+      \param    $fileName File name without path.
+      \return   True if the new template creation was successful,
+                false otherwise.
+    */
+    public function image2hrmTemplate($setting, $fileName)
+    {
+        $result = False;
+        
+        if ($setting == NULL) {
+            return $result;
+        }
+        
+        /* If it doesn't work, just do the same as create new. */
+        $opts = "-path \"" . $_SESSION['fileserver']->sourceFolder() .
+            "\" -filename \"$fileName\"";
+        
+        $data = askHuCore('getMetaDataFromImage', $opts);
+        
+        $setting->parseParamsFromHuCore($data);
+        $this->message = $setting->message();
+        
+        return $result;
+    }
+
+    /*!
+      \brief    Populates a setting based on parsing the raw file string of
+                a Huygens template.
+      \param    $setting    The setting object to fill.
+      \param    $rawString  The raw contents of the template file.
+      \return   True if the new template creation was successful,
+                false otherwise.
+    */
+    public function huTemplate2hrmTemplate($setting, $huTemplate) {
+
+       $result = False;
+
+       if ($setting == NULL) {
+           return $result;
+       }
+
+       $opts = "-huTemplate \"" . $huTemplate . "\"";
+       
+       $data = askHuCore('getMetaDataFromHuTemplate', $opts);
+
+       $setting->parseParamsFromHuCore($data);
+       $this->message = $setting->message();
+       
+       return $result;
     }
 
     /*!
@@ -444,6 +499,33 @@ class TaskSettingEditor extends BaseSettingEditor {
     function newSettingObject() {
         return (new TaskSetting());
     }
+
+        /*!
+      \brief    Populates a setting based on parsing the raw file string of
+                a Huygens template.
+      \param    $setting    The task setting object to fill.
+      \param    $rawString  The raw contents of the template file.
+      \return   True if the new template creation was successful,
+                false otherwise.
+    */
+    public function huTemplate2hrmTemplate($setting, $huTemplate) {
+
+       $result = False;
+
+       if ($setting == NULL) {
+           return $result;
+       }
+
+       $opts = "-huTemplate \"" . $huTemplate . "\"";
+       
+       $data = askHuCore('getDeconDataFromHuTemplate', $opts);
+
+       $setting->parseParamsFromHuCore($data);
+       $this->message = $setting->message();
+       
+       return $result;
+    }
+
 }
 
 

@@ -2963,7 +2963,7 @@ if ($current_revision < $n) {
 // ------------------ Add entries to 'job_files' -------------------------
     $tabname   = "job_files";
     $newcolumn = "autoseries";
-    $yype = "VARCHAR(1)";
+    $type = "VARCHAR(1)";
 
     // Does the column exist already?
     $columns = $db->MetaColumnNames( $tabname );
@@ -3965,6 +3965,1016 @@ if ($current_revision < $n) {
     write_to_log($msg);
 
 }
+
+// -----------------------------------------------------------------------------
+// Update to revision 14
+// Description: Add GPU to globals
+//              Add NumberOfChannels = 6 into possible_values
+//              Support for SPIM microscopy
+// -----------------------------------------------------------------------------
+$n = 14;
+if ($current_revision < $n) {
+
+    $msg = "Trying to update the DB to revision " . $n . ".";
+    write_message($msg);
+    write_to_error($msg);
+
+    // Add GPUenabled = 0 into global_variables
+    $tabname = "global_variables";
+    $record = array();
+    $record["name"] = "GPUenabled";
+    $record["value"] = "0";
+    $rs = $db->Execute("SELECT * FROM " . $tabname .
+                       " WHERE name='" . $record["name"] .
+                       "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Add NumberOfChannels = 6 into possible_values
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "NumberOfChannels";
+    $record["value"] = "6";
+    $record["translation"] = "";
+    $record["isDefault"] = "f";
+    $rs = $db->Execute("SELECT * FROM " . $tabname .
+                       " WHERE parameter='" . $record["parameter"] .
+                       "' AND value='" . $record["value"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Values for parameter 'ChromaticAberration'.
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ChromaticAberration";
+    $record["value"] = "#0#0#0#0#1#";
+    $record["translation"] = "";
+    $record["isDefault"] = "T";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+                       $record["parameter"] . "' AND value='" .
+                       $record["value"] . "' AND translation='" .
+                       $record["translation"] . "' AND isDefault='" .
+                       $record["isDefault"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    // Add Big TIFF file extensions.
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "btf";
+    $record["extension"] = "btf";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "tf2";
+    $record["extension"] = "tf2";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+    
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "tf8";
+    $record["extension"] = "tf8";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+    
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "big-tiff";
+    $record["translation"] = "Big TIFF (*.tf2, *.tf8, *.btf)";
+    $record["isDefault"] = "f";
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
+            $record["parameter"] . "' AND value='" .
+            $record["value"] . "' AND translation='" .
+            $record["translation"] . "' AND isDefault='" .
+            $record["isDefault"] . "'");
+
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "big-tiff";
+    $record["hucorename"] = "";
+
+    // Check if it already exists
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" .
+            $record["name"] . "' AND hucorename='" .
+            $record["hucorename"] . "'");
+
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // ------- Enable longer user names in the template infrastructure. ------
+
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('parameter_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('task_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('task_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('analysis_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('analysis_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('analysis_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('analysis_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_task_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_task_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_task_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_task_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_files',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_queue',
+                                                'username VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
+                                                'previous_owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
+                                                'previous_owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+    
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
+                                                'setting VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
+                                                'previous_owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('statistics',
+                                                'owner VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('username',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }    
+
+
+    // ------- Enable longer server names in the queue manager. ------
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('server',
+                                                'name VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $alterColumnSQL = $datadict->AlterColumnSQL('job_queue',
+                                                'server VARCHAR(255)');
+    $rs = $db->Execute($alterColumnSQL[0]);
+    if (!$rs) {
+        $msg = "Could not modify column in table.";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    // ------- Add SPIM microscopy. ------
+    
+    $tabname = "possible_values";
+    
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "SPIM";
+    $record["translation"] = "spim";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType7";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimExcMode";
+    $record["value"] = "Gaussian light sheet";
+    $record["translation"] = "gauss";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimExcMode1";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimExcMode";
+    $record["value"] = "Gaussian MultiView light sheet";
+    $record["translation"] = "gaussMuVi";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimExcMode2";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimExcMode";
+    $record["value"] = "High fill factor, scanning beam ";
+    $record["translation"] = "scanning";
+    $record["isDefault"] = "t";
+    $record["parameter_key"] = "SpimExcMode3";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimExcMode";
+    $record["value"] = "High fill factor, cylinder ";
+    $record["translation"] = "cylinder";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimExcMode4";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimGaussWidth";
+    $record["value"] = "Width of Gaussian light sheet";
+    $record["translation"] = "spimGaussWidth";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimGaussWidth";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimFocusOffset";
+    $record["value"] = "Light sheet focus offset (microns)";
+    $record["translation"] = "spimFocusOff";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimFocusOffset";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimCenterOffset";
+    $record["value"] = "Sheet lateral offset (microns)";
+    $record["translation"] = "spimCenterOff";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimCenterOffset";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "From right";
+    $record["translation"] = "0.0";
+    $record["isDefault"] = "t";
+    $record["parameter_key"] = "SpimDir1";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "From top";
+    $record["translation"] = "90.0";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimDir2";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "From left";
+    $record["translation"] = "180.0";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimDir3";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "From bottom";
+    $record["translation"] = "270.0";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimDir4";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "Top + bottom";
+    $record["translation"] = "90.0";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimDir5";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimDir";
+    $record["value"] = "Right + left";
+    $record["translation"] = "0.0";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimDir6";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimNA";
+    $record["value"] = "Numerical aperture of the light sheet lens";
+    $record["translation"] = "spimNA";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimNA";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "SpimFill";
+    $record["value"] = "Fill factor of the light sheet lens";
+    $record["translation"] = "spimFill";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "SpimFill";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    
+// ------------------ Add columns to 'confidence_levels' ----------------------
+    $tabname   = "confidence_levels";
+    $newcolumns = array("stedMode",
+                        "stedLambda",
+                        "stedSatFact",
+                        "stedImmunity",
+                        "sted3D");
+    $type = "C(16)";
+
+    $allcolumns = $db->MetaColumnNames( 'confidence_levels' );
+    foreach ($newcolumns as $newcolumn) {
+        if (array_key_exists( strtoupper($newcolumn), $allcolumns) ) {
+            continue;
+        }
+        if ( !insert_column($tabname, $newcolumn . " " . $type) ) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+// -------------------- Add limits to percentage values ------------------------
+
+    $tabname = "boundary_values";
+
+    $record = array();
+    $record["parameter"] = "StedImmunity";
+    $record["min"] = "0";
+    $record["max"] = "100";
+    $record["min_included"] = "T";
+    $record["max_included"] = "T";
+    $record["standard"] = "0";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $record = array();
+    $record["parameter"] = "Sted3D";
+    $record["min"] = "0";
+    $record["max"] = "100";
+    $record["min_included"] = "T";
+    $record["max_included"] = "T";
+    $record["standard"] = "0";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    
+    //Update revision
+    if(!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
 
 fclose($fh);
 

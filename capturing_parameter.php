@@ -78,6 +78,8 @@ $MICR = $_SESSION['setting']->parameter("MicroscopeType")->value( );
 
 if ($MICR == "STED" || $MICR == 'STED 3D') {
     $pageToGo = 'sted_parameters.php';
+} elseif($MICR == "SPIM") {
+    $pageToGo = 'spim_parameters.php';
 } elseif ($PSF == 'measured' ) {
   $pageToGo = 'select_psf.php';
   // Make sure to turn off the correction
@@ -444,12 +446,17 @@ if ($_SESSION['setting']->hasPinhole()) {
 
   // manage one pinhole radius per channel
   for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
-
-  // Add a line break after 3 entries
-  if ( $i == 3 ) {
-      echo "<br />";
-  }
-
+      
+    /* Add a line break after a number of entries. */
+    if ( $_SESSION['setting']->numberOfChannels() == 4 ) {
+        if ($i == 2) {
+            echo "<br />";
+        }
+    } else {
+        if ($i == 3) {
+            echo "<br />";
+        }
+    }
 ?>
 	<span class="nowrap">
         Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;

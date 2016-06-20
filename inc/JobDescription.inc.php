@@ -485,7 +485,11 @@ class JobDescription {
     $taskSetting = $this->taskSetting();
     $files = $this->files();
     $outputFile = $this->sourceImageShortName();
-    $outputFile = end(explode($taskSetting->name(), $this->sourceImageShortName()));
+    // work around the fact that end() requires a reference, but the result of
+    // explode() cannot be turned into one, so use a temporary variable instead
+    // (see http://stackoverflow.com/questions/4636166/ for more details)
+    $tmp = explode($taskSetting->name(), $this->sourceImageShortName());
+    $outputFile = end($tmp);
     $outputFile = str_replace(" ","_",$outputFile);
     $result = $outputFile . "_" . $taskSetting->name() . "_hrm";
         # Add a non-numeric string at the end: if the task name ends with a

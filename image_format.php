@@ -20,6 +20,10 @@ if ( !isset( $_SESSION[ 'user' ] ) || !$_SESSION[ 'user' ]->isLoggedIn() ) {
   header("Location: " . "login.php"); exit();
 }
 
+if (isset($_GET['home'])) {
+    header("Location: " . "home.php"); exit();
+}
+
 if ( !isset( $_SESSION[ 'setting' ] ) ) {
   $_SESSION['setting'] = new ParameterSetting();
 }
@@ -107,7 +111,6 @@ include("header.inc.php");
         <ul>
             <?php
                 include("./inc/nav/user.inc.php");
-                ### FIXME: the "home" link does not work on this page!!
                 include("./inc/nav/home.inc.php");
             ?>
         </ul>
@@ -168,33 +171,30 @@ function check($parameter, $value) {
                     </div>
                     <?php
                     }
-                    ?>
 
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value=""
-                           style="display:none;" />
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="1"
-                           <?php check($parameterNumberOfChannels, 1) ?>/>1
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="2"
-                           <?php check($parameterNumberOfChannels, 2) ?>/>2
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="3"
-                           <?php check($parameterNumberOfChannels, 3) ?>/>3
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="4"
-                            <?php check($parameterNumberOfChannels, 4) ?>/>4
-                    <input name="NumberOfChannels"
-                           type="radio"
-                           value="5"
-                           <?php check($parameterNumberOfChannels, 5) ?>/>5
+for ($i = 0; $i <= $db->getMaxChanCnt(); $i++) {
+    if ($i == 0) {
+?>
+        <input name="NumberOfChannels"
+        type="radio"
+        value=""
+        style="display:none;" />
+<?php
+    } else {
+?>
+        <input name="NumberOfChannels"
+        type="radio"
+        value="<?php echo $i;?>"
+<?php check($parameterNumberOfChannels, $i) ?>    /> <?php echo $i;?>
+<?php
+    }    
+}
+?>
+
+
+
                 </div> <!-- values -->
+
 
                 <div class="bottom">
                     <p class="message_confidence_<?php

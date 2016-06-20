@@ -178,7 +178,7 @@ abstract class Setting {
         foreach ($setting->parameterNames() as $name) {
             $parameter = $this->parameter[$name];
             $otherParameter = $setting->parameter($name);
-            $newValue = $otherParameter->internalValue();
+            $newValue = $otherParameter->internalValue();    
             $parameter->setValue($newValue);
             $this->parameter[$name] = $parameter;
         }
@@ -189,19 +189,22 @@ abstract class Setting {
               Setting names are stored.
 
       Besides the name, the table contains the Setting's name, owner and
-      the standard (default) flag. This is an abstract function and must
-      be reimplemented.
+      the standard (default) flag. This method must be reimplemented.
     */
-    abstract static function table();
+    static function table() {
+        throw new Exception('This method must be reimplemented!');
+    }
 
     /*!
       \brief	Returns the name of the database table in which all the Parameters
               for the Settings stored in the table specified in table()
 
-      This is an abstract function and must be reimplemented.
+      This method must be reimplemented.
       \see table()
     */
-    abstract static function parameterTable();
+    static function parameterTable() {
+        throw new Exception('This method must be reimplemented!');
+    }
 
     /*!
       \brief  Loads the Parameter values into current Setting
@@ -251,7 +254,7 @@ abstract class Setting {
 
       All variable channels Parameter objects in the Setting will updated.
 
-      \param	$channels	Number of channels (between 1 and 5)
+      \param	$channels	Number of channels (between 1 and 6)
     */
     public function setNumberOfChannels($channels) {
         $this->numberOfChannels = $channels;
@@ -262,6 +265,13 @@ abstract class Setting {
             }
         }
     }
+
+    /*!
+  \brief	parses an array retuned by hucore after it has read a file
+    This is an abstract function and must
+  be reimplemented.
+*/
+ //   abstract public function ($hucorearray);
 
 } // End of Setting class
 
@@ -313,7 +323,14 @@ class ParameterSetting extends Setting {
             'StedSaturationFactor',
             'StedWavelength',
             'StedImmunity',
-            'Sted3D'
+            'Sted3D',
+            'SpimExcMode',
+            'SpimGaussWidth',
+            'SpimFocusOffset',
+            'SpimCenterOffset',
+            'SpimNA',
+            'SpimFill',
+            'SpimDir'
         );
         foreach ($parameterClasses as $class) {
             $param = new $class;
@@ -380,6 +397,13 @@ class ParameterSetting extends Setting {
         foreach ($this->parameter as $objName => $objInstance) {
 
             switch ( $objName ) {
+                case 'SpimExcMode':
+                case 'SpimGaussWidth':
+                case 'SpimFocusOffset':
+                case 'SpimCenterOffset':
+                case 'SpimNA':
+                case 'SpimFill':
+                case 'SpimDir':
                 case "StedDepletionMode" :
                 case "StedWavelength" :
                 case "StedSaturationFactor" :
@@ -395,6 +419,7 @@ class ParameterSetting extends Setting {
                             $postedParams["$objName$chan"] = $value;
                         }
                     }
+                    break;
                 default:
                     $postedParams[$objName] = $objInstance->value();
             }
@@ -425,13 +450,19 @@ class ParameterSetting extends Setting {
         }
 
         if ($ok) {
+            if (!$this->checkPostedAberrationCorrectionParameters($postedParams)) {
+                $ok = False;
+            }
+        }
+
+        if ($ok) {
             if ( !$this->checkPostedStedParameters($postedParams) )  {
                 $ok = False;
             }
         }
 
         if ($ok) {
-            if (!$this->checkPostedAberrationCorrectionParameters($postedParams)) {
+            if ( !$this->checkPostedSpimParameters($postedParams) )  {
                 $ok = False;
             }
         }
@@ -512,15 +543,16 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedMicroscopyParameters($postedParameters) {
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
 
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
         $this->message = '';
         $noErrorsFound = True;
-
 
         // Get the names of the relevant parameters
         $names = $this->microscopeParameterNames();
@@ -534,8 +566,8 @@ class ParameterSetting extends Setting {
         // We handle multi-value parameters differently than single-valued ones
 
         // Excitation wavelengths
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["ExcitationWavelength$i"])) {
                 $value[$i] = $postedParameters["ExcitationWavelength$i"];
                 unset($postedParameters["ExcitationWavelength$i"]);
@@ -578,8 +610,8 @@ class ParameterSetting extends Setting {
         }
 
         // Emission wavelengths
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["EmissionWavelength$i"])) {
                 $value[$i] = $postedParameters["EmissionWavelength$i"];
                 unset($postedParameters["EmissionWavelength$i"]);
@@ -703,7 +735,370 @@ class ParameterSetting extends Setting {
         return $noErrorsFound;
     }
 
+    /*!
+      \brief	Checks that the posted SPIM Parameters are all defined
+              and valid
+      \param	$postedParameters	The $_POST array
+      \return	true if all Paraneters are defined and valid, false otherwise
+    */
+    public function checkPostedSpimParameters($postedParameters) {
+        $this->message = '';
 
+        if (count($postedParameters) == 0) {
+            return False;
+        }
+
+        if (!$this->isSpim()) {
+            return True;
+        }
+
+        $noErrorsFound = True;
+
+        // Excitation Mode
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimExcMode$i"])) {
+                $value[$i] = $postedParameters["SpimExcMode$i"];
+                unset($postedParameters["SpimExcMode$i"]);
+            }
+        }
+        $name = 'SpimExcMode';
+        $valueSet = count(array_filter($value)) > 0;
+
+        if ($valueSet) {
+
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            // Keep the 'excModes' so that it can be checked below if any SPIM
+            // parameters need to be forced, e.g when 'excMode' is 'High NA'.
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            } else {
+                $excModes = $parameter->value();
+            }
+        } else {
+
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the SPIM excitation mode!";
+                $noErrorsFound = False;
+            }
+        }
+        
+
+        // Gaussian Width
+        $value = array(null, null, null, null, null);
+
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimGaussWidth$i"])) {
+                $value[$i] = $postedParameters["SpimGaussWidth$i"];
+                unset($postedParameters["SpimGaussWidth$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is 'High NA'.
+                if (empty($value[$i])
+                    && isset($excModes[$i])
+                    && $excModes[$i] == "High NA") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'SpimGaussWidth';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+
+        } else {
+
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim Gaussian Width!";
+                $noErrorsFound = False;
+            }
+        }
+
+
+        // Spim Sheet Focus Offset
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimFocusOffset$i"])) {
+                $value[$i] = $postedParameters["SpimFocusOffset$i"];
+                unset($postedParameters["SpimFocusOffset$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is 'High NA'.
+                if (empty($value[$i])
+                    && isset($excModes[$i])
+                    && $excModes[$i] == "High NA") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'SpimFocusOffset';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+
+        } else {
+
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim Focus Offset!";
+                $noErrorsFound = False;
+            }
+        }
+
+
+        // Spim Sheet Center Offset
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimCenterOffset$i"])) {
+                $value[$i] = $postedParameters["SpimCenterOffset$i"];
+                unset($postedParameters["SpimCenterOffset$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is 'High NA'.
+                if (empty($value[$i])
+                    && isset($excModes[$i])
+                    && $excModes[$i] == "High NA") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'SpimCenterOffset';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+
+        } else {
+
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim Center Offset!";
+                $noErrorsFound = False;
+            }
+        }
+        
+
+        // Spim NA
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimNA$i"])) {
+                $value[$i] = $postedParameters["SpimNA$i"];
+                unset($postedParameters["SpimNA$i"]);
+
+                // Fallback to '0' if no value was provided and
+                // the channel is not 'High NA'.
+                if (empty($value[$i])
+                    && isset($excModes[$i])
+                    && $excModes[$i] != "High NA") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'SpimNA';
+
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+
+        } else {
+
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim NA!";
+                $noErrorsFound = False;
+            }
+        }
+
+
+        // Spim Fill Factor
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimFill$i"])) {
+                $value[$i] = $postedParameters["SpimFill$i"];
+                unset($postedParameters["SpimFill$i"]);
+                
+                // Fallback to '0' if no value was provided and
+                // the channel is not 'High NA'.
+                if (empty($value[$i])
+                    && isset($excModes[$i])
+                    && $excModes[$i] != "High NA") {
+                    $value[$i] = 0;
+                }
+            }
+        }
+        $name = 'SpimFill';
+        
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim Fill Factor!";
+                $noErrorsFound = False;
+            }
+        }
+
+
+        // Spim Direction
+        $value = array(null, null, null, null, null);
+        for ($i = 0; $i < 5; $i++) {
+            if (isset($postedParameters["SpimDir$i"])) {
+                $value[$i] = $postedParameters["SpimDir$i"];
+                unset($postedParameters["SpimDir$i"]);
+            }
+        }
+        $name = 'SpimDir';
+        
+        // Do not filter '0'. Thus, use 'strlen' as callback for filtering.
+        $valueSet = count(array_filter($value, 'strlen')) > 0;
+        if ($valueSet) {
+            
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+            
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+            
+        } else {
+            
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+            
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+            
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Spim Direction!";
+                $noErrorsFound = False;
+            }
+        }       
+
+        return $noErrorsFound;
+    }
 
     /*!
       \brief	Checks that the posted STED Parameters are all defined
@@ -712,8 +1107,6 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedStedParameters($postedParameters) {
-        $this->message = '';
-
         if (count($postedParameters) == 0) {
             return False;
         }
@@ -721,12 +1114,16 @@ class ParameterSetting extends Setting {
         if (!$this->isSted() && !$this->isSted3D()) {
             return True;
         }
-
+        
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+        
+        $this->message = '';
         $noErrorsFound = True;
 
         // Depletion Mode
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedDepletionMode$i"])) {
                 $value[$i] = $postedParameters["StedDepletionMode$i"];
                 unset($postedParameters["StedDepletionMode$i"]);
@@ -770,9 +1167,8 @@ class ParameterSetting extends Setting {
 
 
         // Saturation Factor
-        $value = array(null, null, null, null, null);
-
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedSaturationFactor$i"])) {
                 $value[$i] = $postedParameters["StedSaturationFactor$i"];
                 unset($postedParameters["StedSaturationFactor$i"]);
@@ -822,8 +1218,8 @@ class ParameterSetting extends Setting {
 
 
         // Sted Wavelength
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedWavelength$i"])) {
                 $value[$i] = $postedParameters["StedWavelength$i"];
                 unset($postedParameters["StedWavelength$i"]);
@@ -873,8 +1269,8 @@ class ParameterSetting extends Setting {
 
 
         // Sted Immunity Fraction
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             if (isset($postedParameters["StedImmunity$i"])) {
                 $value[$i] = $postedParameters["StedImmunity$i"];
                 unset($postedParameters["StedImmunity$i"]);
@@ -925,8 +1321,8 @@ class ParameterSetting extends Setting {
 
         // Sted 3D
         if ($this->isSted3D()) {
-            $value = array(null, null, null, null, null);
-            for ($i = 0; $i < 5; $i++) {
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                $value[$i] = null;
                 if (isset($postedParameters["Sted3D$i"])) {
                     $value[$i] = $postedParameters["Sted3D$i"];
                     unset($postedParameters["Sted3D$i"]);
@@ -977,8 +1373,7 @@ class ParameterSetting extends Setting {
 
 
         return $noErrorsFound;
-    }
-
+    }   
 
     /*!
       \brief	Checks that the posted Capturing Parameters are all defined
@@ -987,11 +1382,13 @@ class ParameterSetting extends Setting {
       \return	true if all Paraneters are defined and valid, false otherwise
     */
     public function checkPostedCapturingParameters($postedParameters) {
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
+
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
         $noErrorsFound = True;
@@ -1091,8 +1488,8 @@ class ParameterSetting extends Setting {
         if ($this->hasPinhole()) {
 
             // Pinhole sizes
-            $value = array(null, null, null, null, null);
-            for ($i = 0; $i < 5; $i++) {
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                $value[$i] = null;
                 if (isset($postedParameters["PinholeSize$i"])) {
                     $value[$i] = $postedParameters["PinholeSize$i"];
                     unset($postedParameters["PinholeSize$i"]);
@@ -1172,6 +1569,7 @@ class ParameterSetting extends Setting {
 
         return $noErrorsFound;
     }
+
 
     /*!
       \brief	Checks that the posted Aberration Correction Parameters are all
@@ -1367,6 +1765,7 @@ class ParameterSetting extends Setting {
         return $noErrorsFound;
     }
 
+    
     /*!
       \brief	Checks that the posted Calculate Pixel Size Parameters are all defined
               and valid
@@ -1495,6 +1894,22 @@ class ParameterSetting extends Setting {
     }
 
     /*!
+      \brief	Returns all Spim Parameter names
+      \return array of Spim Parameter names
+    */
+    public function spimParameterNames() {
+        $names = array();
+
+        foreach ($this->parameter as $parameter) {
+            if ($parameter->isForSpim()) {
+                $names[] = $parameter->name();
+            }
+        }
+
+        return $names;
+    }
+
+    /*!
       \brief	Returns all Capture Parameter names
       \return array of Capture Parameter names
      */
@@ -1541,6 +1956,11 @@ class ParameterSetting extends Setting {
               their values
     */
     public function displayString($numberOfChannels = 0, $micrType = NULL) {
+        /**
+         * Please notice: the input arguments $numberOfChannels and $micrType
+         * are ignored.
+         */
+
         $result = '';
 
 
@@ -1613,6 +2033,25 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'Sted3D' && !$this->isSted3D())
                 continue;
+            
+            // To avoid confusion it would be desirable to filter SPIM
+            // parameters on a per channel basis, but we don't do that yet
+            // for any HRM parameters.
+            if ($parameter->name() == 'SpimExcMode' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimGaussWidth' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimFocusOffset' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimCenterOffset' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimNA' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimFill' && !$this->isSpim())
+                continue;
+            if ($parameter->name() == 'SpimDir' && !$this->isSpim())
+                continue;
+            
             if ($parameter->name() == 'PSF' && $PSFmode == 'measured') {
 
                 // If this is a shared template, process the PSF file paths
@@ -1919,6 +2358,18 @@ class ParameterSetting extends Setting {
     }
 
     /*!
+      \brief   Checks whether the currently selected microscope type is spim.
+      \return  true if the currently selected microscope type is spim, false
+               otherwise.
+    */
+    public function isSpim() {
+        $parameter = $this->parameter('MicroscopeType');
+        $value = $parameter->value();
+        return ($value === 'SPIM');
+    }
+
+
+    /*!
       \brief	Checks whether the currently selected microscope type is spinning
               (Nipkow) disk confocal
       \return	true if the currently selected microscope type is spinning (Nipkow)
@@ -2068,6 +2519,209 @@ class ParameterSetting extends Setting {
         $result = $db->getTemplatesSharedBy($username, self::sharedTable());
         return $result;
     }
+
+    /*!
+      \brief Huygens parameters to HRM parameters.
+      \param $huArray An array with the result of 'image setp -tclReturn'.
+    */
+    public function parseParamsFromHuCore($huArray){
+
+         // Sanity checks: remove trailing spaces.
+        foreach ($huArray as $key => $value) {
+            $huArray[$key] = trim($value, " ");
+        }
+
+        // Microscope Type.
+        if (strpos($huArray['parState,micr'], "default") === FALSE) {
+            $huMicrType = explode(" ", $huArray['micr'], 5);
+            $hrmMicrType = $this->parameter['MicroscopeType'];
+
+            // By default, take the first value.
+            $micrVal = $hrmMicrType->translateHucore($huMicrType[0]);
+
+            // If there is STED, just make sure that it's the right one.
+            if(array_search('sted', $huMicrType)) {
+                $micrVal = $hrmMicrType->translateHucore('sted');
+            }
+            if(array_search('sted3d', $huMicrType)) {
+                $micrVal = $hrmMicrType->translateHucore('sted3d');
+            }
+
+            $hrmMicrType->setValue($micrVal);
+        } 
+
+        // Number of channels.
+        if (isset($huMicrType)) {
+            $chanCnt = count($huMicrType);
+        } else {
+            $chanCnt = 1;
+        }
+        
+        if ($chanCnt > 5) $chanCnt = 5;
+        $this->parameter['NumberOfChannels']->setValue($chanCnt);
+
+        // Sampling sizes. Exceptionally, no CL is checked here.
+        if (isset($huArray['s'])) {
+            $sampleSizes = array_map('floatval',  explode(' ', $huArray['s']));
+            
+            $sampleSizes[0] = round($sampleSizes[0] * 1000);
+            $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
+            
+            $sampleSizes[2] = round($sampleSizes[2] * 1000);
+            $this->parameter['ZStepSize']->setValue($sampleSizes[2]);
+            
+            $this->parameter['TimeInterval']->setValue($sampleSizes[3]);
+        }
+        
+        // Numerical Aperture.
+        if (strpos($huArray['parState,na'], "default") === FALSE) {
+            $na = explode(" ", $huArray['na'], 5);
+            $this->parameter['NumericalAperture']->setValue($na[0]);
+        }
+
+        // Objective Type.
+        if (strpos($huArray['parState,ril'], "default") === FALSE) {
+            $lensImm = array_map('floatval',
+                                 explode(' ', $huArray['ril']));
+            $this->parameter['ObjectiveType']->setValue($lensImm[0]);
+        }
+
+        // Sample Medium.
+        if (strpos($huArray['parState,ri'], "default") === FALSE) {
+            $embMedium = array_map('floatval',
+                                   explode(' ', $huArray['ri']));
+            $this->parameter['SampleMedium']->setValue($embMedium[0]);
+        }
+
+        // Excitation Wavelength.
+        if (strpos($huArray['parState,ex'], "default") === FALSE) {
+            $lambdaEx = array_map('intval',
+                                  explode(' ', $huArray['ex']));
+            $this->parameter['ExcitationWavelength']->setValue($lambdaEx);
+        }
+        
+        // Emission Wavelength.
+        if (strpos($huArray['parState,em'], "default") === FALSE) {
+            $lambdaEm = array_map('intval',
+                                  explode(' ', $huArray['em']));
+            $this->parameter['EmissionWavelength']->setValue($lambdaEm);
+        }
+
+        // Pinhole size.
+        if (strpos($huArray['parState,pr'], "default") === FALSE) {
+            $pinhole = array_map('intval',
+                                 explode(' ', $huArray['pr']));
+            $this->parameter['PinholeSize']->setValue($pinhole);
+        }
+
+        // Pinhole spacing.
+        if (strpos($huArray['parState,ps'], "default") === FALSE) {
+            $phSpacing = array_map('floatval',
+                                   explode(' ', $huArray['ps']));
+            $this->parameter['PinholeSpacing']->setValue($phSpacing[0]);
+        }
+
+        // Coverslip Relative Position.
+        if (strpos($huArray['parState,imagingDir'], "default") === FALSE) {
+            // Downward is closest.
+            $imagingDir   = explode(' ', $huArray['imagingDir']);
+            $coversPos = "farthest";
+            if (strcmp("downward", $imagingDir[0])) {
+                $coversPos = "closest";
+            }
+            $this->parameter['CoverslipRelativePosition']->setValue($coversPos);
+        }
+
+        // STED Depletion Mode.
+        if (strpos($huArray['parState,stedMode'], "default") === FALSE) {
+            $stedMode = explode(' ', $huArray['stedMode']);
+            
+            // Rename some modes if the mType is set to confocal.
+            for($i = 0; $i < count($stedMode); $i++) {
+                if($huMicrType[$i] == 'confocal') {
+                    $stedMode[$i] = 'off-confocal';
+                }
+            }
+            $this->parameter['StedDepletionMode']->setValue($stedMode);
+        }
+
+        // STED Saturation Factor.
+        if (strpos($huArray['parState,stedSatFact'], "default") === FALSE) {
+            $stedSatFact = array_map('floatval',
+                                     explode(' ', $huArray['stedSatFact']));
+            $this->parameter['StedSaturationFactor']->setValue($stedSatFact);
+        }
+
+        // STED Wavelength.
+        if (strpos($huArray['parState,stedLambda'], "default") === FALSE) {
+            $stedLambda = array_map('floatval',
+                                    explode(' ', $huArray['stedLambda']));
+            $this->parameter['StedWavelength']->setValue($stedLambda);
+        }
+        
+        // STED Immunity Fraction.
+        if (strpos($huArray['parState,stedImmunity'], "default") === FALSE) {
+            $stedImmunity = array_map('floatval',
+                                      explode(' ', $huArray['stedImmunity']));
+            $this->parameter['StedImmunity']->setValue($stedImmunity);
+        }
+
+        // Whether STED is STED3D.
+        if (strpos($huArray['parState,sted3D'], "default") === FALSE) {
+            $sted3d = array_map('floatval',
+                                explode(' ', $huArray['sted3D']));
+            $this->parameter['Sted3D']->setValue($sted3d);
+        }
+        
+        // SPIM Excitation Mode.
+        if (strpos($huArray['parState,spimExc'], "default") === FALSE) {
+            $spimExcMode = array_map('floatval',
+                                     explode(' ', $huArray['spimExc']));
+            $this->parameter['SpimExcMode']->setValue($spimExcMode);
+        }
+
+        // SPIM Gaussian Width.
+        if (strpos($huArray['parState,spimGaussWidth'], "default") === FALSE) {
+            $spimGaussWidth = array_map('floatval',
+                                     explode(' ', $huArray['spimGaussWidth']));
+            $this->parameter['SpimGaussWidth']->setValue($spimGaussWidth);
+        }
+
+        // SPIM Center Offset.
+        if (strpos($huArray['parState,spimCenterOff'], "default") === FALSE) {
+            $spimCenterOff = array_map('floatval',
+                                       explode(' ', $huArray['spimCenterOff']));
+            $this->parameter['SpimCenterOffset']->setValue($spimCenterOff);
+        }
+
+        // SPIM Focus Offset.
+        if (strpos($huArray['parState,spimFocusOff'], "default") === FALSE) {
+            $spimFocusOff = array_map('floatval',
+                                      explode(' ', $huArray['spimFocusOff']));
+            $this->parameter['SpimFocusOffset']->setValue($spimFocusOff);
+        }
+
+        // SPIM NA.
+        if (strpos($huArray['parState,spimNA'], "default") === FALSE) {
+            $spimNA = array_map('floatval',
+                                explode(' ', $huArray['spimNA']));
+            $this->parameter['SpimNA']->setValue($spimNA);
+        }
+        
+        // SPIM Fill Factor.
+        if (strpos($huArray['parState,spimFill'], "default") === FALSE) {
+            $spimFill = array_map('floatval',
+                                explode(' ', $huArray['spimFill']));
+            $this->parameter['SpimFill']->setValue($spimFill);
+        }
+
+        // SPIM Imaging Direction.
+        if (strpos($huArray['parState,spimDir'], "default") === FALSE) {
+            $spimDir = array_map('floatval',
+                                 explode(' ', $huArray['spimDir']));
+            $this->parameter['SpimDir']->setValue($spimDir);
+        }
+    }
 }
 
 /*
@@ -2090,6 +2744,7 @@ class TaskSetting extends Setting {
     */
     public function TaskSetting() {
         parent::__construct();
+
         $parameterClasses = array(
             'Autocrop',
             'SignalNoiseRatio',
@@ -2099,11 +2754,13 @@ class TaskSetting extends Setting {
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
-            'ZStabilization');
+            'ZStabilization',
+            'ChromaticAberration');
 
         foreach ($parameterClasses as $class) {
             $param = new $class;
             $name = $param->name();
+
             $this->parameter[$name] = $param;
             $this->numberOfChannels = NULL;
         }
@@ -2156,11 +2813,13 @@ class TaskSetting extends Setting {
       \param	$postedParameters	The $_POST array
     */
     public function checkPostedTaskParameters($postedParameters) {
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
+
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
         $noErrorsFound = True;
@@ -2189,8 +2848,8 @@ class TaskSetting extends Setting {
         // Signal-To-Noise Ratio
         // Depending on the choice of the deconvolution algorithm, we will
         // check only the relevant entries
-        $value = array(null, null, null, null, null);
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
             $name = "SignalNoiseRatio" . $algorithm . "$i";
             if (isset($postedParameters[$name])) {
                 $value[$i] = $postedParameters[$name];
@@ -2210,7 +2869,7 @@ class TaskSetting extends Setting {
             $this->message = 'Please choose a background estimation mode!';
             $noErrorsFound = False;
         } else {
-            $value = array(null, null, null, null, null);
+            $value = array_fill(0, $maxChanCnt, null);
             switch ($postedParameters["BackgroundEstimationMode"]) {
                 case 'auto':
 
@@ -2224,7 +2883,8 @@ class TaskSetting extends Setting {
 
                 case 'manual' :
 
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i < $maxChanCnt; $i++) {
+                        $value[$i] = null;
                         $name = "BackgroundOffsetPercent$i";
                         if (isset($postedParameters[$name])) {
                             $value[$i] = $postedParameters[$name];
@@ -2297,6 +2957,54 @@ class TaskSetting extends Setting {
     }
 
     /*!
+      \brief   Checks that the posted Aberration Correction Parameters are 
+               defined. This correction is optional.
+      \param   $postedParameters    The $_POST array
+      \return  true if all Parameters are defined and valid, false otherwise.
+    */
+    public function checkPostedChromaticAberrationParameters($postedParameters) {
+
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return False;
+        }
+
+        $this->message = '';
+        $noErrorsFound = True;
+
+        foreach ($postedParameters as $param) {
+            if ($param != "" && !is_numeric($param)) {
+                $noErrorsFound = False;
+                $this->message = "Value must be numeric";
+                break;
+            }
+        }
+
+        if (!$noErrorsFound) {
+            return $noErrorsFound;
+        }
+
+        $parameter = $this->parameter("ChromaticAberration");
+
+        /* The posted parameters are received in increasing 'chan component'
+           order. */
+        $i = 0;
+        foreach ($postedParameters as $name => $param) {
+            if (strpos($name, 'ChromaticAberration') === false) {
+                continue;
+            }
+
+            $valuesArray[$i] = $param;
+            $i++;
+        }
+        
+        $parameter->setValue($valuesArray);
+        
+        return $noErrorsFound;
+    }
+    
+    
+    /*!
       \brief	Returns all Task Parameter names
       \return array of Task Parameter names
     */
@@ -2349,7 +3057,7 @@ class TaskSetting extends Setting {
 
     /*!
       \brief   Checks whether the restoration should allow for stabilization.
-      \param   $paramSetting An instance of the ParameterSetting clase.
+      \param   $paramSetting An instance of the ParameterSetting class.
       \return  Boolean: TRUE to enable stabilization option, FALSE otherwise.
     */
     public function isEligibleForStabilization(ParameterSetting $paramSetting) {
@@ -2369,6 +3077,22 @@ class TaskSetting extends Setting {
         if (!System::hasLicense("sted3d")) {
             return FALSE;
         }
+        return TRUE;
+    }
+
+    /*!
+      \brief   Checks whether the restoration should allow for CAC.
+      \param   $paramSetting  An instance of the ParameterSetting class.
+      \return  Boolean: TRUE to enable CAC, FALSE otherwise.
+    */
+    public function isEligibleForCAC(ParameterSetting $paramSetting) {
+        if ($this->numberOfChannels() == 1) {
+            return FALSE;
+        }
+        if (!System::hasLicense("chromaticS")) {
+            return FALSE;
+        }
+
         return TRUE;
     }
 
@@ -2395,6 +3119,164 @@ class TaskSetting extends Setting {
         return $result;
     }
 
+
+    /*!
+      \brief Huygens parameters to HRM parameters.
+      \param $huArray An array with the result of 'image setp -tclReturn'.
+    */
+    public function parseParamsFromHuCore($huArray){
+
+         // Sanity checks: remove trailing spaces.
+        foreach ($huArray as $key => $value) {
+            $huArray[$key] = trim($value, " ");
+        }
+
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
+        // We only look at the first channel for the decon algorithm.
+        if (strpos($huArray['cmle:0'], "") === FALSE) {
+            $algorithm = $this->parameter('DeconvolutionAlgorithm');
+            $algorithm->setValue("cmle");
+        } else if (strpos($huArray['qmle:0'], "") === FALSE) {
+            $algorithm = $this->parameter('DeconvolutionAlgorithm');
+            $algorithm->setValue("qmle");
+        }
+
+        // SNR.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " sn";
+            } else {
+                $key = "qmle:" . $chan . " sn";
+            }
+
+            if (strpos($huArray[$key], "") === FALSE) {
+                $snr[$chan] = $huArray[$key];
+            }
+        }
+        if (isset($snr)) {
+            $this->parameter['SignalNoiseRatio']->setValue($snr);
+        }
+
+        // Autocrop.
+        if (strpos($huArray['autocrop enabled'],"") === FALSE) {
+            $autocrop = $huArray['autocrop enabled'];
+            $this->parameter['Autocrop']->setValue($autocrop);
+        }
+
+        // Background.
+        // Set it to manual only if all channels are specified.
+        // Otherwise set it to the first other mode encountered.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            $keyCmleBgMode = "cmle:" . $chan . " bgMode";
+            $keyQmleBgMode = "qmle:" . $chan . " bgMode";
+            $keyCmleBgVal  = "cmle:" . $chan . " bg";
+            $keyQmleBgVal  = "qmle:" . $chan . " bg";
+
+            if (isset($huArray[$keyCmleBgMode])) {
+                $bgMode = $huArray[$keyCmleBgMode];
+            } else if (isset($huArray[$keyQmleBgMode])) {
+                $bgMode = $huArray[$keyQmleBgMode];
+            } else {
+                $bgMode = "auto";
+            }
+
+            if (isset($huArray[$keyCmleBgVal])) {
+                $bgVal = $huArray[$keyCmleBgVal];
+            } else if (isset($huArray[$keyQmleBgVal])) {
+                $bgVal = $huArray[$keyQmleBgVal];
+            } else {
+                $bgVal = 0.;
+            }
+
+            if ($bgMode == "auto" || $bgMode == "object") {
+                $bgArr = array_fill(0, $maxChanCnt, $bgMode);
+                break;
+            } else if ($bgMode == "lowest" || $bgMode == "widefield") {
+                $bgArr = array_fill(0, $maxChanCnt, "auto");
+                break;
+            } else if ($bgMode == "manual") {
+                $bgArr[$chan] = $bgVal;
+            } else {
+                $bgArr = array_fill(0, $maxChanCnt, "auto");
+                break;
+            }
+        }
+        $this->parameter['BackgroundOffsetPercent']->setValue($bgArr);
+
+        // Iterations.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " it";
+            } else {
+                $key = "qmle:" . $chan . " it";
+            }
+
+            if (strpos($huArray[$key], "") === FALSE) {
+                $it = $huArray[$key];
+                $itOld = $this->parameter['NumberOfIterations']->value();
+                if ($it > $itOld) {
+                    $this->parameter['NumberOfIterations']->setValue($it);
+                }
+            }
+        }
+
+        // Quality factor.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " q";
+            } else {
+                $key = "qmle:" . $chan . " q";
+            }
+            
+            if (strpos($huArray[$key], "") === FALSE) {
+                $q = $huArray[$key];
+                $key = 'QualityChangeStoppingCriterion';
+                $qOld = $this->parameter[$key]->value();
+                if ($q > $qOld) {
+                    $this->parameter[$key]->setValue($q);
+                }
+            }
+        }
+
+        // Stabilization.
+        if (strpos($huArray['stabilize enabled'],"") === FALSE) {
+            $stabilize = $huArray['stabilize enabled'];
+            $this->parameter['ZStabilization']->setValue($stabilize);
+        }
+
+        // Chromatic Aberration.
+        $compCnt = 5;
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            $key = "shift:" . $chan . " vector";
+
+            unset($vector);
+            if (isset($huArray[$key])) {
+                $vector = explode(" ", $huArray[$key], $compCnt);
+            }
+            
+            for ($comp = 0; $comp < $compCnt; $comp++) {
+                $compKey = $chan * $compCnt + $comp;
+                
+                if (isset($vector[$comp])) {
+                    $aberration[$compKey] = $vector[$comp];
+                } else {
+                    if ($comp < $compCnt - 1) {
+                        $aberration[$compKey] = 0.;
+                    } else {
+                        // Scale component.
+                        $aberration[$compKey] = 1.;
+                    }
+                }
+            }
+        }
+        if (isset($aberration)) {
+            $this->parameter['ChromaticAberration']->setValue($aberration);
+        }
+    }
+
+    
 } // End of class taskSetting
 
 /*
@@ -2485,6 +3367,9 @@ class AnalysisSetting extends Setting {
             return False;
         }
 
+        $db = new DatabaseConnection;
+        $maxChanCnt = $db->getMaxChanCnt();
+
         $this->message = '';
         $noErrorsFound = True;
 
@@ -2530,7 +3415,7 @@ class AnalysisSetting extends Setting {
             $this->message = 'Please choose a colocalization threshold mode!';
             $noErrorsFound = False;
         } else {
-            $value = array(null, null, null, null, null);
+            $value = array_fill(0, $maxChanCnt, null);
             switch ($postedParameters["ColocThresholdMode"]) {
                 case 'auto':
 
@@ -2539,7 +3424,8 @@ class AnalysisSetting extends Setting {
 
                 case 'manual' :
 
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i < $maxChanCnt; $i++) {
+                        $value[$i] = null;
                         $name = "ColocThreshold$i";
                         if (isset($postedParameters[$name])) {
                             $value[$i] = $postedParameters[$name];

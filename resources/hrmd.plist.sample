@@ -9,9 +9,9 @@
 		<key>HRM_DATA</key>
 		<string>/work/hrm_data</string>
 		<key>HRM_SOURCE</key>
-		<string>huygens_src</string>
+		<string>src</string>
 		<key>HRM_DEST</key>
-		<string>huygens_dst</string>
+		<string>dst</string>
 	</dict>
 	<key>KeepAlive</key>
 	<true/>
