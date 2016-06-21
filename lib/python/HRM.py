@@ -393,10 +393,10 @@ class JobQueue(object):
             self.cats.append(cat)
             self.queue[cat] = deque()
             logd("Current queue categories: %s" % self.cats)
-        else:
-            # in case there are already jobs of this category, we don't touch
-            # the scheduler / priority queue:
-            logd("JobQueue already contains a queue for '%s'." % cat)
+        # else:
+        #     # in case there are already jobs of this category, we don't touch
+        #     # the scheduler / priority queue:
+        #     logd("JobQueue already contains a queue for '%s'." % cat)
         self.queue[cat].append(uid)
         self.set_jobstatus(job, 'queued')
         logi("Queue for category '%s': %s" % (cat, self.queue[cat]))
