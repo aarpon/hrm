@@ -364,6 +364,19 @@ class JobQueue(object):
         for queue in self.queue.values():
             numjobs += len(queue)
         logd("JobQueue.__len__() = %s" % numjobs)
+
+    def num_jobs_queued(self):
+        """Get the number of queued jobs (waiting for retrieval)."""
+        numjobs = 0
+        for queue in self.queue.values():
+            numjobs += len(queue)
+        logd("num_jobs_queued = %s" % numjobs)
+        return numjobs
+
+    def num_jobs_processing(self):
+        """Get the number of currently processing jobs."""
+        numjobs = len(self.processing)
+        logd("num_jobs_processing = %s" % numjobs)
         return numjobs
 
     def set_statusfile(self, statusfile):
