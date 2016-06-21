@@ -5,6 +5,7 @@
 require_once '../inc/SettingEditor.inc.php';
 require_once '../inc/User.inc.php';
 require_once '../inc/JobQueue.inc.php';
+require_once '../inc/Fileserver.inc.php';
 
 //
 // Functions
