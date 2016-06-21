@@ -546,13 +546,28 @@ class JobQueue(object):
 
     def queue_details_hr(self):
         """Generate a human readable list of the queue details."""
+        msg = list()
+        msg.append("%s queue status %s" % ("=" * 25, "=" * 25))
+        msg.append("--- jobs retrieved for processing")
+        if not self.processing:
+            msg.append("None.")
+        for jobid in self.processing:
+            job = self.jobs[jobid]
+            msg.append("%s (%s): %s - %s [%s]" %
+                       (job['user'], job['email'], job['uid'],
+                        job['infiles'], job['status']))
+        msg.append("%s queue status %s" % ("-" * 25, "-" * 25))
+        msg.append("--- jobs queued (not yet retrieved)")
         joblist = self.queue_details()
-        print "-" * 25, " queue status ", "-" * 25
+        if not joblist:
+            msg.append("None.")
         for job in joblist:
-            print("%s (%s): %s - %s [%s]" %
-                  (job['user'], job['email'], job['uid'],
-                   job['infiles'], job['status']))
-        print "-" * 25, " queue status ", "-" * 25
+            msg.append("%s (%s): %s - %s [%s]" %
+                       (job['user'], job['email'], job['uid'],
+                        job['infiles'], job['status']))
+        msg.append("%s queue status %s" % ("=" * 25, "=" * 25))
+        for line in msg:
+            print line
 
     def queue_details(self):
         """Generate a list with the current queue details."""
