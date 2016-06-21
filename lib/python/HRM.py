@@ -359,11 +359,11 @@ class JobQueue(object):
         self.queue = dict()
 
     def __len__(self):
-        """Get the total number of jobs in all queues."""
-        numjobs = 0
-        for queue in self.queue.values():
-            numjobs += len(queue)
-        logd("JobQueue.__len__() = %s" % numjobs)
+        """Get the total number of jobs in all queues (incl. processing)."""
+        jobsproc = self.num_jobs_processing()
+        jobstotal = self.num_jobs_queued() + jobsproc
+        logd("len(JobQueue) = %s (%s processing)" % (jobstotal, jobsproc))
+        return jobstotal
 
     def num_jobs_queued(self):
         """Get the number of queued jobs (waiting for retrieval)."""
