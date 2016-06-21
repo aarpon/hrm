@@ -69,7 +69,7 @@ __all__ = ['JobDescription', 'JobQueue']
 
 
 # expected version for job description files:
-JOBFILE_VER = '5'
+JOBFILE_VER = '6'
 
 def setup_rundirs(base_dir):
     """Check if all runtime directories exist or try to create them otherwise.
@@ -624,6 +624,7 @@ class JobSpooler(object):
         Check the GC3Pie config file, set up the spool directories, set up the
         gc3 engine, check the resource directories.
         """
+
         self.gc3spooldir = None
         self.gc3conf = None
         self._check_gc3conf(gc3conf)
