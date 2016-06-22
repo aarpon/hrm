@@ -50,20 +50,32 @@ def next_print():
 jq = HRM.JobQueue()
 
 print("\n******** adding jobs to queue: ********")
+print "jq.joblist:", jq.joblist()
 for job in jobs:
     jq.append(job)
+    print "jq.joblist:", jq.joblist()
+jq.queue_details_hr()
 
-print("\n******** retrieving jobs from queue: ********")
+print("\n\n******** retrieving jobs from queue for processing: ********")
+print "jq.joblist:", jq.joblist()
 for job in jobs:
-    jq.pop()
+    print "next: '%s' (joblist: %s)" % (jq.next_job()['uid'], jq.joblist())
+print "jq.joblist:", jq.joblist()
+jq.queue_details_hr()
 
 
-print("\n******** adding jobs to queue: ********")
+# create a new job queue
+jq = HRM.JobQueue()
+
+print("\n\n******** adding jobs to queue: ********")
+print "jq.joblist:", jq.joblist()
 for job in jobs:
     jq.append(job)
+    print "jq.joblist:", jq.joblist()
+jq.queue_details_hr()
 
-print("\n******** removing jobs from queue: ********")
-
+print("\n\n******** removing jobs from queue: ********")
+print "jq.joblist:", jq.joblist()
 remove_print('u000_aaa')
 remove_print('u000_bbb')
 next_print()
@@ -71,4 +83,9 @@ remove_print('u111_ggg')
 next_print()
 remove_print('u111_eee')
 remove_print('u111_fff')
+print("\n----- no queued jobs should be left (but some processing) ----")
+print "jq.joblist:", jq.joblist()
+jq.queue_details_hr()
+
+print("\n\n******** trying to removing jobs from the empty queue: ********")
 print jq.remove('aaa')
