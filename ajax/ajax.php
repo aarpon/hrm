@@ -130,7 +130,7 @@ function getJobQueuetable() {
 
     $data .= '
       <tr style="background: #ffffcc">
-        <td colspan="9">The job queue is empty.</td>
+        <td colspan="10">The job queue is empty.</td>
       </tr>';
   } else {
     $index = 1;
