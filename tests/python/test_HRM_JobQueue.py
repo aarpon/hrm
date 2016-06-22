@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-"""Simple test script for the HRM class.
+"""Simple test script for the HRM Queue Manager class.
 
-Run it from the directory that contains 'HRM.py' after setting your
-PYTHONPATH accordingly:
+Run it from this directory after setting your PYTHONPATH accordingly:
 
-export PYTHONPATH=$PYTHONPATH:./
+export PYTHONPATH=$PYTHONPATH:../../lib/python/
+python test_HRM_JobQueue.py
 """
 
 try:
@@ -19,7 +19,7 @@ reload(HRM)
 
 jobs = list(xrange(7))
 
-jobfile = 'spool/examples/deconvolution_job.cfg'
+jobfile = '../jobfiles/sandbox/deconvolution_job.cfg'
 for i in xrange(7):
     jobs[i] = HRM.JobDescription(jobfile, 'file')
 
