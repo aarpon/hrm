@@ -96,3 +96,9 @@ None.
 
 ******** trying to removing jobs from the empty queue: ********
 None
+
+
+******** trying to add duplicate jobs to queue: ********
+jq.joblist: []
+jq.joblist: ['u000_aaa']
+Adding duplicate job failed as expected (Job with uid 'u000_aaa' already in this queue!)!

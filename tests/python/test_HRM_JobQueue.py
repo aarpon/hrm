@@ -89,3 +89,14 @@ jq.queue_details_hr()
 
 print("\n\n******** trying to removing jobs from the empty queue: ********")
 print jq.remove('aaa')
+
+# create a new job queue
+jq = HRM.JobQueue()
+print("\n\n******** trying to add duplicate jobs to queue: ********")
+print "jq.joblist:", jq.joblist()
+jq.append(jobs[0])
+print "jq.joblist:", jq.joblist()
+try:
+    jq.append(jobs[0])
+except ValueError as err:
+    print "Adding duplicate job failed as expected (%s)!" % err
