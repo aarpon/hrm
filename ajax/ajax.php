@@ -135,7 +135,7 @@ function getJobQueuetable() {
   } else {
     $index = 1;
     foreach ($rows as $row) {
-      if ($row['status'] == "started") {
+      if ($row['status'] == "RUNNING") {
         $color = '#99ffcc';
       } else if ($row['status'] == "broken" || $row['status'] == "kill") {
         $color = '#ff9999';
