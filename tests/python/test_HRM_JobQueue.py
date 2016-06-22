@@ -23,18 +23,21 @@ jobfile = '../jobfiles/sandbox/deconvolution_job.cfg'
 for i in xrange(7):
     jobs[i] = HRM.JobDescription(jobfile, 'file')
 
-jobs[0]['uid'] = 'aaa'
-jobs[1]['uid'] = 'bbb'
-jobs[2]['uid'] = 'ccc'
+jobs[0]['uid'] = 'u000_aaa'
+jobs[0]['user'] = 'u000'
+jobs[1]['uid'] = 'u000_bbb'
+jobs[1]['user'] = 'u000'
+jobs[2]['uid'] = 'u000_ccc'
+jobs[2]['user'] = 'u000'
 
-jobs[3]['uid'] = 'ddd'
-jobs[3]['user'] = 'foo'
-jobs[4]['uid'] = 'eee'
-jobs[4]['user'] = 'foo'
-jobs[5]['uid'] = 'fff'
-jobs[5]['user'] = 'foo'
-jobs[6]['uid'] = 'ggg'
-jobs[6]['user'] = 'foo'
+jobs[3]['uid'] = 'u111_ddd'
+jobs[3]['user'] = 'u111'
+jobs[4]['uid'] = 'u111_eee'
+jobs[4]['user'] = 'u111'
+jobs[5]['uid'] = 'u111_fff'
+jobs[5]['user'] = 'u111'
+jobs[6]['uid'] = 'u111_ggg'
+jobs[6]['user'] = 'u111'
 
 def remove_print(uid):
     job = jq.remove(uid)
@@ -60,12 +63,12 @@ for job in jobs:
     jq.append(job)
 
 print("\n******** removing jobs from queue: ********")
-jq.remove('aaa')
-jq.remove('bbb')
-jq.pop()
-jq.remove('ggg')
-jq.pop()
-jq.remove('ccc')
-jq.remove('fff')
-jq.remove('aaa')
 
+remove_print('u000_aaa')
+remove_print('u000_bbb')
+next_print()
+remove_print('u111_ggg')
+next_print()
+remove_print('u111_eee')
+remove_print('u111_fff')
+print jq.remove('aaa')
