@@ -37,13 +37,13 @@ class JobQueue {
         $contents = file_get_contents($this->queueFile);
         $contentArr = json_decode($contents, true);
         return $contentArr["jobs"];
-    }
+}
 
 
     /*!
       \brief       Issues a remove operation via GC3 controller files.
       \params      $ids   IDS of jobs to remove from the queue.
-      \params      $owner User who ownes the jobs.
+      \params      $owner User who owns the jobs.
       \return      Boolean: true upon success, false otherwise.
     */
     public function removeJobs($ids, $owner) {

@@ -167,7 +167,7 @@ function getJobQueuetable() {
 
       // Fill job row
       $username = $row['username'];
-      $jobFiles = $row['file'];
+      $jobFiles = basename($row['file']);
       $queued = $row['queued'];
       $status = $row['status'];
       $start = $row['start'];

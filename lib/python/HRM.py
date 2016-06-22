@@ -514,7 +514,7 @@ class JobQueue(object):
         for job in joblist:
             fjob = {
                 "id" : job['uid'],
-                "file" : job['infiles'],
+                "file" : job['infiles'][0],
                 "username" : job['user'],
                 "jobType" : job['type'],
                 "status" : job['status'],
