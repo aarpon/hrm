@@ -36,6 +36,14 @@ jobs[5]['user'] = 'foo'
 jobs[6]['uid'] = 'ggg'
 jobs[6]['user'] = 'foo'
 
+def remove_print(uid):
+    job = jq.remove(uid)
+    print "remove('%s'): %s (joblist: %s)" % (uid, job['uid'], jq.joblist())
+
+def next_print():
+    uid = jq.next_job()['uid']
+    print "next_job(): %s (joblist: %s)" % (uid, jq.joblist())
+
 jq = HRM.JobQueue()
 
 print("\n******** adding jobs to queue: ********")
