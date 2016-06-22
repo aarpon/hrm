@@ -488,7 +488,7 @@ class JobQueue(object):
         else:
             logw("Can't find job '%s' in any of our queues!" % uid)
             return None
-        logd("Current joblist: %s" % self.jobs)
+        logd("Current jobs: %s" % self.jobs)
         logd("Current queue categories: %s" % self.cats)
         logd("Current contents of all queues: %s" % self.queue)
         return job
