@@ -396,9 +396,10 @@ class JobQueue(object):
         job : JobDescription
             The job to be added to the queue.
         """
-        # TODO: should we catch duplicate jobs? Currently they are enqueued.
         cat = job.get_category()
         uid = job['uid']
+        if self.jobs.has_key(uid):
+            raise ValueError("Job with uid '%s' already in this queue!" % uid)
         logi("Enqueueing job '%s' into category '%s'." % (uid, cat))
         self.jobs[uid] = job  # store the job in the global dict
         if not cat in self.cats:
