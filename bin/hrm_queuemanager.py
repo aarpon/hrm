@@ -150,8 +150,10 @@ def main():
     notifier.start()
     wdd = watch_mgr.add_watch(spool_dirs['new'], mask, rec=False)
 
+    print '*' * 80
     print('HRM Queue Manager started, watching spooldir "%s" '
           '(Ctrl-C to abort).' % spool_dirs['new'])
+    print '*' * 80
     logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
 
     try:
