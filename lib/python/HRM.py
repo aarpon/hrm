@@ -203,9 +203,6 @@ class JobDescription(dict):
         # make sure to only move "file" job descriptions, return otherwise:
         if self.srctype != 'file':
             return
-        if target is None:
-            logw("No target directory set, not moving job file!")
-            return
         target = os.path.join(target, self['uid'] + '.jobfile')
         logd("Moving jobfile '%s' to '%s'." % (self.fname, target))
         shutil.move(self.fname, target)
