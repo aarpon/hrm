@@ -81,8 +81,8 @@ class EventHandler(pyinotify.ProcessEvent):
             job = HRM.JobDescription(event.pathname, 'file', LOGLEVEL)
             logd("Dict assembled from the processed job file:")
             logd(pprint.pformat(job))
-        except IOError as err:
-            logw("Error parsing job description file: %s" % err)
+        except (IOError, ValueError) as err:
+            logw("Unable to parse job description file (%s), skipping." % err)
             # in this case there is nothing to add to the queue, so we simply
             # return silently
             return

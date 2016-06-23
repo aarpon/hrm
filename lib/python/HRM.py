@@ -262,7 +262,7 @@ class JobDescription(dict):
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find version in %s." % self.fname)
         if not (self['ver'] == JOBFILE_VER):
-            raise ValueError("Unexpected version in %s." % self['ver'])
+            raise ValueError("Unexpected jobfile version '%s'." % self['ver'])
         # username
         try:
             self['user'] = self.jobparser.get('hrmjobfile', 'username')
