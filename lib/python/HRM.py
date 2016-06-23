@@ -644,7 +644,7 @@ class JobSpooler(object):
     engine : gc3libs.core.Engine
     """
 
-    def __init__(self, spool_dir, gc3conf=None):
+    def __init__(self, spool_dirs, gc3conf=None):
         """Prepare the spooler.
 
         Check the GC3Pie config file, set up the spool directories, set up the
@@ -654,7 +654,7 @@ class JobSpooler(object):
         self.gc3spooldir = None
         self.gc3conf = None
         self._check_gc3conf(gc3conf)
-        self.dirs = setup_rundirs(spool_dir)
+        self.dirs = spool_dirs
         self.engine = self.setup_engine()
         if not self.resource_dirs_clean():
             raise RuntimeError("GC3 resource dir unclean, refusing to start!")

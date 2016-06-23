@@ -66,8 +66,8 @@ class EventHandler(pyinotify.ProcessEvent):
         queues : dict
             Containing the JobQueue objects for the different queues, using the
             corresponding 'type' keyword as identifier.
-        tgt : str
-            The path to a directory where to move parsed jobfiles.
+        tgt : dict
+            Spooling directories in a dict, as returned by HRM.setup_rundirs().
         """
         logi("Initialized the event handler for inotify.")
         self.queues = queues
@@ -91,7 +91,7 @@ class EventHandler(pyinotify.ProcessEvent):
             return
         # TODO: we need to distinguish different job types and act accordingly
         self.queues[job['type']].append(job)
-        job.move_jobfile(self.tgt)
+        job.move_jobfile(self.tgt['cur'])
         logd("Current job queue for type '%s': %s" %
                 (job['type'], self.queues[job['type']].queue))
 
@@ -121,7 +121,8 @@ def main():
     loglevel = logging.WARN - (args.verbosity * 10)
     gc3libs.configure_logger(loglevel, "qmgc3")
 
-    job_spooler = HRM.JobSpooler(args.spooldir, args.config)
+    spool_dirs = HRM.setup_rundirs(args.spooldir)
+    job_spooler = HRM.JobSpooler(spool_dirs, args.config)
 
     jobqueues = dict()
     jobqueues['hucore'] = HRM.JobQueue()
@@ -138,7 +139,7 @@ def main():
     # set the mask which events to watch:
     mask = pyinotify.IN_CREATE                      # pylint: disable-msg=E1101
     notifier = pyinotify.ThreadedNotifier(watch_mgr,
-        EventHandler(queues=jobqueues, tgt=job_spooler.dirs['cur']))
+        EventHandler(queues=jobqueues, tgt=spool_dirs))
     notifier.start()
     wdd = watch_mgr.add_watch(job_spooler.dirs['new'], mask, rec=False)
 
