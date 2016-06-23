@@ -86,8 +86,15 @@ class EventHandler(pyinotify.ProcessEvent):
             # there is nothing to add to the queue and the IOError indicates
             # problems accessing the file, so we simply return silently:
             return
+        except (SyntaxError, ValueError) as err:
+            logw("Job file unparsable (%s), skipping / moving to 'done'." % err)
+            # still nothing to add to the queue but this time we can at least
+            # move the file out of the way before returning:
+            HRM.move_file(event.pathname, self.tgt['done'])
+            return
         if not self.queues.has_key(job['type']):
             logc("ERROR: no queue existing for jobtype '%s'!" % job['type'])
+            HRM.move_file(event.pathname, self.tgt['done'])
             return
         # TODO: we need to distinguish different job types and act accordingly
         self.queues[job['type']].append(job)

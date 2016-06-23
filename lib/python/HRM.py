@@ -240,14 +240,13 @@ class JobDescription(dict):
                 parsed = self.jobparser.read(self.fname)
                 logd("Parsed file '%s'." % parsed)
             except ConfigParser.MissingSectionHeaderError as err:
-                # consider using SyntaxError here!
-                raise IOError("ERROR in JobDescription: %s" % err)
+                raise SyntaxError("ERROR in JobDescription: %s" % err)
             self._sections = self.jobparser.sections()
             if self._sections:
                 logd("Job parsing succeeded after %s seconds!" % snooze)
                 break
         if not self._sections:
-            raise IOError("Can't parse '%s'" % self.fname)
+            raise SyntaxError("Can't parse '%s'" % self.fname)
         logd("Job description sections: %s" % self._sections)
         self._parse_jobdescription()
 
