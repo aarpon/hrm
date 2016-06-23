@@ -14,7 +14,7 @@
    future reference.
 
    TODO: Once the new QM has all of the required functionality, this
-   file and the corresponding "runDatabasePopulate.php" should be
+   file and the corresponding "runStartupHuCoreTasks.php" should be
    removed!!
 
    See the corresponding tickets #132 and #412 for more details!
