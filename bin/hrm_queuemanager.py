@@ -134,7 +134,7 @@ def main():
     jobqueues = dict()
     jobqueues['hucore'] = HRM.JobQueue()
     for qname, queue in jobqueues.iteritems():
-        status = os.path.join(job_spooler.dirs['status'], qname + '.json')
+        status = os.path.join(spool_dirs['status'], qname + '.json')
         queue.set_statusfile(status)
 
 
@@ -148,10 +148,10 @@ def main():
     notifier = pyinotify.ThreadedNotifier(watch_mgr,
         EventHandler(queues=jobqueues, tgt=spool_dirs))
     notifier.start()
-    wdd = watch_mgr.add_watch(job_spooler.dirs['new'], mask, rec=False)
+    wdd = watch_mgr.add_watch(spool_dirs['new'], mask, rec=False)
 
-    print('HRM Queue Manager started, watching spool directory "%s", '
-          'press Ctrl-C to abort.' % job_spooler.dirs['new'])
+    print('HRM Queue Manager started, watching spooldir "%s" '
+          '(Ctrl-C to abort).' % spool_dirs['new'])
     logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
 
     try:
