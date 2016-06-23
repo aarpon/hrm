@@ -17,9 +17,9 @@ css/custom.css
 # Python bytecode
 *.py[cod]
 
-# runtime directories
-/run/queue/
-/run/spool/
+# runtime directory: *MUST NOT* contain anything but variable data created
+#   during runtine (like queue information, jobs, etc.) --> NO CODE!!
+/run/
 
 # vim swap files
 .*.sw?
