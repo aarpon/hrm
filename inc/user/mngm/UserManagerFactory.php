@@ -9,11 +9,14 @@
  */
 namespace hrm\user\mngm;
 
+use hrm\user\proxy\ProxyFactory;
+use hrm\user\UserV2;
+
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
  * Returns the UserManager object to be used to manage the users based on the
- * value of $authenticateAgainst from the configuration files.
+ * authentication backed of a given user.
  *
  * @package hrm
  */
@@ -24,41 +27,39 @@ class UserManagerFactory {
      * $authenticateAgainst variable in the configuration files and whether
      * or not the user is the administrator.
      *
-     * @param bool $isAdmin (optional, default is False). True if the user is
-     * the administrator, False otherwise.
-     * @return ExternalReadOnlyUserManager|InternalUserManager
+     * @param string $user Name of the User.
+     * @return ExternalReadOnlyUserManager|IntegratedUserManager
      * @throws \Exception If the value of $authenticateAgainst is invalid.
      */
-    public static function getUserManager($isAdmin = false) {
+    public static function getUserManager($username) {
 
-        global $authenticateAgainst;
+        // Get the UserManager for the required user name
+        $authMode = ProxyFactory::getAuthenticationModeForUser($username);
 
-        // If the user is the Admin, we currently must return
-        // an InternalAuthenticator
-        if ($isAdmin) {
-            require_once(dirname(__FILE__) . "/InternalUserManager.php");
-            return new InternalUserManager();
-        }
 
         // Initialize the authenticator
-        switch ($authenticateAgainst) {
+        switch ($authMode) {
 
-            case "MYSQL":
+            case "integrated":
 
-                return new InternalUserManager();
+                return new IntegratedUserManager();
 
-            case "LDAP":
+            case "ldap":
 
                 return new ExternalReadOnlyUserManager();
 
-            case "ACTIVE_DIR":
+            case "active_dir":
+
+                return new ExternalReadOnlyUserManager();
+
+            case 'auth0':
 
                 return new ExternalReadOnlyUserManager();
 
             default:
 
-                // Unknown authentication method.
-                throw new \Exception("Bad value $authenticateAgainst.");
+                // This should not happen
+                throw new \Exception("Authentication mode not recognized.");
         }
 
     }

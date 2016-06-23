@@ -47,6 +47,7 @@ if (!isset($userManagerScript)) {
 // HRM internally calculated the chunk size as:
 //     max_post_size / ($httpNumberOfConcurrentUploads + 1).
 // but sets an upper bound of a few MB per chunk.
+global $image_folder;
 $httpUploadTempChunksDir = "$image_folder/.hrm_chunks";
 $httpUploadTempFilesDir = "$image_folder/.hrm_files";
 $httpDownloadTempFilesDir = "$image_folder/.hrm_downloads";

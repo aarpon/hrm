@@ -6,15 +6,15 @@ use hrm\Fileserver;
 use hrm\Log;
 use hrm\Nav;
 use hrm\user\mngm\UserManagerFactory;
+use hrm\user\proxy\ProxyFactory;
+use hrm\user\UserV2;
 use hrm\Validator;
 use hrm\DatabaseConnection;
-use hrm\user\User;
 use hrm\System;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 global $email_admin;
-global $authenticateAgainst;
 
 /*
  *
@@ -75,13 +75,13 @@ session_start();
 if (isset($_POST['password']) && isset($_POST['username'])) {
     if ($clean['password'] != "" && $clean['username'] != "") {
 
-        // Get the UserManager
-        $userManager = UserManagerFactory::getUserManager(false);
-
         // Create a user
-        $tentativeUser = new User();
+        $tentativeUser = new UserV2();
         $tentativeUser->setName($clean['username']);
-        $tentativeUser->logOut(); // TODO
+        $tentativeUser->logOut();
+
+        // Get the correct UserManager for the User
+        $userManager = UserManagerFactory::getUserManager($tentativeUser->name());
 
         if ($tentativeUser->logIn($clean['username'], $clean['password'])) {
 
@@ -95,9 +95,6 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                 if (!$fileServer->isReachable()) {
                     $userManager->createUserFolders($tentativeUser->name());
                 }
-
-                // Update the user data and the access date in the database
-                $userManager->storeUser($_SESSION['user']);
 
                 // Log successful logon
                 Log::info("User " . $_SESSION['user']->name() . " (" .
@@ -133,7 +130,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                     "to perform maintenance";
             }
         } else {
-            if ($userManager->isSuspended($tentativeUser)) {
+            if ($tentativeUser->isDisabled()) {
                 $message = "Your account has been suspended, please " .
                     "contact the administrator";
             } else {
@@ -387,7 +384,7 @@ include("header.inc.php");
             </fieldset>
 
             <?php
-            if ($authenticateAgainst == "MYSQL") {
+            if (ProxyFactory::getDefaultAuthenticationMode() == "integrated") {
                 ?>
                 <fieldset>
                     <legend>

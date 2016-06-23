@@ -11,7 +11,7 @@ namespace hrm\setting;
 
 use hrm\HuygensTools;
 use hrm\setting\base\SettingEditor;
-use hrm\user\User;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
@@ -26,9 +26,9 @@ class ParameterSettingEditor extends SettingEditor
 
     /**
      * SettingEditor constructor.
-     * @param User $user Current User.
+     * @param UserV2 $user Current User.
      */
-    public function __construct(User $user)
+    public function __construct(UserV2 $user)
     {
         parent::__construct($user);
     }

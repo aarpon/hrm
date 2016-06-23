@@ -11,7 +11,8 @@
 use hrm\DatabaseConnection;
 use hrm\job\JobQueue;
 use hrm\setting\ParameterSettingEditor;
-use hrm\user\User;
+use hrm\user\mngm\UserManager;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 
@@ -40,15 +41,15 @@ function getParameters($editor, $setName, $numChannels, $micrType)
 
 /**
  * Get number of jobs currently in the queue for current user
- * @param User $user User object
- * @return String
+ * @param UserV2 $user User object
+ * @return string String with number of jobs to display in the UI.
  */
-function getNumberOfUserJobsInQueue(User $user)
+function getNumberOfUserJobsInQueue(UserV2 $user)
 {
     if ($user->isAdmin()) {
         return '';
     }
-    $jobsInQueue = $user->numberOfJobsInQueue();
+    $jobsInQueue = UserManager::numberOfJobsInQueue($user->name());
     if ($jobsInQueue == 0) {
         $data = "no jobs";
     } elseif ($jobsInQueue == 1) {

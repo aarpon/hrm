@@ -4,6 +4,8 @@
 
 use hrm\Log;
 use hrm\Nav;
+use hrm\user\mngm\UserManager;
+use hrm\user\proxy\ProxyFactory;
 use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
@@ -88,39 +90,20 @@ include("header.inc.php");
 
             <tr>
 
-                <?php
-                if ($authenticateAgainst == "MYSQL") {
-                    ?>
-                    <td class="icon">
-                        <a href="./user_management.php">
-                            <img alt="Users"
-                                 src="./images/users.png"/>
-                        </a>
-                    </td>
+                <td class="icon">
+                    <a href="./user_management.php">
+                        <img alt="Users"
+                             src="./images/users.png"/>
+                    </a>
+                </td>
 
-                    <td class="text">
-                        <div class="cell">
-                            <a href="./user_management.php">Manage users</a>
-                            <br/>
-                            <p>View, add, edit and delete users.</p>
-                        </div>
-                    </td>
-
-                    <?php
-                } else {
-                    ?>
-                    <td class="icon">
-                        <img alt="Users" src="./images/users_disabled.png"/>
-                    </td>
-                    <td class="text">
-                        <div class="cell">
-                            <p>User management through the HRM is disabled.</p>
-                        </div>
-                    </td>
-
-                    <?php
-                }
-                ?>
+                <td class="text">
+                    <div class="cell">
+                        <a href="./user_management.php">Manage users</a>
+                        <br/>
+                        <p>View, add, edit and delete users.</p>
+                    </div>
+                </td>
 
                 <td class="icon">
                     <a href="./account.php">
@@ -389,7 +372,7 @@ include("header.inc.php");
                     <?php
 
                 } else {
-                    $jobsInQueue = $_SESSION['user']->numberOfJobsInQueue();
+                    $jobsInQueue = UserManager::numberOfJobsInQueue($_SESSION['user']->name());
                     if ($jobsInQueue == 0) {
                         $str = '<strong>no jobs</strong>';
                     } elseif ($jobsInQueue == 1) {
@@ -468,7 +451,7 @@ include("header.inc.php");
                 </td>
 
                 <?php
-                if ($authenticateAgainst == "MYSQL") {
+                if (ProxyFactory::getAuthenticationModeForUser($_SESSION['user']->name()) == "integrated") {
                     ?>
                     <td class="icon">
                         <a href="./account.php">

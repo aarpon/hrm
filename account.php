@@ -132,14 +132,19 @@ if (isset($_POST['modify'])) {
     }
 
     // Update the information in the database
-    if ($result == True) {
+    if ($result == true) {
 
         // Get the user manager
-        $userManager = UserManagerFactory::getUserManager($edit_user->isAdmin());
-        $success = $userManager->updateUser($edit_user->isAdmin(), $edit_user->name(),
-            $passToUse, $emailToUse, $groupToUse);
+        $userManager = UserManagerFactory::getUserManager($edit_user->name());
 
-        if ($success == True) {
+        // Make sure the User is fully loaded
+        $edit_user->load();
+
+        // Update the User information
+        $success = $userManager->updateUser($edit_user->name(), $emailToUse,
+            $groupToUse);
+
+        if ($success == true) {
             if (isset($_SESSION['account_user'])) {
                 $_SESSION['account_user'] =
                     "Account details successfully modified";
@@ -147,7 +152,7 @@ if (isset($_POST['modify'])) {
                 exit();
             } else {
                 $message = "Account details successfully modified";
-                $edit_user->reload();
+                $edit_user->load();
                 $_SESSION['user'] = $edit_user;
                 header("Location: " . $_SESSION['referer']);
                 exit();

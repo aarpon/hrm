@@ -5,7 +5,7 @@
 use hrm\Mail;
 use hrm\Nav;
 use hrm\user\mngm\UserManagerFactory;
-use hrm\user\User;
+use hrm\user\UserV2;
 use hrm\Util;
 use hrm\Validator;
 
@@ -21,13 +21,6 @@ global $userManagerScript;
 global $authenticateAgainst;
 
 session_start();
-
-// Make sure that we don't even show this page if the user
-// management is disabled!
-if ($authenticateAgainst != "MYSQL") {
-    header("Location: " . "home.php");
-    exit();
-}
 
 /*
  *
@@ -96,7 +89,7 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 // Get the UserManager
-$userManager = UserManagerFactory::getUserManager($_SESSION['user']->isAdmin());
+$userManager = UserManagerFactory::getUserManager($_SESSION['user']->name());
 
 if (isset($_GET['seed'])) {
     if (!$userManager->existsUserRequestWithSeed($_GET['seed'])) {
@@ -137,7 +130,7 @@ if (isset($_POST['accept'])) {
     $result = $userManager->acceptUser($clean['username']);
     // TODO refactor
     if ($result) {
-        $accepted_user = new User();
+        $accepted_user = new UserV2();
         $accepted_user->setName($clean['username']);
         $email = $accepted_user->emailAddress();
         $text = "Your account has been activated:\n\n";
@@ -156,7 +149,7 @@ if (isset($_POST['accept'])) {
         shell_exec("$userManagerScript create \"" . $clean['username'] . "\"");
     } else $message = "Database error, please inform the administrator";
 } else if (isset($_POST['reject'])) {
-    $user_to_reject = new User();
+    $user_to_reject = new UserV2();
     $user_to_reject->setName($clean['username']);
     $email = $user_to_reject->emailAddress();
     $result = $userManager->deleteUser($user_to_reject->name());
@@ -181,7 +174,7 @@ if (isset($_POST['accept'])) {
         $message = "Database error, please inform the administrator";
     }
 } else if (isset($_POST['edit'])) {
-    $_SESSION['account_user'] = new User();
+    $_SESSION['account_user'] = new UserV2();
     $_SESSION['account_user']->setName($clean['username']);
     if (isset($c) || isset($_GET['c']) || isset($_POST['c'])) {
         if (isset($_GET['c'])) $_SESSION['c'] = $_GET['c'];
@@ -242,7 +235,7 @@ include("header.inc.php");
         $group = $row["research_group"];
         $creation_date = date("j M Y, G:i", strtotime($row["creation_date"]));
         $status = $row["status"];
-        if ($status != "a" && $status != "d") {
+        if ($status != "a" && $status != "d" && $status!="o") {
 
             ?>
             <form method="post" action="">
@@ -409,13 +402,14 @@ include("header.inc.php");
                             $name = $row['name'];
                             $email = $row['email'];
                             $group = $row['research_group'];
+                            if ($row['last_access_date'] === null) {
+                                $last_access_date = "never";
+                            } else {
                             $last_access_date = date("j M Y, G:i",
                                 strtotime($row['last_access_date']));
-                            if ($last_access_date == "30 Nov 1999, 0:00") {
-                                $last_access_date = "never";
                             }
                             $status = $row['status'];
-                            if ($status == "a" || $status == "d") {
+                            if ($status == "a" || $status == "d" || $status == "o") {
                                 if ($i > 0) {
                                     echo "                    " .
                                         "<tr><td colspan=\"3\" class=\"hr\">&nbsp;</td></tr>\n";
@@ -468,7 +462,7 @@ include("header.inc.php");
                                                        class="submit"/>
                                                 <?php
 
-                                                if ($name != $_SESSION['user']->getAdminName()) {
+                                                if (!$_SESSION['user']->isAdmin()) {
                                                     if ($status == "d") {
 
                                                         ?>

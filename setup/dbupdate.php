@@ -35,9 +35,8 @@
 //    it is simply updated to the last revision.
 
 // Include hrm_config.inc.php
-use ADODB2_mysql;
-use ADODB2_postgres;
 use hrm\System;
+use hrm\user\proxy\ProxyFactory;
 
 require_once  dirname( __FILE__ ) . '/../inc/bootstrap.php';
 
@@ -3736,7 +3735,7 @@ if ($current_revision < $n) {
     //Update revision
     if(!update_dbrevision($n))
         return;
-    
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
@@ -3956,7 +3955,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return false;
-    }    
+    }
 
 //Update revision
     if(!update_dbrevision($n))
@@ -4082,7 +4081,7 @@ if ($current_revision < $n) {
        }
     }
 
-    
+
     $tabname = "file_extension";
     $record = array();
     $record["file_format"] = "tf8";
@@ -4101,7 +4100,7 @@ if ($current_revision < $n) {
            return;
        }
     }
-    
+
 
     $tabname = "possible_values";
     $record = array();
@@ -4126,7 +4125,7 @@ if ($current_revision < $n) {
         }
     }
 
-    
+
     $tabname = "file_format";
     $record = array();
     $record["name"] = "big-tiff";
@@ -4179,7 +4178,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $alterColumnSQL = $datadict->AlterColumnSQL('task_setting',
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4219,7 +4218,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $alterColumnSQL = $datadict->AlterColumnSQL('analysis_setting',
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4229,7 +4228,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter',
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4259,7 +4258,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter_setting',
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4319,7 +4318,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_parameter',
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4418,7 +4417,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
                                                 'owner VARCHAR(255)');
@@ -4428,7 +4427,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
                                                 'setting VARCHAR(255)');
@@ -4438,8 +4437,8 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
-    
+    }
+
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4448,7 +4447,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
                                                 'previous_owner VARCHAR(255)');
@@ -4458,7 +4457,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
                                                 'name VARCHAR(255)');
@@ -4468,8 +4467,8 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
-    
+    }
+
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4478,8 +4477,8 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
-    
+    }
+
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4488,7 +4487,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
                                                 'owner VARCHAR(255)');
@@ -4498,7 +4497,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
                                                 'previous_owner VARCHAR(255)');
@@ -4508,7 +4507,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
                                                 'name VARCHAR(255)');
@@ -4528,7 +4527,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('username',
                                                 'name VARCHAR(255)');
@@ -4538,7 +4537,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
 
     // ------- Enable longer server names in the queue manager. ------
@@ -4564,9 +4563,9 @@ if ($current_revision < $n) {
     }
 
     // ------- Add SPIM microscopy. ------
-    
+
     $tabname = "possible_values";
-    
+
     $record = array();
     $record["parameter"] = "MicroscopeType";
     $record["value"] = "SPIM";
@@ -4903,7 +4902,7 @@ if ($current_revision < $n) {
         }
     }
 
-    
+
 // ------------------ Add columns to 'confidence_levels' ----------------------
     $tabname   = "confidence_levels";
     $newcolumns = array("stedMode",
@@ -4967,7 +4966,7 @@ if ($current_revision < $n) {
         }
     }
 
-    
+
     //Update revision
     if(!update_dbrevision($n))
         return;
@@ -4978,6 +4977,121 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
+// -----------------------------------------------------------------------------
+// Update to revision 15
+// Description: Rename 'username' to 'usernameold'
+//              Create new 'username' table
+//              Migrate users from 'usernameold' to new 'username' table
+//              Drop 'usernameold' table
+// -----------------------------------------------------------------------------
+$n = 15;
+if ($current_revision < $n) {
+
+    // Get current tables
+    $tables = $db->MetaTables();
+
+    // Rename username table to usernameold
+    $tabname = "username";
+    $oldtabname = "usernameold";
+    if (!in_array($oldtabname, $tables)) {
+        $renameSQL = $datadict->RenameTableSQL($tabname, $oldtabname);
+        if(!$db->Execute($renameSQL[0])) {
+            $msg = "Cannot rename username table! " .
+                "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    // Create new table: username
+    $flds = "
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        name C(255) NOTNULL INDEX,
+        password C(255) NOTNULL,
+        email C(255) NOTNULL,
+        research_group C(255) NOTNULL,
+        role C(30) NOTNULL DEFAULT user,
+        authentication C(30) NOTNULL DEFAULT integrated,
+        creation_date T DEFAULT NULL,
+        last_access_date T DEFAULT NULL,
+        status C(10) DEFAULT NULL
+    ";
+
+    // Refresh the table list
+    $tables = $db->MetaTables();
+
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds)) {
+            $msg = "Could not create table $tabname!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Migrate users from 'usernameold' to 'userdata'
+    $allUsers = $db->Execute("SELECT * FROM $oldtabname;");
+    $rows = $allUsers->GetRows();
+
+    // Get the default authentication method
+    $defaultAuthMode = ProxyFactory::getDefaultAuthenticationMode();
+
+    // Prepared statement
+    $sql="INSERT INTO $tabname " .
+        "(name, password, email, research_group, role, authentication, " .
+        "creation_date, last_access_date, status) VALUES " .
+        "(?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+    $db->StartTrans();
+
+    foreach ($rows as $row) {
+
+        // Default role
+        $role = "user";
+        if ($row["name"] == "admin") {
+            $role = "admin";
+        }
+
+        // Complete the user
+        $ext_user = array(
+            "name" => $row["name"],
+            "password" => $row["password"], //uniqid('', true),
+            "email" => $row["email"],
+            "research_group" => $row["research_group"],
+            "role" => $role,
+            "authentication" => $defaultAuthMode,
+            "creation_date" => $row["creation_date"],
+            "last_access_date" => $row["last_access_date"],
+            "status" => "o" // Outdated, i.e. in need of a password rehash.
+        );
+
+        // Run prepared query
+        $rs = $db->Execute($sql, $ext_user);
+        if($rs === false) {
+            $err = $db->ErrorMsg();
+
+            trigger_error("Could not migrate user " . $row['name'] .
+                "': $db->ErrorMsg()", E_USER_ERROR);
+        }
+    }
+
+    $db->CompleteTrans();
+
+    // Drop the 'usernameold' table
+    // @todo
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+
+}
 
 fclose($fh);
 

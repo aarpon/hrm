@@ -17,7 +17,7 @@ use hrm\setting\JobParameterSetting;
 use hrm\setting\JobTaskSetting;
 use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
-use hrm\user\User;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
@@ -70,7 +70,7 @@ class JobDescription
 
     /**
      * The user who created the Job.
-     * @var User
+     * @var UserV2
      */
     private $owner;
 
@@ -134,7 +134,7 @@ class JobDescription
 
     /**
      * Returns the User owner of the job.
-     * @return User Owner of the job.
+     * @return UserV2 Owner of the job.
      */
     public function owner()
     {
@@ -143,9 +143,9 @@ class JobDescription
 
     /**
      * Sets the owner of the Job
-     * @param User $owner Owner of the Job
+     * @param UserV2 $owner Owner of the Job
      */
-    public function setOwner(User $owner)
+    public function setOwner(UserV2 $owner)
     {
         $this->owner = $owner;
     }
@@ -366,7 +366,7 @@ class JobDescription
         $db = new DatabaseConnection();
 
         $parameterSetting = new JobParameterSetting();
-        $owner = new User();
+        $owner = new UserV2();
         $name = $db->userWhoCreatedJob($this->id);
         $owner->setName($name);
         $parameterSetting->setOwner($owner);

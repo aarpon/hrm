@@ -18,7 +18,7 @@ use hrm\setting\AnalysisSetting;
 use hrm\setting\base\Setting;
 use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
-use hrm\user\User;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . "/bootstrap.php";
 
@@ -199,9 +199,25 @@ class DatabaseConnection
      */
     public function query($queryString)
     {
-        $connection = $this->connection();
-        $resultSet = $connection->Execute($queryString);
-        if (!$resultSet) {
+        $resultSet = $this->connection()->Execute($queryString);
+        if ($resultSet === false) {
+            return False;
+        }
+        /** @var \ADORecordSet $resultSet */
+        $rows = $resultSet->GetRows();
+        return $rows;
+    }
+
+    /**
+     * Executes an SQL query and returns the results.
+     * @param string $sql Prepared SQL query.
+     * @param array $values Array of values for the prepared query.
+     * @return array|false Result of the query (rows).
+     */
+    public function queryPrepared($sql, array $values)
+    {
+        $resultSet = $this->connection()->Execute($sql, $values);
+        if ($resultSet === false) {
             return False;
         }
         /** @var \ADORecordSet $resultSet */
@@ -280,6 +296,9 @@ class DatabaseConnection
      */
     public function updateExistingUser($isadmin, $username, $password, $email = "", $group = "")
     {
+        // Get the User
+        $db = new DatabaseConnection();
+
         // The admin user does not have a group and stores his password in the
         // configuration files. The only variable is the password.
         if ($isadmin === True) {
@@ -519,7 +538,7 @@ class DatabaseConnection
         $owner = $settings->owner();
         $original_user = $owner->name();
         $name = $settings->name();
-        $new_owner = new User();
+        $new_owner = new UserV2();
         $new_owner->setName($targetUserName);
         $settings->setOwner($new_owner);
         /** @var ParameterSetting|TaskSetting|AnalysisSetting $settings */
@@ -738,7 +757,7 @@ class DatabaseConnection
 
         // Fill the setting
         $settings->setName($response["name"]);
-        $user = new User();
+        $user = new UserV2();
         $user->setName($response["owner"]);
         $settings->setOwner($user);
 
@@ -1171,7 +1190,7 @@ class DatabaseConnection
     public function saveJobFiles($id, $owner, $files, $autoseries)
     {
         $result = True;
-        /** @var User $owner */
+        /** @var UserV2 $owner */
         $username = $owner->name();
         $sqlAutoSeries = "";
         foreach ($files as $file) {
@@ -1327,7 +1346,7 @@ class DatabaseConnection
 
         $stopTime = date("Y-m-d H:i:s");
         $id = $desc->id();
-        /** @var User $user */
+        /** @var UserV2 $user */
         $user = $desc->owner();
         $owner = $user->name();
         $group = $user->userGroup();
@@ -2068,6 +2087,19 @@ class DatabaseConnection
     }
 
     /**
+     * Set the status of a user.
+     * @param string $name Name of the user.
+     * @param string $status ('a', 'd', ...).
+     * @return \ADORecordSet_empty|\ADORecordSet_mysql|False
+     */
+    public function setUserStatus($name, $status)
+    {
+        $query = "update username set status='$status' where name='$name'";
+        $result = $this->execute($query);
+        return $result;
+    }
+
+    /**
      * Return the list of known users (without the administrator).
      * @param string String User name to filter out from the list (optional).
      * @return array Filtered array of users.
@@ -2488,7 +2520,6 @@ class DatabaseConnection
             return "false";
         }
     }
-
 
     /* ------------------------ PRIVATE FUNCTIONS --------------------------- */
 

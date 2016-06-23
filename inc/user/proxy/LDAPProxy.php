@@ -1,6 +1,6 @@
 <?php
 /**
- * LDAPAuthenticator
+ * LDAPProxy
  *
  * @package hrm
  *
@@ -8,7 +8,7 @@
  * Copyright and license notice: see license.txt
  */
 
-namespace hrm\user\auth;
+namespace hrm\user\proxy;
 
 use hrm\Log;
 
@@ -24,7 +24,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  *
  * @package hrm
  */
-class LDAPAuthenticator extends AbstractAuthenticator {
+class LDAPProxy extends AbstractProxy {
 
     /**
      * LDAP connection object
@@ -127,7 +127,14 @@ class LDAPAuthenticator extends AbstractAuthenticator {
                $ldap_manager_ou, $ldap_valid_groups, $ldap_authorized_groups;
 
         // Include the configuration file
-        include(dirname(__FILE__) . "/../../../config/ldap_config.inc");
+        $conf = dirname(__FILE__) . "/../../../config/ldap_config.inc";
+        if (! is_file($conf)) {
+            $msg = "The LDAP configuration file 'ldap_config.inc' is missing!";
+            Log::error($msg);
+            throw new \Exception($msg);
+        }
+        /** @noinspection PhpIncludeInspection */
+        include($conf);
 
         // Assign the variables
         $this->m_LDAP_Host = $ldap_host;

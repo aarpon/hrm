@@ -1,6 +1,6 @@
 <?php
 /**
- * ActiveDirectoryAuthenticator
+ * ActiveDirectoryProxy
  *
  * @package hrm
  *
@@ -8,7 +8,7 @@
  * Copyright and license notice: see license.txt
  */
 
-namespace hrm\user\auth;
+namespace hrm\user\proxy;
 
 use adLDAP\adLDAP;
 use adLDAP\adLDAPException;
@@ -27,7 +27,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  *
  * @package hrm
  */
-class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
+class ActiveDirectoryProxy extends AbstractProxy {
 
     /**
      * The adLDAP object.
@@ -109,8 +109,16 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
                $AD_USERNAME_SUFFIX_REPLACE;
 
 
-        // Include configuration file
-        include(dirname(__FILE__) . "/../../../config/active_directory_config.inc");
+        // Include the configuration file
+        $conf = dirname(__FILE__) . "/../../../config/active_directory_config.inc";
+        if (! is_file($conf)) {
+            $msg = "The Active Directory configuration file " .
+                "'active_directory_config.inc' is missing!";
+            Log::error($msg);
+            throw new \Exception($msg);
+        }
+        /** @noinspection PhpIncludeInspection */
+        include($conf);
 
         // Set up the adLDAP object
         $options = array(
