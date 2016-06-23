@@ -219,6 +219,7 @@ class JobDescription(dict):
             return
         target = os.path.join(target, self['uid'] + '.jobfile')
         move_file(self.fname, target)
+        # update the job's internal fname pointer:
         self.fname = target
 
     def _parse_jobfile(self):
@@ -661,6 +662,13 @@ class JobSpooler(object):
 
         Check the GC3Pie config file, set up the spool directories, set up the
         gc3 engine, check the resource directories.
+
+        Parameters
+        ----------
+        spool_dirs : dict
+            Spooling directories in a dict, as returned by setup_rundirs().
+        gc3conf : str
+            The path to a gc3pie configuration file.
         """
 
         self.gc3spooldir = None
