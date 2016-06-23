@@ -58,7 +58,7 @@ class EventHandler(pyinotify.ProcessEvent):
     process_IN_CREATE()
     """
 
-    def my_init(self, queues, tgt):                 # pylint: disable-msg=W0221
+    def my_init(self, queues, dirs):                # pylint: disable-msg=W0221
         """Initialize the inotify event handler.
 
         Parameters
@@ -66,41 +66,55 @@ class EventHandler(pyinotify.ProcessEvent):
         queues : dict
             Containing the JobQueue objects for the different queues, using the
             corresponding 'type' keyword as identifier.
-        tgt : dict
+        dirs : dict
             Spooling directories in a dict, as returned by HRM.setup_rundirs().
         """
         logi("Initialized the event handler for inotify.")
         self.queues = queues
-        self.tgt = tgt
+        self.dirs = dirs
 
     def process_IN_CREATE(self, event):
         """Method handling 'create' events."""
-        logw("Found new jobfile '%s', processing..." % event.pathname)
-        try:
-            # TODO: use better approach for the LOGLEVEL here:
-            job = HRM.JobDescription(event.pathname, 'file', LOGLEVEL)
-            logd("Dict assembled from the processed job file:")
-            logd(pprint.pformat(job))
-        except IOError as err:
-            logw("Error reading job description file (%s), skipping." % err)
-            # there is nothing to add to the queue and the IOError indicates
-            # problems accessing the file, so we simply return silently:
-            return
-        except (SyntaxError, ValueError) as err:
-            logw("Job file unparsable (%s), skipping / moving to 'done'." % err)
-            # still nothing to add to the queue but this time we can at least
-            # move the file out of the way before returning:
-            HRM.move_file(event.pathname, self.tgt['done'], safe=True)
-            return
-        if not self.queues.has_key(job['type']):
-            logc("ERROR: no queue existing for jobtype '%s'!" % job['type'])
-            HRM.move_file(event.pathname, self.tgt['done'], safe=True)
-            return
-        # TODO: we need to distinguish different job types and act accordingly
-        self.queues[job['type']].append(job)
-        job.move_jobfile(self.tgt['cur'])
-        logd("Current job queue for type '%s': %s" %
-                (job['type'], self.queues[job['type']].queue))
+        logw("Found new file '%s', processing..." % event.pathname)
+        process_jobfile(event.pathname, self.queues, self.dirs)
+
+
+def process_jobfile(fname, queues, dirs):
+    """Parse a jobfile and add it to its destination queue.
+
+    Parameters
+    ----------
+    fname : str
+        The name of the job file to parse.
+    queues : dict
+        Containing the JobQueue objects for the different queues, using the
+        corresponding 'type' keyword as identifier.
+    dirs : dict
+        Spooling directories in a dict, as returned by HRM.setup_rundirs().
+    """
+    try:
+        # TODO: use better approach for the LOGLEVEL here:
+        job = HRM.JobDescription(fname, 'file', LOGLEVEL)
+        logd("Dict assembled from the processed job file:")
+        logd(pprint.pformat(job))
+    except IOError as err:
+        logw("Error reading job description file (%s), skipping." % err)
+        # there is nothing to add to the queue and the IOError indicates
+        # problems accessing the file, so we simply return silently:
+        return
+    except (SyntaxError, ValueError) as err:
+        logw("Job file unparsable (%s), skipping / moving to 'done'." % err)
+        # still nothing to add to the queue but this time we can at least
+        # move the file out of the way before returning:
+        HRM.move_file(fname, dirs['done'], safe=True)
+        return
+    if not queues.has_key(job['type']):
+        logc("ERROR: no queue existing for jobtype '%s'!" % job['type'])
+        HRM.move_file(fname, dirs['done'], safe=True)
+        return
+    job.move_jobfile(dirs['cur'])
+    # TODO: we need to distinguish different job types and act accordingly
+    queues[job['type']].append(job)
 
 
 def parse_arguments():
@@ -146,7 +160,7 @@ def main():
     # set the mask which events to watch:
     mask = pyinotify.IN_CREATE                      # pylint: disable-msg=E1101
     notifier = pyinotify.ThreadedNotifier(watch_mgr,
-        EventHandler(queues=jobqueues, tgt=spool_dirs))
+        EventHandler(queues=jobqueues, dirs=spool_dirs))
     notifier.start()
     wdd = watch_mgr.add_watch(spool_dirs['new'], mask, rec=False)
 
