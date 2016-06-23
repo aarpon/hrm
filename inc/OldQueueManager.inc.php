@@ -4,14 +4,21 @@
 
 
 /* -------------------------- IMPORTANT ----------------------------
-The code in this  file  is legacy code which will be replaced
-by the new QM implemented  in Python/GC3Pie. Most of the original
-code of this QueueManager has been removed to avoid confusion.
-The remaining code will eventually be removed as well, although
-it has been temporarily saved to use the functions that
-populated the database on the first Queue Manager run. Other functions
-related to notifications and emails can still be found below for
-future reference. */
+   This file contains legacy code which will be replaced by the new
+   QM implemented in Python/GC3Pie. Most of the original code of
+   this QueueManager has been removed to avoid confusion. The
+   remaining code will eventually be removed as well, although it
+   has been temporarily saved to use the functions that populated
+   the database on the first Queue Manager run. Other functions
+   related to notifications and emails can still be found below for
+   future reference.
+
+   TODO: Once the new QM has all of the required functionality, this
+   file and the corresponding "runDatabasePopulate.php" should be
+   removed!!
+
+   See the corresponding tickets #132 and #412 for more details!
+   -------------------------- IMPORTANT ---------------------------- */
 
 require_once("System.inc.php");
 require_once("Database.inc.php");
