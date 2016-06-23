@@ -127,6 +127,20 @@ def setup_rundirs(base_dir):
     return full_subdirs
 
 
+def move_file(fname, target):
+    """Helper function to move a file.
+
+    Parameters
+    ----------
+    fname : str
+        The original filename.
+    target : str
+        The target directory.
+    """
+    logd("Moving file '%s' to '%s'." % (fname, target))
+    shutil.move(fname, target)
+
+
 class JobDescription(dict):
 
     """Abstraction class for handling HRM job descriptions.
@@ -204,8 +218,7 @@ class JobDescription(dict):
         if self.srctype != 'file':
             return
         target = os.path.join(target, self['uid'] + '.jobfile')
-        logd("Moving jobfile '%s' to '%s'." % (self.fname, target))
-        shutil.move(self.fname, target)
+        move_file(self.fname, target)
         self.fname = target
 
     def _parse_jobfile(self):
