@@ -58,7 +58,7 @@ class EventHandler(pyinotify.ProcessEvent):
     process_IN_CREATE()
     """
 
-    def my_init(self, queues, tgt=None):            # pylint: disable-msg=W0221
+    def my_init(self, queues, tgt):                 # pylint: disable-msg=W0221
         """Initialize the inotify event handler.
 
         Parameters
@@ -66,7 +66,7 @@ class EventHandler(pyinotify.ProcessEvent):
         queues : dict
             Containing the JobQueue objects for the different queues, using the
             corresponding 'type' keyword as identifier.
-        tgt : str (optional)
+        tgt : str
             The path to a directory where to move parsed jobfiles.
         """
         logi("Initialized the event handler for inotify.")
