@@ -127,7 +127,7 @@ def setup_rundirs(base_dir):
     return full_subdirs
 
 
-def move_file(fname, target):
+def move_file(fname, target, safe=False):
     """Helper function to move a file.
 
     Parameters
@@ -135,8 +135,16 @@ def move_file(fname, target):
     fname : str
         The original filename.
     target : str
-        The target directory.
+        The target file or directory name.
+    safe : bool
+        If True, a timestamp will be added as a suffix to the filename in case
+        the target already exists.
     """
+    if safe:
+        if os.path.exists(target):
+            if os.path.isdir(target):
+                target = os.path.join(target, fname)
+            target += ".%s" % time.time()
     logd("Moving file '%s' to '%s'." % (fname, target))
     shutil.move(fname, target)
 
