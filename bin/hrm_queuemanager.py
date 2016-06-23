@@ -81,10 +81,10 @@ class EventHandler(pyinotify.ProcessEvent):
             job = HRM.JobDescription(event.pathname, 'file', LOGLEVEL)
             logd("Dict assembled from the processed job file:")
             logd(pprint.pformat(job))
-        except (IOError, ValueError) as err:
-            logw("Unable to parse job description file (%s), skipping." % err)
-            # in this case there is nothing to add to the queue, so we simply
-            # return silently
+        except IOError as err:
+            logw("Error reading job description file (%s), skipping." % err)
+            # there is nothing to add to the queue and the IOError indicates
+            # problems accessing the file, so we simply return silently:
             return
         if not self.queues.has_key(job['type']):
             logc("ERROR: no queue existing for jobtype '%s'!" % job['type'])
