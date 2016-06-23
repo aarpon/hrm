@@ -17,12 +17,12 @@ css/custom.css
 # Python bytecode
 *.py[cod]
 
+# runtime directories
+/run/queue/
+/run/spool/
+
 # vim swap files
 .*.sw?
 
 # file marking a development version
 .hrm_devel_version
-
-# runtime directories
-/run/queue/
-/run/spool/
