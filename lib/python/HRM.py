@@ -127,6 +127,44 @@ def setup_rundirs(base_dir):
     return full_subdirs
 
 
+def process_jobfile(fname, queues, dirs):
+    """Parse a jobfile and add it to its destination queue.
+
+    Parameters
+    ----------
+    fname : str
+        The name of the job file to parse.
+    queues : dict
+        Containing the JobQueue objects for the different queues, using the
+        corresponding 'type' keyword as identifier.
+    dirs : dict
+        Spooling directories in a dict, as returned by HRM.setup_rundirs().
+    """
+    try:
+        # TODO: use better approach for the LOGLEVEL here:
+        job = JobDescription(fname, 'file', LOGLEVEL)
+        logd("Dict assembled from the processed job file:")
+        logd(pprint.pformat(job))
+    except IOError as err:
+        logw("Error reading job description file (%s), skipping." % err)
+        # there is nothing to add to the queue and the IOError indicates
+        # problems accessing the file, so we simply return silently:
+        return
+    except (SyntaxError, ValueError) as err:
+        logw("Job file unparsable (%s), skipping / moving to 'done'." % err)
+        # still nothing to add to the queue but this time we can at least
+        # move the file out of the way before returning:
+        move_file(fname, dirs['done'], safe=True)
+        return
+    if not queues.has_key(job['type']):
+        logc("ERROR: no queue existing for jobtype '%s'!" % job['type'])
+        move_file(fname, dirs['done'], safe=True)
+        return
+    job.move_jobfile(dirs['cur'])
+    # TODO: we need to distinguish different job types and act accordingly
+    queues[job['type']].append(job)
+
+
 def move_file(fname, target, safe=False):
     """Helper function to move a file.
 

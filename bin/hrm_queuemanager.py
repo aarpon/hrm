@@ -34,8 +34,10 @@ except ImportError:
     sys.exit(1)
 
 import HRM
+from hrm_logger import set_loglevel
 
 import logging
+
 # we set a default loglevel and add some shortcuts for logging:
 LOGLEVEL = logging.WARN
 gc3libs.configure_logger(LOGLEVEL, "qmgc3")
@@ -76,45 +78,7 @@ class EventHandler(pyinotify.ProcessEvent):
     def process_IN_CREATE(self, event):
         """Method handling 'create' events."""
         logw("Found new file '%s', processing..." % event.pathname)
-        process_jobfile(event.pathname, self.queues, self.dirs)
-
-
-def process_jobfile(fname, queues, dirs):
-    """Parse a jobfile and add it to its destination queue.
-
-    Parameters
-    ----------
-    fname : str
-        The name of the job file to parse.
-    queues : dict
-        Containing the JobQueue objects for the different queues, using the
-        corresponding 'type' keyword as identifier.
-    dirs : dict
-        Spooling directories in a dict, as returned by HRM.setup_rundirs().
-    """
-    try:
-        # TODO: use better approach for the LOGLEVEL here:
-        job = HRM.JobDescription(fname, 'file', LOGLEVEL)
-        logd("Dict assembled from the processed job file:")
-        logd(pprint.pformat(job))
-    except IOError as err:
-        logw("Error reading job description file (%s), skipping." % err)
-        # there is nothing to add to the queue and the IOError indicates
-        # problems accessing the file, so we simply return silently:
-        return
-    except (SyntaxError, ValueError) as err:
-        logw("Job file unparsable (%s), skipping / moving to 'done'." % err)
-        # still nothing to add to the queue but this time we can at least
-        # move the file out of the way before returning:
-        HRM.move_file(fname, dirs['done'], safe=True)
-        return
-    if not queues.has_key(job['type']):
-        logc("ERROR: no queue existing for jobtype '%s'!" % job['type'])
-        HRM.move_file(fname, dirs['done'], safe=True)
-        return
-    job.move_jobfile(dirs['cur'])
-    # TODO: we need to distinguish different job types and act accordingly
-    queues[job['type']].append(job)
+        HRM.process_jobfile(event.pathname, self.queues, self.dirs)
 
 
 def parse_arguments():
@@ -140,6 +104,7 @@ def main():
 
     # set the loglevel as requested on the commandline
     loglevel = logging.WARN - (args.verbosity * 10)
+    set_loglevel(loglevel)
     gc3libs.configure_logger(loglevel, "qmgc3")
 
     spool_dirs = HRM.setup_rundirs(args.spooldir)
