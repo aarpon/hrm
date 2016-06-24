@@ -141,8 +141,7 @@ def process_jobfile(fname, queues, dirs):
         Spooling directories in a dict, as returned by HRM.setup_rundirs().
     """
     try:
-        # TODO: use better approach for the LOGLEVEL here:
-        job = JobDescription(fname, 'file', LOGLEVEL)
+        job = JobDescription(fname, 'file')
         logd("Dict assembled from the processed job file:")
         logd(pprint.pformat(job))
     except IOError as err:
@@ -202,7 +201,7 @@ class JobDescription(dict):
     _sections : list
     """
 
-    def __init__(self, job, srctype, loglevel=None):
+    def __init__(self, job, srctype):
         """Initialize depending on the type of description source.
 
         Parameters
@@ -215,8 +214,6 @@ class JobDescription(dict):
         >>> job = HRM.JobDescription('/path/to/jobdescription.cfg', 'file')
         """
         super(JobDescription, self).__init__()
-        if loglevel is not None:
-            set_loglevel(loglevel)
         self.jobparser = ConfigParser.RawConfigParser()
         self._sections = []
         self.srctype = srctype
