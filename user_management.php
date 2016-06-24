@@ -461,7 +461,7 @@ include("header.inc.php");
                                                        class="submit"/>
                                                 <?php
 
-                                                if (!$_SESSION['user']->isAdmin()) {
+                                                if ($_SESSION['user']->isAdmin()) {
                                                     if ($status == "d") {
 
                                                         ?>
