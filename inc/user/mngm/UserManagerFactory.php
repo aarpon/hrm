@@ -10,7 +10,6 @@
 namespace hrm\user\mngm;
 
 use hrm\user\proxy\ProxyFactory;
-use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
@@ -20,22 +19,30 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  *
  * @package hrm
  */
-class UserManagerFactory {
+class UserManagerFactory
+{
 
     /**
      * Returns the correct UserManager object depending on the value of the
      * $authenticateAgainst variable in the configuration files and whether
      * or not the user is the administrator.
      *
-     * @param string $user Name of the User.
+     * @param string $username Name of the User. Pass "" to retrieve the
+     * UserManager for the default authentication mode.
      * @return ExternalReadOnlyUserManager|IntegratedUserManager
-     * @throws \Exception If the value of $authenticateAgainst is invalid.
+     * @throws \Exception If the authentication mode for the User cannot be
+     * obtained.
      */
-    public static function getUserManager($username) {
+    public static function getUserManager($username)
+    {
+
+        if ($username == "") {
+            $authMode = ProxyFactory::getDefaultAuthenticationMode();
+            return $authMode;
+        }
 
         // Get the UserManager for the required user name
         $authMode = ProxyFactory::getAuthenticationModeForUser($username);
-
 
         // Initialize the authenticator
         switch ($authMode) {
@@ -63,4 +70,5 @@ class UserManagerFactory {
         }
 
     }
+
 }

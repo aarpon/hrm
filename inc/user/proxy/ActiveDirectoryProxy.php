@@ -94,8 +94,8 @@ class ActiveDirectoryProxy extends AbstractProxy {
     private $m_UsernameSuffixReplaceString;
 
     /**
-     * ActiveDirectoryAuthenticator constructor: instantiates an
-     * ActiveDirectoryAuthenticator object with the settings specified in
+     * ActiveDirectoryProxy constructor: instantiates an
+     * ActiveDirectoryProxy object with the settings specified in
      * the configuration file.
      *
      * No parameters are passed to the constructor.

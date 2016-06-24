@@ -124,13 +124,15 @@ abstract class UserManager
      * @param string $password User password in plain text.
      * @param string $emailAddress User e-mail address.
      * @param string $group User group.
+     * @param string $authentication User authentication mode.
      * @param string $role User role (optional, default is 'user').
      * @param string $status User status (optional, the user is activated by
      * default).
      * @return True if the User could be created, false otherwise.
      */
     public abstract function createUser($username, $password, $emailAddress,
-                                        $group, $role, $status);
+                                        $group, $authentication, $role,
+                                        $status);
 
 
     /**

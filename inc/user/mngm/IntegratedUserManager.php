@@ -42,12 +42,15 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
       * @param string $password User password in plain text.
       * @param string $emailAddress User e-mail address.
       * @param string $group User group.
+      * @param string $authentication User authentication mode (ignored, since
+      * it is always integrated).
       * @param string $role User role (optional, default is 'user').
       * @param string $status User status (optional, the user is activated by
       * default).
       * @return True if the User could be created, false otherwise.
       */
      public function createUser($username, $password, $emailAddress, $group,
+                                $authentication = "integrated",
                                 $role = 'user',
                                 $status = UserConstants::STATUS_ACTIVE) {
 
@@ -63,6 +66,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
          $record["email"] = $emailAddress;
          $record["research_group"] = $group;
          $record["role"] = $role;
+         $record["authentication"] = "integrated";
          $record["status"] = UserConstants::STATUS_ACTIVE;
          $table = "username";
          $insertSQL = $db->connection()->GetInsertSQL($table, $record);

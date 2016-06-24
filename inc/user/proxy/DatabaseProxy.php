@@ -1,6 +1,6 @@
 <?php
 /**
- * IntegratedAuthenticatorV2
+ * DatabaseProxy
  *
  * @package hrm
  *
@@ -13,7 +13,6 @@ namespace hrm\user\proxy;
 use hrm\DatabaseConnection;
 use hrm\Log;
 use hrm\user\UserConstants;
-use Nette\Security\User;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
@@ -25,7 +24,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
 class DatabaseProxy extends AbstractProxy {
 
     /**
-     * Constructor: instantiates an InternalAuthenticator object.
+     * Constructor: instantiates an DatabaseProxy object.
      * No parameters are passed to the constructor.
      */
     public function __construct() { }

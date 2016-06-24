@@ -50,6 +50,7 @@ class ExternalReadOnlyUserManager extends UserManager {
      * @param string $password This is ignored.
      * @param string $emailAddress This is ignored.
      * @param string $group This is ignored.
+     * @param string $authentication User authentication mode.
      * @param string $role User role (optional, default is 'user').
      * @param string $status User status (optional, the user is activated by
      * default).
@@ -59,6 +60,7 @@ class ExternalReadOnlyUserManager extends UserManager {
                                $password = "ignored",
                                $emailAddress = "ignored",
                                $group = "ignored",
+                               $authentication,
                                $role = 'user',
                                $status = UserConstants::STATUS_ACTIVE) {
 
@@ -75,6 +77,7 @@ class ExternalReadOnlyUserManager extends UserManager {
         $record["name"] = $username;
         $record["password"] = $password;
         $record["role"] = $role;
+        $record["authentication"] = $authentication;
         $record["status"] = UserConstants::STATUS_ACTIVE;
         $table = "username";
         $insertSQL = $db->connection()->GetInsertSQL($table, $record);
