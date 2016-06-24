@@ -92,12 +92,14 @@ def setup_rundirs(base_dir):
 
     Returns
     -------
-    full_subdirs : dict
-        { 'new'      : '/run/spool/new',
-          'cur'      : '/run/spool/cur',
-          'done'     : '/run/spool/done',
-          'requests' : '/run/queue/requests',
-          'status'   : '/run/queue/status' }
+    full_subdirs : {
+        'new'      : '/run/spool/new',
+        'cur'      : '/run/spool/cur',
+        'done'     : '/run/spool/done',
+        'requests' : '/run/queue/requests',
+        'status'   : '/run/queue/status',
+        'newfiles' : list of existing files in the 'new' directory
+    }
     """
     full_subdirs = dict()
     tree = {
@@ -118,12 +120,18 @@ def setup_rundirs(base_dir):
                     raise OSError("Error creating Queue Manager runtime "
                         "directory '%s': %s" % (cur, err))
             full_subdirs[sub_dir] = cur
-    logd("Runtime directories:\n%s" % pprint.pformat(full_subdirs))
-    # TODO: pick up jobs in 'new' and 'cur' instead of raising an error
-    # the latter is fine for now to prevent strange behaviour of the queue!
-    for check_empty in [full_subdirs['new'], full_subdirs['cur']]:
-        if len(os.listdir(check_empty)) > 0:
-            raise RuntimeError("Directory non-empty: %s" % check_empty)
+    # pick up any existing jobfiles in the 'new' spooldir
+    full_subdirs['newfiles'] = list()
+    new_existing = os.listdir(full_subdirs['new'])
+    if len(new_existing) > 0:
+        for fname in new_existing:
+            logw("Found existing file in 'new' directory: %s" % fname)
+            full_subdirs['newfiles'].append(fname)
+    logi("Runtime directories:\n%s" % pprint.pformat(full_subdirs))
+    # TODO: define how to deal with existing files in the 'cur' directory!
+    cur_existing = os.listdir(full_subdirs['cur'])
+    if len(cur_existing) > 0:
+        raise RuntimeError("Directory non-empty: %s" % full_subdirs['cur'])
     return full_subdirs
 
 
