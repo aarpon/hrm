@@ -171,7 +171,13 @@ class UserV2 {
      * @param string $name The name of the User.
      */
     public function setName($name) {
+
+        // Set the name
         $this->name = $name;
+
+        // Get the appropriate proxy
+        $this->proxy = ProxyFactory::getProxy($name);
+
     }
 
     /**
@@ -247,7 +253,9 @@ class UserV2 {
         $this->setName($name);
 
         // Get the appropriate proxy
-        $this->proxy = ProxyFactory::getProxy($name);
+        if ($this->proxy == null) {
+            $this->proxy = ProxyFactory::getProxy($name);
+        }
 
         // Try authenticating the user
         $this->isLoggedIn = $this->proxy->authenticate($this->name(), $password);
