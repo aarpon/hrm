@@ -138,9 +138,51 @@ class HuOutput2Html():
 
 
     def write_img_params(self,job_output):
-        pattern  = '(.*){Parameter ([a-zA-Z3]+?) (of channel ([0-9])\s|)(.*) '
-        pattern += '(template|metadata|meta data): (.*).}}(.*)'
-        matchObj = re.match(pattern, job_output, re.S)
+        title = "<br /><b><u>Image parameters summary</u></b>"
+        text = "<br /><br />"
+        text += "Parameter values that were <b>missing</b> from your "
+        text += "settings are highlighted in <b>green</b>.<br />Alternative "
+        text += "values found in the image metadata were used "
+        text += "instead. Please examine<br />their <b>validity</b>.<br />"
+        text += "<br />"
+
+        row = self.insert_cell("Image Parameters", "header", 4)
+        table = self.insert_row(row)
+
+        row = self.insert_cell("Parameter", "param")
+        row += self.insert_cell("Channel", "channel")
+        row += self.insert_cell("Source", "source")
+        row += self.insert_cell("Value", "value")
+        table += self.insert_row(row)
+
+        pattern  = '({Parameter ([a-zA-Z3]+?) (of channel ([0-9])\s|)(.*) '
+        pattern += '(template|metadata|meta data): (.*).}})'
+        regex = re.compile(pattern, re.IGNORECASE)
+
+        for match in regex.finditer(job_output):
+            paramName = match.group(2)
+            channel = match.group(4)
+            source = match.group(6)
+            value = match.group(7)
+
+            if source == "meta data":
+                source = 'File meta data'
+                style = 'metadata'
+            else:
+                source = 'User defined'
+                style = 'userdef'
+
+            row = self.insert_cell(paramName, style)
+            row += self.insert_cell(channel, style)
+            row += self.insert_cell(source, style)
+            row += self.insert_cell(value, style)
+            table += self.insert_row(row)
+
+        html = self.insert_table(table)
+        html = title + text + table
+        html += self.insert_separator("")
+
+        return html
 
 
     def write_resto_params(self,job_output):
@@ -171,7 +213,9 @@ class HuOutput2Html():
         div = self.write_scaling_factors(job_output)
         html += self.insert_div(div, "scaling")
 
-        self.write_img_params(job_output)
+        div = self.write_img_params(job_output)
+        html += self.insert_div(div, "jobParameters")
+        
         self.write_resto_params(job_output)
         self.write_coloc_tables(job_output)
 
