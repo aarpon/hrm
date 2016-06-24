@@ -111,20 +111,19 @@ if (isset($_SESSION['admin_referer'])) {
     unset($_SESSION['admin_referer']);
 }
 
-if (isset($_SESSION['account_user']) &&
-    gettype($_SESSION['account_user']) != "object"
-) {
-    $message = $_SESSION['account_user'];
-    unset($_SESSION['account_user']);
-}
-
 if (!isset($_SESSION['index'])) {
     $_SESSION['index'] = "";
 } else if (isset($_GET['index'])) {
     $_SESSION['index'] = $_GET['index'];
 }
 
+// Check if there is a message from the account page that we need to
+// display
 $message = "";
+if (isset($_SESSION['account_update_message'])) {
+    $message = $_SESSION['account_update_message'];
+    unset($_SESSION['account_update_message']);
+}
 
 if (isset($_POST['accept'])) {
     $result = $userManager->acceptUser($clean['username']);

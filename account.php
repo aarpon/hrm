@@ -6,13 +6,14 @@ use hrm\Nav;
 use hrm\Util;
 use hrm\Validator;
 use hrm\user\mngm\UserManagerFactory;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 
 global $email_sender;
 
-/*
+/* *****************************************************************************
  *
  * SANITIZE INPUT
  *   We check the relevant contents of $_POST for validity and store them in
@@ -21,7 +22,7 @@ global $email_sender;
  *   After this step, only the $clean array and no longer the $_POST array
  *   should be used!
  *
- */
+ **************************************************************************** */
 
 // Here we store the cleaned variables
 $clean = array(
@@ -56,11 +57,11 @@ if (isset($_POST["pass2"])) {
     }
 }
 
-/*
+/* *****************************************************************************
  *
- * END OF SANITIZE INPUT
+ * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
  *
- */
+ **************************************************************************** */
 
 session_start();
 
@@ -81,41 +82,69 @@ if (isset($_SERVER['HTTP_REFERER']) &&
 }
 
 if (isset($_SESSION['account_user'])) {
+
+    // Make sure the User is properly loaded
     $edit_user = $_SESSION['account_user'];
+    $edit_user->load();
+
+
 } else {
     $edit_user = $_SESSION['user'];
 }
 
 $message = "";
 
+/* *****************************************************************************
+ *
+ * UPDATE USER SETTINGS
+ *
+ **************************************************************************** */
+
 if (isset($_POST['modify'])) {
 
-    // Set the result to True and then...
+    // Get the user manager
+    $userManager = UserManagerFactory::getUserManager($edit_user->name());
+
+    // Make sure the User is fully loaded
+    $edit_user->load();
+
+    // Initialize the result to True
     $result = True;
 
-    // ... check that all required entries are indeed set
-    // Email
-    if ($edit_user->isAdmin()) {
-        $emailToUse = '';
-    } else {
+    // E-mail address
+    if ($userManager->canModifyEmailAddress()) {
+
+        // Check that a valid e-mail address was provided
         if ($clean['email'] == "") {
             $result = False;
             $message = "Please fill in the email field with a valid address";
         } else {
             $emailToUse = $clean['email'];
         }
+
+    } else {
+
+        // Use current e-mail address
+        $emailToUse = $edit_user->emailAddress();
+
     }
 
-    // Group
-    if ($edit_user->isAdmin()) {
-        $groupToUse = '';
-    } else {
+    // User group
+    if ($userManager->canModifyUserGroup()) {
+
+        // Check that a valid group was provided
         if ($clean['group'] == "") {
             $result = False;
             $message = "Please fill in the group field";
         } else {
             $groupToUse = $clean['group'];
         }
+
+    } else {
+
+        // Use current group
+        $groupToUse = $edit_user->userGroup();
+
     }
 
     // Passwords
@@ -134,19 +163,30 @@ if (isset($_POST['modify'])) {
     // Update the information in the database
     if ($result == true) {
 
-        // Get the user manager
-        $userManager = UserManagerFactory::getUserManager($edit_user->name());
-
-        // Make sure the User is fully loaded
-        $edit_user->load();
-
         // Update the User information
         $success = $userManager->updateUser($edit_user->name(), $emailToUse,
             $groupToUse);
 
         if ($success == true) {
+
+            // Now we need to update the password (and update the success
+            // status).
+            $success &= $userManager->changeUserPassword($edit_user->name(),
+                $passToUse);
+        }
+
+        if (!$success) {
+
+            $message = "Sorry, an error occurred and the user data could " .
+                "not be updated!";
+
+        } else {
+
+            // If updating some other User setting, remove the modified
+            // User from the session and return to the user management page.
             if (isset($_SESSION['account_user'])) {
-                $_SESSION['account_user'] =
+                unset($_SESSION['account_user']);
+                $_SESSION['account_update_message'] =
                     "Account details successfully modified";
                 header("Location: " . "user_management.php");
                 exit();
@@ -157,11 +197,15 @@ if (isset($_POST['modify'])) {
                 header("Location: " . $_SESSION['referer']);
                 exit();
             }
-        } else {
-            $message = "Database error, please inform the administrator";
         }
     }
 }
+
+/* *****************************************************************************
+ *
+ * DISPLAY PAGE
+ *
+ **************************************************************************** */
 
 include("header.inc.php");
 ?>
@@ -200,59 +244,55 @@ include("header.inc.php");
 
         <div id="adduser">
             <?php
-            if (isset($_SESSION['account_user']) ||
-                !$_SESSION['user']->isAdmin()
-            ) {
-                ?>
-                <label for="email">E-mail address: </label>
-                <?php
+
+            // Get the appropriate UserManager for the User
+            $userManager = UserManagerFactory::getUserManager($edit_user->name());
+
+            if ($userManager->canModifyEmailAddress()) {
+
+                $emailForForm = "";
                 if ($clean['email'] != "") {
-                    ?>
-                    <input name="email"
-                           id="email"
-                           type="text"
-                           value="<?php echo $clean['email'] ?>"/>
-                    <?php
+                    $emailForForm = $clean['email'];
                 } else {
-                    ?>
-                    <input name="email"
-                           id="email"
-                           type="text"
-                           value="<?php echo $edit_user->emailAddress() ?>"/>
-                    <?php
+                    $emailForForm = $edit_user->emailAddress();
                 }
+
                 ?>
 
-                <br/>
-                <?php
-            }
+                <label for="email">E-mail address: </label>
+                <input name="email"
+                       id="email"
+                       type="text"
+                       value="<?php echo $emailForForm; ?>"/>
 
-            if (isset($_SESSION['account_user']) ||
-                !$_SESSION['user']->isAdmin()
-            ) {
-                ?>
-                <label for="group">Research group: </label>
-                <?php
-                if ($clean['group'] != "") {
-                    ?>
-                    <input name="group"
-                           id="group"
-                           type="text"
-                           value="<?php echo $clean['group'] ?>"/>
-                    <?php
-                } else {
-                    ?>
-                    <input name="group"
-                           id="group"
-                           type="text"
-                           value="<?php echo $edit_user->userGroup() ?>"/>
-                    <?php
-                }
-                ?>
-                <br/>
                 <?php
             }
             ?>
+            <br/>
+            <?php
+
+            if ($userManager->canModifyUserGroup()) {
+
+                $emailForForm = "";
+                if ($clean['group'] != "") {
+                    $groupForForm = $clean['group'];
+                } else {
+                    $groupForForm = $edit_user->userGroup();
+                }
+
+                ?>
+
+                <label for="group">Research group: </label>
+                <input name="group"
+                       id="group"
+                       type="text"
+                       value="<?php echo $groupForForm; ?>"/>
+
+                <?php
+            }
+
+            ?>
+
             <br/>
             <label for="pass1">New password: </label>
             <input name="pass1" id="pass1" type="password"/>
