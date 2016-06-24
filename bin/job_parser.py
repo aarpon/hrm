@@ -14,9 +14,65 @@ class HuOutput2Html():
         print "Destroy class instance"
 
 
+    def insert_cell(self,content, style, colspan=0):
+        if colspan == 0:
+            colspan = 1
+
+        cell = '<td class=\"%s\" colspan=\"%s\">' % (style, colspan)
+        cell += '%s' % content
+        cell += '</td>'
+
+        return cell
+
+
+    def insert_row(self,content):
+        row = '<tr>'
+        row += '%s' % content
+        row += '</tr>'
+
+        return row
+
+
+    def insert_table(self,content):
+        table = '<table>'
+        table += '%s' % content
+        table += '</table>'
+
+        return table
+
+
+    def insert_div(self,content, id=-1):
+        if id == -1:
+            div = '<div>'
+            div += '%s' % content
+            div += '</div>'
+        else:
+            div = '<div id=\"%s\">' % id
+            div += '%s' % content
+            div += '</div>'
+            div += '<!-- %s -->' % id
+
+        return div
+
+
     def write_micr_warning(self,job_output):
-        pattern = '(.*){Microscope conflict for channel([0 - 9]): (. *)}(.*)'
+        pattern = '(.*){Microscope conflict for channel ([0 - 9]):(. *)'
         matchObj = re.match(pattern, job_output, re.S)
+
+        if matchObj:
+            warning = '<p><b><u>WARNING</u>:</b>'
+            warning += ' The <b>microscope type</b> selected to deconvolve '
+            warning += 'this image <b>may not<br />be correct</b>. '
+            warning += 'The acquisition system registered a different '
+            warning += 'microscope type<br />in the image metadata. '
+            warning += 'The restoration process may produce '
+            warning += '<b>wrong results</b><br />if the microscope type '
+            warning += 'is not set properly.<br />'
+
+            row = self.insert_cell(warning, "text")
+            table = self.insert_row(row)
+            div = self.insert_table(table)
+            html = self.insert_div(div, "warning")
 
 
     def write_scaling_factors(self,job_output):
@@ -46,7 +102,7 @@ class HuOutput2Html():
         matchObj = re.match(pattern, job_output, re.S)
 
         if matchObj:
-            print "Found colocalization results: ", matchObj.group()
+            print "Found colocalization results: "
 
 
     def gen_html_output(self,job_output):
@@ -64,7 +120,7 @@ class HuOutput2Html():
 
     def process(self):
         if self.path == 0:
-            self.path = "/home/daniel/Downloads/hrm_results_2016-06-23_160049/scheduler_client0.log"
+            self.path = "/home/daniel/Desktop/scheduler_log_warning.txt"
 
         with open(self.path, 'r') as content_file:
             content = content_file.read()
