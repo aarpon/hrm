@@ -146,8 +146,7 @@ def main():
         job_spooler.spool()
     finally:
         print('Cleaning up. Remaining jobs:')
-        # TODO: before exiting with a non-empty queue, it should be serialized
-        # and stored in a file (e.g. using the "pickle" module)
+        # TODO: store the current queue (see #516)
         print(jobqueues['hucore'].queue)
         watch_mgr.rm_watch(wdd.values())
         notifier.stop()
