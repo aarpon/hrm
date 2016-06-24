@@ -238,6 +238,7 @@ include("header.inc.php");
      */
     if (file_exists("user/login_user.inc") == true) {
         echo "<div id=\"login_user\">\n";
+        /** @noinspection PhpIncludeInspection */
         include "user/login_user.inc";
         echo "</div>";
     }

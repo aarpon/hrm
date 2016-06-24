@@ -168,7 +168,36 @@ abstract class UserManager
 
         // Delete the user
         $db = new DatabaseConnection();
-        if ($db->deleteUser($username)) {
+
+        // Start transaction: if error, everything will be rolled back.
+        $db->connection()->StartTrans();
+
+        // Delete the user from the username table
+        $sql = "DELETE FROM username WHERE name=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM parameter WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM parameter_setting WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM task_parameter WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM task_setting WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM analysis_parameter WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM analysis_setting WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        // Complete the transaction (or roll back if failed).
+        $success = $db->connection()->CompleteTrans();
+
+        if ($success) {
 
             // Delete the user folders
             $this->deleteUserFolders($username);

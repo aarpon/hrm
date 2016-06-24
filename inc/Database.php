@@ -387,35 +387,6 @@ class DatabaseConnection
     }
 
     /**
-     * Deletes an user and all data from the database (username is expected to
-     * be already validated!
-     * @param string $username The name of the user.
-     * @return bool True if deleting all user data was successful; false otherwise.
-     */
-    public function deleteUser($username)
-    {
-        if ($username == 'admin') {
-            return false;
-        }
-        $query = "DELETE FROM username WHERE name = '$username'";
-        $result = $this->execute($query);
-        if ($result) {
-            // delete user's settings
-            $query = "DELETE FROM parameter WHERE owner = '$username'";
-            $this->execute($query);
-            $query = "DELETE FROM parameter_setting WHERE owner = '$username'";
-            $this->execute($query);
-            $query = "DELETE FROM task_parameter WHERE owner = '$username'";
-            $this->execute($query);
-            $query = "DELETE FROM task_setting WHERE owner = '$username'";
-            $this->execute($query);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Returns the password of a given user name.
      * @param string $name Name of the user.
      * @return string Password for the requested user.
