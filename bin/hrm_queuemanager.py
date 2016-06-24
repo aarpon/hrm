@@ -108,20 +108,20 @@ def main():
     gc3libs.configure_logger(loglevel, "qmgc3")
 
     spool_dirs = HRM.setup_rundirs(args.spooldir)
-    job_spooler = HRM.JobSpooler(spool_dirs, args.config)
-
     jobqueues = dict()
     jobqueues['hucore'] = HRM.JobQueue()
     for qname, queue in jobqueues.iteritems():
         status = os.path.join(spool_dirs['status'], qname + '.json')
         queue.set_statusfile(status)
 
+    job_spooler = HRM.JobSpooler(spool_dirs, jobqueues['hucore'], args.config)
 
 
     # process jobfiles already existing during our startup:
     for jobfile in spool_dirs['newfiles']:
         fname = os.path.join(spool_dirs['new'], jobfile)
         HRM.process_jobfile(fname, jobqueues, spool_dirs)
+
 
     # select a specific resource if requested on the cmdline:
     if args.resource:
@@ -143,7 +143,7 @@ def main():
 
     try:
         # NOTE: spool() is blocking, as it contains the main spooling loop!
-        job_spooler.spool(jobqueues)
+        job_spooler.spool()
     finally:
         print('Cleaning up. Remaining jobs:')
         # TODO: before exiting with a non-empty queue, it should be serialized

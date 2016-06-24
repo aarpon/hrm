@@ -708,7 +708,7 @@ class JobSpooler(object):
     engine : gc3libs.core.Engine
     """
 
-    def __init__(self, spool_dirs, gc3conf=None):
+    def __init__(self, spool_dirs, queue, gc3conf=None):
         """Prepare the spooler.
 
         Check the GC3Pie config file, set up the spool directories, set up the
@@ -718,10 +718,11 @@ class JobSpooler(object):
         ----------
         spool_dirs : dict
             Spooling directories in a dict, as returned by setup_rundirs().
+        queue : HRM.JobQueue
         gc3conf : str
             The path to a gc3pie configuration file.
         """
-
+        self.queue = queue
         self.gc3spooldir = None
         self.gc3conf = None
         self._check_gc3conf(gc3conf)
@@ -809,18 +810,18 @@ class JobSpooler(object):
                 # we don't process more than one request at a time, so exit:
                 return
 
-    def spool(self, jobqueues):
+    def spool(self):
         """Wrapper method for the spooler to catch Ctrl-C."""
         # TODO: when the spooler gets stopped (e.g. via Ctrl-C or upon request
         # from the web interface or the init script) while a job is still
         # running, it leaves it alone (and thus as well the files transferred
         # for / generated from processing)
         try:
-            self._spool(jobqueues)
+            self._spool()
         except KeyboardInterrupt:
             logi("Received keyboard interrupt, stopping queue manager.")
 
-    def _spool(self, jobqueues):
+    def _spool(self):
         """Spooler function dispatching jobs from the queues. BLOCKING!"""
         apps = []
         while True:
@@ -830,7 +831,7 @@ class JobSpooler(object):
                 for i, app in enumerate(apps):
                     new_state = app.status_changed()
                     if new_state is not None:
-                        jobqueues['hucore'].set_jobstatus(app.job, new_state)
+                        self.queue.set_jobstatus(app.job, new_state)
                     if new_state == gc3libs.Run.State.TERMINATED:
                         app.job.move_jobfile(self.dirs['done'])
                         apps.pop(i)
@@ -844,9 +845,9 @@ class JobSpooler(object):
                 if stats['RUNNING'] > 0 or stats['SUBMITTED'] > 0:
                     time.sleep(1)
                     continue
-                nextjob = jobqueues['hucore'].next_job()
+                nextjob = self.queue.next_job()
                 if nextjob is not None:
-                    logd("Current joblist: %s" % jobqueues['hucore'].queue)
+                    logd("Current joblist: %s" % self.queue.queue)
                     logi("Adding another job to the gc3pie engine.")
                     app = HucoreDeconvolveApp(nextjob, self.gc3spooldir)
                     apps.append(app)
@@ -854,9 +855,9 @@ class JobSpooler(object):
             elif self.status_cur == 'shutdown':
                 return True
             elif self.status_cur == 'refresh':
-                # jobqueues['hucore'].queue_details_hr()
-                print jobqueues['hucore'].queue_details_hr()
-                logd(jobqueues['hucore'].queue_details_json())
+                # self.queue.queue_details_hr()
+                print self.queue.queue_details_hr()
+                logd(self.queue.queue_details_json())
                 self.status_cur = self.status_pre
             elif self.status_cur == 'pause':
                 # no need to do anything, just sleep and check requests again:
