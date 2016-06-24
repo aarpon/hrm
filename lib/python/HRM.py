@@ -57,8 +57,8 @@ from hrm_logger import set_loglevel
 
 import logging
 # we set a default loglevel and add some shortcuts for logging:
-loglevel = logging.WARN
-gc3libs.configure_logger(loglevel, "qmgc3")
+LOGLEVEL = logging.WARN
+gc3libs.configure_logger(LOGLEVEL, "qmgc3")
 logw = gc3libs.log.warn
 logi = gc3libs.log.info
 logd = gc3libs.log.debug
