@@ -23,28 +23,28 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
  * Manages a User and its state and authenticates against the
  * configured authentication mechanism.
  *
- * A User known to HRM is always stored in the database, no matter what the 
+ * A User known to HRM is always stored in the database, no matter what the
  * user management backend is.
- * 
- * A User relies on a proxy to authenticate and to query information from the 
+ *
+ * A User relies on a proxy to authenticate and to query information from the
  * underlying user management system. Some user management systems are read-only
  * for the HRM.
- * 
+ *
  * Supported proxies are:
- * 
+ *
  *   * DatabaseProxy (read/write): the HRM integrated user management system
  *   * ActiveDirectoryProxy (read only): interface to Microsoft Active Directory
  *   * LDAPProxy (read only): interface to generic LDAP (version 3)
  *   * Auth0Proxy (read only): interface to Auth0.
- * 
+ *
  * Moreover, transparently linked to the underlying proxy, HRM offers some
  * UserManagement classes:
- * 
+ *
  *   * IntegratedUserManager: uses DatabaseProxy and allows for read/write
  *     operations.
- *   * ExternalReadOnlyUserManager: uses ActiveDirectoryProxy, LDAPProxy and 
- *     Auth0 proxy for read-only operations. 
- * 
+ *   * ExternalReadOnlyUserManager: uses ActiveDirectoryProxy, LDAPProxy and
+ *     Auth0 proxy for read-only operations.
+ *
  * @package hrm
  */
 class UserV2 {
@@ -200,6 +200,8 @@ class UserV2 {
         // Get the appropriate proxy
         $this->proxy = ProxyFactory::getProxy($name);
 
+        // Load the user
+        $this->load();
     }
 
     /**
