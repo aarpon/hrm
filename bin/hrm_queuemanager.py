@@ -117,6 +117,12 @@ def main():
         queue.set_statusfile(status)
 
 
+
+    # process jobfiles already existing during our startup:
+    for jobfile in spool_dirs['newfiles']:
+        fname = os.path.join(spool_dirs['new'], jobfile)
+        HRM.process_jobfile(fname, jobqueues, spool_dirs)
+
     # select a specific resource if requested on the cmdline:
     if args.resource:
         job_spooler.select_resource(args.resource)
