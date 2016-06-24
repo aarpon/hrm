@@ -72,8 +72,6 @@ session_destroy();
 
 session_start();
 
-error_log("Start");
-
 // Check that the database is reachable
 $db = new DatabaseConnection();
 if (!$db->isReachable()) {
@@ -81,14 +79,12 @@ if (!$db->isReachable()) {
         "Please contact your administrator." .
         "You will not be allowed to login " .
         "until this issue has been fixed.";
-    error_log("DB not reachable");
 // Check that the hucore version is known
 } elseif (System::getHuCoreVersionAsInteger() == 0) {
     $message = "Unknown HuCore version! <br/>" .
         "Please ask the administrator to start the queue manager." .
         "You are now allowed to login until this issue has been " .
         "fixed.";
-    error_log("Unknown HuCore");
 // Check that hucore is recent enough to run this version of the HRM
 } elseif (System::isMinHuCoreVersion() == false) {
     $message = "Your HuCore version is " .
@@ -96,7 +92,6 @@ if (!$db->isReachable()) {
         "version " . System::getMinHuCoreVersionAsString() . " for HRM " .
         System::getHRMVersionAsString() . "!<br/>";
         "Please contact the administrator.";
-    error_log("Old HuCore");
 // Check that the database is up-to-date
 } elseif (System::isDBUpToDate() == false) {
     $message = "<The database is not up-to-date! <br/>" .
@@ -104,22 +99,17 @@ if (!$db->isReachable()) {
         "database was not. You are not allowed to login " .
         "until this issue has been fixed.<br/>" .
         "Only the administrator can login.</p>";
-    error_log("Old DB");
 }
 
 // Check that HuCore has a valid license, unless this is a development setup
 elseif (file_exists('.hrm_devel_version') == false  && System::hucoreHasValidLicense() == false) {
       $message = "No valid HuCore license found!<br/>" .
       "Please contact the administrator.";
-      error_log("HuCore invalid, message is " . $message);
 } else {
-
-  error_log("past pre-checks");
 
   if (isset($_POST['password']) && isset($_POST['username'])) {
       if ($clean['password'] != "" && $clean['username'] != "") {
 
-          error_log("password provided");
           // Get the UserManager
           $userManager = UserManagerFactory::getUserManager(false);
 
@@ -128,12 +118,8 @@ elseif (file_exists('.hrm_devel_version') == false  && System::hucoreHasValidLic
           $tentativeUser->setName($clean['username']);
           $tentativeUser->logOut(); // TODO
 
-          error_log("user: " . $clean['username']);
-          error_log("password: " . $clean['password']);
           if ($tentativeUser->logIn($clean['username'], $clean['password'])) {
           
-              error_log("logIn returned true");
-
               if ($tentativeUser->isLoggedIn()) {
 
                   // Register the user in the session
@@ -196,11 +182,10 @@ elseif (file_exists('.hrm_devel_version') == false  && System::hucoreHasValidLic
 
 }
 
-
-error_log('Test log');
-error_log('Message is ' . $message);
     
 $loader = new Twig_Loader_Filesystem('template');
 $twig = new Twig_Environment($loader);
 
 echo $twig->render('login.html', array('error_message' => $message));
+
+?>
