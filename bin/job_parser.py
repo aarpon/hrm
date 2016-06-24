@@ -55,6 +55,11 @@ class HuOutput2Html():
         return div
 
 
+    def insert_separator(self, content):
+        separator = self.insert_div(content, "separator")
+        return separator
+
+
     def write_micr_warning(self,job_output):
         pattern = '(.*){Microscope conflict for channel ([0 - 9]):(. *)'
         matchObj = re.match(pattern, job_output, re.S)
@@ -73,11 +78,63 @@ class HuOutput2Html():
             table = self.insert_row(row)
             div = self.insert_table(table)
             html = self.insert_div(div, "warning")
+            html += self.insert_separator("")
+        else:
+            html = ""
+
+        return html
 
 
     def write_scaling_factors(self,job_output):
+        title = "<br /><b><u>Scaling factors summary</u></b>"
+        text = "<br /><br />"
+        text += "All or some of the image channels were <b>scaled</b>. "
+        text += "Scale factors may be applied during the<br />restoration "
+        text += "to gain dynamic range. Scaling may also occur when the "
+        text += "deconvolved data is<br />exported to a TIFF file.<br /><br />"
+
+        row = self.insert_cell("Scaling Factors", "header", 4)
+        table = self.insert_row(row)
+
+        row = self.insert_cell("Factor", "param")
+        row += self.insert_cell("Channel", "channel")
+        row += self.insert_cell("Reason", "reason")
+        row += self.insert_cell("Value", "value")
+        table += self.insert_row(row)
+
+        pattern = '(.*)the image will be multiplied by (.*)\.}}(.*)'
+        matchObj = re.match(pattern, job_output, re.S)
+
+        if matchObj:
+            scaling = True
+
+            row = self.insert_cell("Scaling factor", "cell")
+            row += self.insert_cell("All", "cell")
+            row += self.insert_cell("Output file format", "cell")
+            row += self.insert_cell(matchObj.group(2), "cell")
+            table += self.insert_row(row)
+
         pattern = '(.*){Scaling of channel ([0-9]): (.*)}}(.*)'
         matchObj = re.match(pattern, job_output, re.S)
+
+        if matchObj:
+            scaling = True
+
+            row = self.insert_cell("Scaling factor", "cell")
+            row += self.insert_cell(matchObj.group(2), "cell")
+            row += self.insert_cell("Restoration", "cell")
+            row += self.insert_cell(matchObj.group(3), "cell")
+            table += self.insert_row(row)
+
+        if scaling:
+            div = self.insert_table(table)
+            html = self.insert_div(div)
+            html = title + text + html
+            html = self.insert_separator(html)
+
+            return html
+        else:
+            return ""
 
 
     def write_img_params(self,job_output):
@@ -108,8 +165,12 @@ class HuOutput2Html():
     def gen_html_output(self,job_output):
         start = time.clock()
 
-        self.write_micr_warning(job_output)
-        self.write_scaling_factors(job_output)
+        div = self.write_micr_warning(job_output)
+        html = self.insert_div(div)
+
+        div = self.write_scaling_factors(job_output)
+        html += self.insert_div(div, "scaling")
+
         self.write_img_params(job_output)
         self.write_resto_params(job_output)
         self.write_coloc_tables(job_output)
@@ -120,7 +181,7 @@ class HuOutput2Html():
 
     def process(self):
         if self.path == 0:
-            self.path = "/home/daniel/Desktop/scheduler_log_warning.txt"
+            self.path = "/home/daniel/Desktop/scheduler_log_scaling.txt"
 
         with open(self.path, 'r') as content_file:
             content = content_file.read()
