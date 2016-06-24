@@ -8,6 +8,12 @@
     <link href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/hrm.css" rel="stylesheet">
     
+    <!-- jQuery and jQuery UI (REQUIRED) -->
+    <link rel="stylesheet" type="text/css" href="../vendor/components/jqueryui/themes/base/jquery-ui.min.css">
+    
+    <!-- elFinder CSS (REQUIRED) -->
+    <link rel="stylesheet" type="text/css" href="../vendor/studio-42/elfinder/css/elfinder.min.css">
+    <link rel="stylesheet" type="text/css" href="../vendor/studio-42/elfinder/css/theme.css">
 
   </head>
 
@@ -20,6 +26,13 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Queue <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="../job_queue.php">Status</a></li>
+                <li><a href="../statistics.php">Statistics</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Help <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="http://huygens-remote-manager.readthedocs.io/en/latest/user/index.html">Manual</a></li>
@@ -28,117 +41,37 @@
               </ul>
             </li>
           </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">gruell <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="../account.php">Profile</a></li>
+                <li><a href="../home.php?exited=exited">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
         </div><!--/.nav-collapse -->
       </div>
     </nav>
     
     <div class="container-fluid main">
-      <h1 class="page-header">Welcome
+      <h1 class="page-header">Raw Images
       </h1>
       <div class="row">
         <div class="col-md-9">
-          <p>
-            The Huygens Remote Manager is an easy to use interface to the Huygens Software by Scientific Volume Imaging B.V.  that allows for multi-user, large-scale deconvolution and analysis.
-          </p>
-          
-          <h2>Collaborators</h2>
-          <p>&nbsp;</p>
-          <p>
-            <div class="row">
-              <div class="col-md-3 text-center">
-                <p>
-                  <img class="logo" src="../images/logo_epfl.png">
-                </p>
-                <p class="text-center small">
-                  EPF Lausanne<br />
-                  Biological and Optics Platform
-                </p>
-              </div>
-              <div class="col-md-3 text-center">
-                <p>
-                  <img class="logo" src="../images/logo_fmi.png">
-                </p>
-                <p class="text-center small">
-                  Friedrich Miescher Institute<br />
-                  Faculty for Advanced Imaging and Microscopy
-                </p>
-              </div>
-              <div class="col-md-3 text-center">
-                <p>
-                  <img class="logo" src="../images/logo_mri.png">
-                </p>
-                <p class="text-center small">
-                  Montpellier RIO Imaging
-                </p>
-              </div>
-              <div class="col-md-3 text-center">
-                <p>
-                  <img class="logo" src="../images/logo_bsse.png">
-                </p>
-                <p class="text-center small">
-                  ETH Zurich<br />
-                  Single-Cell Unit
-                </p>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-3 text-center">
-                <p>
-                  <img class="logo" src="../images/logo_svi.png">
-                </p>
-                <p class="text-center small">
-                  Scientific Volume Imaging
-                </p>
-              </div>
-              <div class="col-md-3 text-center">
-                <p>
-                  <img class="logo" src="../images/logo_lin_en.png">
-                </p>
-                <p class="text-center small">
-                  Leibniz Institute for Neurobiology Magedeburg
-                </p>
-              </div>
-              <div class="col-md-3 text-center">
-                <p>
-                  <img class="logo" src="../images/logo_bio_basel.png">
-                </p>
-                <p class="text-center small">
-                  Biozentrum Basel<br/>
-                  University of Basel<br>
-                  The Center for Molecular Sciences
-                </p>
-              </div>
-              <div class="col-md-3 text-center">
-                <p>
-                  <img class="logo" src="../images/logo_cni_pp.png">
-                </p>
-                <p class="text-center small">
-                  Comninatorial Neuroimaging Magedeburg
-                </p>
-              </div>
-            </div>
-          </p>
+          <!-- file browser -->
+          <div id="elfinder"></div>
         </div>
         
         <div class="col-md-3">
-          <div class="panel panel-default">
+          <div id="info-panel" class="panel panel-default">
+            <div class="panel-heading">DrosophilaOmmatidia_decon.h5</div>
             <div class="panel-body">
-              <h2>Login</h2>
-              <form>
-                <div class="form-group">
-                  <label for="inputUsername">Username</label>
-                  <input type="text" class="form-control" id="inputUsername" placeholder="Username">
-                </div>
-                <div class="form-group">
-                  <label for="inputPassword">Password</label>
-                  <input type="password" class="form-control" id="inputPassword" placeholder="Password">
-                </div>
-                <button type="submit" class="btn btn-default">Login</button>
-              </form>
-              <p>&nbsp;</p>
               <p>
-                No HRM account yet?<br/>
-                Register <a href="../registration.php">here</a>.
+                <img src="img/drosophila.jpeg" class="img-thumbnail" alt="Preview of DrosophilaOmmatidia_decon.h5">
+              </p>
+              <p>
+                <button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-cog"></span> Deconvolve</button>
               </p>
             </div>
           </div>
@@ -146,16 +79,23 @@
       </div>
     </div>
     
-    <div class="container">
-      <p class="text-center small">
-        created 2004 by Volker Bäcker and released under the terms of the CeCILL license</br>
-        extended 2006-2016 by Asheesh Gulati, Alessandra Griffa, José Viña, Daniel Sevilla, Niko Ehrenfeuchter, Torsten Stöter, Olivier Burri and Aaron Ponti
-      </p>
-    </div>
     
     <script src="../vendor/components/jquery/jquery.min.js"></script>
+    <script src="../vendor/components/jqueryui/jquery-ui.min.js"></script>
     <script src="../vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendor/studio-42/elfinder/js/elfinder.min.js"></script>
     
+    <!-- elFinder initialization (REQUIRED) -->
+    <script type="text/javascript" charset="utf-8">
+    // Documentation for client options:
+    // https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
+      $(document).ready(function() {
+        $('#elfinder').elfinder({
+          url : 'elfinder/connector.minimal.php'  // connector URL (REQUIRED)
+          // , lang: 'ru'                    // language (OPTIONAL)
+        });
+      });
+    </script>
 
   </body>
 </html>

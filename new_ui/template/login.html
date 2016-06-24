@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Huygens Remote Manager</title>
+    <link rel=icon href="../images/hrm.ico" type="image/vnd.microsoft.icon">
+    
+    <link href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/hrm.css" rel="stylesheet">
+  </head>
+
+  <body role="document">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Huygens Remote Manager</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Help <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="http://huygens-remote-manager.readthedocs.io/en/latest/user/index.html">Manual</a></li>
+                <li><a href="http://hrm.svi.nl:8080/redmine/projects/public/issues/new">Bug report</a></li>
+                <li><a href="https://svi.nl/HuygensRemoteManager">About</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    
+    <div class="container-fluid main">
+      
+      {% if error_message|length > 0 %}
+        <p>
+          <div class="alert alert-danger" role="alert">{{error_message}}</div>
+        </p>
+      {% endif %}
+      
+      <h1 class="page-header">Welcome
+      </h1>
+      <div class="row">
+        <div class="col-md-9">
+          <p>
+            The Huygens Remote Manager is an easy to use interface to the Huygens Software by Scientific Volume Imaging B.V. that allows for multi-user, large-scale deconvolution and analysis.
+          </p>
+          <h2>Collaborators</h2>
+          <div class="row">
+            <div class="col-md-3 text-center">
+              <p>
+                <img class="logo" src="../images/logo_epfl.png">
+              </p>
+              <p class="small">
+                 EPF Lausanne<br/>
+                 BioImaging and Optics platform
+              </p>
+            </div>
+            <div class="col-md-3 text-center">
+              <p>
+                <img class="logo" src="../images/logo_fmi.png">
+              </p>
+              <p class="small">
+                Friedrich Miescher Institute<br />
+                Facility for Advanced Imaging and Microscopy
+              </p>
+            </div>
+            <div class="col-md-3 text-center">
+              <p>
+                <img class="logo" src="../images/logo_mri.png">
+              </p>
+              <p class="small">
+                 Montpellier RIO Imaging 
+              </p>
+            </div>
+            <div class="col-md-3 text-center">
+              <p>
+                <img class="logo" src="../images/logo_bsse.png">
+              </p>
+              <p class="small">
+                ETH Zurich<br/>
+                Single-Cell Unit 
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 text-center">
+              <p>
+                <img class="logo" src="../images/logo_svi.png">
+              </p>
+              <p class="small">
+                 Scientific Volume Imaging
+              </p>
+            </div>
+            <div class="col-md-3 text-center">
+              <p>
+                <img class="logo" src="../images/logo_lin_en.png">
+              </p>
+              <p class="small">
+                Leibniz Institute for Neurobiology Magdeburg 
+              </p>
+            </div>
+            <div class="col-md-3 text-center">
+              <p>
+                <img class="logo" src="../images/logo_bio_basel.png">
+              </p>
+              <p class="small">
+                Biozentrum Basel <br/>
+                University of Basel <br/>
+                The Center for Molecular Life Sciences 
+              </p>
+            </div>
+            <div class="col-md-3 text-center">
+              <p>
+                <img class="logo" src="../images/logo_cni_pp.png">
+              </p>
+              <p class="small">
+                Combinatorial Neuroimaging Magdeburg 
+              </p>
+            </div>
+          </div>
+        
+        </div>
+        
+        <div class="col-md-3">
+          <div id="info-panel" class="panel panel-default">
+            <div class="panel-body">
+              <form method="post" action="">
+                <div class="form-group">
+                  <label for="inputUsername">Username</label>
+                  <input type="text" class="form-control" id="inputUsername" placeholder="Username" name="username">
+                </div>
+                <div class="form-group">
+                  <label for="inputPassword">Password</label>
+                  <input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password">
+                </div>
+                <button type="submit" class="btn btn-default">Login</button>
+              </form>
+              <p>&nbsp;</p>
+              <p>
+                No HRM account yet?<br />
+                Register <a href="../registration.php">here.</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <script src="../vendor/components/jquery/jquery.min.js"></script>
+    <script src="../vendor/components/jqueryui/jquery-ui.min.js"></script>
+    <script src="../vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendor/studio-42/elfinder/js/elfinder.min.js"></script>
+    
+    <!-- elFinder initialization (REQUIRED) -->
+    <script type="text/javascript" charset="utf-8">
+    // Documentation for client options:
+    // https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
+      $(document).ready(function() {
+        $('#elfinder').elfinder({
+          url : 'elfinder/connector.minimal.php'  // connector URL (REQUIRED)
+          // , lang: 'ru'                    // language (OPTIONAL)
+        });
+      });
+    </script>
+
+  </body>
+</html>

@@ -40,7 +40,8 @@
     "studio-42/elfinder": "2.1.12",
     "twbs/bootstrap": "v3.3.6",
     "components/jquery": "2.2.4",
-    "components/jqueryui": "1.11.4"
+    "components/jqueryui": "1.11.4",
+    "twig/twig": "v1.14.1"
   },
   "require-dev": {
     "phpunit/phpunit": "4.8.24",
