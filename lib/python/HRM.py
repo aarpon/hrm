@@ -591,9 +591,7 @@ class JobQueue(object):
             ]
         }
         """
-        joblist = self.queue_details()
-        formatted = []
-        for job in joblist:
+        def format_job(job):
             fjob = {
                 "id" : job['uid'],
                 "file" : job['infiles'][0],
@@ -606,7 +604,14 @@ class JobQueue(object):
                 "start" : 'N/A',
                 "queued" : job['timestamp'],
             }
-            formatted.append(fjob)
+            return fjob
+        joblist = self.queue_details()
+        formatted = []
+        for jobid in self.processing:
+            job = self.jobs[jobid]
+            formatted.append(format_job(job))
+        for job in joblist:
+            formatted.append(format_job(job))
         details = {'jobs' : formatted}
         if self.statusfile is not None:
             with open(self.statusfile, 'w') as fout:
