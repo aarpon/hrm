@@ -230,7 +230,6 @@ class ActiveDirectoryProxy extends AbstractProxy {
 
         // Get the user groups from AD
         $userGroups = $this->m_AdLDAP->user()->groups($username);
-        $this->m_AdLDAP->close();
 
         // Test for intersection
         $b = count(array_intersect($userGroups, $this->m_AuthorizedGroups)) > 0;
@@ -262,7 +261,6 @@ class ActiveDirectoryProxy extends AbstractProxy {
         // Get the email from AD
         $info = $this->m_AdLDAP->user()->infoCollection($username, array("mail"));
 
-        $this->m_AdLDAP->close();
         if (!$info) {
             Log::warning('No email address found for username "' . $username . '"');
             return "";
@@ -290,7 +288,6 @@ class ActiveDirectoryProxy extends AbstractProxy {
 
         // Get the user groups from AD
         $userGroups = $this->m_AdLDAP->user()->groups($username);
-        $this->m_AdLDAP->close();
 
         // If no groups found, return ""
         if (!$userGroups) {
