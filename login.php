@@ -77,51 +77,47 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
 
         // Create a user
         $tentativeUser = new UserV2();
-        $tentativeUser->setName($clean['username']);
-        $tentativeUser->logOut();
 
         // Get the correct UserManager for the User
         $userManager = UserManagerFactory::getUserManager($tentativeUser->name());
 
         if ($tentativeUser->logIn($clean['username'], $clean['password'])) {
 
-            if ($tentativeUser->isLoggedIn()) {
+            // Register the user in the session
+            $_SESSION['user'] = $tentativeUser;
 
-                // Register the user in the session
-                $_SESSION['user'] = $tentativeUser;
+            // Make sure that the user source and destination folders exist
+            $fileServer = new Fileserver($tentativeUser->name());
+            if (!$fileServer->isReachable()) {
+                $userManager->createUserFolders($tentativeUser->name());
+            }
 
-                // Make sure that the user source and destination folders exist
-                $fileServer = new Fileserver($tentativeUser->name());
-                if (!$fileServer->isReachable()) {
-                    $userManager->createUserFolders($tentativeUser->name());
-                }
+            // Log successful logon
+            Log::info("User " . $_SESSION['user']->name() . " (" .
+                $_SESSION['user']->emailAddress() . ") logged on.");
 
-                // Log successful logon
-                Log::info("User " . $_SESSION['user']->name() . " (" .
-                    $_SESSION['user']->emailAddress() . ") logged on.");
-
-                // If the database is not up-to-date go straight to the
-                // database update page
-                if (!System::isDBUpToDate()) {
-                    if ($_SESSION['user']->isAdmin()) {
-                        header("Location: update.php");
-                        exit();
-                    } else {
-                        $message = "Only the administrator is allowed to login " .
-                            "to perform maintenance";
-                    }
+            // If the database is not up-to-date go straight to the
+            // database update page
+            if (!System::isDBUpToDate()) {
+                if ($_SESSION['user']->isAdmin()) {
+                    header("Location: update.php");
+                    exit();
                 } else {
-                    // Is there a requested redirection?
-                    if ($req != "") {
-                        header("Location: " . $req);
-                        exit();
-                    } else {
-                        // Proceed to home
-                        header("Location: " . "home.php");
-                        exit();
-                    }
+                    $message = "Only the administrator is allowed to login " .
+                        "to perform maintenance";
+                }
+            } else {
+                // Is there a requested redirection?
+                if ($req != "") {
+                    header("Location: " . $req);
+                    exit();
+                } else {
+                    // Proceed to home
+                    header("Location: " . "home.php");
+                    exit();
                 }
             }
+
         } else if ($userManager->isLoginRestrictedToAdmin()) {
             if ($tentativeUser->isAdmin()) {
                 $message = "Wrong password";

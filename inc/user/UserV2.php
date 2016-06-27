@@ -282,12 +282,12 @@ class UserV2 {
     public function logIn($name, $password) {
 
         // Set the name
-        $this->setName($name);
+        if ($this->name != $name) {
+            $this->setName($name);
+        }
 
         // Get the appropriate proxy
-        if ($this->proxy == null) {
-            $this->proxy = ProxyFactory::getProxy($name);
-        }
+        $this->proxy = ProxyFactory::getProxy($name);
 
         // Try authenticating the user
         $this->isLoggedIn = $this->proxy->authenticate($this->name(), $password);
@@ -431,11 +431,30 @@ class UserV2 {
         $row = $rows[0];
 
         // Update the User object
+
+        // User ID
         $this->id = intval($row["id"]);
-        $this->emailAddress = $this->proxy->getEmailAddress($this->name);
-        $this->group = $this->proxy->getGroup($this->name);
+
+        // User e-mail address
+        if ($this->isLoggedIn) {
+            $this->emailAddress = $this->proxy->getEmailAddress($this->name);
+        } else {
+            $this->emailAddress = $row["email"];
+        }
+
+        // User (research) group
+        if ($this->isLoggedIn) {
+            $this->group = $this->proxy->getGroup($this->name);
+        } else {
+            $this->group = $row["research_group"];
+        }
+
+        // User role
         $this->role = $row["role"];
+
+        // User status
         $this->status = $row["status"];
+
         // Cache the isAdmin check
         $this->isAdmin = ($this->role == "admin");
     }
