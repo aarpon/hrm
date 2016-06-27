@@ -247,6 +247,14 @@ class UserV2 {
     }
 
     /**
+     * Returns the authentication mode for the User.
+     * @return string Authentication mode for the User.
+     */
+    public function authenticationMode() {
+        return $this->authMode;
+    }
+
+    /**
      * Returns the status of the User.
      * @return string Status of the User.
      */

@@ -12,6 +12,7 @@ namespace hrm\user\mngm;
 use hrm\Log;
 use hrm\DatabaseConnection;
 use hrm\System;
+use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserConstants;
 use hrm\user\UserV2;
 
@@ -75,7 +76,13 @@ abstract class UserManager
     public function existsUserRequestWithSeed($seed)
     {
         $db = new DatabaseConnection();
-        return ($db->existsUserRequestWithSeed($seed));
+        $query = "SELECT status FROM username WHERE status = '$seed';";
+        $value = $db->queryLastValue($query);
+        if ($value == false) {
+            return false;
+        } else {
+            return ($value == $seed);
+        }
     }
 
     /**
@@ -233,6 +240,38 @@ abstract class UserManager
     }
 
     /**
+     * Sets the authentication mode for the user with given name.
+     * @param string $username Name of the user.
+     * @param string $mode One of the enabled authentication modes. Subset of
+     * {'integrated', 'active_dir', 'ldap', 'auth0'}, depending on the
+     * configuration.
+     * @return bool True if the authentication mode could be set successfully,
+     * false otherwise.
+     */
+    public function setAuthenticationMode($username, $mode) {
+
+        // Get all configured authentication modes
+        $allAuthModes = ProxyFactory::getAllConfiguredAuthenticationModes();
+
+        // Check that the requested mode is one of the configured ones
+        $keys = array_keys($allAuthModes);
+        if (! in_array($mode, $keys)) {
+            Log::error("The authentication mode $mode is not supported in " .
+                "this configuration!");
+            return false;
+        }
+
+        // Try updating the user
+        $db = new DatabaseConnection();
+        $sql = "UPDATE username SET authentication=? WHERE name=?;";
+        $result = $db->connection()->Execute($sql, array($mode, $username));
+        if ($result === false) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
      * Accepts user with given username.
      * @param string $username Name of the user to accept.
      * @return bool True if the user could be accepted; false otherwise.
@@ -305,6 +344,22 @@ abstract class UserManager
         $db = new DatabaseConnection();
         $rows = $db->query("SELECT * FROM username WHERE status = '" .
             UserConstants::STATUS_ACTIVE . "' ORDER BY name");
+        return $rows;
+    }
+
+    /**
+     * Returns all rows for users with pending requests from the database
+     * (sorted by user name).
+     * @return array Array of rows of users with pending requests sorted by
+     * user name.
+     */
+    public function getAllPendingUserDBRows()
+    {
+        $db = new DatabaseConnection();
+        $rows = $db->query("SELECT * FROM username WHERE status != '" .
+            UserConstants::STATUS_ACTIVE . "' AND status != '" .
+            UserConstants::STATUS_DISABLED . "' AND status != '" .
+            UserConstants::STATUS_OUTDATED . "' ORDER BY name");
         return $rows;
     }
 

@@ -3,10 +3,10 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\user\proxy\ProxyFactory;
 use hrm\Util;
 use hrm\Validator;
 use hrm\user\mngm\UserManagerFactory;
-use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -55,6 +55,9 @@ if (isset($_POST["pass2"])) {
     if (Validator::isPasswordValid($_POST["pass2"])) {
         $clean["pass2"] = $_POST["pass2"];
     }
+}
+if (isset($_POST["authMode"])) {
+    $clean["authMode"] = $_POST["authMode"];
 }
 
 /* *****************************************************************************
@@ -173,6 +176,13 @@ if (isset($_POST['modify'])) {
             // status).
             $success &= $userManager->changeUserPassword($edit_user->name(),
                 $passToUse);
+
+
+            // And also the authentication mode
+            if (isset($_SESSION['account_user']) && isset($clean["authMode"])) {
+                $success &= $userManager->setAuthenticationMode(
+                    $edit_user->name(), $clean["authMode"]);
+            }
         }
 
         if (!$success) {
@@ -181,6 +191,9 @@ if (isset($_POST['modify'])) {
                 "not be updated!";
 
         } else {
+
+            // Make sure to reload the User with the new changes
+            $edit_user->load();
 
             // If updating some other User setting, remove the modified
             // User from the session and return to the user management page.
@@ -192,7 +205,6 @@ if (isset($_POST['modify'])) {
                 exit();
             } else {
                 $message = "Account details successfully modified";
-                $edit_user->load();
                 $_SESSION['user'] = $edit_user;
                 header("Location: " . $_SESSION['referer']);
                 exit();
@@ -301,6 +313,42 @@ include("header.inc.php");
             <input name="pass2" id="pass2" type="password"/>
             <input name="modify" type="hidden" value="modify"/>
 
+            <?php
+
+            if (isset($_SESSION['account_user'])) {
+                // Retrieve all configured authentication modes
+                $allAuthMap = ProxyFactory::getAllConfiguredAuthenticationModes();
+
+                if (count($allAuthMap) > 1) {
+
+                    ?>
+
+                    <br/>
+                    <select name="authMode" id="authMode">
+
+                    <?php
+
+                    // Get current authentication mode
+                    $currentAuthMode = $edit_user->authenticationMode();
+                    $auth_keys = array_keys($allAuthMap);
+                    for ($i = 0; $i < count($allAuthMap); $i++) {
+                        $value = $auth_keys[$i];
+                        $text = $allAuthMap[$value];
+                        if ($currentAuthMode == $value) {
+                            $selected = "selected";
+                        } else {
+                            $selected = "";
+                        }
+                        echo("<option value='$value' $selected>$text</option>");
+                    }
+                }
+
+                ?>
+                </select>
+
+                <?php
+            }
+            ?>
             <p>&nbsp;</p>
 
             <?php

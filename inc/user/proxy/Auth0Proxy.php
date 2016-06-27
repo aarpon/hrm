@@ -57,6 +57,15 @@ class Auth0Proxy extends AbstractProxy {
     }
 
     /**
+     * Return a friendly name for the proxy to be displayed in the ui.
+     * @return string 'auth0'.
+     */
+    public function friendlyName()
+    {
+        return 'Auth0';
+    }
+
+    /**
      * Authenticates the User with given username and password against the
      * configured Auth0 application.
      * @param string $username Username for authentication.

@@ -28,6 +28,14 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
 abstract class AbstractProxy {
 
     /**
+     * Return a friendly name for the proxy to be displayed in the ui.
+     *
+     * Something like 'integrated', 'active directory', 'generic ldap', 'auth0'.
+     * @return string Friendly name.
+     */
+    abstract public function friendlyName();
+
+    /**
      * Authenticates the User with given username and password.
      * @param string $username Username for authentication.
      * @param string $password Password for authentication.

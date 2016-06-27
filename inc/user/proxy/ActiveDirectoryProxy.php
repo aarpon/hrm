@@ -186,6 +186,15 @@ class ActiveDirectoryProxy extends AbstractProxy {
     }
 
     /**
+     * Return a friendly name for the proxy to be displayed in the ui.
+     * @return string 'active directory'.
+     */
+    public function friendlyName()
+    {
+        return 'Active Directory';
+    }
+
+    /**
      * Authenticates the User with given username and password against Active
      * Directory.
      * @param string $username Username for authentication.

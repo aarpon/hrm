@@ -5,6 +5,7 @@
 use hrm\Mail;
 use hrm\Nav;
 use hrm\user\mngm\UserManagerFactory;
+use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserV2;
 use hrm\Util;
 use hrm\Validator;
@@ -226,7 +227,9 @@ include("header.inc.php");
 
     <?php
 
-    $rows = $userManager->getAllUserDBRows();
+    // GEt list of users with pending requests
+    $rows = $userManager->getAllPendingUserDBRows();
+
     $i = 0;
     foreach ($rows as $row) {
         $name = $row["name"];
@@ -288,7 +291,7 @@ include("header.inc.php");
         }
     }
 
-    if (!$i) {
+    if ($i == 0) {
 
         ?>
         <p>There are no pending requests.</p>
@@ -413,7 +416,6 @@ include("header.inc.php");
                                     echo "                    " .
                                         "<tr><td colspan=\"3\" class=\"hr\">&nbsp;</td></tr>\n";
                                 }
-
                                 ?>
                                 <tr class="upline<?php
                                 if ($status == "d") {
@@ -434,15 +436,32 @@ include("header.inc.php");
                                         </a>
                                     </td>
                                 </tr>
+                                <tr class="middleline"<?php
+                                if ($status == "d") {
+                                    echo " disabled";
+                                }
+                                ?>">
+                                <td colspan="1" class="auth">
+                                    authentication
+                                </td>
+                                <td colspan="2" class="auth">
+                                    <?php
+                                    echo(ProxyFactory::getProxy($name)->friendlyName());
+                                    ?>
+                                </td>
+                                </tr>
                                 <tr class="bottomline<?php
                                 if ($status == "d") {
                                     echo " disabled";
                                 }
                                 ?>">
-                                    <td colspan="2" class="date">
-                                        last
-                                        access: <?php echo $last_access_date . "\n" ?>
+                                    <td colspan="1" class="date">
+                                        last access
                                     </td>
+                                    <td colspan="1" class="date">
+                                        <?php echo $last_access_date . "\n" ?>
+                                    </td>
+
                                     <td class="operations">
                                         <form method="post" action="">
                                             <div>

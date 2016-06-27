@@ -207,6 +207,15 @@ class LDAPProxy extends AbstractProxy {
     }
 
     /**
+     * Return a friendly name for the proxy to be displayed in the ui.
+     * @return string 'generic ldap'.
+     */
+    public function friendlyName()
+    {
+        return 'Generic LDAP';
+    }
+
+    /**
      * Returna the email address of user with given username.
      * @param string $uid Username for which to query the email address.
      * @return string|null email address or null.

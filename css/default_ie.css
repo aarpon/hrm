@@ -1218,16 +1218,22 @@ td {
 }
 
 td.name {
+    font-weight: bold;
+    font-size: 1.2em;
     text-align: left;
 }
 
 td.group {
-    text-align: center;
+    text-align: left;
 }
 
 td.email {
     width: 50%;
     text-align: right;
+}
+
+td.auth {
+    text-align: left;
 }
 
 td.date {

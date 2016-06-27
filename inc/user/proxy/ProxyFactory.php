@@ -164,4 +164,55 @@ class ProxyFactory {
         }
     }
 
+    /**
+     * Returns the list of all configured authentication methods.
+     *
+     * The array keys correspond to the actual authentication mode
+     * as encoded in the configuration, where the corresponding values
+     * are the human-friendly names (for display purposes).
+     *
+     * @return array List of configured authentication modes.
+     */
+    public static function getAllConfiguredAuthenticationModes() {
+
+        global $authenticateAgainst;
+
+        // Do not modify the original variable
+
+        // Fall back
+        if (!is_array($authenticateAgainst)) {
+            $allAuthModes  = array($authenticateAgainst);
+        } else {
+            $allAuthModes = array();
+            foreach($authenticateAgainst as $mode) {
+                $allAuthModes[] = $mode;
+            }
+        }
+
+        // Now build the final output with the new, official nomenclature
+        $authModeMap = array();
+        for ($i = 0; $i < count($allAuthModes); $i++) {
+
+            if ($allAuthModes[$i] == "MYSQL" ||
+                $allAuthModes[$i] == "integrated") {
+
+                $authModeMap["integrated"] = "Integrated authentication";
+
+            } else if ($allAuthModes[$i] == "ACTIVE_DIR" ||
+                $allAuthModes[$i] == "active_dir") {
+
+                $authModeMap["active_dir"] = "Active Directory authentication";
+
+            } else if ($allAuthModes[$i] == "LDAP" ||
+                $allAuthModes[$i] == "ldap") {
+
+                $authModeMap["ldap"] = "Generic LDAP authentication";
+
+            } else {
+                Log::error("Unknown authentication mode $allAuthModes[$i].");
+            }
+        }
+
+        return $authModeMap;
+    }
 };

@@ -2436,6 +2436,7 @@ class DatabaseConnection
      *
      * @param string $seed Seed associated to the User request.
      * @return bool True if a user with given seed exists, false otherwise.
+     * @deprecated
      */
     public function existsUserRequestWithSeed($seed)
     {

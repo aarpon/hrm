@@ -30,6 +30,15 @@ class DatabaseProxy extends AbstractProxy {
     public function __construct() { }
 
     /**
+     * Return a friendly name for the proxy to be displayed in the ui.
+     * @return string 'integrated'.
+     */
+    public function friendlyName()
+    {
+        return 'Integrated';
+    }
+
+    /**
      * Authenticates the User with given username and password against the
      * HRM user database.
      * @param string $username Username for authentication.
