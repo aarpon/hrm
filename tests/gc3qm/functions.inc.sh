@@ -21,6 +21,7 @@ qm_request() {
 
 startup_qm() {
     # Start a fresh instance of the QM, making sure no other one is running.
+    # NOTE: this changes the working directory to the base HRM dir!
     if ! [ -f "$PFX/../../$QM_PY" ] ; then
         echo "ERROR: can't find queue manager executable!"
         exit 2
