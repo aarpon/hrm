@@ -2,9 +2,10 @@
 #
 # Variable definitions to be included in various test scripts.
 
-QM_RUN="python bin/hrm_queuemanager.py"
+QM_PY="bin/hrm_queuemanager.py"
+QM_RUN="python $QM_PY"
 QM_SPOOL="run"
-QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf"
+QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf -v"
 
 
 qm_is_running() {
@@ -20,6 +21,10 @@ qm_request() {
 
 startup_single_qm_instance() {
     # start a single instance of the QM or exit in case one is running already
+    if ! [ -f "$PFX/../../$QM_PY" ] ; then
+        echo "ERROR: can't find queue manager executable!"
+        exit 2
+    fi
     cd "$PFX/../.."
     if qm_is_running ; then
         echo
@@ -31,7 +36,8 @@ startup_single_qm_instance() {
         exit 1
     fi
     echo "**** Starting Queue Manager..."
-    $QM_RUN $QM_OPTS -v &
+    echo $QM_RUN $QM_OPTS
+    $QM_RUN $QM_OPTS &
     # remember the PID of the background process:
     QM_PID=$!
 }
