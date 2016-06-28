@@ -3,7 +3,7 @@
 # exit on any error:
 set -e
 
-# source global variables and change to base directory:
+# remember path prefix as called, source functions
 PFX=$(dirname $0)
 source "$PFX/functions.inc.sh"
 
