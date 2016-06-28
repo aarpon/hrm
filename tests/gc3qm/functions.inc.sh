@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Variable definitions to be included in various test scripts.
+# function definitions to be included in various test scripts.
 
 QM_PY="bin/hrm_queuemanager.py"
 QM_RUN="python $QM_PY"
@@ -70,4 +70,9 @@ wait_for_qm_to_finish() {
     if qm_is_running ; then
         echo "ERROR: QM doesn't react to HUP, giving up!!"
     fi
+}
+
+
+msg_finished() {
+    echo "************************* TEST FINISHED! *************************"
 }

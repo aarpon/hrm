@@ -26,4 +26,4 @@ qm_request shutdown
 
 wait_for_qm_to_finish 1
 
-echo "TEST FINISHED!"
+msg_finished
