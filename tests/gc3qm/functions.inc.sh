@@ -19,8 +19,8 @@ qm_request() {
 }
 
 
-startup_single_qm_instance() {
-    # start a single instance of the QM or exit in case one is running already
+startup_qm() {
+    # Start a fresh instance of the QM, making sure no other one is running.
     if ! [ -f "$PFX/../../$QM_PY" ] ; then
         echo "ERROR: can't find queue manager executable!"
         exit 2

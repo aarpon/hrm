@@ -7,7 +7,8 @@ set -e
 PFX=$(dirname $0)
 source "$PFX/functions.inc.sh"
 
-startup_single_qm_instance
+
+startup_qm
 
 qm_request pause
 sleep 1
