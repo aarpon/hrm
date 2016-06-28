@@ -82,7 +82,30 @@ wait_for_qm_to_finish() {
     fi
 }
 
+shutdown_qm_on_empty_queue() {
+    if ! qm_is_running ; then
+        echo "WARNING: QM is not running!"
+        return
+    fi
+    for counter in $(seq 1 $1) ; do
+        QUEUED=$(grep '"queued"' "$QM_SPOOL/queue/status/hucore.json" | wc -l)
+        echo "--> $QUEUED jobs currently queued"
+        if [ "$QUEUED" -eq 0 ] ; then
+            echo "Queue empty!"
+            break
+        fi
+        sleep 1
+    done
+    qm_request shutdown
+    wait_for_qm_to_finish 5
+}
 
 msg_finished() {
     echo "************************* TEST FINISHED! *************************"
+}
+
+
+parse_shortname() {
+    SHORT=$(basename $0 | sed 's,__.*,,')
+    echo $SHORT
 }
