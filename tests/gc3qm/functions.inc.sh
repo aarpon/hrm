@@ -52,15 +52,17 @@ startup_qm() {
 
 
 wait_for_qm_to_finish() {
-    # wait a given number of seconds for the QM process to finish
+    # Wait a given number of seconds for the QM process to terminate,
+    # otherwise try to shut it down (gracefully, using a shutdown request), or
+    # try to kill it as a last resort.
     if qm_is_running ; then
         echo "QM is running..."
     fi
     for counter in $(seq 1 $1) ; do
         sleep 1
         if ! qm_is_running ; then
-            echo "QM was shut down (or crashed)."
-            break
+            echo "QM process terminated."
+            return
         fi
     done
     if qm_is_running ; then
