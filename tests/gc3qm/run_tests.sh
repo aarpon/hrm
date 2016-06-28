@@ -23,4 +23,5 @@ for TEST in test-*__*.sh ; do
     RET=$?
     echo $RET > $EXITVAL
     echo "Test '$SHORT' finished (exit code: $RET, results in '$PFX/$RES')."
+    echo
 done
