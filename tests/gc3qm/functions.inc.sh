@@ -40,6 +40,14 @@ startup_qm() {
     $QM_RUN $QM_OPTS &
     # remember the PID of the background process:
     QM_PID=$!
+    # test if the QM process is alive:
+    sleep .2
+    if qm_is_running ; then
+        echo "QM process started."
+    else
+        echo "ERROR: QM startup FAILED!"
+        exit 3
+    fi
 }
 
 
