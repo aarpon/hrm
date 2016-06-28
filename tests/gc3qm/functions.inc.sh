@@ -3,13 +3,13 @@
 # function definitions to be included in various test scripts.
 
 QM_PY="bin/hrm_queuemanager.py"
-QM_RUN="python $QM_PY"
+QM_EXEC="python $QM_PY"
 QM_SPOOL="run"
 QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf -v"
 
 
 qm_is_running() {
-    test $(pgrep --count --full "$QM_RUN") -gt 0
+    test $(pgrep --count --full "$QM_EXEC") -gt 0
 }
 
 
@@ -36,8 +36,8 @@ startup_qm() {
         exit 1
     fi
     echo "**** Starting Queue Manager..."
-    echo $QM_RUN $QM_OPTS
-    $QM_RUN $QM_OPTS &
+    echo $QM_EXEC $QM_OPTS
+    $QM_EXEC $QM_OPTS &
     # remember the PID of the background process:
     QM_PID=$!
     # test if the QM process is alive:
@@ -74,7 +74,7 @@ wait_for_qm_to_finish() {
     if qm_is_running ; then
         echo "WARNING: QM doesn't listen to our shutdown request!"
         echo "Trying to kill it..."
-        pkill --signal HUP --full "$QM_RUN"
+        pkill --signal HUP --full "$QM_EXEC"
         sleep 1
     fi
     if qm_is_running ; then
