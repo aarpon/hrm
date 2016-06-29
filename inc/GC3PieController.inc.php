@@ -412,15 +412,20 @@ class GC3PieController {
         
         $controllerHandle = fopen($controllerName, "w");
         if (!$controllerHandle ) {
-            report ("Impossible to open file $controllerName", 0);
+            report("Unable to open file '$controllerName'!", 0);
+            /*
+             * Why are we waiting 15 seconds, and then returning? Nothing will
+             * have changed then - so either we retry after that period, or we
+             * can return immediately.
             report ("Waiting 15 seconds...", 1);
             sleep(15);
+            */
             return False;
         }
         
         $result = (fwrite($controllerHandle, $this->controller) > 0);
         fclose($controllerHandle);
-        report("Wrote gc3 controller $controllerName", 2);        
+        report("Wrote job description file '$controllerName'.", 2);
 
         return $result;
     }
