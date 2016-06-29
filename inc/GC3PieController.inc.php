@@ -404,7 +404,7 @@ class GC3PieController {
 
         // TODO: the spool directory has to be read from the config, once it
         // is defined there (see issue #411).
-        $controllerPath = dirname(__FILE__) . "/../run/spool/new";
+        $controllerPath = realpath(dirname(__FILE__) . "/../run/spool/new");
         $controllerName = tempnam($controllerPath, "gc3_");
 
         // tempnam() diverts to the system temp folder in case the directory
