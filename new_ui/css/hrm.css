@@ -1,7 +1,7 @@
-body {
-    padding-top: 50px;
-    padding-left: 50px;
-    padding-right: 50px;
+.main {
+/*    padding-top: 50px; */
+  padding-left: 50px;
+  padding-right: 50px; 
 }
 
 .logo {

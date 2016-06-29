@@ -183,7 +183,7 @@ elseif (file_exists('.hrm_devel_version') == false  && System::hucoreHasValidLic
 }
 
     
-$loader = new Twig_Loader_Filesystem('template');
+$loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader);
 
 echo $twig->render('login.html', array('error_message' => $message));

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Huygens Remote Manager</title>
+    <link rel=icon href="../images/hrm.ico" type="image/vnd.microsoft.icon">
+    
+    <link href="../vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/hrm.css" rel="stylesheet">
+    
+    <!-- jQuery and jQuery UI (REQUIRED) -->
+    <link rel="stylesheet" type="text/css" href="../vendor/components/jqueryui/themes/base/jquery-ui.min.css">
+    
+    <!-- elFinder CSS (REQUIRED) -->
+    <link rel="stylesheet" type="text/css" href="../vendor/studio-42/elfinder/css/elfinder.min.css">
+    <link rel="stylesheet" type="text/css" href="../vendor/studio-42/elfinder/css/theme.css">
+
+  </head>
+
+  <body role="document">
+    {{ include('partials/navbar.html') }}
+    
+    <div class="container-fluid main">
+      <h1 class="page-header">File browser
+      </h1>
+      <div class="row">
+        <div class="col-md-9">
+          <!-- file browser -->
+          <div id="elfinder"></div>
+        </div>
+        
+        <div class="col-md-3">
+          <div id="info-panel" class="panel panel-default">
+            <div class="panel-heading">DrosophilaOmmatidia_decon.h5</div>
+            <div class="panel-body">
+              <p>
+                <img src="img/drosophila.jpeg" class="img-thumbnail" alt="Preview of DrosophilaOmmatidia_decon.h5">
+              </p>
+              <p>
+                <button type="button" class="btn btn-primary"><span class=""></span> Preview</button>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <h2>Selection</h2>
+      <table id="tableSelection" class="table table-condensed">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Path</th>
+            <th>Size</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- will be populated when user selects files -->
+        </tbody>
+      </table>
+      
+      <button type="button" class="btn btn-primary disabled"><span class="glyphicon glyphicon-cog"></span> Create job</button> Select files of only one type to create a job.
+    
+      {{ include('partials/footer.html') }}
+      
+    </div>
+    
+    
+    <script src="../vendor/components/jquery/jquery.min.js"></script>
+    <script src="../vendor/components/jqueryui/jquery-ui.min.js"></script>
+    <script src="../vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../vendor/studio-42/elfinder/js/elfinder.min.js"></script>
+    
+    <!-- elFinder initialization (REQUIRED) -->
+    <script type="text/javascript" charset="utf-8">
+    
+      var fileSelection = [];
+    
+      function formatSize(size) {
+    
+        console.log('formatSize');
+        console.log('size: ' + size);
+    
+        s = parseInt(size);
+        if (s == NaN) {
+          return "unknown";
+        }
+        
+        var unitSize = 1, unit = 'B';
+        if(s > 1024 * unitSize) {
+          unitSize *= 1024;
+          unit = 'KB';
+        }
+        
+        if(s > 1024 * unitSize) {
+          unitSize *= 1024;
+          unit = 'MB';
+        }
+        
+        if(s > 1024 * unitSize) {
+          unitSize *= 1024;
+          unit = 'GB';
+        }
+        
+        s = s / unitSize;
+        return ((unitSize >= 1024 * 1024) ? s.toFixed(2) : Math.round(s)) + ' ' + unit;
+      }
+      
+    
+      function formatDate(ts) {
+
+        if (ts > 0) {
+          date = new Date(ts*1000);
+          str =  date.toLocaleString();
+          return str;
+        }
+      
+        return 'unknown';
+      }
+      
+      function htmlEscape(s) {
+        return $("<div>").text(s).html()
+      }
+      
+      function removeTdClicked(tdId) {
+        event.preventDefault();
+        $(tdId).remove();
+      }
+    
+      function getFileHandler(file) {
+        console.log('getFileCallback');
+        console.log(file);
+        var fileHash = file.hash;
+        var filePath = file.path;
+        var fileSize = formatSize(file.size);
+        var fileTimestamp = formatDate(file.ts);
+        
+        if(fileSelection.indexOf(filePath) == -1) {
+            fileSelection.push(filePath);
+            trId = 'tr_file_' + fileHash;
+            aId = 'a_file_' + fileHash;
+            $('#tableSelection > tbody:last-child').append(
+              '<tr id="' + trId + '">' +
+                '<td>' + fileSelection.length + '</td>' + 
+                '<td>' + htmlEscape(filePath) + '</td>' +
+                '<td>' + htmlEscape(fileSize) + '</td>' + 
+                '<td>' + htmlEscape(fileTimestamp) + '</td>' +
+                //'<td><a id="' + aId + "'  href="#" onclick="removeTdClicked(\'' + tdID + '\');"><span class="glyphicon glyphicon-remove"></span></a>' +
+                '<td><a id="' + aId + '" href="javascript:void(0)" ><span class="glyphicon glyphicon-remove"></span></a>' +
+              '</tr>');
+            console.log('File ' + filePath + ' added to table');
+            (function(aId, trId) {
+              $('#' + aId).click(function(event) {
+                $('#' + trId).remove();
+              });
+            })(aId, trId);
+          }
+      }
+      
+      
+      // Documentation for client options:
+      // https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
+      $(document).ready(function() {
+        var elfinder = $('#elfinder').elfinder({
+          url : 'elfinder/connector.minimal.php',  // connector URL (REQUIRED)
+          resizable : false,
+          getFileCallback : getFileHandler           
+        });
+      });
+    </script>
+
+  </body>
+</html>

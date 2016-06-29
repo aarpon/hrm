@@ -34,9 +34,9 @@ $message = "";
 
 $script = array("ajax_utils.js", "json-rpc-client.js");
 
-$loader = new Twig_Loader_Filesystem('template');
+$loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader);
 
-echo $twig->render('index.html', array('error_message' => $message, 'username' => $_SESSION['user']));
+echo $twig->render('index.html', array('error_message' => $message, 'user' => $_SESSION['user']));
 
 ?>
