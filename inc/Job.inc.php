@@ -134,8 +134,12 @@ class Job {
         report("Created Huygens template", 1);
         
         $this->createGC3PieController();
-        $this->controller->write2Spool();
-        report("Created GC3Pie controller", 1);
+        $result = $this->controller->write2Spool();
+        if ($result) {
+            report("Created job description file.", 1);
+        } else {
+            report("ERROR creating job description file!", 0);
+        }
 
         return $result;
     }
