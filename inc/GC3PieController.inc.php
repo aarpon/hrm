@@ -402,6 +402,8 @@ class GC3PieController {
     */
     public function write2Spool() {
 
+        // TODO: the spool directory has to be read from the config, once it
+        // is defined there (see issue #411).
         $controllerPath = dirname(__FILE__) . "/../run/spool/new";
         $controllerName = tempnam($controllerPath, "gc3_");
         if (!chmod($controllerName, 0664)) {  /*Due to  'tempnam'. */
