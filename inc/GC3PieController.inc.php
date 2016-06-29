@@ -407,6 +407,14 @@ class GC3PieController {
         $controllerPath = dirname(__FILE__) . "/../run/spool/new";
         $controllerName = tempnam($controllerPath, "gc3_");
 
+        // tempnam() diverts to the system temp folder in case the directory
+        // specified is not writable, so we have to catch this:
+        if (!(substr($controllerName, 0, strlen($controllerPath)) === $controllerPath)) {
+            report("Could not access spooldir for creating a job file.", 0);
+            report("Make sure '$controllerPath' exists and is writable!", 0);
+            return False;
+        }
+
         // tempnam() creates files with mode 0600, so we have to adjust this:
         if (!chmod($controllerName, 0664)) {
             return False;
