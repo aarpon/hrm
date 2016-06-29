@@ -8,10 +8,14 @@ source "functions.inc.sh"
 set +e
 
 for TEST in test-*__*.sh ; do
+    set -e
+    if ! spooldir_cur_is_empty ; then
+        echo "ERROR, unclean spooling directory found! Stopping."
+        exit 1
+    fi
     # parse the "short" test name (basically the number):
     SHORT=$(echo $TEST | sed 's,__.*,,')
     RES="results/$SHORT"
-    set -e
     rm -rf $RES
     mkdir -p $RES
     set +e

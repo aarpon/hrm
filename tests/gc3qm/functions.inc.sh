@@ -8,6 +8,19 @@ QM_SPOOL="run"
 QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf -v"
 
 
+spooldir_cur_is_empty() {
+    CUR="../../$QM_SPOOL/spool/cur/"
+    COUNT=$(ls "$CUR" | wc -l)
+    if [ $COUNT -eq 0 ] ; then
+        # echo "No jobs in 'cur' spooling directory!"
+        return 0
+    else
+        echo "WARNING: found $COUNT jobfiles in 'cur': $CUR"
+        return 1
+    fi
+}
+
+
 qm_is_running() {
     test $(pgrep --count --full "$QM_EXEC") -gt 0
 }
