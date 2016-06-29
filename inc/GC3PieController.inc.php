@@ -404,25 +404,25 @@ class GC3PieController {
 
         // TODO: the spool directory has to be read from the config, once it
         // is defined there (see issue #411).
-        $controllerPath = realpath(dirname(__FILE__) . "/../run/spool/new");
-        $controllerName = tempnam($controllerPath, "hrm_jobfile_");
+        $jobfilePath = realpath(dirname(__FILE__) . "/../run/spool/new");
+        $jobfileName = tempnam($jobfilePath, "hrm_jobfile_");
 
         // tempnam() diverts to the system temp folder in case the directory
         // specified is not writable, so we have to catch this:
-        if (!(substr($controllerName, 0, strlen($controllerPath)) === $controllerPath)) {
+        if (!(substr($jobfileName, 0, strlen($jobfilePath)) === $jobfilePath)) {
             report("Could not access spooldir for creating a job file.", 0);
-            report("Make sure '$controllerPath' exists and is writable!", 0);
+            report("Make sure '$jobfilePath' exists and is writable!", 0);
             return False;
         }
 
         // tempnam() creates files with mode 0600, so we have to adjust this:
-        if (!chmod($controllerName, 0664)) {
+        if (!chmod($jobfileName, 0664)) {
             return False;
         }
         
-        $controllerHandle = fopen($controllerName, "w");
-        if (!$controllerHandle ) {
-            report("Unable to open file '$controllerName'!", 0);
+        $jobfileHandle = fopen($jobfileName, "w");
+        if (!$jobfileHandle ) {
+            report("Unable to open file '$jobfileName'!", 0);
             /*
              * Why are we waiting 15 seconds, and then returning? Nothing will
              * have changed then - so either we retry after that period, or we
@@ -433,9 +433,9 @@ class GC3PieController {
             return False;
         }
         
-        $result = (fwrite($controllerHandle, $this->controller) > 0);
-        fclose($controllerHandle);
-        report("Wrote job description file '$controllerName'.", 2);
+        $result = (fwrite($jobfileHandle, $this->controller) > 0);
+        fclose($jobfileHandle);
+        report("Wrote job description file '$jobfileName'.", 2);
 
         return $result;
     }
