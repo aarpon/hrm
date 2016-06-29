@@ -3,8 +3,7 @@ python bin/hrm_queuemanager.py --spooldir run --config config/samples/gc3pie_loc
 QM process started.
 Requesting QM status change to: pause
 Requesting QM status change to: run
---> 0 jobs currently queued
-Queue empty!
+Queue is empty, trying to shut down the QM!
 Requesting QM status change to: shutdown
 QM is running...
 ********************************************************************************
