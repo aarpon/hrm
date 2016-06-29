@@ -406,7 +406,9 @@ class GC3PieController {
         // is defined there (see issue #411).
         $controllerPath = dirname(__FILE__) . "/../run/spool/new";
         $controllerName = tempnam($controllerPath, "gc3_");
-        if (!chmod($controllerName, 0664)) {  /*Due to  'tempnam'. */
+
+        // tempnam() creates files with mode 0600, so we have to adjust this:
+        if (!chmod($controllerName, 0664)) {
             return False;
         }
         
