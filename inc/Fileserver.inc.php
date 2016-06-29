@@ -1686,7 +1686,7 @@ echo '</body></html>';
           <head>
           <title>HRM - ' . $file . ' - results preview</title>';
       $ico = 'images/hrm_custom.ico';
-      if ! (file_exists($ico)) {
+      if (!file_exists($ico)) {
           $ico = 'images/hrm.ico';
       }
       echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
