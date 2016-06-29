@@ -397,15 +397,15 @@ class GC3PieController {
     
     
     /*!
-      \brief	Writes the GC3Pie controller to the GC3Pie spool folder
-      \return	true if the controller could be written, false otherwise
+      \brief	Writes the HRM jobfile to the Queue Mananger's spool folder.
+      \return	true if the jobfile could be written, false otherwise
     */
     public function write2Spool() {
 
         // TODO: the spool directory has to be read from the config, once it
         // is defined there (see issue #411).
         $controllerPath = realpath(dirname(__FILE__) . "/../run/spool/new");
-        $controllerName = tempnam($controllerPath, "gc3_");
+        $controllerName = tempnam($controllerPath, "hrm_jobfile_");
 
         // tempnam() diverts to the system temp folder in case the directory
         // specified is not writable, so we have to catch this:
