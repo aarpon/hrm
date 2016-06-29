@@ -83,20 +83,41 @@ wait_for_qm_to_finish() {
     fi
 }
 
+
+queue_is_empty() {
+    QFILE="$QM_SPOOL/queue/status/hucore.json"
+    if [ -n "$1" ] ; then
+        QFILE="$QM_SPOOL/queue/status/$1.json"
+    fi
+    # cat "$QM_SPOOL/queue/status/hucore.json"
+    QUEUED=$(grep '"status":' "$QFILE" | wc -l)
+    if [ "$QUEUED" -eq 0 ] ; then
+        # echo "Queue is empty!"
+        return 0
+    else
+        # echo "--> $QUEUED jobs currently queued"
+        return 1
+    fi
+}
+
+
 shutdown_qm_on_empty_queue() {
     if ! qm_is_running ; then
         echo "WARNING: QM is not running!"
         return
     fi
     for counter in $(seq 1 $1) ; do
-        QUEUED=$(grep '"queued"' "$QM_SPOOL/queue/status/hucore.json" | wc -l)
-        echo "--> $QUEUED jobs currently queued"
-        if [ "$QUEUED" -eq 0 ] ; then
-            echo "Queue empty!"
+        if queue_is_empty ; then
+            echo "Queue is empty, trying to shut down the QM!"
             break
         fi
         sleep 1
     done
+    if ! queue_is_empty ; then
+        echo "=============================================================="
+        echo "ERROR: Queue still not empty after $1 secondes!"
+        echo "=============================================================="
+    fi
     qm_request shutdown
     wait_for_qm_to_finish 5
 }
