@@ -7,6 +7,12 @@ cd $PFX
 source "functions.inc.sh"
 set +e
 
+RES_BASE="results"
+
+# first clean out *ALL* results, so we notice immediately if not all tests
+# were run when this script terminates:
+rm -rf "$RES_BASE"
+
 for TEST in test-*__*.sh ; do
     set -e
     if ! spooldir_cur_is_empty ; then
@@ -15,7 +21,7 @@ for TEST in test-*__*.sh ; do
     fi
     # parse the "short" test name (basically the number):
     SHORT=$(echo $TEST | sed 's,__.*,,')
-    RES="results/$SHORT"
+    RES="$RES_BASE/$SHORT"
     rm -rf $RES
     mkdir -p $RES
     set +e
