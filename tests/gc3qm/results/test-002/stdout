@@ -4,12 +4,21 @@ Requesting QM status change to: run
 QM process started.
 Requesting QM status change to: pause
 Requesting QM status change to: run
+Requesting QM status change to: refresh
 Queue is empty, trying to shut down the QM!
 Requesting QM status change to: shutdown
 QM is running...
 ********************************************************************************
 HRM Queue Manager started, watching spooldir "run/spool/new" (Ctrl-C to abort).
 ********************************************************************************
+========================= queue status =========================
+--- jobs retrieved for processing
+None.
+------------------------- queue status -------------------------
+--- jobs queued (not yet retrieved)
+None.
+========================= queue status =========================
+None
 Cleaning up. Remaining jobs:
 {}
 QM process terminated.

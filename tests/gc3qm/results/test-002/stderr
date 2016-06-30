@@ -13,4 +13,5 @@ gc3.gc3libs: INFO: Initialized the event handler for inotify.
 gc3.gc3libs: INFO: Excpected job description files version: 5.
 gc3.gc3libs: WARNING: Received queue request: run -> pause
 gc3.gc3libs: WARNING: Received queue request: pause -> run
+gc3.gc3libs: WARNING: Received queue request: run -> refresh
 gc3.gc3libs: WARNING: Received queue request: run -> shutdown
