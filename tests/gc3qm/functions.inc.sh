@@ -4,11 +4,12 @@
 
 QM_PY="bin/hrm_queuemanager.py"
 QM_EXEC="python $QM_PY"
-QM_SPOOL="run"
+QM_SPOOL="run"  # TODO: read this from hrm.conf once it's there!
 QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf -v"
 
 
 check_spooldirs_clean() {
+    # test if all relevant spooling directories are empty, EXIT otherwise!
     for DIR in new cur ; do
         if ! spooldir_is_empty "$DIR" ; then
             echo "ERROR: unclean spooling directory '$DIR' found! Stopping."
@@ -19,6 +20,7 @@ check_spooldirs_clean() {
 
 
 spooldir_is_empty() {
+    # check if a given spool directory contains files
     if [ -z "$1" ] ; then
         echo "ERROR No spooling dir specified to check!"
         exit 255
