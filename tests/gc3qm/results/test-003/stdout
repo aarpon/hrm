@@ -1,5 +1,6 @@
 **** Starting Queue Manager...
 python bin/hrm_queuemanager.py --spooldir run --config config/samples/gc3pie_localhost.conf -v
+Requesting QM status change to: run
 QM process started.
 Requesting QM status change to: pause
 `tests/gc3qm/inputs/test-003/job_1.cfg' -> `run/spool/new/job_1.cfg'
