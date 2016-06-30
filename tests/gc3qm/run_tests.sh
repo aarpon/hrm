@@ -22,10 +22,7 @@ fi
 
 for TEST in $RUN_TESTS ; do
     set -e
-    if ! spooldir_cur_is_empty ; then
-        echo "ERROR, unclean spooling directory found! Stopping."
-        exit 1
-    fi
+    check_spooldirs_clean
     # parse the "short" test name (basically the number):
     SHORT=$(echo $TEST | sed 's,__.*,,')
     RES="$RES_BASE/$SHORT"

@@ -8,14 +8,28 @@ QM_SPOOL="run"
 QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf -v"
 
 
-spooldir_cur_is_empty() {
-    CUR="../../$QM_SPOOL/spool/cur/"
-    COUNT=$(ls "$CUR" | wc -l)
+check_spooldirs_clean() {
+    for DIR in new cur ; do
+        if ! spooldir_is_empty "$DIR" ; then
+            echo "ERROR: unclean spooling directory '$DIR' found! Stopping."
+            exit 1
+        fi
+    done
+}
+
+
+spooldir_is_empty() {
+    if [ -z "$1" ] ; then
+        echo "ERROR No spooling dir specified to check!"
+        exit 255
+    fi
+    DIR="../../$QM_SPOOL/spool/$1/"
+    COUNT=$(ls "$DIR" | wc -l)
     if [ $COUNT -eq 0 ] ; then
-        # echo "No jobs in 'cur' spooling directory!"
+        # echo "No jobs in '$1' spooling directory!"
         return 0
     else
-        echo "WARNING: found $COUNT jobfiles in 'cur': $CUR"
+        echo "WARNING: found $COUNT jobfiles in '$1': $DIR"
         return 1
     fi
 }
