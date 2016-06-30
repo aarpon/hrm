@@ -22,7 +22,6 @@ fi
 
 for TEST in $RUN_TESTS ; do
     set -e
-    check_spooldirs_clean
     # parse the "short" test name (basically the number):
     SHORT=$(echo $TEST | sed 's,__.*,,')
     RES="$RES_BASE/$SHORT"
@@ -30,6 +29,7 @@ for TEST in $RUN_TESTS ; do
     mkdir -p $RES
     set +e
     echo "++++++++++++++++++++ Running $SHORT ($TEST) ++++++++++++++++++++"
+    check_spooldirs_clean
     STDOUT="$RES/stdout"
     STDERR="$RES/stderr"
     EXITVAL="$RES/exitval"
