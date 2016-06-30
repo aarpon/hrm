@@ -15,7 +15,7 @@ rm -rf "$RES_BASE"
 
 # by default all tests will be run, only if the special variable "RUN_TESTS" is
 # set, we limit the tests to the ones specified there, e.g. usable like this:
-# > export RUN_TESTS="test-001__* test-002__*" ./run_tests.sh
+# > RUN_TESTS="test-001__* test-002__*" ./run_tests.sh
 if [ -z "$RUN_TESTS" ] ; then
     RUN_TESTS=test-*__*.sh
 fi
