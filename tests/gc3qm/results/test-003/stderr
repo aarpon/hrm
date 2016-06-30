@@ -28,7 +28,7 @@ gc3.gc3libs: WARNING: Received queue request: pause -> run
 gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '7729626d3d0d41462c5abb38b9ae4b5451209142'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
-[user01]: tests/gc3qm/templates/hrm_faba128_it-3.hgsb --> ['tests/sample_images/faba128.h5']
+[user01]: tests/gc3qm/hucore_templates/hrm_faba128_it-3.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: 7729626d3d0d41462c5abb38b9ae4b5451209142
 gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@14a9750 to: localhost
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_3.cfg', processing...
@@ -39,7 +39,7 @@ gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
 gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'eebe5a28d295e86ae656bff5d4f0508b26ef2da4'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
-[user01]: tests/gc3qm/templates/hrm_faba128_it-3.hgsb --> ['tests/sample_images/faba128.h5']
+[user01]: tests/gc3qm/hucore_templates/hrm_faba128_it-3.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: eebe5a28d295e86ae656bff5d4f0508b26ef2da4
 gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@14a9710 to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
@@ -49,7 +49,7 @@ gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
 gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'ccd0d22d18c607693370c632e8111ef87c4d1f77'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
-[user01]: tests/gc3qm/templates/hrm_faba128_it-3.hgsb --> ['tests/sample_images/faba128.h5']
+[user01]: tests/gc3qm/hucore_templates/hrm_faba128_it-3.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: ccd0d22d18c607693370c632e8111ef87c4d1f77
 gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@14a9cd0 to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
