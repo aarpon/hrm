@@ -80,7 +80,7 @@ class Nav
     public static function linkManual()
     {
         return self::buildLinkHTMLElement("HRM manual",
-            "http://huygens-remote-manager.readthedocs.org/en/latest/user/index.html",
+            "http://huygens-remote-manager.readthedocs.io/en/latest/user/index.html",
             "images/manual.png", "HRM manual", true);
     }
 
