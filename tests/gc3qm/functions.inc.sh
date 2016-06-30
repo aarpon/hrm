@@ -41,7 +41,13 @@ qm_is_running() {
 
 
 qm_request() {
+    # send a status change request to the queue manager, making sure the actual
+    # process is still alive (EXIT otherwise!)
     echo "Requesting QM status change to: $1"
+    if ! qm_is_running ; then
+        echo "ERROR: QM is not running! Stopping here."
+        exit 3
+    fi
     touch "$QM_SPOOL/queue/requests/$1"
 }
 
