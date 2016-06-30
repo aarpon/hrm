@@ -115,9 +115,15 @@ wait_for_qm_to_finish() {
 
 
 queue_is_empty() {
+    # Test if the queue is empty, EXIT if the queue file doesn't exist!
     QFILE="$QM_SPOOL/queue/status/hucore.json"
     if [ -n "$1" ] ; then
         QFILE="$QM_SPOOL/queue/status/$1.json"
+    fi
+    # the queue file *HAS TO* exist, otherwise we terminate with an error:
+    if ! [ -r "$QFILE" ] ; then
+        echo "ERROR: queue file '$QFILE' doesn't exist!"
+        exit 100
     fi
     # cat "$QM_SPOOL/queue/status/hucore.json"
     QUEUED=$(grep '"status":' "$QFILE" | wc -l)
