@@ -8,20 +8,19 @@ gc3.gc3libs: INFO: Runtime directories:
 gc3.gc3libs: INFO: Setting job queue status report file: run/queue/status/hucore.json
 gc3.gc3libs: INFO: Creating GC3Pie engine using config file "config/samples/gc3pie_localhost.conf".
 gc3.gc3libs: INFO: Computational resource 'localhost' initialized successfully.
-gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrm/.gc3/shellcmd.d
+gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
 gc3.gc3libs: INFO: Initialized the event handler for inotify.
 gc3.gc3libs: INFO: Excpected job description files version: 5.
 gc3.gc3libs: WARNING: Received queue request: run -> pause
-gc3.gc3libs: WARNING: Found new file '/var/www/hrm/run/spool/new/job_1.cfg', processing...
+gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_1.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
 gc3.gc3libs: INFO: Enqueueing job '7729626d3d0d41462c5abb38b9ae4b5451209142' into category 'user01'.
 gc3.gc3libs: INFO: Adding a new queue for 'user01' to the JobQueue.
 gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['7729626d3d0d41462c5abb38b9ae4b5451209142'])}
-gc3.gc3libs: WARNING: Found new file '/var/www/hrm/run/spool/new/job_2.cfg', processing...
+gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_2.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
 gc3.gc3libs: INFO: Enqueueing job 'eebe5a28d295e86ae656bff5d4f0508b26ef2da4' into category 'user01'.
 gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['7729626d3d0d41462c5abb38b9ae4b5451209142', 'eebe5a28d295e86ae656bff5d4f0508b26ef2da4'])}
-gc3.gc3libs: WARNING: Found new file '/var/www/hrm/run/spool/new/job_3.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
 gc3.gc3libs: INFO: Enqueueing job 'ccd0d22d18c607693370c632e8111ef87c4d1f77' into category 'user01'.
 gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['7729626d3d0d41462c5abb38b9ae4b5451209142', 'eebe5a28d295e86ae656bff5d4f0508b26ef2da4', 'ccd0d22d18c607693370c632e8111ef87c4d1f77'])}
@@ -32,6 +31,7 @@ gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
 [user01]: tests/gc3qm/templates/hrm_faba128_it-3.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: 7729626d3d0d41462c5abb38b9ae4b5451209142
 gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@14a9750 to: localhost
+gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_3.cfg', processing...
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
 gc3.gc3libs: INFO: Job '7729626d3d0d41462c5abb38b9ae4b5451209142' terminated successfully!
