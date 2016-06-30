@@ -13,7 +13,14 @@ RES_BASE="results"
 # were run when this script terminates:
 rm -rf "$RES_BASE"
 
-for TEST in test-*__*.sh ; do
+# by default all tests will be run, only if the special variable "RUN_TESTS" is
+# set, we limit the tests to the ones specified there, e.g. usable like this:
+# > export RUN_TESTS="test-001__* test-002__*" ./run_tests.sh
+if [ -z "$RUN_TESTS" ] ; then
+    RUN_TESTS=test-*__*.sh
+fi
+
+for TEST in $RUN_TESTS ; do
     set -e
     if ! spooldir_cur_is_empty ; then
         echo "ERROR, unclean spooling directory found! Stopping."
