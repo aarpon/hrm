@@ -1,0 +1,4 @@
+info {title {Batch Processing template} version 2.2 templateName batch_2014-06-27_05-32-35 date {Fri Jun 27 17:32:35 CEST 2014}}
+taskList {setEnv  taskID:0}
+setEnv {resultDir {/var/www/html/hrm/tests/sample_images/hucore_logs} perJobThreadCnt auto concurrentJobCnt 1 OMP_DYNAMIC 1 timeOut 10000 exportFormat {type ics multidir 0 cmode scale}}
+ taskID:0 {info {state readyToRun tag {setp Micr decon Decon} timeStartAbs 1403883155 timeOut 10000 userDefConfidence default} taskList {imgOpen previewGen:0} imgOpen {path {/var/www/html/hrm/tests/sample_images/faba128.h5} series off index  0} previewGen:0 {image raw destDir {/var/www/html/hrm/tests/sample_images/previews} destFile {faba128} type XYXZ size 400}}
