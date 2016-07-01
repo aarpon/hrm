@@ -36,6 +36,9 @@ for TEST in $RUN_TESTS ; do
     bash $TEST >$STDOUT 2>$STDERR
     RET=$?
     echo $RET > $EXITVAL
+    # generate the "stripped" version of stdout / stderr (without UID hashes):
+    cat $STDOUT | sed -s 's/[0-9a-f]\{40\}/UID_STRIPPED/g' > ${STDOUT}.stripped
+    cat $STDERR | sed -s 's/[0-9a-f]\{40\}/UID_STRIPPED/g' > ${STDERR}.stripped
     echo "Test '$SHORT' finished (exit code: $RET, results in '$PFX/$RES')."
     echo
 done
