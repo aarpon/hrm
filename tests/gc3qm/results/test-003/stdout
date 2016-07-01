@@ -3,9 +3,9 @@ python bin/hrm_queuemanager.py --spooldir run --config config/samples/gc3pie_loc
 Requesting QM status change to: run
 QM process started.
 Requesting QM status change to: pause
-`tests/gc3qm/inputs/test-003/job_1.cfg' -> `run/spool/new/job_1.cfg'
-`tests/gc3qm/inputs/test-003/job_2.cfg' -> `run/spool/new/job_2.cfg'
-`tests/gc3qm/inputs/test-003/job_3.cfg' -> `run/spool/new/job_3.cfg'
+'tests/gc3qm/inputs/test-003/job_1.cfg' -> 'run/spool/new/job_1.cfg'
+'tests/gc3qm/inputs/test-003/job_2.cfg' -> 'run/spool/new/job_2.cfg'
+'tests/gc3qm/inputs/test-003/job_3.cfg' -> 'run/spool/new/job_3.cfg'
 Requesting QM status change to: run
 Queue is empty, trying to shut down the QM!
 Requesting QM status change to: shutdown
