@@ -42,6 +42,11 @@ qm_is_running() {
 }
 
 
+hucore_is_running() {
+    test $(pgrep --count --full "hucore.bin") -gt 0
+}
+
+
 qm_request() {
     # send a status change request to the queue manager, making sure the actual
     # process is still alive (EXIT otherwise!)
@@ -113,6 +118,13 @@ wait_for_qm_to_finish() {
     if qm_is_running ; then
         echo "ERROR: QM doesn't react to HUP, giving up!!"
     fi
+    # try to terminate any still-running hucore processes
+    if hucore_is_running ; then
+        echo "==============================================================="
+        echo "WARNING: Found running HuCore processes, trying to kill them..."
+        echo "==============================================================="
+        killall hucore.bin
+    fi
 }
 
 
@@ -152,12 +164,19 @@ shutdown_qm_on_empty_queue() {
         sleep 1
     done
     if ! queue_is_empty ; then
-        echo "=============================================================="
+        echo "==============================================================="
         echo "ERROR: Queue still not empty after $1 secondes!"
-        echo "=============================================================="
+        echo "==============================================================="
     fi
     qm_request shutdown
     wait_for_qm_to_finish 5
+    # try to terminate any still-running hucore processes
+    if hucore_is_running ; then
+        echo "==============================================================="
+        echo "WARNING: Found running HuCore processes, trying to kill them..."
+        echo "==============================================================="
+        killall hucore.bin
+    fi
 }
 
 msg_finished() {
