@@ -1,0 +1,30 @@
+**** Starting Queue Manager...
+python bin/hrm_queuemanager.py --spooldir run --config config/samples/gc3pie_localhost.conf -v
+Requesting QM status change to: run
+QM process started.
+Requesting QM status change to: pause
+'tests/gc3qm/inputs/test-004/job_1.cfg' -> 'run/spool/new/job_1.cfg'
+Requesting QM status change to: run
+===============================================================
+ERROR: Queue still not empty after 5 secondes!
+===============================================================
+Requesting QM status change to: shutdown
+QM is running...
+********************************************************************************
+HRM Queue Manager started, watching spooldir "run/spool/new" (Ctrl-C to abort).
+********************************************************************************
+========================= queue status =========================
+--- jobs retrieved for processing
+user01 (user01@mail.xy): 1f18afafeb4824bf6d807dcf2c73558fd1a1b08d - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb'] [queued]
+------------------------- queue status -------------------------
+--- jobs queued (not yet retrieved)
+None.
+========================= queue status =========================
+None
+Cleaning up. Remaining jobs:
+{}
+QM process terminated.
+===============================================================
+WARNING: Found running HuCore processes, trying to kill them...
+===============================================================
+************************* TEST FINISHED! *************************
