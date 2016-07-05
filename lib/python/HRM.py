@@ -867,6 +867,9 @@ class JobSpooler(object):
                     app = HucoreDeconvolveApp(nextjob, self.gc3spooldir)
                     apps.append(app)
                     self.engine.add(app)
+                    # as a new job is dispatched now, we also print out the
+                    # human readable queue status:
+                    print self.queue.queue_details_hr()
             elif self.status_cur == 'shutdown':
                 return True
             elif self.status_cur == 'refresh':
