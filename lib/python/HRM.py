@@ -69,7 +69,7 @@ __all__ = ['JobDescription', 'JobQueue']
 
 
 # expected version for job description files:
-JOBFILE_VER = '6'
+JOBFILE_VER = '5'
 
 def setup_rundirs(base_dir):
     """Check if all runtime directories exist or try to create them otherwise.
