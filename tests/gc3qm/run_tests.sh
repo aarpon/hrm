@@ -9,10 +9,6 @@ set +e
 
 RES_BASE="results"
 
-# first clean out *ALL* results, so we notice immediately if not all tests
-# were run when this script terminates:
-rm -rf "$RES_BASE"
-
 # by default all tests will be run, only if the special variable "RUN_TESTS" is
 # set, we limit the tests to the ones specified there, e.g. usable like this:
 # > RUN_TESTS="test-001__* test-002__*" ./run_tests.sh
