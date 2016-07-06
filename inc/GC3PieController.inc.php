@@ -263,7 +263,7 @@ class GC3PieController {
     private function getTaskPriority( ) {
         $priority = "";
         $taskType = $this->jobDescription->getTaskType();
-;
+
         foreach ($this->tasksPriorityArray as $key => $value) {
             switch( $key ) {
                 case "decon":
