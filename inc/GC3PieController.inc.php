@@ -149,7 +149,7 @@ class GC3PieController {
                 break;
             case "jobtype":
                 $this->hrmJobFileList .= " = ";
-                $this->hrmJobFileList .= $this->jobDescription->getTaskType();
+                $this->hrmJobFileList .= $this->jobDescription->getJobType();
                 break;
             case "id":
                 $this->hrmJobFileList .=  " = " . $this->jobDescription->getJobID();
@@ -168,7 +168,7 @@ class GC3PieController {
      \brief  Sets the ID  section field.
     */
     private function setDeleteJobsSectionList() {
-        if ($this->jobDescription->getTaskType() != "deletejobs") {
+        if ($this->jobDescription->getJobType() != "deletejobs") {
             return;
         }
         
@@ -193,7 +193,7 @@ class GC3PieController {
     private function setHuCoreSectionList() {
         global $local_huygens_core;
 
-        if ($this->jobDescription->getTaskType() == "deletejobs") {
+        if ($this->jobDescription->getJobType() == "deletejobs") {
             return;
         }
 
@@ -227,7 +227,7 @@ class GC3PieController {
     */
     private function setInputFilesSectionList() {
 
-        if ($this->jobDescription->getTaskType() == "deletejobs") {
+        if ($this->jobDescription->getJobType() == "deletejobs") {
             return;
         }
         
@@ -261,13 +261,13 @@ class GC3PieController {
         
         foreach ($this->sectionsArray as $section) {
 
-            if ($this->jobDescription->getTaskType()  == "deletejobs")  {
+            if ($this->jobDescription->getJobType()  == "deletejobs")  {
                 if ($section  == "hucore" || $section == "inputfiles") {
                     continue;
                 }
             }
 
-            if ($this->jobDescription->getTaskType() !=  "deletejobs") {
+            if ($this->jobDescription->getJobType() !=  "deletejobs") {
                 if ($section  == "deletejobs") {
                     continue;
                 }

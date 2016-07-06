@@ -52,7 +52,7 @@ class JobQueue {
         
         $JobDescription = new JobDescription();
         $JobDescription->setOwner( $owner );
-        $JobDescription->setTaskType( "deletejobs" );        
+        $JobDescription->setJobType("deletejobs");
         
         $JobDescription->setJobID( implode(', ', $ids) );
         $GC3PieController = new GC3PieController( $JobDescription );

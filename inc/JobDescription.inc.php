@@ -81,10 +81,10 @@ class JobDescription {
   private $group;
 
   /*!
-    \var    $taskType
-    \brief  Name of the task to use: decon, snr, etc.
+    \var    $jobType
+    \brief  Name of the job type: hucore, deletejobs, etc.
   */
-  private $taskType;
+  private $jobType;
 
   /*!
     \var    $jobID 
@@ -267,26 +267,26 @@ class JobDescription {
   }
   
   /*!
-    \brief      Sets the task type as an object property.
-    \params     $taskType The name of the job task: decon, snr, etc.
+    \brief      Sets the job type as an object property.
+    \params     $jobType The name of the job type: hucore, deletejobs
   */
-  public function setTaskType( $taskType ) {
-      switch( $taskType )  {
+  public function setJobType( $jobType ) {
+      switch( $jobType )  {
       case 'hucore':
       case 'deletejobs':
-          $this->taskType =  $taskType;
+          $this->jobType =  $jobType;
           break;
       default:
-          error_log("Unimplemented task type $taskType.");       
+          error_log("Unimplemented job type $jobType.");
       }
   }
 
   /*!
-    \brief      The task type to write in the GC3Pie config  file.
-    \return     The task type.
+    \brief      The job type to write in the GC3Pie config  file.
+    \return     The job type.
     */
-    public function getTaskType( ) {
-        return $this->taskType;
+    public function getJobType( ) {
+        return $this->jobType;
     }
 
   /*!
