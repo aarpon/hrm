@@ -100,7 +100,7 @@ class GC3PieController {
         );        
         
         $this->hrmJobFileArray = array (
-            'version'       =>  '5',
+            'version'       =>  '7',
             'username'      =>  '',
             'useremail'     =>  '',
             'jobtype'       =>  '',
@@ -112,6 +112,7 @@ class GC3PieController {
         );
 
         $this->hucoreArray = array (
+            'tasktype'      =>   '',
             'executable'    =>   '',
             'template'      =>   ''
         );
@@ -203,6 +204,16 @@ class GC3PieController {
         foreach ($this->hucoreArray as $key => $value) {
             $this->hucoreList .= $key;
             switch ( $key ) {
+                case "tasktype":
+                    $this->hucoreList .= " = ";
+                    $taskType = $this->jobDescription->getTaskType();
+                    if ($taskType == '') {
+                        $this->hucoreList .= "MISSING";
+                        error_log("WARNING: task type is missing!");
+                    } else {
+                        $this->hucoreList .= $taskType;
+                    }
+                    break;
                 case "executable":
                     if (isset($local_huygens_core)) {
                         $this->hucoreList .= " = " . $local_huygens_core;

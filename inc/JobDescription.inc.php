@@ -87,6 +87,15 @@ class JobDescription {
   private $jobType;
 
   /*!
+    \var    $taskType
+    \brief  Name of the task type, specific to the $jobType from above:
+                * for a 'hucore' job, this can be any of
+                    decon, preview, snr, coloc, movie, psf, stabilize, cac
+                * for a 'deletejobs' job, this is EMPTY
+  */
+  private $taskType;
+
+  /*!
     \var    $jobID 
     \brief  ID of the job to delete, prioritize, etc.
   */
@@ -287,6 +296,39 @@ class JobDescription {
     */
     public function getJobType( ) {
         return $this->jobType;
+    }
+
+  /*!
+    \brief      Sets the task type as an object property.
+    \params     $taskType decon, preview, snr, coloc, movie, psf, stabilize, cac
+  */
+  public function setTaskType($taskType) {
+      switch($taskType) {
+          case 'decon':
+          case 'preview':
+          case 'snr':
+          case 'coloc':
+          case 'movie':
+          case 'psf':
+          case 'stabilize':
+          case 'cac':
+              if ($this->jobType != 'hucore') {
+                  error_log("Task type '$taskType' requires job type 'hucore'");
+              } else {
+                  $this->taskType =  $taskType;
+              }
+              break;
+          default:
+              error_log("Unimplemented task type $taskType.");
+      }
+  }
+
+  /*!
+    \brief      Get the task type to write in the job config file.
+    \return     The task type.
+    */
+    public function getTaskType() {
+        return $this->taskType;
     }
 
   /*!
