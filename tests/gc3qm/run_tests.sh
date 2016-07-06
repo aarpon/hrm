@@ -19,7 +19,7 @@ fi
 for TEST in $RUN_TESTS ; do
     set -e
     # parse the "short" test name (basically the number):
-    SHORT=$(parse_shortname)
+    SHORT=$(echo $TEST | sed 's,__.*,,')
     RES="$RES_BASE/$SHORT"
     rm -rf $RES
     mkdir -p $RES
