@@ -10,51 +10,51 @@ gc3.gc3libs: INFO: Creating GC3Pie engine using config file "config/samples/gc3p
 gc3.gc3libs: INFO: Computational resource 'localhost' initialized successfully.
 gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
 gc3.gc3libs: INFO: Initialized the event handler for inotify.
-gc3.gc3libs: INFO: Excpected job description files version: 5.
+gc3.gc3libs: INFO: Excpected job description files version: 7.
 gc3.gc3libs: WARNING: Received queue request: run -> pause
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_1.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
-gc3.gc3libs: INFO: Enqueueing job '9c38a47136a28347d1d2b6ce3b760fb7929411fb' into category 'user01'.
+gc3.gc3libs: INFO: Enqueueing job '0f5c1cfd6202bd1e4f8f7b2ab8bfbc3c46ec01e7' into category 'user01'.
 gc3.gc3libs: INFO: Adding a new queue for 'user01' to the JobQueue.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['9c38a47136a28347d1d2b6ce3b760fb7929411fb'])}
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['0f5c1cfd6202bd1e4f8f7b2ab8bfbc3c46ec01e7'])}
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_2.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
-gc3.gc3libs: INFO: Enqueueing job '42db8aabc5ae1162467d85986d73384f06b9d3c3' into category 'user01'.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['9c38a47136a28347d1d2b6ce3b760fb7929411fb', '42db8aabc5ae1162467d85986d73384f06b9d3c3'])}
+gc3.gc3libs: INFO: Enqueueing job '53a0fafa3874b70a596b8c5dddb093c423a373c8' into category 'user01'.
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['0f5c1cfd6202bd1e4f8f7b2ab8bfbc3c46ec01e7', '53a0fafa3874b70a596b8c5dddb093c423a373c8'])}
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_3.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
-gc3.gc3libs: INFO: Enqueueing job 'd77acaca7a69497f8dac09d440ff8ee1cb854a14' into category 'user01'.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['9c38a47136a28347d1d2b6ce3b760fb7929411fb', '42db8aabc5ae1162467d85986d73384f06b9d3c3', 'd77acaca7a69497f8dac09d440ff8ee1cb854a14'])}
+gc3.gc3libs: INFO: Enqueueing job 'bb65283039532c92d7315d6400b24b3e945610f9' into category 'user01'.
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['0f5c1cfd6202bd1e4f8f7b2ab8bfbc3c46ec01e7', '53a0fafa3874b70a596b8c5dddb093c423a373c8', 'bb65283039532c92d7315d6400b24b3e945610f9'])}
 gc3.gc3libs: WARNING: Received queue request: pause -> run
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '9c38a47136a28347d1d2b6ce3b760fb7929411fb'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '0f5c1cfd6202bd1e4f8f7b2ab8bfbc3c46ec01e7'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: 9c38a47136a28347d1d2b6ce3b760fb7929411fb
+gc3.gc3libs: INFO: Job UID: 0f5c1cfd6202bd1e4f8f7b2ab8bfbc3c46ec01e7
 gc3.gc3libs: WARNING: Received queue request: run -> run
-gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@7f71e39c4ed0 to: localhost
+gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@7f3e60f36f10 to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
-gc3.gc3libs: INFO: Job '9c38a47136a28347d1d2b6ce3b760fb7929411fb' terminated successfully!
+gc3.gc3libs: INFO: Job '0f5c1cfd6202bd1e4f8f7b2ab8bfbc3c46ec01e7' terminated successfully!
 gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '42db8aabc5ae1162467d85986d73384f06b9d3c3'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '53a0fafa3874b70a596b8c5dddb093c423a373c8'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: 42db8aabc5ae1162467d85986d73384f06b9d3c3
-gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@7f71e39c4f10 to: localhost
+gc3.gc3libs: INFO: Job UID: 53a0fafa3874b70a596b8c5dddb093c423a373c8
+gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@7f3e60f36f50 to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
-gc3.gc3libs: INFO: Job '42db8aabc5ae1162467d85986d73384f06b9d3c3' terminated successfully!
+gc3.gc3libs: INFO: Job '53a0fafa3874b70a596b8c5dddb093c423a373c8' terminated successfully!
 gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'd77acaca7a69497f8dac09d440ff8ee1cb854a14'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'bb65283039532c92d7315d6400b24b3e945610f9'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: d77acaca7a69497f8dac09d440ff8ee1cb854a14
-gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@7f71e3921510 to: localhost
+gc3.gc3libs: INFO: Job UID: bb65283039532c92d7315d6400b24b3e945610f9
+gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@7f3e60ed3510 to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
-gc3.gc3libs: INFO: Job 'd77acaca7a69497f8dac09d440ff8ee1cb854a14' terminated successfully!
+gc3.gc3libs: INFO: Job 'bb65283039532c92d7315d6400b24b3e945610f9' terminated successfully!
 gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
 gc3.gc3libs: WARNING: Received queue request: run -> shutdown

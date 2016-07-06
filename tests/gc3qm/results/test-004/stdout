@@ -15,7 +15,7 @@ HRM Queue Manager started, watching spooldir "run/spool/new" (Ctrl-C to abort).
 ********************************************************************************
 ========================= queue status =========================
 --- jobs retrieved for processing
-user01 (user01@mail.xy): 1f18afafeb4824bf6d807dcf2c73558fd1a1b08d - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb'] [queued]
+user01 (user01@mail.xy): f8b580420534f43b0b321ae8659d48a6e3a77262 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
 None.
