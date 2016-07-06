@@ -335,7 +335,7 @@ class GC3PieController {
         
         $result = (fwrite($jobfileHandle, $this->controller) > 0);
         fclose($jobfileHandle);
-        report("Wrote job description file '$jobfileName'.", 2);
+        report("Wrote job description file '$jobfileName'.", 1);
 
         return $result;
     }
