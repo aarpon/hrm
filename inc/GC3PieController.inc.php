@@ -68,12 +68,6 @@ class GC3PieController {
     */
     private $inputFilesList;
 
-    /*!
-     \brief  $taskPriorityArray
-     \var    Array with fields for the task priorities.
-    */
-    private $taskPriorityArray;
-
 
     /* ------------------------------------------------------------------------ */
     
@@ -110,7 +104,6 @@ class GC3PieController {
             'username'      =>  '',
             'useremail'     =>  '',
             'jobtype'       =>  '',
-            'priority'      =>  '',
             'timestamp'     =>  ''
         );
         
@@ -127,13 +120,6 @@ class GC3PieController {
             'file'          =>   ''
         );
         
-        /* Priorities stated in 'nice' units. */
-        $this->tasksPriorityArray = array (
-            'hucore'       =>   '20',
-            'snr'          =>   '15',
-            'previewgen'   =>   '5',
-            'deletejobs'   =>   '1'
-        );
     }
     
     
@@ -164,9 +150,6 @@ class GC3PieController {
             case "jobtype":
                 $this->hrmJobFileList .= " = ";
                 $this->hrmJobFileList .= $this->jobDescription->getTaskType();
-                break;
-            case "priority":
-                $this->hrmJobFileList .= " = " . $this->getTaskPriority();
                 break;
             case "id":
                 $this->hrmJobFileList .=  " = " . $this->jobDescription->getJobID();
@@ -202,38 +185,6 @@ class GC3PieController {
             }
             $this->idList .= "\n";
         }
-    }
-    
-    /*!
-    \brief   Returns the priority of a task.
-    \return  The task priority
-    */
-    private function getTaskPriority( ) {
-        $priority = "";
-        $taskType = $this->jobDescription->getTaskType();
-
-        foreach ($this->tasksPriorityArray as $key => $value) {
-            switch( $key ) {
-                case "decon":
-                case "snr":
-                case "previewgen":
-                case "hucore":
-                case "deletejobs":
-                if ($key == $taskType) {
-                        $priority = $value;
-                }
-                break;
-                default:
-                    error_log("Unknown task type: $key");
-
-            }
-        }
-
-        if ($priority == "") {
-            error_log("No priority found for task $taskType");
-        }
-
-        return $priority;
     }
 
     /*!
