@@ -118,7 +118,7 @@ class Job {
     */
     private function createGC3PieController() {
         $jobDescription = $this->description();
-        $jobDescription->setTaskType("decon");
+        $jobDescription->setTaskType("hucore");
         $gc3Pie = new GC3PieController($jobDescription);
         $this->controller = $gc3Pie;
     }

@@ -106,10 +106,9 @@ class GC3PieController {
         );        
         
         $this->hrmJobFileArray = array (
-            'version'       =>  '6',
+            'version'       =>  '5',
             'username'      =>  '',
             'useremail'     =>  '',
-            'queuetype'     =>  '',
             'jobtype'       =>  '',
             'priority'      =>  '',
             'timestamp'     =>  ''
@@ -130,7 +129,7 @@ class GC3PieController {
         
         /* Priorities stated in 'nice' units. */
         $this->tasksPriorityArray = array (
-            'decon'        =>   '20',
+            'hucore'       =>   '20',
             'snr'          =>   '15',
             'previewgen'   =>   '5',
             'deletejobs'   =>   '1'
@@ -138,54 +137,6 @@ class GC3PieController {
     }
     
     
-    /* ----------------------------- Utils ------------------------------ */
-
-    /*!
-      \brief    Assigns a queue type to a task type (decon, previewgen, etc).
-      \return   The queue type.
-    */
-    private function taskType2queueType() {
-        $taskType = $this->jobDescription->getTaskType();
-        
-        switch ( $taskType ) {
-        case "deletejobs":
-        case "decon":
-            $queueType = "primary";
-            break;
-        case "snr": 
-        case "previewgen":
-            $queueType = "secondary";
-            break;
-        default:
-            error_log("Impossible to set queue type for job type $taskType");
-        }
-        
-        return $queueType;
-    }
-
-    /*!
-      \brief   Assigns a job type to a task type (decon, previewgen, etc).
-      \return  The job type.
-    */
-    private function taskType2JobType() {
-        $taskType = $this->jobDescription->getTaskType();
-        
-        switch ( $taskType ) {
-        case "snr":
-        case "previewgen":
-        case "decon":
-            $jobType = "hucore";
-            break;
-        case "deletejobs":
-            $jobType = $taskType;
-            break;
-        default:
-            error_log("Impossible to set job type for task type $jobType");
-        }
-        
-        return $jobType;
-    }
-
     /* ----------------------------------------------------------------- */
     
     /*!
@@ -210,12 +161,9 @@ class GC3PieController {
                 $this->hrmJobFileList .= " = ";
                 $this->hrmJobFileList .= $user->emailAddress();
                 break;
-            case "queuetype":
-                $this->hrmJobFileList .= " = ";
-                $this->hrmJobFileList .= $this->taskType2queueType();
-                break;
             case "jobtype":
-                $this->hrmJobFileList .= " = " . $this->taskType2JobType();
+                $this->hrmJobFileList .= " = ";
+                $this->hrmJobFileList .= $this->jobDescription->getTaskType();
                 break;
             case "priority":
                 $this->hrmJobFileList .= " = " . $this->getTaskPriority();
@@ -269,6 +217,7 @@ class GC3PieController {
                 case "decon":
                 case "snr":
                 case "previewgen":
+                case "hucore":
                 case "deletejobs":
                 if ($key == $taskType) {
                         $priority = $value;
