@@ -203,13 +203,13 @@ class GC3PieController {
         foreach ($this->hucoreArray as $key => $value) {
             $this->hucoreList .= $key;
             switch ( $key ) {
-            case "executable":
-                if (isset($local_huygens_core)) {
-                    $this->hucoreList .= " = " . $local_huygens_core;
-                } else {
-                    error_log("Unreachable hucore binary.");
-                }
-                break;
+                case "executable":
+                    if (isset($local_huygens_core)) {
+                        $this->hucoreList .= " = " . $local_huygens_core;
+                    } else {
+                        error_log("Unreachable hucore binary.");
+                    }
+                    break;
                 case "template":
                     $this->hucoreList .= " = ";
                     $this->hucoreList .= $templatePath;

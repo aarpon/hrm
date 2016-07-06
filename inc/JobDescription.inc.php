@@ -272,12 +272,12 @@ class JobDescription {
   */
   public function setJobType( $jobType ) {
       switch( $jobType )  {
-      case 'hucore':
-      case 'deletejobs':
-          $this->jobType =  $jobType;
-          break;
-      default:
-          error_log("Unimplemented job type $jobType.");
+          case 'hucore':
+          case 'deletejobs':
+              $this->jobType =  $jobType;
+              break;
+          default:
+              error_log("Unimplemented job type $jobType.");
       }
   }
 
