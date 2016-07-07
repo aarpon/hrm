@@ -21,10 +21,10 @@ jobs_ok = [
     '../jobfiles/sandbox/deconvolution_job.cfg'
 ]
 
-print('Testing correct job description files:')
+print 'Testing correct job description files:'
 for jobfile in jobs_ok:
     job = HRM.JobDescription(jobfile, 'file')
-    print(" - Parsing worked without errors on '%s'." % jobfile)
+    print " - Parsing worked without errors on '%s'." % jobfile
 
 jobs_broken = [
     '../jobfiles/testing/broken_sec_deconvolution.cfg',
@@ -32,9 +32,10 @@ jobs_broken = [
     '../jobfiles/testing/broken_sec_jobfile.cfg'
 ]
 
-print('\nTesting incorrect job description files:')
+print '\nTesting invalid job description files:'
 for jobfile in jobs_broken:
     try:
         job = HRM.JobDescription(jobfile, 'file')
-    except ValueError:
-        print(" - Got the excpected ValueError from '%s'." % jobfile)
+    except ValueError as err:
+        print(" - Got the excpected ValueError from '%s':\n   %s" %
+              (jobfile, err))
