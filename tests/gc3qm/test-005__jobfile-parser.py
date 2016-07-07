@@ -8,6 +8,8 @@ export PYTHONPATH=$PYTHONPATH:../../lib/python/
 python test-005__jobfile-parser.py
 """
 
+import glob
+
 try:
     import HRM
 except ImportError:
@@ -17,23 +19,15 @@ except ImportError:
 # during an interactive single IPython session:
 reload(HRM)
 
-jobs_ok = [
-    '../jobfiles/sandbox/deconvolution_job.cfg'
-]
 
 print 'Testing correct job description files:'
-for jobfile in jobs_ok:
+for jobfile in glob.glob('jobfiles/*.cfg'):
     job = HRM.JobDescription(jobfile, 'file')
     print " - Parsing worked without errors on '%s'." % jobfile
 
-jobs_broken = [
-    '../jobfiles/testing/broken_sec_deconvolution.cfg',
-    '../jobfiles/testing/broken_sec_inputfiles.cfg',
-    '../jobfiles/testing/broken_sec_jobfile.cfg'
-]
 
 print '\nTesting invalid job description files:'
-for jobfile in jobs_broken:
+for jobfile in glob.glob('jobfiles/invalid/*.cfg'):
     try:
         job = HRM.JobDescription(jobfile, 'file')
     except ValueError as err:
