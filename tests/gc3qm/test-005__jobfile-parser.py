@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-"""Simple test script for the HRM class.
+"""Simple tests for the jobfile parsing of the HRM class.
 
 Run it from this directory after setting your PYTHONPATH accordingly:
 
 export PYTHONPATH=$PYTHONPATH:../../lib/python/
-python test_HRM.py
+python test-005__jobfile-parser.py
 """
 
 try:
@@ -13,8 +13,8 @@ try:
 except ImportError:
     raise SystemExit(__doc__)
 
-# the reload statement is here so we can us the script in subsequent calls
-# during a single IPython session:
+# the reload statement is here so we can use the script in subsequent calls
+# during an interactive single IPython session:
 reload(HRM)
 
 jobs_ok = [
