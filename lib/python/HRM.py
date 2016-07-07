@@ -309,6 +309,20 @@ class JobDescription(dict):
         logd("Job description sections: %s" % self._sections)
         self._parse_jobdescription()
 
+    def _get_option(self, section, option):
+        """Helper method to get an option and remove it from the section."""
+        value = self.jobparser.get(section, option)
+        self.jobparser.remove_option(section, option)
+        return value
+
+    def _check_for_remaining_options(self, section):
+        """Helper method to check if a section has remaining items."""
+        remaining = self.jobparser.items(section)
+        if remaining:
+            raise ValueError("Section '%s' in file '%s' contains unknown "
+                             "options, jobfile is invalid: %s" %
+                             (section, self.fname, remaining))
+
     def _parse_jobdescription(self):
         """Parse details for an HRM job and check for sanity.
 
@@ -318,7 +332,6 @@ class JobDescription(dict):
         found in the given file.
         """
         # TODO: group code into parsing and sanity-checking
-        # TODO: make sure there are no unparsed fields in the description!
         # FIXME: currently only deconvolution jobs are supported, until hucore
         # will be able to do the other things like SNR estimation and
         # previewgen using templates as well!
@@ -327,24 +340,24 @@ class JobDescription(dict):
             raise ValueError("Error parsing job from %s." % self.fname)
         # version
         try:
-            self['ver'] = self.jobparser.get('hrmjobfile', 'version')
+            self['ver'] = self._get_option('hrmjobfile', 'version')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find version in %s." % self.fname)
         if not (self['ver'] == JOBFILE_VER):
             raise ValueError("Unexpected jobfile version '%s'." % self['ver'])
         # username
         try:
-            self['user'] = self.jobparser.get('hrmjobfile', 'username')
+            self['user'] = self._get_option('hrmjobfile', 'username')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find username in %s." % self.fname)
         # useremail
         try:
-            self['email'] = self.jobparser.get('hrmjobfile', 'useremail')
+            self['email'] = self._get_option('hrmjobfile', 'useremail')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find email address in %s." % self.fname)
         # timestamp
         try:
-            timestamp = self.jobparser.get('hrmjobfile', 'timestamp')
+            timestamp = self._get_option('hrmjobfile', 'timestamp')
             # the keyword "on_parsing" requires us to fill in the value:
             if timestamp == 'on_parsing':
                 self['timestamp'] = time.time()
@@ -356,9 +369,11 @@ class JobDescription(dict):
             raise ValueError("Can't find timestamp in %s." % self.fname)
         # type
         try:
-            self['type'] = self.jobparser.get('hrmjobfile', 'jobtype')
+            self['type'] = self._get_option('hrmjobfile', 'jobtype')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find jobtype in %s." % self.fname)
+        ### by now the section should be fully parsed and therefore empty:
+        self._check_for_remaining_options('hrmjobfile')
         # from here on a jobtype specific parsing must be done:
         if self['type'] == 'hucore':
             self._parse_job_hucore()
@@ -379,25 +394,28 @@ class JobDescription(dict):
         # the "hucore" section:
         ## "tasktype"
         try:
-            self['tasktype'] = self.jobparser.get('hucore', 'tasktype')
+            self['tasktype'] = self._get_option('hucore', 'tasktype')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find tasktype in %s." % self.fname)
         ## "exec"
         try:
-            self['exec'] = self.jobparser.get('hucore', 'executable')
+            self['exec'] = self._get_option('hucore', 'executable')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find executable in %s." % self.fname)
         ## "template"
         try:
-            self['template'] = self.jobparser.get('hucore', 'template')
+            self['template'] = self._get_option('hucore', 'template')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find template in %s." % self.fname)
+        ### by now the section should be fully parsed and therefore empty:
+        self._check_for_remaining_options('hucore')
         # and the input file(s) section:
+        # TODO: can we check if this section contains nonsense values?
         if not 'inputfiles' in self._sections:
             raise ValueError("No input files defined in %s." % self.fname)
         self['infiles'] = []
         for option in self.jobparser.options('inputfiles'):
-            infile = self.jobparser.get('inputfiles', option)
+            infile = self._get_option('inputfiles', option)
             self['infiles'].append(infile)
 
     def get_category(self):
