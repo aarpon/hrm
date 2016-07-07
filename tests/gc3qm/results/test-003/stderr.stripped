@@ -10,7 +10,7 @@ gc3.gc3libs: INFO: Creating GC3Pie engine using config file "config/samples/gc3p
 gc3.gc3libs: INFO: Computational resource 'localhost' initialized successfully.
 gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
 gc3.gc3libs: INFO: Initialized the event handler for inotify.
-gc3.gc3libs: INFO: Excpected job description files version: 5.
+gc3.gc3libs: INFO: Excpected job description files version: 7.
 gc3.gc3libs: WARNING: Received queue request: run -> pause
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_1.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
@@ -32,7 +32,7 @@ gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: UID_STRIPPED
 gc3.gc3libs: WARNING: Received queue request: run -> run
-gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@7f71e39c4ed0 to: localhost
+gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@APPID_STRIPPED to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
 gc3.gc3libs: INFO: Job 'UID_STRIPPED' terminated successfully!
@@ -42,7 +42,7 @@ gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: UID_STRIPPED
-gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@7f71e39c4f10 to: localhost
+gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@APPID_STRIPPED to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
 gc3.gc3libs: INFO: Job 'UID_STRIPPED' terminated successfully!
@@ -52,7 +52,7 @@ gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: UID_STRIPPED
-gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@7f71e3921510 to: localhost
+gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@APPID_STRIPPED to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
 gc3.gc3libs: INFO: Job 'UID_STRIPPED' terminated successfully!

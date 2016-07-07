@@ -68,12 +68,6 @@ class GC3PieController {
     */
     private $inputFilesList;
 
-    /*!
-     \brief  $taskPriorityArray
-     \var    Array with fields for the task priorities.
-    */
-    private $taskPriorityArray;
-
 
     /* ------------------------------------------------------------------------ */
     
@@ -106,12 +100,10 @@ class GC3PieController {
         );        
         
         $this->hrmJobFileArray = array (
-            'version'       =>  '6',
+            'version'       =>  '7',
             'username'      =>  '',
             'useremail'     =>  '',
-            'queuetype'     =>  '',
             'jobtype'       =>  '',
-            'priority'      =>  '',
             'timestamp'     =>  ''
         );
         
@@ -120,6 +112,7 @@ class GC3PieController {
         );
 
         $this->hucoreArray = array (
+            'tasktype'      =>   '',
             'executable'    =>   '',
             'template'      =>   ''
         );
@@ -128,64 +121,9 @@ class GC3PieController {
             'file'          =>   ''
         );
         
-        /* Priorities stated in 'nice' units. */
-        $this->tasksPriorityArray = array (
-            'decon'        =>   '20',
-            'snr'          =>   '15',
-            'previewgen'   =>   '5',
-            'deletejobs'   =>   '1'
-        );
     }
     
     
-    /* ----------------------------- Utils ------------------------------ */
-
-    /*!
-      \brief    Assigns a queue type to a task type (decon, previewgen, etc).
-      \return   The queue type.
-    */
-    private function taskType2queueType() {
-        $taskType = $this->jobDescription->getTaskType();
-        
-        switch ( $taskType ) {
-        case "deletejobs":
-        case "decon":
-            $queueType = "primary";
-            break;
-        case "snr": 
-        case "previewgen":
-            $queueType = "secondary";
-            break;
-        default:
-            error_log("Impossible to set queue type for job type $taskType");
-        }
-        
-        return $queueType;
-    }
-
-    /*!
-      \brief   Assigns a job type to a task type (decon, previewgen, etc).
-      \return  The job type.
-    */
-    private function taskType2JobType() {
-        $taskType = $this->jobDescription->getTaskType();
-        
-        switch ( $taskType ) {
-        case "snr":
-        case "previewgen":
-        case "decon":
-            $jobType = "hucore";
-            break;
-        case "deletejobs":
-            $jobType = $taskType;
-            break;
-        default:
-            error_log("Impossible to set job type for task type $jobType");
-        }
-        
-        return $jobType;
-    }
-
     /* ----------------------------------------------------------------- */
     
     /*!
@@ -210,15 +148,9 @@ class GC3PieController {
                 $this->hrmJobFileList .= " = ";
                 $this->hrmJobFileList .= $user->emailAddress();
                 break;
-            case "queuetype":
-                $this->hrmJobFileList .= " = ";
-                $this->hrmJobFileList .= $this->taskType2queueType();
-                break;
             case "jobtype":
-                $this->hrmJobFileList .= " = " . $this->taskType2JobType();
-                break;
-            case "priority":
-                $this->hrmJobFileList .= " = " . $this->getTaskPriority();
+                $this->hrmJobFileList .= " = ";
+                $this->hrmJobFileList .= $this->jobDescription->getJobType();
                 break;
             case "id":
                 $this->hrmJobFileList .=  " = " . $this->jobDescription->getJobID();
@@ -237,7 +169,7 @@ class GC3PieController {
      \brief  Sets the ID  section field.
     */
     private function setDeleteJobsSectionList() {
-        if ($this->jobDescription->getTaskType() != "deletejobs") {
+        if ($this->jobDescription->getJobType() != "deletejobs") {
             return;
         }
         
@@ -255,37 +187,6 @@ class GC3PieController {
             $this->idList .= "\n";
         }
     }
-    
-    /*!
-    \brief   Returns the priority of a task.
-    \return  The task priority
-    */
-    private function getTaskPriority( ) {
-        $priority = "";
-        $taskType = $this->jobDescription->getTaskType();
-
-        foreach ($this->tasksPriorityArray as $key => $value) {
-            switch( $key ) {
-                case "decon":
-                case "snr":
-                case "previewgen":
-                case "deletejobs":
-                if ($key == $taskType) {
-                        $priority = $value;
-                }
-                break;
-                default:
-                    error_log("Unknown task type: $key");
-
-            }
-        }
-
-        if ($priority == "") {
-            error_log("No priority found for task $taskType");
-        }
-
-        return $priority;
-    }
 
     /*!
      \brief  Sets the hucore section field.
@@ -293,7 +194,7 @@ class GC3PieController {
     private function setHuCoreSectionList() {
         global $local_huygens_core;
 
-        if ($this->jobDescription->getTaskType() == "deletejobs") {
+        if ($this->jobDescription->getJobType() == "deletejobs") {
             return;
         }
 
@@ -303,13 +204,23 @@ class GC3PieController {
         foreach ($this->hucoreArray as $key => $value) {
             $this->hucoreList .= $key;
             switch ( $key ) {
-            case "executable":
-                if (isset($local_huygens_core)) {
-                    $this->hucoreList .= " = " . $local_huygens_core;
-                } else {
-                    error_log("Unreachable hucore binary.");
-                }
-                break;
+                case "tasktype":
+                    $this->hucoreList .= " = ";
+                    $taskType = $this->jobDescription->getTaskType();
+                    if ($taskType == '') {
+                        $this->hucoreList .= "MISSING";
+                        error_log("WARNING: task type is missing!");
+                    } else {
+                        $this->hucoreList .= $taskType;
+                    }
+                    break;
+                case "executable":
+                    if (isset($local_huygens_core)) {
+                        $this->hucoreList .= " = " . $local_huygens_core;
+                    } else {
+                        error_log("Unreachable hucore binary.");
+                    }
+                    break;
                 case "template":
                     $this->hucoreList .= " = ";
                     $this->hucoreList .= $templatePath;
@@ -327,7 +238,7 @@ class GC3PieController {
     */
     private function setInputFilesSectionList() {
 
-        if ($this->jobDescription->getTaskType() == "deletejobs") {
+        if ($this->jobDescription->getJobType() == "deletejobs") {
             return;
         }
         
@@ -361,13 +272,13 @@ class GC3PieController {
         
         foreach ($this->sectionsArray as $section) {
 
-            if ($this->jobDescription->getTaskType()  == "deletejobs")  {
+            if ($this->jobDescription->getJobType()  == "deletejobs")  {
                 if ($section  == "hucore" || $section == "inputfiles") {
                     continue;
                 }
             }
 
-            if ($this->jobDescription->getTaskType() !=  "deletejobs") {
+            if ($this->jobDescription->getJobType() !=  "deletejobs") {
                 if ($section  == "deletejobs") {
                     continue;
                 }
@@ -435,7 +346,7 @@ class GC3PieController {
         
         $result = (fwrite($jobfileHandle, $this->controller) > 0);
         fclose($jobfileHandle);
-        report("Wrote job description file '$jobfileName'.", 2);
+        report("Wrote job description file '$jobfileName'.", 1);
 
         return $result;
     }

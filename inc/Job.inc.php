@@ -118,6 +118,7 @@ class Job {
     */
     private function createGC3PieController() {
         $jobDescription = $this->description();
+        $jobDescription->setJobType("hucore");
         $jobDescription->setTaskType("decon");
         $gc3Pie = new GC3PieController($jobDescription);
         $this->controller = $gc3Pie;
@@ -135,9 +136,7 @@ class Job {
         
         $this->createGC3PieController();
         $result = $this->controller->write2Spool();
-        if ($result) {
-            report("Created job description file.", 1);
-        } else {
+        if (!$result) {
             report("ERROR creating job description file!", 0);
         }
 

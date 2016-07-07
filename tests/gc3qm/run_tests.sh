@@ -19,7 +19,7 @@ fi
 for TEST in $RUN_TESTS ; do
     set -e
     # parse the "short" test name (basically the number):
-    SHORT=$(parse_shortname)
+    SHORT=$(echo $TEST | sed 's,__.*,,')
     RES="$RES_BASE/$SHORT"
     rm -rf $RES
     mkdir -p $RES
@@ -33,8 +33,8 @@ for TEST in $RUN_TESTS ; do
     RET=$?
     echo $RET > $EXITVAL
     # generate the "stripped" version of stdout / stderr (without UID hashes):
-    cat $STDOUT | sed -s 's/[0-9a-f]\{40\}/UID_STRIPPED/g' > ${STDOUT}.stripped
-    cat $STDERR | sed -s 's/[0-9a-f]\{40\}/UID_STRIPPED/g' > ${STDERR}.stripped
+    cat $STDOUT | strip_uids > ${STDOUT}.stripped
+    cat $STDERR | strip_uids > ${STDERR}.stripped
     echo "Test '$SHORT' finished (exit code: $RET, results in '$PFX/$RES')."
     echo
 done

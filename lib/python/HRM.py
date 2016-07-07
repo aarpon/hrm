@@ -69,7 +69,7 @@ __all__ = ['JobDescription', 'JobQueue']
 
 
 # expected version for job description files:
-JOBFILE_VER = '6'
+JOBFILE_VER = '7'
 
 def setup_rundirs(base_dir):
     """Check if all runtime directories exist or try to create them otherwise.
@@ -318,6 +318,7 @@ class JobDescription(dict):
         found in the given file.
         """
         # TODO: group code into parsing and sanity-checking
+        # TODO: make sure there are no unparsed fields in the description!
         # FIXME: currently only deconvolution jobs are supported, until hucore
         # will be able to do the other things like SNR estimation and
         # previewgen using templates as well!
@@ -372,15 +373,22 @@ class JobDescription(dict):
             All information is added to the "self" dict.
         """
         # the "hucore" section:
+        ## "tasktype"
+        try:
+            self['tasktype'] = self.jobparser.get('hucore', 'tasktype')
+        except ConfigParser.NoOptionError:
+            raise ValueError("Can't find tasktype in %s." % self.fname)
+        ## "exec"
         try:
             self['exec'] = self.jobparser.get('hucore', 'executable')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find executable in %s." % self.fname)
+        ## "template"
         try:
             self['template'] = self.jobparser.get('hucore', 'template')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find template in %s." % self.fname)
-        # and the input file(s):
+        # and the input file(s) section:
         if not 'inputfiles' in self._sections:
             raise ValueError("No input files defined in %s." % self.fname)
         self['infiles'] = []

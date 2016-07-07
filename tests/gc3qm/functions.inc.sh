@@ -188,3 +188,10 @@ parse_shortname() {
     SHORT=$(basename $0 | sed 's,__.*,,')
     echo $SHORT
 }
+
+strip_uids() {
+    # strips away various hashes that are runtime-specific, to make the result
+    # better comparable among subsequent individual runs
+    sed -s 's/[0-9a-f]\{40\}/UID_STRIPPED/g' |
+    sed -s 's/App@[0-9a-f]\{12\}/App@APPID_STRIPPED/g'
+}
