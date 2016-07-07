@@ -344,10 +344,14 @@ class JobDescription(dict):
             raise ValueError("Can't find email address in %s." % self.fname)
         # timestamp
         try:
-            self['timestamp'] = self.jobparser.get('hrmjobfile', 'timestamp')
+            timestamp = self.jobparser.get('hrmjobfile', 'timestamp')
             # the keyword "on_parsing" requires us to fill in the value:
-            if self['timestamp'] == 'on_parsing':
+            if timestamp == 'on_parsing':
                 self['timestamp'] = time.time()
+            elif isinstance(timestamp, float):
+                self['timestamp'] = timestamp
+            else:
+                raise ValueError("Invalid timestamp format: %s." % timestamp)
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find timestamp in %s." % self.fname)
         # type
