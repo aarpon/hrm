@@ -363,9 +363,6 @@ class JobDescription(dict):
         processing task. Raises Exceptions in case something unexpected is
         found in the given file.
         """
-        # FIXME: currently only deconvolution jobs are supported, until hucore
-        # will be able to do the other things like SNR estimation and
-        # previewgen using templates as well!
         ### prepare the parser-mapping for the generic 'hrmjobfile' section:
         mapping = [
             ['version', 'ver'],
@@ -391,6 +388,9 @@ class JobDescription(dict):
             except ValueError:
                 raise ValueError("Invalid timestamp: %s." % self['timestamp'])
         ### now call the jobtype-specific parser method(s):
+        # FIXME: currently only deconvolution jobs are supported, until hucore
+        # will be able to do the other things like SNR estimation and
+        # previewgen using templates as well!
         if self['type'] == 'hucore':
             self._parse_job_hucore()
         else:
