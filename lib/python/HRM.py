@@ -364,7 +364,7 @@ class JobDescription(dict):
         self._parse_section_entries('hrmjobfile', mapping)
         ### sanity-check / validate the parsed options:
         # version
-        if not self['ver'] == JOBFILE_VER:
+        if self['ver'] != JOBFILE_VER:
             raise ValueError("Unexpected jobfile version '%s'." % self['ver'])
         # timestamp
         if self['timestamp'] == 'on_parsing':
@@ -406,7 +406,7 @@ class JobDescription(dict):
         self._parse_section_entries('hucore', mapping)
         # and the input file(s) section:
         # TODO: can we check if this section contains nonsense values?
-        if not 'inputfiles' in self._sections:
+        if 'inputfiles' not in self._sections:
             raise ValueError("No input files defined in %s." % self.fname)
         self['infiles'] = []
         for option in self.jobparser.options('inputfiles'):
@@ -495,7 +495,7 @@ class JobQueue(object):
             raise ValueError("Job with uid '%s' already in this queue!" % uid)
         logi("Enqueueing job '%s' into category '%s'." % (uid, cat))
         self.jobs[uid] = job  # store the job in the global dict
-        if not cat in self.cats:
+        if cat not in self.cats:
             logi("Adding a new queue for '%s' to the JobQueue." % cat)
             self.cats.append(cat)
             self.queue[cat] = deque()
@@ -983,8 +983,8 @@ class HucoreDeconvolveApp(gc3libs.Application):
         log message if the status changes. Return the new state if the app it
         has changed, otherwise None.
         """
-        if not self.execution.state == self.laststate:
-            logi("Job status changed to '%s'." % self.job['status'])
+        if self.execution.state != self.laststate:
+            logi("Job status changed to '%s'.", self.job['status'])
             self.laststate = self.execution.state
             return self.execution.state
         else:
