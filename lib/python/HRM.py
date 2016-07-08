@@ -620,6 +620,7 @@ class JobQueue(object):
         # consist of multiple input files (TIFF series, ICS/IDS, etc.), so
         # don't just use the first file (requires the PHP part to be adapted).
         def format_job(job):
+            """Helper function to assemble the job dict."""
             fjob = {
                 "id" : job['uid'],
                 "file" : job['infiles'][0],  # TODO: see above!
