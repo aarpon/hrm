@@ -104,7 +104,7 @@ def setup_rundirs(base_dir):
                                   "writable for us. Stopping!" % cur)
                 try:
                     os.makedirs(cur)
-                    logi("Created spool directory '%s'." % cur)
+                    logi("Created spool directory '%s'.", cur)
                 except OSError as err:
                     raise OSError("Error creating Queue Manager runtime "
                                   "directory '%s': %s" % (cur, err))
@@ -115,9 +115,9 @@ def setup_rundirs(base_dir):
     new_existing = os.listdir(full_subdirs['new'])
     if new_existing:
         for fname in new_existing:
-            logw("Found existing file in 'new' directory: %s" % fname)
+            logw("Found existing file in 'new' directory: %s", fname)
             full_subdirs['newfiles'].append(fname)
-    logi("Runtime directories:\n%s" % pprint.pformat(full_subdirs))
+    logi("Runtime directories:\n%s", pprint.pformat(full_subdirs))
 
     # check the 'cur' directory and issue a warning only if non-empty:
     cur_existing = os.listdir(full_subdirs['cur'])
@@ -149,18 +149,18 @@ def process_jobfile(fname, queues, dirs):
         logd("Dict assembled from the processed job file:")
         logd(pprint.pformat(job))
     except IOError as err:
-        logw("Error reading job description file (%s), skipping." % err)
+        logw("Error reading job description file (%s), skipping.", err)
         # there is nothing to add to the queue and the IOError indicates
         # problems accessing the file, so we simply return silently:
         return
     except (SyntaxError, ValueError) as err:
-        logw("Job file unparsable (%s), skipping / moving to 'done'." % err)
+        logw("Job file unparsable (%s), skipping / moving to 'done'.", err)
         # still nothing to add to the queue but this time we can at least
         # move the file out of the way before returning:
         move_file(fname, dirs['done'], safe=True)
         return
     if not queues.has_key(job['type']):
-        logc("ERROR: no queue existing for jobtype '%s'!" % job['type'])
+        logc("ERROR: no queue existing for jobtype '%s'!", job['type'])
         move_file(fname, dirs['done'], safe=True)
         return
     job.move_jobfile(dirs['cur'])
@@ -186,7 +186,7 @@ def move_file(fname, target, safe=False):
             if os.path.isdir(target):
                 target = os.path.join(target, fname)
             target += ".%s" % time.time()
-    logd("Moving file '%s' to '%s'." % (fname, target))
+    logd("Moving file '%s' to '%s'.", fname, target)
     shutil.move(fname, target)
 
 
@@ -271,7 +271,7 @@ class JobDescription(dict):
 
     def _parse_jobfile(self):
         """Initialize ConfigParser for a file and run parsing method."""
-        logd("Parsing jobfile '%s'..." % self.fname)
+        logd("Parsing jobfile '%s'...", self.fname)
         if not os.path.exists(self.fname):
             raise IOError("Can't find file '%s'!" % self.fname)
         if not os.access(self.fname, os.R_OK):
@@ -282,20 +282,20 @@ class JobDescription(dict):
         # levels of waiting time to avoid this race condition:
         for snooze in [0, 0.001, 0.1, 1, 5]:
             if not self._sections and snooze > 0:
-                logd("Sections are empty, re-trying in %is." % snooze)
+                logd("Sections are empty, re-trying in %is.", snooze)
             time.sleep(snooze)
             try:
                 parsed = self.jobparser.read(self.fname)
-                logd("Parsed file '%s'." % parsed)
+                logd("Parsed file '%s'.", parsed)
             except ConfigParser.MissingSectionHeaderError as err:
                 raise SyntaxError("ERROR in JobDescription: %s" % err)
             self._sections = self.jobparser.sections()
             if self._sections:
-                logd("Job parsing succeeded after %s seconds!" % snooze)
+                logd("Job parsing succeeded after %s seconds!", snooze)
                 break
         if not self._sections:
             raise SyntaxError("Can't parse '%s'" % self.fname)
-        logd("Job description sections: %s" % self._sections)
+        logd("Job description sections: %s", self._sections)
         self._parse_jobdescription()
 
     def _get_option(self, section, option):
@@ -455,7 +455,7 @@ class JobQueue(object):
         """Get the total number of jobs in all queues (incl. processing)."""
         jobsproc = self.num_jobs_processing()
         jobstotal = self.num_jobs_queued() + jobsproc
-        logd("len(JobQueue) = %s (%s processing)" % (jobstotal, jobsproc))
+        logd("len(JobQueue) = %s (%s processing)", jobstotal, jobsproc)
         return jobstotal
 
     def num_jobs_queued(self):
@@ -463,13 +463,13 @@ class JobQueue(object):
         numjobs = 0
         for queue in self.queue.values():
             numjobs += len(queue)
-        logd("num_jobs_queued = %s" % numjobs)
+        logd("num_jobs_queued = %s", numjobs)
         return numjobs
 
     def num_jobs_processing(self):
         """Get the number of currently processing jobs."""
         numjobs = len(self.processing)
-        logd("num_jobs_processing = %s" % numjobs)
+        logd("num_jobs_processing = %s", numjobs)
         return numjobs
 
     def set_statusfile(self, statusfile):
@@ -479,7 +479,7 @@ class JobQueue(object):
         ----------
         statusfile : str
         """
-        logi("Setting job queue status report file: %s" % statusfile)
+        logi("Setting job queue status report file: %s", statusfile)
         self.statusfile = statusfile
 
     def append(self, job):
@@ -493,20 +493,20 @@ class JobQueue(object):
         uid = job['uid']
         if self.jobs.has_key(uid):
             raise ValueError("Job with uid '%s' already in this queue!" % uid)
-        logi("Enqueueing job '%s' into category '%s'." % (uid, cat))
+        logi("Enqueueing job '%s' into category '%s'.", uid, cat)
         self.jobs[uid] = job  # store the job in the global dict
         if cat not in self.cats:
-            logi("Adding a new queue for '%s' to the JobQueue." % cat)
+            logi("Adding a new queue for '%s' to the JobQueue.", cat)
             self.cats.append(cat)
             self.queue[cat] = deque()
-            logd("Current queue categories: %s" % self.cats)
+            logd("Current queue categories: %s", self.cats)
         # else:
         #     # in case there are already jobs of this category, we don't touch
         #     # the scheduler / priority queue:
-        #     logd("JobQueue already contains a queue for '%s'." % cat)
+        #     logd("JobQueue already contains a queue for '%s'.", cat)
         self.queue[cat].append(uid)
         self.set_jobstatus(job, 'queued')
-        logi("Job (type '%s') added. New queue: %s" % (job['type'], self.queue))
+        logi("Job (type '%s') added. New queue: %s", job['type'], self.queue)
 
     def _is_queue_empty(self, cat):
         """Clean up if a queue of a given category is empty.
@@ -514,7 +514,7 @@ class JobQueue(object):
         Return True if the queue was empty and removed, False otherwise.
         """
         if len(self.queue[cat]) == 0:
-            logd("Queue for category '%s' now empty, removing it." % cat)
+            logd("Queue for category '%s' now empty, removing it.", cat)
             self.cats.remove(cat)  # remove it from the categories list
             del self.queue[cat]    # delete the category from the queue dict
             return True
@@ -542,12 +542,12 @@ class JobQueue(object):
         jobid = self.queue[cat].popleft()
         # put it into the list of currently processing jobs:
         self.processing.append(jobid)
-        logi("Retrieving next job: category '%s', uid '%s'." % (cat, jobid))
+        logi("Retrieving next job: category '%s', uid '%s'.", cat, jobid)
         if not self._is_queue_empty(cat):
             # push the current category to the last position in the queue:
             self.cats.rotate(-1)
-        logd("Current queue categories: %s" % self.cats)
-        logd("Current contents of all queues: %s" % self.queue)
+        logd("Current queue categories: %s", self.cats)
+        logd("Current contents of all queues: %s", self.queue)
         return self.jobs[jobid]
 
     def remove(self, uid):
@@ -565,31 +565,31 @@ class JobQueue(object):
         job : JobDescription
             The JobDescription dict of the job that was removed (on success).
         """
-        logd("Trying to remove job with uid '%s'." % uid)
+        logd("Trying to remove job with uid '%s'.", uid)
         if not self.jobs.has_key(uid):
-            logw("No job with uid '%s' was found!" % uid)
+            logw("No job with uid '%s' was found!", uid)
             return None
         job = self.jobs[uid]   # remember the job for returning it later
         cat = job.get_category()
         del self.jobs[uid]     # remove the job from the jobs dict
         if self.queue.has_key(cat) and uid in self.queue[cat]:
-            logd("Removing job '%s' from queue '%s'." % (uid, cat))
+            logd("Removing job '%s' from queue '%s'.", uid, cat)
             self.queue[cat].remove(uid)
             self._is_queue_empty(cat)
         elif uid in self.processing:
-            logd("Removing job '%s' from currently processing jobs." % uid)
+            logd("Removing job '%s' from currently processing jobs.", uid)
             self.processing.remove(uid)
         else:
-            logw("Can't find job '%s' in any of our queues!" % uid)
+            logw("Can't find job '%s' in any of our queues!", uid)
             return None
-        logd("Current jobs: %s" % self.jobs)
-        logd("Current queue categories: %s" % self.cats)
-        logd("Current contents of all queues: %s" % self.queue)
+        logd("Current jobs: %s", self.jobs)
+        logd("Current queue categories: %s", self.cats)
+        logd("Current contents of all queues: %s", self.queue)
         return job
 
     def set_jobstatus(self, job, status):
         """Update the status of a job and trigger related actions."""
-        logd("Changing status of job %s to %s" % (job['uid'], status))
+        logd("Changing status of job %s to %s", job['uid'], status)
         job['status'] = status
         if status == gc3libs.Run.State.TERMINATED:
             self.remove(job['uid'])
@@ -804,7 +804,7 @@ class JobSpooler(object):
         -------
         gc3libs.core.Engine
         """
-        logi('Creating GC3Pie engine using config file "%s".' % self.gc3conf)
+        logi('Creating GC3Pie engine using config file "%s".', self.gc3conf)
         return gc3libs.create_engine(self.gc3conf)
 
     def select_resource(self, resource):
@@ -834,7 +834,7 @@ class JobSpooler(object):
                 continue
             files = os.listdir(resourcedir)
             if files:
-                logw("Resource dir unclean: %s" % files)
+                logw("Resource dir unclean: %s", files)
                 return False
         return True
 
@@ -889,7 +889,7 @@ class JobSpooler(object):
                     continue
                 nextjob = self.queue.next_job()
                 if nextjob is not None:
-                    logd("Current joblist: %s" % self.queue.queue)
+                    logd("Current joblist: %s", self.queue.queue)
                     logi("Adding another job to the gc3pie engine.")
                     app = HucoreDeconvolveApp(nextjob, self.gc3spooldir)
                     apps.append(app)
@@ -974,8 +974,8 @@ class HucoreDeconvolveApp(gc3libs.Application):
             logc("Job '%s' terminated with unexpected EXIT CODE: %s!",
                  self.job['uid'], self.execution.exitcode)
         else:
-            logi("Job '%s' terminated successfully!" % self.job['uid'])
-        logd("The output of the application is in `%s`." % self.output_dir)
+            logi("Job '%s' terminated successfully!", self.job['uid'])
+        logd("The output of the application is in `%s`.", self.output_dir)
 
     def status_changed(self):
         """Check the if the execution state of the app has changed.
@@ -997,7 +997,7 @@ class HucorePreviewgenApp(gc3libs.Application):
     """App object for 'hucore' image preview generation jobs."""
 
     def __init__(self):
-        # logw('Instantiating a HucorePreviewgenApp:\n%s' % job)
+        # logw('Instantiating a HucorePreviewgenApp:\n%s', job)
         logw('WARNING: this is a stub, nothing is implemented yet!')
         super(HucorePreviewgenApp, self).__init__()
 
@@ -1007,6 +1007,6 @@ class HucoreEstimateSNRApp(gc3libs.Application):
     """App object for 'hucore' SNR estimation jobs."""
 
     def __init__(self):
-        # logw('Instantiating a HucoreEstimateSNRApp:\n%s' % job)
+        # logw('Instantiating a HucoreEstimateSNRApp:\n%s', job)
         logw('WARNING: this is a stub, nothing is implemented yet!')
         super(HucoreEstimateSNRApp, self).__init__()
