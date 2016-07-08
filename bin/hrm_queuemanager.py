@@ -77,7 +77,7 @@ class EventHandler(pyinotify.ProcessEvent):
 
     def process_IN_CREATE(self, event):
         """Method handling 'create' events."""
-        logw("Found new file '%s', processing..." % event.pathname)
+        logw("Found new file '%s', processing...", event.pathname)
         HRM.process_jobfile(event.pathname, self.queues, self.dirs)
 
 
@@ -139,7 +139,7 @@ def main():
     print('HRM Queue Manager started, watching spooldir "%s" '
           '(Ctrl-C to abort).' % spool_dirs['new'])
     print '*' * 80
-    logi('Excpected job description files version: %s.' % HRM.JOBFILE_VER)
+    logi('Excpected job description files version: %s.', HRM.JOBFILE_VER)
 
     try:
         # NOTE: spool() is blocking, as it contains the main spooling loop!
