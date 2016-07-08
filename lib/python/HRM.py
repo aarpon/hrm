@@ -101,13 +101,13 @@ def setup_rundirs(base_dir):
             if not os.access(cur, os.W_OK):
                 if os.path.exists(cur):
                     raise OSError("Directory '%s' exists, but it is not "
-                        "writable for us. Stopping!" % cur)
+                                  "writable for us. Stopping!" % cur)
                 try:
                     os.makedirs(cur)
                     logi("Created spool directory '%s'." % cur)
                 except OSError as err:
                     raise OSError("Error creating Queue Manager runtime "
-                        "directory '%s': %s" % (cur, err))
+                                  "directory '%s': %s" % (cur, err))
             full_subdirs[sub_dir] = cur
 
     # pick up any existing jobfiles in the 'new' spooldir
@@ -221,10 +221,10 @@ class JobDescription(dict):
         self.jobparser = ConfigParser.RawConfigParser()
         self._sections = []
         self.srctype = srctype
-        if (srctype == 'file'):
+        if srctype == 'file':
             self.fname = job
             self._parse_jobfile()
-        elif (srctype == 'string'):
+        elif srctype == 'string':
             self.fname = "string"
             # _parse_jobstring(job) needs to be implemented if required!
             raise Exception("Source type 'string' not yet implemented!")
@@ -364,7 +364,7 @@ class JobDescription(dict):
         self._parse_section_entries('hrmjobfile', mapping)
         ### sanity-check / validate the parsed options:
         # version
-        if not (self['ver'] == JOBFILE_VER):
+        if not self['ver'] == JOBFILE_VER:
             raise ValueError("Unexpected jobfile version '%s'." % self['ver'])
         # timestamp
         if self['timestamp'] == 'on_parsing':
@@ -730,9 +730,9 @@ class JobQueue(object):
 
         # now flatten the tuple-list and fill with the job details:
         joblist = [jobid
-                       for roundlist in queues
-                           for jobid in roundlist
-                               if jobid is not None]
+                   for roundlist in queues
+                   for jobid in roundlist
+                   if jobid is not None]
         return joblist
 
 
@@ -792,7 +792,8 @@ class JobSpooler(object):
             self.gc3spooldir = gc3conf.resources['localhost'].spooldir
         except AttributeError:
             raise AttributeError("Unable to parse spooldir for resource "
-                "'localhost' from gc3pie config file '%s'!" % gc3conffile)
+                                 "'localhost' from gc3pie config file '%s'!" %
+                                 gc3conffile)
         self.gc3conf = gc3conffile
 
     def setup_engine(self):
@@ -826,8 +827,8 @@ class JobSpooler(object):
         # and figure out what their status is, clean up, collect results etc.
         for resource in self.engine.get_resources():
             resourcedir = os.path.expandvars(resource.cfg_resourcedir)
-            logi("Checking resource dir for resource '%s': %s" %
-                (resource.name, resourcedir))
+            logi("Checking resource dir for resource '%s': %s",
+                 resource.name, resourcedir)
             if not os.path.exists(resourcedir):
                 continue
             files = os.listdir(resourcedir)
@@ -845,8 +846,8 @@ class JobSpooler(object):
                 os.remove(check_file)
                 self.status_pre = self.status_cur
                 self.status_cur = fname
-                logw("Received queue request: %s -> %s" %
-                    (self.status_pre, self.status_cur))
+                logw("Received queue request: %s -> %s",
+                     self.status_pre, self.status_cur)
                 # we don't process more than one request at a time, so exit:
                 return
 
@@ -911,10 +912,10 @@ class JobSpooler(object):
         """Helper to get the engine status and print a formatted log."""
         stats = self.engine.stats()
         logd("Engine: NEW:%s  SUBM:%s  RUN:%s  TERM'ing:%s  TERM'ed:%s  "
-             "UNKNWN:%s  STOP:%s  (total:%s)" %
-            (stats['NEW'], stats['SUBMITTED'], stats['RUNNING'],
+             "UNKNWN:%s  STOP:%s  (total:%s)",
+             stats['NEW'], stats['SUBMITTED'], stats['RUNNING'],
              stats['TERMINATING'], stats['TERMINATED'], stats['UNKNOWN'],
-             stats['STOPPED'], stats['total']))
+             stats['STOPPED'], stats['total'])
         return stats
 
 
@@ -930,9 +931,9 @@ class HucoreDeconvolveApp(gc3libs.Application):
     def __init__(self, job, gc3_output):
         self.job = job   # remember the job object
         uid = self.job['uid']
-        logw('Instantiating a HucoreDeconvolveApp:\n[%s]: %s --> %s' %
-            (self.job['user'], self.job['template'], self.job['infiles']))
-        logi('Job UID: %s' % uid)
+        logw('Instantiating a HucoreDeconvolveApp:\n[%s]: %s --> %s',
+             self.job['user'], self.job['template'], self.job['infiles'])
+        logi('Job UID: %s', uid)
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
         self.job['infiles'].append(self.job['template'])
@@ -942,17 +943,18 @@ class HucoreDeconvolveApp(gc3libs.Application):
         templ_on_tgt = self.job['template'].split('/')[-1]
         gc3libs.Application.__init__(
             self,
-            arguments = [self.job['exec'],
-                '-exitOnDone',
-                '-noExecLog',
-                '-checkForUpdates', 'disable',
-                '-template', templ_on_tgt],
-            inputs = self.job['infiles'],
-            outputs = ['resultdir', 'previews'],
+            arguments=[self.job['exec'],
+                       '-exitOnDone',
+                       '-noExecLog',
+                       '-checkForUpdates', 'disable',
+                       '-template', templ_on_tgt],
+            inputs=self.job['infiles'],
+            outputs=['resultdir', 'previews'],
             # collect the results in a subfolder of GC3Pie's spooldir:
-            output_dir = os.path.join(gc3_output, 'results_%s' % uid),
-            stderr = 'stdout.txt', # combine stdout & stderr
-            stdout = 'stdout.txt')
+            output_dir=os.path.join(gc3_output, 'results_%s' % uid),
+            stderr='stdout.txt', # combine stdout & stderr
+            stdout='stdout.txt'
+        )
         self.laststate = self.execution.state
 
     def terminated(self):
@@ -968,8 +970,8 @@ class HucoreDeconvolveApp(gc3libs.Application):
         # 143: hucore.bin received the HUP signal (9)
         # 165: the .hgsb file could not be parsed (file missing or with errors)
         if self.execution.exitcode != 0:
-            logc("Job '%s' terminated with unexpected EXIT CODE: %s!" %
-                (self.job['uid'], self.execution.exitcode))
+            logc("Job '%s' terminated with unexpected EXIT CODE: %s!",
+                 self.job['uid'], self.execution.exitcode)
         else:
             logi("Job '%s' terminated successfully!" % self.job['uid'])
         logd("The output of the application is in `%s`." % self.output_dir)
