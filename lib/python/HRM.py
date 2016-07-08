@@ -34,28 +34,17 @@ import ConfigParser
 import pprint
 import time
 import os
-import sys
 import shutil
 import itertools
 import json
+import logging
+
 from collections import deque
-from hashlib import sha1  # ignore this bug in pylint: disable-msg=E0611
+from hashlib import sha1  # ignore this bug in pylint: disable=E0611
 
-# GC3Pie imports
-try:
-    import gc3libs
-except ImportError:
-    print("ERROR: unable to import GC3Pie library package, please make sure")
-    print("it is installed and active, e.g. by running this command before")
-    print("starting the HRM Queue Manager:")
-    print("\n$ source /path/to/your/gc3pie_installation/bin/activate\n")
-    sys.exit(1)
-
+import gc3libs
 from gc3libs.config import Configuration
 
-from hrm_logger import set_loglevel
-
-import logging
 # we set a default loglevel and add some shortcuts for logging:
 LOGLEVEL = logging.WARN
 gc3libs.configure_logger(LOGLEVEL, "qmgc3")
