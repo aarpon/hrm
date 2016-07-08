@@ -84,14 +84,15 @@ class EventHandler(pyinotify.ProcessEvent):
 def parse_arguments():
     """Parse command line arguments."""
     argparser = argparse.ArgumentParser(description=__doc__)
-    argparser.add_argument('-s', '--spooldir', required=True,
-        help='spooling directory for jobfiles (e.g. "run/spool/")')
-    argparser.add_argument('-c', '--config', required=False, default=None,
-        help='GC3Pie config file (default: ~/.gc3/gc3pie.conf)')
-    argparser.add_argument('-r', '--resource', required=False,
-        help='GC3Pie resource name')
-    argparser.add_argument('-v', '--verbosity', dest='verbosity',
-        action='count', default=0)
+    add_arg = argparser.add_argument  # just for readability of the next lines
+    add_arg('-s', '--spooldir', required=True,
+            help='spooling directory for jobfiles (e.g. "run/spool/")')
+    add_arg('-c', '--config', required=False, default=None,
+            help='GC3Pie config file (default: ~/.gc3/gc3pie.conf)')
+    add_arg('-r', '--resource', required=False,
+            help='GC3Pie resource name')
+    add_arg('-v', '--verbosity', dest='verbosity',
+            action='count', default=0)
     try:
         return argparser.parse_args()
     except IOError as err:
@@ -131,7 +132,8 @@ def main():
     # set the mask which events to watch:
     mask = pyinotify.IN_CREATE                      # pylint: disable=E1101
     notifier = pyinotify.ThreadedNotifier(watch_mgr,
-        EventHandler(queues=jobqueues, dirs=spool_dirs))
+                                          EventHandler(queues=jobqueues,
+                                                       dirs=spool_dirs))
     notifier.start()
     wdd = watch_mgr.add_watch(spool_dirs['new'], mask, rec=False)
 
@@ -145,9 +147,9 @@ def main():
         # NOTE: spool() is blocking, as it contains the main spooling loop!
         job_spooler.spool()
     finally:
-        print('Cleaning up. Remaining jobs:')
+        print 'Cleaning up. Remaining jobs:'
         # TODO: store the current queue (see #516)
-        print(jobqueues['hucore'].queue)
+        print jobqueues['hucore'].queue
         watch_mgr.rm_watch(wdd.values())
         notifier.stop()
 
