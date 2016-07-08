@@ -60,7 +60,7 @@ class EventHandler(pyinotify.ProcessEvent):
     process_IN_CREATE()
     """
 
-    def my_init(self, queues, dirs):                # pylint: disable-msg=W0221
+    def my_init(self, queues, dirs):                # pylint: disable=W0221
         """Initialize the inotify event handler.
 
         Parameters
@@ -129,7 +129,7 @@ def main():
 
     watch_mgr = pyinotify.WatchManager()
     # set the mask which events to watch:
-    mask = pyinotify.IN_CREATE                      # pylint: disable-msg=E1101
+    mask = pyinotify.IN_CREATE                      # pylint: disable=E1101
     notifier = pyinotify.ThreadedNotifier(watch_mgr,
         EventHandler(queues=jobqueues, dirs=spool_dirs))
     notifier.start()
