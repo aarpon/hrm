@@ -323,6 +323,38 @@ class JobDescription(dict):
                              "options, jobfile is invalid: %s" %
                              (section, self.fname, remaining))
 
+    def _parse_section_entries(self, section, options_mapping):
+        """Helper function to read a given list of options from a section.
+
+        Parameters
+        ----------
+        section : str
+            The name of the section to parse.
+        options_mapping : list of tuples
+            A list of tuples containing the mapping from the option names in
+            the config file to the key names in the JobDescription object, e.g.
+
+            mapping = [
+                ['version', 'ver'],
+                ['username', 'user'],
+                ['useremail', 'email'],
+                ['timestamp', 'timestamp'],
+                ['jobtype', 'type']
+            ]
+        """
+        if not self.jobparser.has_section(section):
+            raise ValueError("Error parsing job from %s." % self.fname)
+        for cfg_option, job_key in options_mapping:
+            try:
+                self[job_key] = self._get_option(section, cfg_option)
+            except ConfigParser.NoOptionError:
+                raise ValueError("Can't find %s in %s." %
+                                 (cfg_option, self.fname))
+                # raise ValueError("Jobfile %s invalid, '%s' is missing!" %
+                #                  (self.fname, cfg_option))
+        ### by now the section should be fully parsed and therefore empty:
+        self._check_for_remaining_options('hrmjobfile')
+
     def _parse_jobdescription(self):
         """Parse details for an HRM job and check for sanity.
 
@@ -331,50 +363,34 @@ class JobDescription(dict):
         processing task. Raises Exceptions in case something unexpected is
         found in the given file.
         """
-        # TODO: group code into parsing and sanity-checking
         # FIXME: currently only deconvolution jobs are supported, until hucore
         # will be able to do the other things like SNR estimation and
         # previewgen using templates as well!
-        # parse generic information, version, user etc.
-        if not self.jobparser.has_section('hrmjobfile'):
-            raise ValueError("Error parsing job from %s." % self.fname)
+        ### prepare the parser-mapping for the generic 'hrmjobfile' section:
+        mapping = [
+            ['version', 'ver'],
+            ['username', 'user'],
+            ['useremail', 'email'],
+            ['timestamp', 'timestamp'],
+            ['jobtype', 'type']
+        ]
+        ### now parse the section:
+        self._parse_section_entries('hrmjobfile', mapping)
+        ### sanity-check / validate the parsed options:
         # version
-        try:
-            self['ver'] = self._get_option('hrmjobfile', 'version')
-        except ConfigParser.NoOptionError:
-            raise ValueError("Can't find version in %s." % self.fname)
         if not (self['ver'] == JOBFILE_VER):
             raise ValueError("Unexpected jobfile version '%s'." % self['ver'])
-        # username
-        try:
-            self['user'] = self._get_option('hrmjobfile', 'username')
-        except ConfigParser.NoOptionError:
-            raise ValueError("Can't find username in %s." % self.fname)
-        # useremail
-        try:
-            self['email'] = self._get_option('hrmjobfile', 'useremail')
-        except ConfigParser.NoOptionError:
-            raise ValueError("Can't find email address in %s." % self.fname)
         # timestamp
-        try:
-            timestamp = self._get_option('hrmjobfile', 'timestamp')
+        if self['timestamp'] == 'on_parsing':
             # the keyword "on_parsing" requires us to fill in the value:
-            if timestamp == 'on_parsing':
-                self['timestamp'] = time.time()
-            elif isinstance(timestamp, float):
-                self['timestamp'] = timestamp
-            else:
-                raise ValueError("Invalid timestamp format: %s." % timestamp)
-        except ConfigParser.NoOptionError:
-            raise ValueError("Can't find timestamp in %s." % self.fname)
-        # type
-        try:
-            self['type'] = self._get_option('hrmjobfile', 'jobtype')
-        except ConfigParser.NoOptionError:
-            raise ValueError("Can't find jobtype in %s." % self.fname)
-        ### by now the section should be fully parsed and therefore empty:
-        self._check_for_remaining_options('hrmjobfile')
-        # from here on a jobtype specific parsing must be done:
+            self['timestamp'] = time.time()
+        else:
+            # otherwise we need to convert to float, or raise an error:
+            try:
+                self['timestamp'] = float(self['timestamp'])
+            except ValueError:
+                raise ValueError("Invalid timestamp: %s." % self['timestamp'])
+        ### now call the jobtype-specific parser method(s):
         if self['type'] == 'hucore':
             self._parse_job_hucore()
         else:
@@ -391,24 +407,14 @@ class JobDescription(dict):
         void
             All information is added to the "self" dict.
         """
-        # the "hucore" section:
-        ## "tasktype"
-        try:
-            self['tasktype'] = self._get_option('hucore', 'tasktype')
-        except ConfigParser.NoOptionError:
-            raise ValueError("Can't find tasktype in %s." % self.fname)
-        ## "exec"
-        try:
-            self['exec'] = self._get_option('hucore', 'executable')
-        except ConfigParser.NoOptionError:
-            raise ValueError("Can't find executable in %s." % self.fname)
-        ## "template"
-        try:
-            self['template'] = self._get_option('hucore', 'template')
-        except ConfigParser.NoOptionError:
-            raise ValueError("Can't find template in %s." % self.fname)
-        ### by now the section should be fully parsed and therefore empty:
-        self._check_for_remaining_options('hucore')
+        ### prepare the parser-mapping for the generic 'hrmjobfile' section:
+        mapping = [
+            ['tasktype', 'tasktype'],
+            ['executable', 'exec'],
+            ['template', 'template']
+        ]
+        ### now parse the section:
+        self._parse_section_entries('hucore', mapping)
         # and the input file(s) section:
         # TODO: can we check if this section contains nonsense values?
         if not 'inputfiles' in self._sections:

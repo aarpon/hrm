@@ -61,11 +61,11 @@ test-005__jobfile-parser.py
 
 ----------------- parsing jobfiles/invalid/v7_broken_section_hrmjobfile.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hrmjobfile.cfg':
-   Can't find email address in jobfiles/invalid/v7_broken_section_hrmjobfile.cfg.
+   Can't find useremail in jobfiles/invalid/v7_broken_section_hrmjobfile.cfg.
 
 ----------------- parsing jobfiles/invalid/v2_broken_section-content_inputfiles.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v2_broken_section-content_inputfiles.cfg':
-   Unexpected jobfile version '2'.
+   Can't find useremail in jobfiles/invalid/v2_broken_section-content_inputfiles.cfg.
 
 ----------------- parsing jobfiles/invalid/v7_broken_section_hucore.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hucore.cfg':
@@ -77,6 +77,6 @@ test-005__jobfile-parser.py
 
 ----------------- parsing jobfiles/invalid/v7_broken_timestamp.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_timestamp.cfg':
-   Invalid timestamp format: on_parse.
+   Invalid timestamp: on_parse.
 
 ************************* TEST FINISHED! *************************
