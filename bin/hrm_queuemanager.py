@@ -37,15 +37,7 @@ sys.path.insert(0, LPY)
 
 # pylint: disable=wrong-import-position
 import HRM
-
-# we set a default loglevel and add some shortcuts for logging:
-LOGLEVEL = logging.WARN
-gc3libs.configure_logger(LOGLEVEL, "qmgc3")
-logw = gc3libs.log.warn
-logi = gc3libs.log.info
-logd = gc3libs.log.debug
-loge = gc3libs.log.error
-logc = gc3libs.log.critical
+from HRM.logger import *
 
 
 class EventHandler(pyinotify.ProcessEvent):
