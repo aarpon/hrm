@@ -12,10 +12,10 @@ SNREstimateApp()
     The gc3libs applications.
 """
 
-from ..logger import *
-
 import os
 import gc3libs
+
+from ..logger import *
 
 
 class DeconApp(gc3libs.Application):
@@ -34,8 +34,7 @@ class DeconApp(gc3libs.Application):
              self.__class__.__name__,
              self.job['user'],
              self.job['template'],
-             self.job['infiles']
-        )
+             self.job['infiles'])
         logi('Job UID: %s', uid)
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:

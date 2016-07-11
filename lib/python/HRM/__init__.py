@@ -38,8 +38,8 @@ from hashlib import sha1  # ignore this bug in pylint: disable=E0611
 import gc3libs
 from gc3libs.config import Configuration
 
-from apps import hucore
-from logger import *
+from HRM.apps import hucore
+from HRM.logger import *
 
 
 # expected version for job description files:
