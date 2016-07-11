@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Logging helper module.
+"""
 
 import logging
 import gc3libs
