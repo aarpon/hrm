@@ -853,18 +853,18 @@ class JobSpooler(object):
 
     def _spool(self):
         """Spooler function dispatching jobs from the queues. BLOCKING!"""
-        apps = []
+        applist = []
         while True:
             self.check_status_request()
             if self.status_cur == 'run':
                 self.engine.progress()
-                for i, app in enumerate(apps):
+                for i, app in enumerate(applist):
                     new_state = app.status_changed()
                     if new_state is not None:
                         self.queue.set_jobstatus(app.job, new_state)
                     if new_state == gc3libs.Run.State.TERMINATED:
                         app.job.move_jobfile(self.dirs['done'])
-                        apps.pop(i)
+                        applist.pop(i)
                 stats = self._engine_status()
                 # NOTE: in theory, we could simply add all apps to the engine
                 # and let gc3 decide when to dispatch the next one, however
@@ -880,7 +880,7 @@ class JobSpooler(object):
                     logd("Current joblist: %s", self.queue.queue)
                     logi("Adding another job to the gc3pie engine.")
                     app = HucoreDeconvolveApp(nextjob, self.gc3spooldir)
-                    apps.append(app)
+                    applist.append(app)
                     self.engine.add(app)
                     # as a new job is dispatched now, we also print out the
                     # human readable queue status:
