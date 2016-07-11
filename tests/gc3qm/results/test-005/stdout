@@ -2,6 +2,23 @@ test-005__jobfile-parser.py
 
 >>>>>> Testing CORRECT job description files:
 
+----------------- parsing jobfiles/decon_it-3_user01.cfg -----------------
+ - Parsing worked without errors on 'jobfiles/decon_it-3_user01.cfg'.
+{'email': 'user01@mail.xy',
+ 'exec': '/usr/local/bin/hucore',
+ 'infiles': ['tests/sample_images/faba128.h5'],
+ 'pid': 'N/A',
+ 'progress': 'N/A',
+ 'server': 'N/A',
+ 'start': 'N/A',
+ 'status': 'N/A',
+ 'tasktype': 'decon',
+ 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
+ 'timestamp': 1468220723.16896,
+ 'type': 'hucore',
+ 'uid': 'e8c44b23c7dca5c273e9ab96022bea6dce06c193',
+ 'user': 'user01',
+ 'ver': '7'}
 ----------------- parsing jobfiles/decon_it-3_user01_fixed-timestamp.cfg -----------------
  - Parsing worked without errors on 'jobfiles/decon_it-3_user01_fixed-timestamp.cfg'.
 {'email': 'user01@mail.xy',
@@ -19,9 +36,9 @@ test-005__jobfile-parser.py
  'uid': 'b5c328bb5406328f0a95a9516bef988b0ca99966',
  'user': 'user01',
  'ver': '7'}
------------------ parsing jobfiles/decon_it-3_user01.cfg -----------------
- - Parsing worked without errors on 'jobfiles/decon_it-3_user01.cfg'.
-{'email': 'user01@mail.xy',
+----------------- parsing jobfiles/decon_it-3_user02.cfg -----------------
+ - Parsing worked without errors on 'jobfiles/decon_it-3_user02.cfg'.
+{'email': 'user02@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
  'pid': 'N/A',
@@ -31,10 +48,10 @@ test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1468175227.561582,
+ 'timestamp': 1468220723.170079,
  'type': 'hucore',
- 'uid': 'dc695a69a213d26ff8ccf72bced59de3bc954043',
- 'user': 'user01',
+ 'uid': '149fb8136b624e235aadcc81f347799f6d7daf92',
+ 'user': 'user02',
  'ver': '7'}
 ----------------- parsing jobfiles/decon_it-999_user01.cfg -----------------
  - Parsing worked without errors on 'jobfiles/decon_it-999_user01.cfg'.
@@ -48,49 +65,32 @@ test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb',
- 'timestamp': 1468175227.562472,
+ 'timestamp': 1468220723.170577,
  'type': 'hucore',
- 'uid': 'c49224a46e6e75d3b8f3c420daed730808d6b996',
+ 'uid': '3d33ce8ff85e91a2c04684d1983e899b6dbe8a84',
  'user': 'user01',
- 'ver': '7'}
------------------ parsing jobfiles/decon_it-3_user02.cfg -----------------
- - Parsing worked without errors on 'jobfiles/decon_it-3_user02.cfg'.
-{'email': 'user02@mail.xy',
- 'exec': '/usr/local/bin/hucore',
- 'infiles': ['tests/sample_images/faba128.h5'],
- 'pid': 'N/A',
- 'progress': 'N/A',
- 'server': 'N/A',
- 'start': 'N/A',
- 'status': 'N/A',
- 'tasktype': 'decon',
- 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1468175227.563272,
- 'type': 'hucore',
- 'uid': '92a35a282107160240b2bde080f1b075da17a8ae',
- 'user': 'user02',
  'ver': '7'}
 
 >>>>>> Testing INVALID job description files:
------------------ parsing jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg -----------------
- - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg':
-   Section 'hrmjobfile' in file 'jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg' contains unknown options, jobfile is invalid: [('invalid_option', 'some-value')]
-
------------------ parsing jobfiles/invalid/v7_broken_section_hrmjobfile.cfg -----------------
- - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hrmjobfile.cfg':
-   Can't find useremail in jobfiles/invalid/v7_broken_section_hrmjobfile.cfg.
+----------------- parsing jobfiles/invalid/v1_broken_section-title.cfg -----------------
+ - Got the excpected ValueError from 'jobfiles/invalid/v1_broken_section-title.cfg':
+   Error parsing job from jobfiles/invalid/v1_broken_section-title.cfg.
 
 ----------------- parsing jobfiles/invalid/v2_broken_section-content_inputfiles.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v2_broken_section-content_inputfiles.cfg':
    Can't find useremail in jobfiles/invalid/v2_broken_section-content_inputfiles.cfg.
 
+----------------- parsing jobfiles/invalid/v7_broken_section_hrmjobfile.cfg -----------------
+ - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hrmjobfile.cfg':
+   Can't find useremail in jobfiles/invalid/v7_broken_section_hrmjobfile.cfg.
+
 ----------------- parsing jobfiles/invalid/v7_broken_section_hucore.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hucore.cfg':
    Can't find tasktype in jobfiles/invalid/v7_broken_section_hucore.cfg.
 
------------------ parsing jobfiles/invalid/v1_broken_section-title.cfg -----------------
- - Got the excpected ValueError from 'jobfiles/invalid/v1_broken_section-title.cfg':
-   Error parsing job from jobfiles/invalid/v1_broken_section-title.cfg.
+----------------- parsing jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg -----------------
+ - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg':
+   Section 'hrmjobfile' in file 'jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg' contains unknown options, jobfile is invalid: [('invalid_option', 'some-value')]
 
 ----------------- parsing jobfiles/invalid/v7_broken_timestamp.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_timestamp.cfg':

@@ -22,7 +22,9 @@ reload(HRM)
 
 
 print '\n>>>>>> Testing CORRECT job description files:\n'
-for jobfile in glob.glob('jobfiles/*.cfg'):
+jobfile_list = glob.glob('jobfiles/*.cfg')
+jobfile_list.sort()
+for jobfile in jobfile_list:
     print "----------------- parsing %s -----------------" % jobfile
     job = HRM.JobDescription(jobfile, 'file')
     print " - Parsing worked without errors on '%s'." % jobfile
@@ -30,7 +32,9 @@ for jobfile in glob.glob('jobfiles/*.cfg'):
 
 
 print '\n>>>>>> Testing INVALID job description files:'
-for jobfile in glob.glob('jobfiles/invalid/*.cfg'):
+jobfile_list = glob.glob('jobfiles/invalid/*.cfg')
+jobfile_list.sort()
+for jobfile in jobfile_list:
     print "----------------- parsing %s -----------------" % jobfile
     try:
         job = HRM.JobDescription(jobfile, 'file')
