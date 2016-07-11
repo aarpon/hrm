@@ -12,6 +12,7 @@ HucoreEstimateSNRApp()
     The gc3libs applications.
 """
 
+from .logger import *
 import gc3libs
 
 class HucoreDeconvolveApp(gc3libs.Application):

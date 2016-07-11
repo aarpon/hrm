@@ -37,7 +37,6 @@ sys.path.insert(0, LPY)
 
 # pylint: disable=wrong-import-position
 import HRM
-from hrm_logger import set_loglevel
 
 # we set a default loglevel and add some shortcuts for logging:
 LOGLEVEL = logging.WARN
@@ -106,7 +105,6 @@ def main():
 
     # set the loglevel as requested on the commandline
     loglevel = logging.WARN - (args.verbosity * 10)
-    set_loglevel(loglevel)
     gc3libs.configure_logger(loglevel, "qmgc3")
 
     spool_dirs = HRM.setup_rundirs(args.spooldir)

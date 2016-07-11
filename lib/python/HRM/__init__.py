@@ -31,7 +31,6 @@ import os
 import shutil
 import itertools
 import json
-import logging
 
 from collections import deque
 from hashlib import sha1  # ignore this bug in pylint: disable=E0611
@@ -41,16 +40,9 @@ from gc3libs.config import Configuration
 
 from HRM.apps import HucoreDeconvolveApp, HucorePreviewgenApp, HucoreEstimateSNRApp
 
-# we set a default loglevel and add some shortcuts for logging:
-LOGLEVEL = logging.WARN
-gc3libs.configure_logger(LOGLEVEL, "qmgc3")
-logw = gc3libs.log.warn
-logi = gc3libs.log.info
-logd = gc3libs.log.debug
-loge = gc3libs.log.error
-logc = gc3libs.log.critical
 
 __all__ = ['JobDescription', 'JobQueue']
+from .logger import *
 
 
 # expected version for job description files:
