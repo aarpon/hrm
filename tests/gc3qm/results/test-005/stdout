@@ -2,6 +2,23 @@ test-005__jobfile-parser.py
 
 >>>>>> Testing CORRECT job description files:
 
+----------------- parsing jobfiles/decon_it-3_user01_fixed-timestamp.cfg -----------------
+ - Parsing worked without errors on 'jobfiles/decon_it-3_user01_fixed-timestamp.cfg'.
+{'email': 'user01@mail.xy',
+ 'exec': '/usr/local/bin/hucore',
+ 'infiles': ['tests/sample_images/faba128.h5'],
+ 'pid': 'N/A',
+ 'progress': 'N/A',
+ 'server': 'N/A',
+ 'start': 'N/A',
+ 'status': 'N/A',
+ 'tasktype': 'decon',
+ 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
+ 'timestamp': 1467979338.137427,
+ 'type': 'hucore',
+ 'uid': 'b5c328bb5406328f0a95a9516bef988b0ca99966',
+ 'user': 'user01',
+ 'ver': '7'}
 ----------------- parsing jobfiles/decon_it-3_user01.cfg -----------------
  - Parsing worked without errors on 'jobfiles/decon_it-3_user01.cfg'.
 {'email': 'user01@mail.xy',
@@ -14,9 +31,9 @@ test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1467932268.761575,
+ 'timestamp': 1468175227.561582,
  'type': 'hucore',
- 'uid': '5ea99cc41c3d3d1434dfdc67e2aaca09d95ab82b',
+ 'uid': 'dc695a69a213d26ff8ccf72bced59de3bc954043',
  'user': 'user01',
  'ver': '7'}
 ----------------- parsing jobfiles/decon_it-999_user01.cfg -----------------
@@ -31,9 +48,9 @@ test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb',
- 'timestamp': 1467932268.762146,
+ 'timestamp': 1468175227.562472,
  'type': 'hucore',
- 'uid': '7c712330ecac5cdfd845feeac6af4a6b2c26a443',
+ 'uid': 'c49224a46e6e75d3b8f3c420daed730808d6b996',
  'user': 'user01',
  'ver': '7'}
 ----------------- parsing jobfiles/decon_it-3_user02.cfg -----------------
@@ -48,9 +65,9 @@ test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1467932268.762615,
+ 'timestamp': 1468175227.563272,
  'type': 'hucore',
- 'uid': '4349d9150fc2039fad34e8bf5f130e0104eb7b29',
+ 'uid': '92a35a282107160240b2bde080f1b075da17a8ae',
  'user': 'user02',
  'ver': '7'}
 
