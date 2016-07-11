@@ -6,18 +6,19 @@ Support for various HRM related tasks, GC3lib application classes.
 Classes
 -------
 
-HucoreDeconvolveApp()
-HucorePreviewgenApp()
-HucoreEstimateSNRApp()
+DeconApp()
+PreviewApp()
+SNREstimateApp()
     The gc3libs applications.
 """
 
-from .logger import *
+from ..logger import *
 
 import os
 import gc3libs
 
-class HucoreDeconvolveApp(gc3libs.Application):
+
+class DeconApp(gc3libs.Application):
 
     """App object for 'hucore' deconvolution jobs.
 
@@ -29,8 +30,12 @@ class HucoreDeconvolveApp(gc3libs.Application):
     def __init__(self, job, gc3_output):
         self.job = job   # remember the job object
         uid = self.job['uid']
-        logw('Instantiating a HucoreDeconvolveApp:\n[%s]: %s --> %s',
-             self.job['user'], self.job['template'], self.job['infiles'])
+        logw('Instantiating a %s:\n[%s]: %s --> %s',
+             self.__class__.__name__,
+             self.job['user'],
+             self.job['template'],
+             self.job['infiles']
+        )
         logi('Job UID: %s', uid)
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
@@ -89,21 +94,21 @@ class HucoreDeconvolveApp(gc3libs.Application):
             return None
 
 
-class HucorePreviewgenApp(gc3libs.Application):
+class PreviewApp(gc3libs.Application):
 
     """App object for 'hucore' image preview generation jobs."""
 
     def __init__(self):
-        # logw('Instantiating a HucorePreviewgenApp:\n%s', job)
+        # logw('Instantiating a PreviewApp:\n%s', job)
         logw('WARNING: this is a stub, nothing is implemented yet!')
-        super(HucorePreviewgenApp, self).__init__()
+        super(PreviewApp, self).__init__()
 
 
-class HucoreEstimateSNRApp(gc3libs.Application):
+class SNREstimateApp(gc3libs.Application):
 
     """App object for 'hucore' SNR estimation jobs."""
 
     def __init__(self):
-        # logw('Instantiating a HucoreEstimateSNRApp:\n%s', job)
+        # logw('Instantiating a SNREstimateApp:\n%s', job)
         logw('WARNING: this is a stub, nothing is implemented yet!')
-        super(HucoreEstimateSNRApp, self).__init__()
+        super(SNREstimateApp, self).__init__()

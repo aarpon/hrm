@@ -38,15 +38,13 @@ from hashlib import sha1  # ignore this bug in pylint: disable=E0611
 import gc3libs
 from gc3libs.config import Configuration
 
-from HRM.apps import HucoreDeconvolveApp, HucorePreviewgenApp, HucoreEstimateSNRApp
-
-
-__all__ = ['JobDescription', 'JobQueue']
-from .logger import *
+from apps import hucore
+from logger import *
 
 
 # expected version for job description files:
 JOBFILE_VER = '7'
+
 
 def setup_rundirs(base_dir):
     """Check if all runtime directories exist or try to create them otherwise.
@@ -879,7 +877,7 @@ class JobSpooler(object):
                 if nextjob is not None:
                     logd("Current joblist: %s", self.queue.queue)
                     logi("Adding another job to the gc3pie engine.")
-                    app = HucoreDeconvolveApp(nextjob, self.gc3spooldir)
+                    app = hucore.DeconApp(nextjob, self.gc3spooldir)
                     applist.append(app)
                     self.engine.add(app)
                     # as a new job is dispatched now, we also print out the
