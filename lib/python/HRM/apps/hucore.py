@@ -40,6 +40,10 @@ class DeconApp(gc3libs.Application):
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
         self.job['infiles'].append(self.job['template'])
+        # currently the output_dir is *NOT YET* part of the job config, so we
+        # remember it here - once this is part of the job, discard this:
+        self.output_dir = os.path.join(gc3_output, 'results_%s' % uid)
+        logi('Results will be placed in "%s".', self.output_dir)
         # for the execution on the remote host, we need to strip all paths from
         # this string as the template file will end up in the temporary
         # processing directory together with all the images:
@@ -54,7 +58,7 @@ class DeconApp(gc3libs.Application):
             inputs=self.job['infiles'],
             outputs=['resultdir', 'previews'],
             # collect the results in a subfolder of GC3Pie's spooldir:
-            output_dir=os.path.join(gc3_output, 'results_%s' % uid),
+            output_dir=self.output_dir,
             stderr='stdout.txt', # combine stdout & stderr
             stdout='stdout.txt'
         )
