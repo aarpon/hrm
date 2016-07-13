@@ -28,33 +28,37 @@ gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['UID_
 gc3.gc3libs: WARNING: Received queue request: pause -> run
 gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'UID_STRIPPED'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
-gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
+gc3.gc3libs: WARNING: Instantiating a DeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: UID_STRIPPED
+gc3.gc3libs: INFO: Successfully submitted DeconApp@APPID_STRIPPED to: localhost
+gc3.gc3libs: INFO: Job status changed to 'queued'.
+gc3.gc3libs: WARNING: Received queue request: run -> refresh
 gc3.gc3libs: WARNING: Received queue request: run -> run
-gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@APPID_STRIPPED to: localhost
-gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
 gc3.gc3libs: INFO: Job 'UID_STRIPPED' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_UID_STRIPPED`.
 gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
 gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'UID_STRIPPED'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
-gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
+gc3.gc3libs: WARNING: Instantiating a DeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: UID_STRIPPED
-gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@APPID_STRIPPED to: localhost
+gc3.gc3libs: INFO: Successfully submitted DeconApp@APPID_STRIPPED to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
 gc3.gc3libs: INFO: Job 'UID_STRIPPED' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_UID_STRIPPED`.
 gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
 gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'UID_STRIPPED'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
-gc3.gc3libs: WARNING: Instantiating a HucoreDeconvolveApp:
+gc3.gc3libs: WARNING: Instantiating a DeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: UID_STRIPPED
-gc3.gc3libs: INFO: Successfully submitted HucoreDeconvolveApp@APPID_STRIPPED to: localhost
+gc3.gc3libs: INFO: Successfully submitted DeconApp@APPID_STRIPPED to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
 gc3.gc3libs: INFO: Job 'UID_STRIPPED' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_UID_STRIPPED`.
 gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
 gc3.gc3libs: WARNING: Received queue request: run -> shutdown

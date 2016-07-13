@@ -30,7 +30,9 @@ for jobfile in tests/gc3qm/inputs/$SHORT/*.cfg ; do
     sleep .1
 done
 
-sleep .5
+sleep 1
+qm_request refresh
+sleep 1
 
 qm_request run
 sleep 1
