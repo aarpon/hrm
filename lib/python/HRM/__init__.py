@@ -493,6 +493,7 @@ class JobQueue(object):
         self.queue[cat].append(uid)
         self.set_jobstatus(job, 'queued')
         logi("Job (type '%s') added. New queue: %s", job['type'], self.queue)
+        self.queue_details_hr()
 
     def _is_queue_empty(self, cat):
         """Clean up if a queue of a given category is empty.
