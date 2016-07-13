@@ -635,6 +635,11 @@ class JobQueue(object):
 
     def queue_details_hr(self):
         """Generate a human readable list of the queue details."""
+        # FIXME: don't print the queue status, return the text instead!
+        #        this produce annoying amounts of output in a production
+        #        environment, therefore the generated text should be returned,
+        #        so it can be handled by the logging methods (e.g. only printed
+        #        when running in debug mode)
         msg = list()
         msg.append("%s queue status %s" % ("=" * 25, "=" * 25))
         msg.append("--- jobs retrieved for processing")
@@ -882,12 +887,11 @@ class JobSpooler(object):
                     self.engine.add(app)
                     # as a new job is dispatched now, we also print out the
                     # human readable queue status:
-                    print self.queue.queue_details_hr()
+                    self.queue.queue_details_hr()
             elif self.status_cur == 'shutdown':
                 return True
             elif self.status_cur == 'refresh':
-                # self.queue.queue_details_hr()
-                print self.queue.queue_details_hr()
+                self.queue.queue_details_hr()
                 logd(self.queue.queue_details_json())
                 self.status_cur = self.status_pre
             elif self.status_cur == 'pause':
