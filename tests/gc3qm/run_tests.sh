@@ -29,7 +29,8 @@ for TEST in $RUN_TESTS ; do
     STDOUT="$RES/stdout"
     STDERR="$RES/stderr"
     EXITVAL="$RES/exitval"
-    bash $TEST >$STDOUT 2>$STDERR
+    # use 'stdbuf' to disable output buffering, so output order is consistent:
+    stdbuf --input=0 --output=0 --error=0 bash $TEST >$STDOUT 2>$STDERR
     RET=$?
     echo $RET > $EXITVAL
     # generate the "stripped" version of stdout / stderr (without UID hashes):

@@ -3,7 +3,10 @@
 # function definitions to be included in various test scripts.
 
 QM_PY="bin/hrm_queuemanager.py"
-QM_EXEC="python $QM_PY"
+# the "-u" flag requests Python to run with unbuffered stdin/stdout, which is
+# required for testing to ensure the messages are always printed in the very
+# order in which the program(s) were sending them:
+QM_EXEC="python -u $QM_PY"
 QM_SPOOL="run"  # TODO: read this from hrm.conf once it's there!
 QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf -v"
 
