@@ -919,7 +919,7 @@ class JobSpooler(object):
             elif self.status == 'pause':
                 # no need to do anything, just sleep and check requests again:
                 pass
-            time.sleep(1)
+            time.sleep(0.5)
 
     def _engine_status(self):
         """Helper to get the engine status and print a formatted log."""
