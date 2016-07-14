@@ -11,6 +11,7 @@ gc3.gc3libs: INFO: Computational resource 'localhost' initialized successfully.
 gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
 gc3.gc3libs: INFO: Initialized the event handler for inotify.
 gc3.gc3libs: INFO: Excpected job description files version: 7.
-gc3.gc3libs: WARNING: Received queue request: run -> refresh
-gc3.gc3libs: WARNING: Received queue request: run -> pause
-gc3.gc3libs: WARNING: Received queue request: pause -> shutdown
+gc3.gc3libs: INFO: Received spooler queue status refresh request.
+gc3.gc3libs: WARNING: Received spooler status change request: run -> pause
+gc3.gc3libs: WARNING: Received spooler status change request: pause -> run
+gc3.gc3libs: WARNING: Received spooler status change request: run -> shutdown

@@ -4,8 +4,6 @@ python -u bin/hrm_queuemanager.py --spooldir run --config config/samples/gc3pie_
 HRM Queue Manager started, watching spooldir "run/spool/new" (Ctrl-C to abort).
 ********************************************************************************
 Requesting QM status change to: refresh
-QM process started.
-Requesting QM status change to: pause
 ========================= queue status =========================
 --- jobs retrieved for processing
 None.
@@ -13,13 +11,15 @@ None.
 --- jobs queued (not yet retrieved)
 None.
 ========================= queue status =========================
+QM process started.
+Requesting QM status change to: pause
 'tests/gc3qm/inputs/test-003/job_1.cfg' -> 'run/spool/new/job_1.cfg'
 ========================= queue status =========================
 --- jobs retrieved for processing
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 8fcb019aef9e071bf302d0d4eb0dfff01d3b0072 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 74767318ff35b3c9dbaa9a863e6d9f52fc848894 - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 'tests/gc3qm/inputs/test-003/job_2.cfg' -> 'run/spool/new/job_2.cfg'
 ========================= queue status =========================
@@ -27,8 +27,8 @@ user01 (user01@mail.xy): 8fcb019aef9e071bf302d0d4eb0dfff01d3b0072 - ['tests/samp
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 8fcb019aef9e071bf302d0d4eb0dfff01d3b0072 - ['tests/sample_images/faba128.h5'] [queued]
-user01 (user01@mail.xy): 7f5c81f307b4e0db6a03199e4ec4befc343c8f08 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 74767318ff35b3c9dbaa9a863e6d9f52fc848894 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 1b61d815b8ecf65340854c6b7ad5c13b29b0ceef - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 'tests/gc3qm/inputs/test-003/job_3.cfg' -> 'run/spool/new/job_3.cfg'
 ========================= queue status =========================
@@ -36,37 +36,37 @@ user01 (user01@mail.xy): 7f5c81f307b4e0db6a03199e4ec4befc343c8f08 - ['tests/samp
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 8fcb019aef9e071bf302d0d4eb0dfff01d3b0072 - ['tests/sample_images/faba128.h5'] [queued]
-user01 (user01@mail.xy): 7f5c81f307b4e0db6a03199e4ec4befc343c8f08 - ['tests/sample_images/faba128.h5'] [queued]
-user01 (user01@mail.xy): a2c4cb7195d68d8a18222d08fa33969884b0a5ce - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 74767318ff35b3c9dbaa9a863e6d9f52fc848894 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 1b61d815b8ecf65340854c6b7ad5c13b29b0ceef - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 55365143ee8cead097da2d89d1a910436d46c999 - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 Requesting QM status change to: run
 ========================= queue status =========================
 --- jobs retrieved for processing
-user01 (user01@mail.xy): 8fcb019aef9e071bf302d0d4eb0dfff01d3b0072 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
+user01 (user01@mail.xy): 74767318ff35b3c9dbaa9a863e6d9f52fc848894 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 7f5c81f307b4e0db6a03199e4ec4befc343c8f08 - ['tests/sample_images/faba128.h5'] [queued]
-user01 (user01@mail.xy): a2c4cb7195d68d8a18222d08fa33969884b0a5ce - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 1b61d815b8ecf65340854c6b7ad5c13b29b0ceef - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 55365143ee8cead097da2d89d1a910436d46c999 - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 ========================= queue status =========================
 --- jobs retrieved for processing
-user01 (user01@mail.xy): 7f5c81f307b4e0db6a03199e4ec4befc343c8f08 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
+user01 (user01@mail.xy): 1b61d815b8ecf65340854c6b7ad5c13b29b0ceef - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): a2c4cb7195d68d8a18222d08fa33969884b0a5ce - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 55365143ee8cead097da2d89d1a910436d46c999 - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 ========================= queue status =========================
 --- jobs retrieved for processing
-user01 (user01@mail.xy): a2c4cb7195d68d8a18222d08fa33969884b0a5ce - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
+user01 (user01@mail.xy): 55365143ee8cead097da2d89d1a910436d46c999 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
 None.
 ========================= queue status =========================
 Queue is empty, trying to shut down the QM!
 Requesting QM status change to: shutdown
+QM is running...
 Cleaning up. Remaining jobs:
 {}
-QM is running...
 QM process terminated.
 ************************* TEST FINISHED! *************************

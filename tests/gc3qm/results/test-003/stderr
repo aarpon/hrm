@@ -11,53 +11,53 @@ gc3.gc3libs: INFO: Computational resource 'localhost' initialized successfully.
 gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
 gc3.gc3libs: INFO: Initialized the event handler for inotify.
 gc3.gc3libs: INFO: Excpected job description files version: 7.
-gc3.gc3libs: WARNING: Received queue request: run -> refresh
+gc3.gc3libs: INFO: Received spooler queue status refresh request.
+gc3.gc3libs: WARNING: Received spooler status change request: run -> pause
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_1.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
-gc3.gc3libs: INFO: Enqueueing job '8fcb019aef9e071bf302d0d4eb0dfff01d3b0072' into category 'user01'.
+gc3.gc3libs: INFO: Enqueueing job '74767318ff35b3c9dbaa9a863e6d9f52fc848894' into category 'user01'.
 gc3.gc3libs: INFO: Adding a new queue for 'user01' to the JobQueue.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['8fcb019aef9e071bf302d0d4eb0dfff01d3b0072'])}
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['74767318ff35b3c9dbaa9a863e6d9f52fc848894'])}
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_2.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
-gc3.gc3libs: INFO: Enqueueing job '7f5c81f307b4e0db6a03199e4ec4befc343c8f08' into category 'user01'.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['8fcb019aef9e071bf302d0d4eb0dfff01d3b0072', '7f5c81f307b4e0db6a03199e4ec4befc343c8f08'])}
-gc3.gc3libs: WARNING: Received queue request: run -> pause
+gc3.gc3libs: INFO: Enqueueing job '1b61d815b8ecf65340854c6b7ad5c13b29b0ceef' into category 'user01'.
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['74767318ff35b3c9dbaa9a863e6d9f52fc848894', '1b61d815b8ecf65340854c6b7ad5c13b29b0ceef'])}
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_3.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
-gc3.gc3libs: INFO: Enqueueing job 'a2c4cb7195d68d8a18222d08fa33969884b0a5ce' into category 'user01'.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['8fcb019aef9e071bf302d0d4eb0dfff01d3b0072', '7f5c81f307b4e0db6a03199e4ec4befc343c8f08', 'a2c4cb7195d68d8a18222d08fa33969884b0a5ce'])}
-gc3.gc3libs: WARNING: Received queue request: pause -> run
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '8fcb019aef9e071bf302d0d4eb0dfff01d3b0072'.
+gc3.gc3libs: INFO: Enqueueing job '55365143ee8cead097da2d89d1a910436d46c999' into category 'user01'.
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['74767318ff35b3c9dbaa9a863e6d9f52fc848894', '1b61d815b8ecf65340854c6b7ad5c13b29b0ceef', '55365143ee8cead097da2d89d1a910436d46c999'])}
+gc3.gc3libs: WARNING: Received spooler status change request: pause -> run
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '74767318ff35b3c9dbaa9a863e6d9f52fc848894'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a DeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: 8fcb019aef9e071bf302d0d4eb0dfff01d3b0072
-gc3.gc3libs: INFO: Successfully submitted DeconApp@7f6316154310 to: localhost
+gc3.gc3libs: INFO: Job UID: 74767318ff35b3c9dbaa9a863e6d9f52fc848894
+gc3.gc3libs: INFO: Successfully submitted DeconApp@7fd8e1bb6190 to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
-gc3.gc3libs: INFO: Job '8fcb019aef9e071bf302d0d4eb0dfff01d3b0072' terminated successfully!
-gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_8fcb019aef9e071bf302d0d4eb0dfff01d3b0072`.
+gc3.gc3libs: INFO: Job '74767318ff35b3c9dbaa9a863e6d9f52fc848894' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_74767318ff35b3c9dbaa9a863e6d9f52fc848894`.
 gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '7f5c81f307b4e0db6a03199e4ec4befc343c8f08'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '1b61d815b8ecf65340854c6b7ad5c13b29b0ceef'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a DeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: 7f5c81f307b4e0db6a03199e4ec4befc343c8f08
-gc3.gc3libs: INFO: Successfully submitted DeconApp@7f6316154510 to: localhost
+gc3.gc3libs: INFO: Job UID: 1b61d815b8ecf65340854c6b7ad5c13b29b0ceef
+gc3.gc3libs: INFO: Successfully submitted DeconApp@7fd8e1bb6510 to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
-gc3.gc3libs: INFO: Job '7f5c81f307b4e0db6a03199e4ec4befc343c8f08' terminated successfully!
-gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_7f5c81f307b4e0db6a03199e4ec4befc343c8f08`.
+gc3.gc3libs: INFO: Job '1b61d815b8ecf65340854c6b7ad5c13b29b0ceef' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_1b61d815b8ecf65340854c6b7ad5c13b29b0ceef`.
 gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'a2c4cb7195d68d8a18222d08fa33969884b0a5ce'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '55365143ee8cead097da2d89d1a910436d46c999'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a DeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: a2c4cb7195d68d8a18222d08fa33969884b0a5ce
-gc3.gc3libs: INFO: Successfully submitted DeconApp@7f63160d6fd0 to: localhost
+gc3.gc3libs: INFO: Job UID: 55365143ee8cead097da2d89d1a910436d46c999
+gc3.gc3libs: INFO: Successfully submitted DeconApp@7fd8e1b42110 to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
-gc3.gc3libs: INFO: Job 'a2c4cb7195d68d8a18222d08fa33969884b0a5ce' terminated successfully!
-gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_a2c4cb7195d68d8a18222d08fa33969884b0a5ce`.
+gc3.gc3libs: INFO: Job '55365143ee8cead097da2d89d1a910436d46c999' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_55365143ee8cead097da2d89d1a910436d46c999`.
 gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
-gc3.gc3libs: WARNING: Received queue request: run -> shutdown
+gc3.gc3libs: WARNING: Received spooler status change request: run -> shutdown
