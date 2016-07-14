@@ -390,6 +390,8 @@ class JobDescription(dict):
         ]
         ### now parse the section:
         self._parse_section_entries('hucore', mapping)
+        if self['tasktype'] != 'decon' and self['tasktype'] != 'preview':
+            raise ValueError("Tasktype invalid: %s" % self['tasktype'])
         # and the input file(s) section:
         # TODO: can we check if this section contains nonsense values?
         if 'inputfiles' not in self._sections:
