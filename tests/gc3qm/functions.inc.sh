@@ -88,6 +88,9 @@ startup_qm() {
     sleep 1
     # test if the QM process is alive by sending a "refresh" request:
     qm_request refresh
+    # give the QM some time to process the "refresh" request, so the followup
+    # requests won't get mixed with this one:
+    sleep 1
     echo "QM process started."
 }
 
