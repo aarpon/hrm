@@ -83,8 +83,8 @@ startup_qm() {
     QM_PID=$!
     # give the QM some time to start up
     sleep 1
-    # test if the QM process is alive by sending a "run" request:
-    qm_request run
+    # test if the QM process is alive by sending a "refresh" request:
+    qm_request refresh
     echo "QM process started."
 }
 
