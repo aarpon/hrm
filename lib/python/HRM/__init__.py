@@ -767,7 +767,30 @@ class JobSpooler(object):
             raise RuntimeError("GC3 resource dir unclean, refusing to start!")
         # the default status is 'run' unless explicitly requested (which will
         # be respected by the _spool() function anyway):
-        self.status_pre = self.status_cur = 'run'
+        self._status = self._status_pre = 'run'
+
+    @property
+    def status(self):
+        """Get the 'status' variable."""
+        return self._status
+
+    @status.setter
+    def status(self, newstatus):
+        """Set the 'status' variable, perform non-spooling actions."""
+        if newstatus == 'refresh':
+            # don't change the status on "refresh", instead simply print the
+            # queue status and update the status file:
+            logi("Received spooler queue status refresh request.")
+            self.queue.queue_details_hr()
+            logd(self.queue.queue_details_json())
+            return
+        if newstatus == self.status:
+            # no change required, so return immediately:
+            return
+        self._status_pre = self.status
+        self._status = newstatus
+        logw("Received spooler status change request: %s -> %s",
+             self._status_pre, self.status)
 
     def _check_gc3conf(self, gc3conffile=None):
         """Check the gc3 config file and extract the gc3 spooldir.
@@ -839,10 +862,7 @@ class JobSpooler(object):
             check_file = os.path.join(self.dirs['requests'], fname)
             if os.path.exists(check_file):
                 os.remove(check_file)
-                self.status_pre = self.status_cur
-                self.status_cur = fname
-                logw("Received queue request: %s -> %s",
-                     self.status_pre, self.status_cur)
+                self.status = fname
                 # we don't process more than one request at a time, so exit:
                 return
 
@@ -862,7 +882,7 @@ class JobSpooler(object):
         applist = []
         while True:
             self.check_status_request()
-            if self.status_cur == 'run':
+            if self.status == 'run':
                 self.engine.progress()
                 for i, app in enumerate(applist):
                     new_state = app.status_changed()
@@ -891,13 +911,12 @@ class JobSpooler(object):
                     # as a new job is dispatched now, we also print out the
                     # human readable queue status:
                     self.queue.queue_details_hr()
-            elif self.status_cur == 'shutdown':
+            elif self.status == 'shutdown':
                 return True
-            elif self.status_cur == 'refresh':
-                self.queue.queue_details_hr()
-                logd(self.queue.queue_details_json())
-                self.status_cur = self.status_pre
-            elif self.status_cur == 'pause':
+            elif self.status == 'refresh':
+                # refresh is now handled by the status.setter method:
+                pass
+            elif self.status == 'pause':
                 # no need to do anything, just sleep and check requests again:
                 pass
             time.sleep(1)
