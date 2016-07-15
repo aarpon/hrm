@@ -772,6 +772,7 @@ class JobSpooler(object):
         # the default status is 'run' unless explicitly requested (which will
         # be respected by the _spool() function anyway):
         self._status = self._status_pre = 'run'
+        logi("Created JobSpooler.")
 
     @property
     def status(self):
@@ -812,6 +813,7 @@ class JobSpooler(object):
         gc3conf = Configuration(gc3conffile)
         try:
             self.gc3spooldir = gc3conf.resources['localhost'].spooldir
+            logi("Using gc3pie spooldir: %s", self.gc3spooldir)
         except AttributeError:
             raise AttributeError("Unable to parse spooldir for resource "
                                  "'localhost' from gc3pie config file '%s'!" %
