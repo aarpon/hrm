@@ -25,6 +25,7 @@ JobSpooler()
 #       this should trigger an email).
 
 import ConfigParser
+import StringIO
 import pprint
 import time
 import os
@@ -216,7 +217,7 @@ class JobDescription(dict):
         self.srctype = srctype
         if srctype == 'file':
             self.fname = job
-            self._parse_jobfile()
+            job = self._read_jobfile()
         elif srctype == 'string':
             self.fname = "string"
             # _parse_jobstring(job) needs to be implemented if required!
@@ -230,6 +231,7 @@ class JobDescription(dict):
         # way one could simply use the cmdline utility "sha1sum" to check if a
         # certain job description file belongs to a specific UID.
         self['uid'] = sha1(self.__repr__()).hexdigest()
+        self.parse_jobconfig(job)
         # fill in keys without a reasonable value, they'll be updated later:
         self['status'] = "N/A"
         self['start'] = "N/A"
@@ -264,8 +266,14 @@ class JobDescription(dict):
         # update the job's internal fname pointer:
         self.fname = target
 
-    def _parse_jobfile(self):
-        """Initialize ConfigParser for a file and run parsing method."""
+    def _read_jobfile(self):
+        """Read in a job config file and pass it to the parser.
+
+        Returns
+        -------
+        config_raw : str
+            The file content as a single string.
+        """
         logi("Parsing jobfile '%s'...", self.fname)
         if not os.path.exists(self.fname):
             raise IOError("Can't find file '%s'!" % self.fname)
@@ -275,19 +283,28 @@ class JobDescription(dict):
         # trying to parse the file *BEFORE* it has been written to disk
         # entirely, which breaks the parsing, so we introduce four additional
         # levels of waiting time to avoid this race condition:
-        for snooze in [0, 0.001, 0.1, 1, 5]:
-            if not self._sections and snooze > 0:
-                logd("Sections are empty, re-trying in %is.", snooze)
+        config_raw = []
+        for snooze in [0, 0.00001, 0.0001, 0.001, 0.01, 0.1]:
+            if len(config_raw) == 0 and snooze > 0:
+                logd("Jobfile could not be read, re-trying in %is.", snooze)
             time.sleep(snooze)
-            try:
-                parsed = self.jobparser.read(self.fname)
-                logd("Parsed file '%s'.", parsed)
-            except ConfigParser.MissingSectionHeaderError as err:
-                raise SyntaxError("ERROR in JobDescription: %s" % err)
-            self._sections = self.jobparser.sections()
-            if self._sections:
+            with open(self.fname, 'r') as jobfile:
+                config_raw = jobfile.read()
+            if len(config_raw) > 0:
                 logd("Job parsing succeeded after %s seconds!", snooze)
                 break
+        if len(config_raw) == 0:
+            raise IOError("Unable to read job config file '%s'!" % self.fname)
+        return config_raw
+
+    def parse_jobconfig(self, cfg_raw):
+        """Initialize ConfigParser and run parsing method."""
+        try:
+            self.jobparser.readfp(StringIO.StringIO(cfg_raw))
+            logd("Parsed job configuration.")
+        except ConfigParser.MissingSectionHeaderError as err:
+            raise SyntaxError("ERROR in JobDescription: %s" % err)
+        self._sections = self.jobparser.sections()
         if not self._sections:
             raise SyntaxError("No sections found in job config %s" % self.fname)
         logd("Job description sections: %s", self._sections)
