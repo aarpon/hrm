@@ -200,7 +200,11 @@ class JobDescription(dict):
         Parameters
         ----------
         job : string
+            Can be either a filename pointing to a job config file, or a
+            configuration itself, requires 'srctype' to be set accordingly!
         srctype : string
+            One of ['file', 'string'], determines whether 'job' should be
+            interpreted as a filename or as a job description string.
 
         Example
         -------
