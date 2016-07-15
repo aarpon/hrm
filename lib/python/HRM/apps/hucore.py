@@ -61,9 +61,10 @@ class DeconApp(gc3libs.Application):
 
     def terminated(self):
         """This is called when the app has terminated execution."""
-        # TODO: put the results dir back to the user's destination directory
-        # (WARNING: we have to be careful if the data has already been
-        # collected in case of a remote execution scenario)
+        # TODO: #407 process "output_dir" after job has terminated
+        #       the results have to be put back to the user's destination
+        #       directory (in case of gc3 remote execution, data might have
+        #       been collected already)
         # TODO: consider specifying the output dir in the jobfile!
         # -> for now we simply use the gc3spooldir as the output directory to
         # ensure results won't get moved across different storage locations:
