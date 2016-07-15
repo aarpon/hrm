@@ -253,6 +253,9 @@ class JobDescription(dict):
         target : str
             The target directory.
         """
+        # FIXME FIXME FIXME FIXME FIXME
+        # this seems to be broken, moving unparsable jobfiles doesn't work!!!
+        # FIXME FIXME FIXME FIXME FIXME
         # make sure to only move "file" job descriptions, return otherwise:
         if self.srctype != 'file':
             return
