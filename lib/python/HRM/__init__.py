@@ -220,8 +220,6 @@ class JobDescription(dict):
             job = self._read_jobfile()
         elif srctype == 'string':
             self.fname = "string"
-            # _parse_jobstring(job) needs to be implemented if required!
-            raise Exception("Source type 'string' not yet implemented!")
         else:
             raise Exception("Unknown source type '%s'" % srctype)
         # store the SHA1 digest of this job, serving as the UID:
