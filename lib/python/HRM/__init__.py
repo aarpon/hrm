@@ -737,10 +737,12 @@ class JobSpooler(object):
 
     Instance Variables
     ------------------
+    queue : HRM.JobQueue
     gc3spooldir : str
     gc3conf : str
     dirs : dict
     engine : gc3libs.core.Engine
+    status : str
     """
 
     def __init__(self, spool_dirs, queue, gc3conf=None):
