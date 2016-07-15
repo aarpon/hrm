@@ -926,10 +926,6 @@ class JobSpooler(object):
     def cleanup(self):
         """Clean up the spooler, terminate jobs, store status."""
         # TODO: store the current queue (see #516)
-        # TODO: clean up temporary gc3lib proceesing dir(s)
-        #       when the spooler shuts down and terminates the running jobs it
-        #       leaves the temporary gc3libs directory (files transferred for /
-        #       generated from processing, logfiles etc.) alone!
         logw("Queue Manager shutdown initiated: cleaning up spooler.")
         if self.apps:
             logw("v%sv", "-" * 80)
@@ -938,6 +934,14 @@ class JobSpooler(object):
                 logw("-- [%s] %s", app.job['user'], type(app).__name__)
                 app.kill()
                 self.engine.progress()
+                # TODO: clean up temporary gc3lib processing dir(s)
+                #       app.kill() leaves the temporary gc3libs spooldir (files
+                #       transferred for / generated from processing, logfiles
+                #       etc.) alone, unfortunately the fetch_output() methods
+                #       tested below do not work as suggested by the docs:
+                ### self.engine.fetch_output(app)
+                ### app.fetch_output()
+                ### self.engine.progress()
                 # this is just to trigger the stats messages in debug mode:
                 self._engine_status()
             logw("^%s^", "-" * 80)
