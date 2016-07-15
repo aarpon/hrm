@@ -139,7 +139,6 @@ def main():
         job_spooler.spool()
     finally:
         print 'Cleaning up. Remaining jobs:'
-        # TODO: store the current queue (see #516)
         print jobqueues['hucore'].queue
         watch_mgr.rm_watch(wdd.values())
         notifier.stop()

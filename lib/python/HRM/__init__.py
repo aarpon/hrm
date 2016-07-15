@@ -872,14 +872,11 @@ class JobSpooler(object):
 
     def spool(self):
         """Wrapper method for the spooler to catch Ctrl-C."""
-        # TODO: when the spooler gets stopped (e.g. via Ctrl-C or upon request
-        # from the web interface or the init script) while a job is still
-        # running, it leaves it alone (and thus as well the files transferred
-        # for / generated from processing)
         try:
             self._spool()
         except KeyboardInterrupt:
             logi("Received keyboard interrupt, stopping queue manager.")
+        self.cleanup()
 
     def _spool(self):
         """Spooler function dispatching jobs from the queues. BLOCKING!"""
@@ -924,6 +921,32 @@ class JobSpooler(object):
                 pass
             time.sleep(0.5)
 
+    def cleanup(self):
+        """Clean up the spooler, terminate jobs, store status."""
+        # TODO: store the current queue (see #516)
+        # TODO: clean up temporary gc3lib proceesing dir(s)
+        #       when the spooler shuts down and terminates the running jobs it
+        #       leaves the temporary gc3libs directory (files transferred for /
+        #       generated from processing, logfiles etc.) alone!
+        logw("Queue Manager shutdown initiated: cleaning up spooler.")
+        if self.apps:
+            logw("v%sv", "-" * 80)
+            logw("Unfinished jobs, trying to stop them:")
+            for app in self.apps:
+                logw("-- [%s] %s", app.job['user'], type(app).__name__)
+                self.engine.kill(app)
+                self.engine.progress()
+                # this is just to trigger the stats messages in debug mode:
+                self._engine_status()
+            logw("^%s^", "-" * 80)
+            self.engine.progress()
+            stats = self._engine_status()
+            if stats['RUNNING'] > 0:
+                logc("Killing jobs failed, %s still running.", stats['RUNNING'])
+            else:
+                logi("Successfully terminated remaining jobs, none left.")
+        logw("Queue Manager shutdown: spooler cleanup completed.")
+
     def _engine_status(self):
         """Helper to get the engine status and print a formatted log."""
         stats = self.engine.stats()
@@ -933,5 +956,3 @@ class JobSpooler(object):
              stats['TERMINATING'], stats['TERMINATED'], stats['UNKNOWN'],
              stats['STOPPED'], stats['total'])
         return stats
-
-
