@@ -65,9 +65,9 @@ class DeconApp(gc3libs.Application):
         #       the results have to be put back to the user's destination
         #       directory (in case of gc3 remote execution, data might have
         #       been collected already)
-        # TODO: consider specifying the output dir in the jobfile!
-        # -> for now we simply use the gc3spooldir as the output directory to
-        # ensure results won't get moved across different storage locations:
+        # TODO: consider specifying the output dir in the jobfile
+        #       for now we use the gc3spooldir as the output_dir, so results
+        #       will NOT get moved across different storage locations
         ##### hucore EXIT CODES #####
         # 0: all went well
         # 130: hucore.bin was terminated with Ctrl-C (interactive console)
