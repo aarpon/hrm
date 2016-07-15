@@ -6,26 +6,37 @@ gc3.gc3libs: INFO: Runtime directories:
  'requests': 'run/queue/requests',
  'status': 'run/queue/status'}
 gc3.gc3libs: INFO: Setting job queue status report file: run/queue/status/hucore.json
+gc3.gc3libs: INFO: Using gc3pie spooldir: /data/hrm_data
 gc3.gc3libs: INFO: Creating GC3Pie engine using config file "config/samples/gc3pie_localhost.conf".
 gc3.gc3libs: INFO: Computational resource 'localhost' initialized successfully.
 gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
+gc3.gc3libs: INFO: Created JobSpooler.
 gc3.gc3libs: INFO: Initialized the event handler for inotify.
 gc3.gc3libs: INFO: Excpected job description files version: 7.
-gc3.gc3libs: WARNING: Received queue request: run -> run
-gc3.gc3libs: WARNING: Received queue request: run -> refresh
+gc3.gc3libs: INFO: Received spooler queue status refresh request.
+gc3.gc3libs: WARNING: Received spooler status change request: run -> pause
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_1.cfg', processing...
 gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
-gc3.gc3libs: INFO: Enqueueing job '8b0921b29fca0d40aaf50354a472abf86b40c770' into category 'user01'.
+gc3.gc3libs: INFO: Enqueueing job '8528ab22f5aca4fd17e1840f34a80bdec11962e2' into category 'user01'.
 gc3.gc3libs: INFO: Adding a new queue for 'user01' to the JobQueue.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['8b0921b29fca0d40aaf50354a472abf86b40c770'])}
-gc3.gc3libs: WARNING: Received queue request: run -> pause
-gc3.gc3libs: WARNING: Received queue request: pause -> run
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '8b0921b29fca0d40aaf50354a472abf86b40c770'.
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['8528ab22f5aca4fd17e1840f34a80bdec11962e2'])}
+gc3.gc3libs: WARNING: Received spooler status change request: pause -> run
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '8528ab22f5aca4fd17e1840f34a80bdec11962e2'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a DeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: 8b0921b29fca0d40aaf50354a472abf86b40c770
-gc3.gc3libs: INFO: Successfully submitted DeconApp@7f856be3b1d0 to: localhost
+gc3.gc3libs: INFO: Job UID: 8528ab22f5aca4fd17e1840f34a80bdec11962e2
+gc3.gc3libs: INFO: Successfully submitted DeconApp@7ff8640341d0 to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
-gc3.gc3libs: WARNING: Received queue request: run -> shutdown
+gc3.gc3libs: WARNING: Received spooler status change request: run -> shutdown
+gc3.gc3libs: WARNING: Queue Manager shutdown initiated: cleaning up spooler.
+gc3.gc3libs: WARNING: v--------------------------------------------------------------------------------v
+gc3.gc3libs: WARNING: Unfinished jobs, trying to stop them:
+gc3.gc3libs: WARNING: -- [user01] DeconApp
+Terminated
+gc3.gc3libs: CRITICAL: Job '8528ab22f5aca4fd17e1840f34a80bdec11962e2' terminated with unexpected EXIT CODE: None!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_8528ab22f5aca4fd17e1840f34a80bdec11962e2`.
+gc3.gc3libs: WARNING: ^--------------------------------------------------------------------------------^
+gc3.gc3libs: INFO: Successfully terminated remaining jobs, none left.
+gc3.gc3libs: WARNING: Queue Manager shutdown: spooler cleanup completed.
