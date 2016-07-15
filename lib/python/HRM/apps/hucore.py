@@ -90,7 +90,7 @@ class DeconApp(gc3libs.Application):
                  self.job['uid'], self.execution.exitcode)
         else:
             logi("Job '%s' terminated successfully!", self.job['uid'])
-        logi("The output of the application is in `%s`.", self.output_dir)
+            logi("The output of the application is in `%s`.", self.output_dir)
 
     def status_changed(self):
         """Check the if the execution state of the app has changed.

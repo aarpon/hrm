@@ -926,7 +926,8 @@ class JobSpooler(object):
     def cleanup(self):
         """Clean up the spooler, terminate jobs, store status."""
         # TODO: store the current queue (see #516)
-        logw("Queue Manager shutdown initiated: cleaning up spooler.")
+        logw("Queue Manager shutdown initiated.")
+        logi("QM shutdown: cleaning up spooler.")
         if self.apps:
             logw("v%sv", "-" * 80)
             logw("Unfinished jobs, trying to stop them:")
@@ -951,7 +952,7 @@ class JobSpooler(object):
                 logc("Killing jobs failed, %s still running.", stats['RUNNING'])
             else:
                 logi("Successfully terminated remaining jobs, none left.")
-        logw("Queue Manager shutdown: spooler cleanup completed.")
+        logi("QM shutdown: spooler cleanup completed.")
 
     def _engine_status(self):
         """Helper to get the engine status and print a formatted log."""
