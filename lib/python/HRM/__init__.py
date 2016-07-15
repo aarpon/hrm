@@ -230,14 +230,13 @@ class JobDescription(dict):
         # way one could simply use the cmdline utility "sha1sum" to check if a
         # certain job description file belongs to a specific UID.
         self['uid'] = sha1(self.__repr__()).hexdigest()
-        # after creating the UID, we fill in those keys that don't have a
-        # reasonable value yet, they'll be updated later:
+        # fill in keys without a reasonable value, they'll be updated later:
         self['status'] = "N/A"
         self['start'] = "N/A"
         self['progress'] = "N/A"
         self['pid'] = "N/A"
         self['server'] = "N/A"
-        logi(pprint.pformat("Finished initialization of JobDescription()."))
+        logi("Finished initialization of JobDescription().")
         logd(pprint.pformat(self))
 
     def move_jobfile(self, target):
@@ -264,7 +263,7 @@ class JobDescription(dict):
 
     def _parse_jobfile(self):
         """Initialize ConfigParser for a file and run parsing method."""
-        logd("Parsing jobfile '%s'...", self.fname)
+        logi("Parsing jobfile '%s'...", self.fname)
         if not os.path.exists(self.fname):
             raise IOError("Can't find file '%s'!" % self.fname)
         if not os.access(self.fname, os.R_OK):
@@ -287,7 +286,7 @@ class JobDescription(dict):
                 logd("Job parsing succeeded after %s seconds!", snooze)
                 break
         if not self._sections:
-            raise SyntaxError("Can't parse '%s'" % self.fname)
+            raise SyntaxError("No sections found in job config %s" % self.fname)
         logd("Job description sections: %s", self._sections)
         self._parse_jobdescription()
 
