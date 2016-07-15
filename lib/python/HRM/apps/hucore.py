@@ -82,6 +82,10 @@ class DeconApp(gc3libs.Application):
             #       cleanup() method by telling the app it is requested to stop
             logw("Job '%s' apparently was killed by gc3pie!", self.job['uid'])
         elif self.execution.exitcode != 0:
+            # IMPORTANT: gc3pie does NOT seem to pass on the exit code of
+            # hucore in this value, instead every non-zero exit code is
+            # represented as 255 - which means we can NOT DERIVE from this how
+            # hucore has finished!
             logc("Job '%s' terminated with unexpected EXIT CODE: %s!",
                  self.job['uid'], self.execution.exitcode)
         else:
