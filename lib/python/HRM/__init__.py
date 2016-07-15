@@ -223,12 +223,7 @@ class JobDescription(dict):
         else:
             raise Exception("Unknown source type '%s'" % srctype)
         # store the SHA1 digest of this job, serving as the UID:
-        # TODO: we could use be the hash of the actual (unparsed) string
-        # instead of the representation of the Python object, but therefore we
-        # need to hook into the parsing itself (or read the file twice) - this
-        # way one could simply use the cmdline utility "sha1sum" to check if a
-        # certain job description file belongs to a specific UID.
-        self['uid'] = sha1(self.__repr__()).hexdigest()
+        self['uid'] = sha1(job).hexdigest()
         self.parse_jobconfig(job)
         # fill in keys without a reasonable value, they'll be updated later:
         self['status'] = "N/A"
