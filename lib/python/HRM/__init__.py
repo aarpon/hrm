@@ -936,7 +936,7 @@ class JobSpooler(object):
             logw("Unfinished jobs, trying to stop them:")
             for app in self.apps:
                 logw("-- [%s] %s", app.job['user'], type(app).__name__)
-                self.engine.kill(app)
+                app.kill()
                 self.engine.progress()
                 # this is just to trigger the stats messages in debug mode:
                 self._engine_status()
