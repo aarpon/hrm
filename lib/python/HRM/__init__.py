@@ -151,7 +151,10 @@ def process_jobfile(fname, queues, dirs):
         return
     job.move_jobfile(dirs['cur'])
     # TODO: we need to distinguish different job types and act accordingly
-    queues[job['type']].append(job)
+    try:
+        queues[job['type']].append(job)
+    except ValueError as err:
+        loge("Adding the newe job from '%s' failed:\n    %s", fname, err)
 
 
 def move_file(fname, target, safe=False):
