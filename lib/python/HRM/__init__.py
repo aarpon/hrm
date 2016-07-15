@@ -953,6 +953,9 @@ class JobSpooler(object):
             else:
                 logi("Successfully terminated remaining jobs, none left.")
         logi("QM shutdown: spooler cleanup completed.")
+        logw("QM shutdown: checking resource directories.")
+        self.resource_dirs_clean()
+        logw("QM shutdown: resource directories check completed.")
 
     def _engine_status(self):
         """Helper to get the engine status and print a formatted log."""
