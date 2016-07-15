@@ -19,7 +19,7 @@ Requesting QM status change to: pause
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 74767318ff35b3c9dbaa9a863e6d9f52fc848894 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 108be18b99c7de2c7041de150a2b81087d9244e3 - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 'tests/gc3qm/inputs/test-003/job_2.cfg' -> 'run/spool/new/job_2.cfg'
 ========================= queue status =========================
@@ -27,8 +27,8 @@ user01 (user01@mail.xy): 74767318ff35b3c9dbaa9a863e6d9f52fc848894 - ['tests/samp
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 74767318ff35b3c9dbaa9a863e6d9f52fc848894 - ['tests/sample_images/faba128.h5'] [queued]
-user01 (user01@mail.xy): 1b61d815b8ecf65340854c6b7ad5c13b29b0ceef - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 108be18b99c7de2c7041de150a2b81087d9244e3 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): d0707faaf43557101362fec9ee843253088b7c11 - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 'tests/gc3qm/inputs/test-003/job_3.cfg' -> 'run/spool/new/job_3.cfg'
 ========================= queue status =========================
@@ -36,29 +36,29 @@ user01 (user01@mail.xy): 1b61d815b8ecf65340854c6b7ad5c13b29b0ceef - ['tests/samp
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 74767318ff35b3c9dbaa9a863e6d9f52fc848894 - ['tests/sample_images/faba128.h5'] [queued]
-user01 (user01@mail.xy): 1b61d815b8ecf65340854c6b7ad5c13b29b0ceef - ['tests/sample_images/faba128.h5'] [queued]
-user01 (user01@mail.xy): 55365143ee8cead097da2d89d1a910436d46c999 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 108be18b99c7de2c7041de150a2b81087d9244e3 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): d0707faaf43557101362fec9ee843253088b7c11 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): e2d68a406f80b93a5166f010632959f79c47bc2b - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 Requesting QM status change to: run
 ========================= queue status =========================
 --- jobs retrieved for processing
-user01 (user01@mail.xy): 74767318ff35b3c9dbaa9a863e6d9f52fc848894 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
+user01 (user01@mail.xy): 108be18b99c7de2c7041de150a2b81087d9244e3 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 1b61d815b8ecf65340854c6b7ad5c13b29b0ceef - ['tests/sample_images/faba128.h5'] [queued]
-user01 (user01@mail.xy): 55365143ee8cead097da2d89d1a910436d46c999 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): d0707faaf43557101362fec9ee843253088b7c11 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): e2d68a406f80b93a5166f010632959f79c47bc2b - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 ========================= queue status =========================
 --- jobs retrieved for processing
-user01 (user01@mail.xy): 1b61d815b8ecf65340854c6b7ad5c13b29b0ceef - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
+user01 (user01@mail.xy): d0707faaf43557101362fec9ee843253088b7c11 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 55365143ee8cead097da2d89d1a910436d46c999 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): e2d68a406f80b93a5166f010632959f79c47bc2b - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 ========================= queue status =========================
 --- jobs retrieved for processing
-user01 (user01@mail.xy): 55365143ee8cead097da2d89d1a910436d46c999 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
+user01 (user01@mail.xy): e2d68a406f80b93a5166f010632959f79c47bc2b - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
 None.

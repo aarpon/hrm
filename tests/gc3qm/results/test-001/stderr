@@ -17,5 +17,9 @@ gc3.gc3libs: INFO: Received spooler queue status refresh request.
 gc3.gc3libs: WARNING: Received spooler status change request: run -> pause
 gc3.gc3libs: WARNING: Received spooler status change request: pause -> run
 gc3.gc3libs: WARNING: Received spooler status change request: run -> shutdown
-gc3.gc3libs: WARNING: Queue Manager shutdown initiated: cleaning up spooler.
-gc3.gc3libs: WARNING: Queue Manager shutdown: spooler cleanup completed.
+gc3.gc3libs: WARNING: Queue Manager shutdown initiated.
+gc3.gc3libs: INFO: QM shutdown: cleaning up spooler.
+gc3.gc3libs: INFO: QM shutdown: spooler cleanup completed.
+gc3.gc3libs: WARNING: QM shutdown: checking resource directories.
+gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
+gc3.gc3libs: WARNING: QM shutdown: resource directories check completed.
