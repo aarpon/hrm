@@ -74,7 +74,14 @@ class DeconApp(gc3libs.Application):
         # 143: hucore.bin received the HUP signal (9)
         # 165: the .hgsb file could not be parsed (file missing or with errors)
         ##### hucore EXIT CODES #####
-        if self.execution.exitcode != 0:
+        if self.execution.exitcode is None:
+            # TODO: we could let the app know it was killed
+            #       currently, were guessing from the exitcode 'None' that the
+            #       app was explicitly killed by gc3pie - it would be cleaner
+            #       to explicitly cover this situation e.g. in the spooler's
+            #       cleanup() method by telling the app it is requested to stop
+            logw("Job '%s' apparently was killed by gc3pie!", self.job['uid'])
+        elif self.execution.exitcode != 0:
             logc("Job '%s' terminated with unexpected EXIT CODE: %s!",
                  self.job['uid'], self.execution.exitcode)
         else:
