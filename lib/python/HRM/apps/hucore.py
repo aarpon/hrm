@@ -67,10 +67,12 @@ class DeconApp(gc3libs.Application):
         # TODO: consider specifying the output dir in the jobfile!
         # -> for now we simply use the gc3spooldir as the output directory to
         # ensure results won't get moved across different storage locations:
-        # hucore EXIT CODES:
+        ##### hucore EXIT CODES #####
         # 0: all went well
+        # 130: hucore.bin was terminated with Ctrl-C (interactive console)
         # 143: hucore.bin received the HUP signal (9)
         # 165: the .hgsb file could not be parsed (file missing or with errors)
+        ##### hucore EXIT CODES #####
         if self.execution.exitcode != 0:
             logc("Job '%s' terminated with unexpected EXIT CODE: %s!",
                  self.job['uid'], self.execution.exitcode)
