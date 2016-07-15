@@ -10,8 +10,13 @@ set +e
 RES_BASE="results"
 
 # by default all tests will be run, only if the special variable "RUN_TESTS" is
-# set, we limit the tests to the ones specified there, e.g. usable like this:
+# set or list of tests is specified as commandline parameters, we limit the
+# tests to the ones specified there, e.g. usable like this:
 # > RUN_TESTS="test-001__* test-002__*" ./run_tests.sh
+# > ./run_tests.sh "test-001__* test-002__*"
+if [ -n "$1" ] ; then
+    RUN_TESTS="$1"
+fi
 if [ -z "$RUN_TESTS" ] ; then
     RUN_TESTS=test-*__*.sh
 fi
