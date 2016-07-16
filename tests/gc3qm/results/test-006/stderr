@@ -1,0 +1,45 @@
+gc3.gc3libs: INFO: Runtime directories:
+{'cur': 'run/spool/cur',
+ 'done': 'run/spool/done',
+ 'new': 'run/spool/new',
+ 'newfiles': [],
+ 'requests': 'run/queue/requests',
+ 'status': 'run/queue/status'}
+gc3.gc3libs: INFO: Setting job queue status report file: run/queue/status/hucore.json
+gc3.gc3libs: INFO: Using gc3pie spooldir: /data/hrm_data
+gc3.gc3libs: INFO: Creating GC3Pie engine using config file "config/samples/gc3pie_localhost.conf".
+gc3.gc3libs: INFO: Computational resource 'localhost' initialized successfully.
+gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
+gc3.gc3libs: INFO: Created JobSpooler.
+gc3.gc3libs: INFO: Initialized the event handler for inotify.
+gc3.gc3libs: INFO: Excpected job description files version: 7.
+gc3.gc3libs: INFO: Received spooler queue status refresh request.
+gc3.gc3libs: WARNING: Received spooler status change request: run -> pause
+gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_1.cfg', processing...
+gc3.gc3libs: INFO: Parsing jobfile '/var/www/html/hrm/run/spool/new/job_1.cfg'...
+gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
+gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
+gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
+gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: INFO: Enqueueing job '973447afa9ed3fea3a6381616fe294bd601e02cd' into category 'user01'.
+gc3.gc3libs: INFO: Adding a new queue for 'user01' to the JobQueue.
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['973447afa9ed3fea3a6381616fe294bd601e02cd'])}
+gc3.gc3libs: WARNING: Received spooler status change request: pause -> run
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '973447afa9ed3fea3a6381616fe294bd601e02cd'.
+gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
+gc3.gc3libs: WARNING: Instantiating a DeconApp:
+[user01]: tests/gc3qm/hucore_templates/preview_faba128.hgsb --> ['tests/sample_images/faba128.h5']
+gc3.gc3libs: INFO: Job UID: 973447afa9ed3fea3a6381616fe294bd601e02cd
+gc3.gc3libs: INFO: Successfully submitted DeconApp@7f209011b210 to: localhost
+gc3.gc3libs: INFO: Job status changed to 'queued'.
+gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
+gc3.gc3libs: INFO: Job '973447afa9ed3fea3a6381616fe294bd601e02cd' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_973447afa9ed3fea3a6381616fe294bd601e02cd`.
+gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
+gc3.gc3libs: WARNING: Received spooler status change request: run -> shutdown
+gc3.gc3libs: WARNING: Queue Manager shutdown initiated.
+gc3.gc3libs: INFO: QM shutdown: cleaning up spooler.
+gc3.gc3libs: INFO: QM shutdown: spooler cleanup completed.
+gc3.gc3libs: WARNING: QM shutdown: checking resource directories.
+gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
+gc3.gc3libs: WARNING: QM shutdown: resource directories check completed.
