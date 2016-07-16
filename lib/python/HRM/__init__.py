@@ -151,7 +151,7 @@ def process_jobfile(fname, queues, dirs):
         move_file(fname, dirs['done'], safe=True)
         return
     job.move_jobfile(dirs['cur'])
-    # TODO: we need to distinguish different job types and act accordingly
+    # TODO: have more than one queue, decide by 'tasktype' where to put a job
     try:
         queues[job['type']].append(job)
     except ValueError as err:
@@ -390,9 +390,6 @@ class JobDescription(dict):
             except ValueError:
                 raise ValueError("Invalid timestamp: %s." % self['timestamp'])
         ### now call the jobtype-specific parser method(s):
-        # FIXME: currently only deconvolution jobs are supported, until hucore
-        # will be able to do the other things like SNR estimation and
-        # previewgen using templates as well!
         if self['type'] == 'hucore':
             self._parse_job_hucore()
         else:
