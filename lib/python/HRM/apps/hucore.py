@@ -11,6 +11,7 @@ PreviewApp()
 SNREstimateApp()
     The gc3libs applications.
 """
+# TODO: create hucore superclass, derive task specific child classes from it
 
 import os
 import gc3libs
