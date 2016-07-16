@@ -70,6 +70,23 @@ test-005__jobfile-parser.py
  'uid': 'UID_STRIPPED',
  'user': 'user01',
  'ver': '7'}
+----------------- parsing jobfiles/preview_user01.cfg -----------------
+ - Parsing worked without errors on 'jobfiles/preview_user01.cfg'.
+{'email': 'user01@mail.xy',
+ 'exec': '/usr/local/bin/hucore',
+ 'infiles': ['tests/sample_images/faba128.h5'],
+ 'pid': 'N/A',
+ 'progress': 'N/A',
+ 'server': 'N/A',
+ 'start': 'N/A',
+ 'status': 'N/A',
+ 'tasktype': 'preview',
+ 'template': 'tests/gc3qm/hucore_templates/preview_faba128.hgsb',
+ 'timestamp': TIMESTAMP_STRIPPED,
+ 'type': 'hucore',
+ 'uid': 'UID_STRIPPED',
+ 'user': 'user01',
+ 'ver': '7'}
 
 >>>>>> Testing INVALID job description files:
 ----------------- parsing jobfiles/invalid/v1_broken_section-title.cfg -----------------
