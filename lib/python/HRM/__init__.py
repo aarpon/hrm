@@ -375,6 +375,14 @@ class JobDescription(dict):
         if self['timestamp'] == 'on_parsing':
             # the keyword "on_parsing" requires us to fill in the value:
             self['timestamp'] = time.time()
+            # in this case we also adjust the UID of the job - this is mostly
+            # done to allow submitting the same jobfile multiple times during
+            # testing and should not be used in production, therefore we also
+            # issue a corresponding warning message:
+            self['uid'] = sha1(str(self['timestamp'])).hexdigest()
+            logw('===%s', ' WARNING ===' * 8)
+            logw('"timestamp = on_parsing" is meant for testing only!!!')
+            logw('===%s', ' WARNING ===' * 8)
         else:
             # otherwise we need to convert to float, or raise an error:
             try:
