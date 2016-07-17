@@ -25,7 +25,8 @@ class DeconApp(gc3libs.Application):
 
     This application calls `hucore` with a given template file and retrives the
     stdout/stderr in a file named `stdout.txt` plus the directories `resultdir`
-    and `previews` into a directory `deconvolved` inside the current directory.
+    and `previews` into a directory `reults_<UID>` inside the current
+    directory.
     """
 
     def __init__(self, job, gc3_output):
