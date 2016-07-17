@@ -45,8 +45,7 @@ class DeconApp(gc3libs.Application):
         # this string as the template file will end up in the temporary
         # processing directory together with all the images:
         templ_on_tgt = self.job['template'].split('/')[-1]
-        gc3libs.Application.__init__(
-            self,
+        super(DeconApp, self).__init__(
             arguments=[self.job['exec'],
                        '-exitOnDone',
                        '-noExecLog',
