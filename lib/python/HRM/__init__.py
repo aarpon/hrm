@@ -931,7 +931,7 @@ class JobSpooler(object):
                 if nextjob is not None:
                     logd("Current joblist: %s", self.queue.queue)
                     logi("Adding another job to the gc3pie engine.")
-                    app = hucore.DeconApp(nextjob, self.gc3spooldir)
+                    app = hucore.HuDeconApp(nextjob, self.gc3spooldir)
                     self.apps.append(app)
                     self.engine.add(app)
                     # as a new job is dispatched now, we also print out the

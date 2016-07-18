@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Support for various HRM related tasks, GC3lib application classes.
+GC3lib application classes for HuCore related tasks.
 
 Classes
 -------
 
-DeconApp()
-PreviewApp()
-SNREstimateApp()
+HuCoreApp()
+HuDeconApp()
+HuPreviewApp()
+HuSNRApp()
     The gc3libs applications.
 """
-# TODO: create hucore superclass, derive task specific child classes from it
 
 import os
 import gc3libs
@@ -19,24 +19,26 @@ import gc3libs
 from ..logger import *
 
 
-class DeconApp(gc3libs.Application):
+class HuCoreApp(gc3libs.Application):
 
-    """App object for 'hucore' deconvolution jobs.
+    """App object for generic 'hucore' jobs.
 
-    This application calls `hucore` with a given template file and retrives the
-    stdout/stderr in a file named `stdout.txt` plus the directories `resultdir`
-    and `previews` into a directory `reults_<UID>` inside the current
-    directory.
+    This virtual application calls `hucore` with a given template file and
+    retrives the stdout/stderr in a file named `stdout.txt` plus the
+    directories `resultdir` and `previews` into a directory `reults_<UID>`
+    inside the current directory.
     """
 
     def __init__(self, job, gc3_output):
+        if self.__class__.__name__ == 'HuCoreApp':
+            raise TypeError("Not instantiating the virtual class 'HuCoreApp'!")
         self.job = job   # remember the job object
-        uid = self.job['uid']
         logw('Instantiating a %s:\n[%s]: %s --> %s',
              self.__class__.__name__,
              self.job['user'],
              self.job['template'],
              self.job['infiles'])
+        uid = self.job['uid']
         logi('Job UID: %s', uid)
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
@@ -45,7 +47,7 @@ class DeconApp(gc3libs.Application):
         # this string as the template file will end up in the temporary
         # processing directory together with all the images:
         templ_on_tgt = self.job['template'].split('/')[-1]
-        super(DeconApp, self).__init__(
+        super(HuCoreApp, self).__init__(
             arguments=[self.job['exec'],
                        '-exitOnDone',
                        '-noExecLog',
@@ -108,21 +110,25 @@ class DeconApp(gc3libs.Application):
             return None
 
 
-class PreviewApp(gc3libs.Application):
+class HuDeconApp(HuCoreApp):
+
+    """App object for 'hucore' deconvolution jobs."""
+
+    def __init__(self, job, gc3_output):
+        super(HuDeconApp, self).__init__(job, gc3_output)
+
+
+class HuPreviewApp(HuCoreApp):
 
     """App object for 'hucore' image preview generation jobs."""
 
-    def __init__(self):
-        # logw('Instantiating a PreviewApp:\n%s', job)
-        logw('WARNING: this is a stub, nothing is implemented yet!')
-        super(PreviewApp, self).__init__()
+    def __init__(self, job, gc3_output):
+        super(HuPreviewApp, self).__init__(job, gc3_output)
 
 
-class SNREstimateApp(gc3libs.Application):
+class HuSNRApp(HuCoreApp):
 
     """App object for 'hucore' SNR estimation jobs."""
 
-    def __init__(self):
-        # logw('Instantiating a SNREstimateApp:\n%s', job)
-        logw('WARNING: this is a stub, nothing is implemented yet!')
-        super(SNREstimateApp, self).__init__()
+    def __init__(self, job, gc3_output):
+        super(HuSNRApp, self).__init__(job, gc3_output)
