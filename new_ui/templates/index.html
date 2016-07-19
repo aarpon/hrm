@@ -57,10 +57,14 @@
         </thead>
         <tbody>
           <!-- will be populated when user selects files -->
+          <tr id="noteEmptySelection"><td><em>No files selected</em></td></tr>
         </tbody>
       </table>
+            
+      <button type="button" id="btnCreateJob" class="btn btn-primary"><span class="glyphicon glyphicon-cog"></span> Create job</button>
+      &nbsp;&nbsp;<span id="noteCreateJob">Select files of only one type to create a job.</span>
       
-      <button type="button" class="btn btn-primary disabled"><span class="glyphicon glyphicon-cog"></span> Create job</button> Select files of only one type to create a job.
+          
     
       {{ include('partials/footer.html') }}
       
@@ -75,7 +79,7 @@
     <!-- elFinder initialization (REQUIRED) -->
     <script type="text/javascript" charset="utf-8">
     
-      var fileSelection = [];
+      var selectedFiles = [];
     
       function formatSize(size) {
     
@@ -123,26 +127,69 @@
         return $("<div>").text(s).html()
       }
       
+      function fileExtension(name) {
+        var extension = name.split('.').pop();
+        console.log("Extension of " + name + " is " + extension);
+        return extension;
+      }
+      
+      function removeArrayElement(el, array) {
+        console.log('Array before');
+        console.log(array);
+        for(var i = array.length - 1; i >= 0; i--) {
+          if(array[i] === el) {
+              array.splice(i, 1);
+          }
+        }
+        console.log('Array after');
+        console.log(array);
+      }
+      
       function removeTdClicked(tdId) {
         event.preventDefault();
         $(tdId).remove();
       }
+      
+      function updateCreateJobButton() {
+        if(selectedFiles.length == 0) {
+          $('#btnCreateJob').prop('disabled', true);
+          $('#noteEmptySelection').show();
+          $('#noteCreateJob').text('Double click on files to select them for deconvolution.');
+          return;
+        }
+        
+        $('#noteEmptySelection').hide();
+        
+        var extensions = selectedFiles.map(fileExtension);
+        var sameExtension = extensions.every(function(el) {
+          return el === extensions[0];
+        });
+        if(sameExtension) {
+          $('#btnCreateJob').prop('disabled', false);
+          $('#noteCreateJob').text(selectedFiles.length + ' files selected for deconvolution.');
+        } else {
+          $('#btnCreateJob').prop('disabled', true);
+          $('#noteCreateJob').text('Select files of only one type to create a job.');
+        }
+        
+      }
     
       function getFileHandler(file) {
-        console.log('getFileCallback');
-        console.log(file);
-        var fileHash = file.hash;
-        var filePath = file.path;
-        var fileSize = formatSize(file.size);
-        var fileTimestamp = formatDate(file.ts);
-        
-        if(fileSelection.indexOf(filePath) == -1) {
-            fileSelection.push(filePath);
+        try {
+          console.log('getFileCallback');
+          console.log(file);
+          var fileHash = file.hash;
+          var filePath = file.path;
+          var fileSize = formatSize(file.size);
+          var fileTimestamp = formatDate(file.ts);
+          
+          if(selectedFiles.indexOf(filePath) == -1) {
+            selectedFiles.push(filePath);
             trId = 'tr_file_' + fileHash;
             aId = 'a_file_' + fileHash;
             $('#tableSelection > tbody:last-child').append(
               '<tr id="' + trId + '">' +
-                '<td>' + fileSelection.length + '</td>' + 
+                '<td>' + selectedFiles.length + '</td>' + 
                 '<td>' + htmlEscape(filePath) + '</td>' +
                 '<td>' + htmlEscape(fileSize) + '</td>' + 
                 '<td>' + htmlEscape(fileTimestamp) + '</td>' +
@@ -150,12 +197,20 @@
                 '<td><a id="' + aId + '" href="javascript:void(0)" ><span class="glyphicon glyphicon-remove"></span></a>' +
               '</tr>');
             console.log('File ' + filePath + ' added to table');
-            (function(aId, trId) {
+            (function(aId, trId, filePath) {    // use anonymous function to copy (aID, trID) into closure
               $('#' + aId).click(function(event) {
                 $('#' + trId).remove();
+                removeArrayElement(filePath, selectedFiles);
+                updateCreateJobButton();
               });
-            })(aId, trId);
+            })(aId, trId, filePath);
           }
+          
+          updateCreateJobButton();
+          
+        } catch(e) {
+          throw e;    // remove this line after debugging, otherwise file download will be triggered on double-click if this function is buggy
+        }
       }
       
       
@@ -167,6 +222,7 @@
           resizable : false,
           getFileCallback : getFileHandler           
         });
+        updateCreateJobButton();
       });
     </script>
 
