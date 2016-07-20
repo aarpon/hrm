@@ -18,6 +18,7 @@ except ImportError:
 reload(HRM)
 
 from HRM.logger import set_loglevel
+from HRM.logger import *
 
 set_loglevel('debug')
 
@@ -55,6 +56,7 @@ def next_print():
 jq = HRM.JobQueue()
 
 print("\n******** adding jobs to queue: ********")
+logw("\n******** adding jobs to queue: ********")
 print "jq.joblist:", jq.joblist()
 for job in jobs:
     jq.append(job)
@@ -62,6 +64,7 @@ for job in jobs:
 
 
 print("\n\n******** retrieving jobs from queue for processing: ********")
+logw("\n\n******** retrieving jobs from queue for processing: ********")
 print "jq.joblist:", jq.joblist()
 for job in jobs:
     print "next: '%s' (joblist: %s)" % (jq.next_job()['uid'], jq.joblist())
@@ -70,11 +73,13 @@ print "jq.joblist:", jq.joblist()
 
 
 print("\n\n\n\n******** creating a new job queue object: ********")
+logw("\n\n\n\n******** creating a new job queue object: ********")
 print("**************************************************")
 jq = HRM.JobQueue()
 jq.queue_details_hr()
 
 print("\n\n******** adding jobs to queue: ********")
+logw("\n\n******** adding jobs to queue: ********")
 print "jq.joblist:", jq.joblist()
 for job in jobs:
     jq.append(job)
@@ -82,6 +87,7 @@ for job in jobs:
 jq.queue_details_hr()
 
 print("\n\n******** removing jobs from queue: ********")
+logw("\n\n******** removing jobs from queue: ********")
 print "jq.joblist:", jq.joblist()
 remove_print('u000_aaa')
 remove_print('u000_bbb')
@@ -100,6 +106,7 @@ print jq.remove('aaa')
 
 
 print("\n\n\n\n******** creating a new job queue object: ********")
+logw("\n\n\n\n******** creating a new job queue object: ********")
 print("**************************************************")
 jq = HRM.JobQueue()
 jq.queue_details_hr()

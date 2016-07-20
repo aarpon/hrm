@@ -159,6 +159,8 @@ gc3.gc3libs: DEBUG: {'email': 'hrm@svi.nl',
  'uid': 'UID_STRIPPED',
  'user': 'user01',
  'ver': '7'}
+gc3.gc3libs: WARNING: 
+******** adding jobs to queue: ********
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
@@ -615,6 +617,9 @@ gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 7
 gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
+gc3.gc3libs: WARNING: 
+
+******** retrieving jobs from queue for processing: ********
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 7
 gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
@@ -665,10 +670,18 @@ gc3.gc3libs: DEBUG: len(JobQueue) = 7 (7 processing)
 gc3.gc3libs: DEBUG: num_jobs_processing = 7
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 7 (7 processing)
+gc3.gc3libs: WARNING: 
+
+
+
+******** creating a new job queue object: ********
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
 gc3.gc3libs: DEBUG: Empty queue!
+gc3.gc3libs: WARNING: 
+
+******** adding jobs to queue: ********
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
@@ -1128,6 +1141,9 @@ gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 7
 gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
+gc3.gc3libs: WARNING: 
+
+******** removing jobs from queue: ********
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 7
 gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
@@ -1193,6 +1209,11 @@ gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 2 (2 processing)
 gc3.gc3libs: DEBUG: Trying to remove job with uid 'aaa'.
 gc3.gc3libs: WARNING: No job with uid 'aaa' was found!
+gc3.gc3libs: WARNING: 
+
+
+
+******** creating a new job queue object: ********
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
