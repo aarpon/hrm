@@ -22,7 +22,7 @@ $reportparams = array("micro", "d", "na", "wl", "mo", "msys", "c");
 // parameters.
 // Developers adding a new microscope model should see the usage of these
 // parameters at
-// http://support.svi.nl/wiki/index.php?edit=ReportOtherMicroscope
+// https://svi.nl/index.php?edit=ReportOtherMicroscope
 // It is not easy because originally this was not to be included in the HRM but
 // online on the SVI server. Popular demand convinced us to include it embedded
 // in the HRM but without much time to make this more programmer-friendly.
@@ -30,57 +30,57 @@ $reportparams = array("micro", "d", "na", "wl", "mo", "msys", "c");
 // instructions.
 // Or even better, just report the new model to SVI and we will include online
 // and in the HRM, for the benefit of all users:
-// http://support.svi.nl/wiki/ReportOtherMicroscope
+// https://svi.nl/ReportOtherMicroscope
 
 $microscopes = array (
     "Biorad MRC 500, 600 and 1024" =>
-    array ("micro=Biorad_MRC_500_600_1024&param=Pinhole+diameter+(mm)&a=1&b=0&na=0&wl=0&msys=53.2&c=0.5&u=-3&cmsys=1&extra1=1.25&txt1=Fluorescence+attachment&extra2=1.25&txt2=DIC+attachment", "http://support.svi.nl/wiki/BioradMRC_500_600_1024"),
+    array ("micro=Biorad_MRC_500_600_1024&param=Pinhole+diameter+(mm)&a=1&b=0&na=0&wl=0&msys=53.2&c=0.5&u=-3&cmsys=1&extra1=1.25&txt1=Fluorescence+attachment&extra2=1.25&txt2=DIC+attachment", "https://svi.nl/BioradMRC_500_600_1024"),
     "Biorad Radiance" =>
-    array ("micro=Biorad_Radiance&param=Pinhole+diameter+(mm)&a=1&b=0&na=0&wl=0&msys=73.2&c=0.5&u=-3&cmsys=1&extra1=1.25&txt1=Fluorescence+attachment&extra2=1.25&txt2=DIC+attachment", "http://support.svi.nl/wiki/Biorad_Radiance"),
+    array ("micro=Biorad_Radiance&param=Pinhole+diameter+(mm)&a=1&b=0&na=0&wl=0&msys=73.2&c=0.5&u=-3&cmsys=1&extra1=1.25&txt1=Fluorescence+attachment&extra2=1.25&txt2=DIC+attachment", "https://svi.nl/Biorad_Radiance"),
     "Leica confocal TCS 4d (parameter P_8)" =>
     array
     ("micro=Leica_TCS4d_P8&param=Reported+parameter+(P_8)&a=2.39216&b=20&na=0&wl=0&msys=4.5&c=0.56419&u=-6",
-    "http://support.svi.nl/wiki/LeicaConfocal_TCS4d_SP1_NT"),
+    "https://svi.nl/LeicaConfocal_TCS4d_SP1_NT"),
     "Leica confocals TCS 4d, SP1 and NT (Airy disk units)" =>
     array
     ("micro=Leica_TCS4d_SP1_NT_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580",
-    "http://support.svi.nl/wiki/LeicaConfocal_TCS4d_SP1_NT"),
+    "https://svi.nl/LeicaConfocal_TCS4d_SP1_NT"),
     "Leica confocal SP2" =>
-    array ("micro=Leica_TCS_SP2_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "http://support.svi.nl/wiki/LeicaConfocal_TCS_SP2"),
+    array ("micro=Leica_TCS_SP2_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "https://svi.nl/LeicaConfocal_TCS_SP2"),
     "Leica confocal SP5" =>
-    array ("micro=Leica_TCS_SP5_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "http://support.svi.nl/wiki/LeicaConfocal_TCS_SP5"),
+    array ("micro=Leica_TCS_SP5_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "https://svi.nl/LeicaConfocal_TCS_SP5"),
     "Leica confocal SP8" =>
-    array ("micro=Leica_TCS_SP8_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "http://support.svi.nl/wiki/LeicaConfocal_TCS_SP8"),
+    array ("micro=Leica_TCS_SP8_Airy_units&param=Number+of+Airy+disks&msys=0&mo=0&c=0.56419&a=0&b=0&u=0&wl=580", "https://svi.nl/LeicaConfocal_TCS_SP8"),
     "Nikon TE2000-E with the C1 scanning head" =>
     array ("micro=Nikon_TE2000E_C1&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6&extra1=1.5&txt1=Optional+1.5x+magnification",
-    "http://support.svi.nl/wiki/Nikon_TE2000E_C1"),
+    "https://svi.nl/Nikon_TE2000E_C1"),
     "Nikon TiE A1R" =>
-    array ("micro=Nikon_TiE_A1R&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.456&u=-6","http://support.svi.nl/wiki/Nikon_TiE_A1R"),
+    array ("micro=Nikon_TiE_A1R&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.456&u=-6","https://svi.nl/Nikon_TiE_A1R"),
     "Olympus FV300 and FVX" =>
-    array( "micro=Olympus_FV300&param=Reported+pinhole+parameter&table=1&a=1&b=0&na=0&wl=0&msys=3.426&c=0.5&u=-6", "http://support.svi.nl/wiki/Olympus_FV300"),
+    array( "micro=Olympus_FV300&param=Reported+pinhole+parameter&table=1&a=1&b=0&na=0&wl=0&msys=3.426&c=0.5&u=-6", "https://svi.nl/Olympus_FV300"),
     "Olympus FV500" =>
-    array( "micro=Olympus_FV500&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=3.8&c=0.5641896&u=-6", "http://support.svi.nl/wiki/Olympus_FV500"),
+    array( "micro=Olympus_FV500&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=3.8&c=0.5641896&u=-6", "https://svi.nl/Olympus_FV500"),
     "Olympus FV1000" =>
-    array ("micro=Olympus_FV1000&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=3.82&c=0.5641896&u=-6", "http://support.svi.nl/wiki/Olympus_FV1000"),
+    array ("micro=Olympus_FV1000&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=3.82&c=0.5641896&u=-6", "https://svi.nl/Olympus_FV1000"),
     "Yokogawa spinning disk (pinhole radius)" =>
     array ("micro=Yokogawa_spinning_disk&d=50&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6",
-    "http://support.svi.nl/wiki/YokogawaDisk"),
+    "https://svi.nl/YokogawaDisk"),
     "Yokogawa spinning disk (pinhole distance)" =>
     array ("micro=Yokogawa_disk_(pinhole_distance)&d=253&a=1&b=0&na=0&wl=0&msys=1&c=1&u=-6&ru=-6&rtag=pinhole+distance",
-    "http://support.svi.nl/wiki/BackProjectedPinholeDistance"),
+    "https://svi.nl/BackProjectedPinholeDistance"),
     "Zeiss LSM410 inverted" =>
     array ("micro=Zeiss_LSM410_inverted_P8&param=Reported+parameter+(P_8)&a=3.92157&b=0&na=0&wl=0&msys=2.23&c=0.56419&u=-6",
-    "http://support.svi.nl/wiki/Zeiss_LSM410_inverted"),
+    "https://svi.nl/Zeiss_LSM410_inverted"),
     "Zeiss LSM510" =>
-    array("micro=Zeiss_LSM510&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=3.33&c=0.5&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM510"),
+    array("micro=Zeiss_LSM510&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=3.33&c=0.5&u=-6", "https://svi.nl/Zeiss_LSM510"),
     "Zeiss LSM700" =>
-    array("micro=Zeiss_LSM700&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.53&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM700"),
+    array("micro=Zeiss_LSM700&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.53&c=0.564&u=-6", "https://svi.nl/Zeiss_LSM700"),
     "Zeiss LSM710" =>
-    array("micro=Zeiss_LSM710&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM710"),
+    array("micro=Zeiss_LSM710&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "https://svi.nl/Zeiss_LSM710"),
     "Zeiss LSM780" =>
-    array("micro=Zeiss_780&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "http://support.svi.nl/wiki/Zeiss_LSM780"),
+    array("micro=Zeiss_780&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "https://svi.nl/Zeiss_LSM780"),
     "Not listed" => 
-    array ("micro=Not_listed_microscope&param=Pinhole+physical+diameter+(microns)&a=1&b=0&na=0&wl=0&u=-6", "http://support.svi.nl/wiki/ReportOtherMicroscope")
+    array ("micro=Not_listed_microscope&param=Pinhole+physical+diameter+(microns)&a=1&b=0&na=0&wl=0&u=-6", "https://svi.nl/ReportOtherMicroscope")
 );
 
 
@@ -364,7 +364,7 @@ global $cmsys, $table, $extra1, $txt1, $extra2, $txt2, $checked1, $checked2;
                Enter or confirm the requested values and press the calculator
                button to calculate the
                <a href="javascript:openWindow('
-                  http://support.svi.nl/wiki/BackProjected')">
+                  https://svi.nl/BackProjected')">
                   back projected
                </a>
                pinhole radius.

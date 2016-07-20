@@ -349,7 +349,7 @@ $textForCaptorSize = "pixel size (nm)";
                     onmouseover="TagToTip('ttSpanNyquist' )"
                     onmouseout="UnTip()"
                     onclick="storeValuesAndRedirectExtern(
-                      'http://support.svi.nl/wiki/NyquistCalculator');">
+                      'https://svi.nl/NyquistCalculator');">
                     <img src="images/calc_small.png" alt="" />
                     On-line Nyquist rate and PSF calculator
                     &nbsp;<img src="images/web.png" alt="external link" />

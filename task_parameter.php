@@ -164,7 +164,7 @@ include("header.inc.php");
 
                 <legend>
                     <a href="javascript:openWindow(
-                       'http://support.svi.nl/wiki/RestorationMethod')">
+                       'https://svi.nl/RestorationMethod')">
                         <img src="images/help.png" alt="?" /></a>
                     deconvolution algorithm
                 </legend>
