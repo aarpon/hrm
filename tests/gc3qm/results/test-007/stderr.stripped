@@ -618,9 +618,6 @@ gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 7
 gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
-gc3.gc3libs: DEBUG: num_jobs_processing = 0
-gc3.gc3libs: DEBUG: num_jobs_queued = 7
-gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
 gc3.gc3libs: INFO: Retrieving next job: category 'u000', uid 'u000_aaa'.
 gc3.gc3libs: DEBUG: Current queue categories: deque(['u111', 'u000'])
 gc3.gc3libs: DEBUG: Current contents of all queues: {'u000': deque(['u000_bbb', 'u000_ccc']), 'u111': deque(['u111_ddd', 'u111_eee', 'u111_fff', 'u111_ggg'])}
@@ -668,9 +665,10 @@ gc3.gc3libs: DEBUG: len(JobQueue) = 7 (7 processing)
 gc3.gc3libs: DEBUG: num_jobs_processing = 7
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 7 (7 processing)
-gc3.gc3libs: DEBUG: num_jobs_processing = 7
+gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
-gc3.gc3libs: DEBUG: len(JobQueue) = 7 (7 processing)
+gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
+gc3.gc3libs: DEBUG: Empty queue!
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
@@ -1195,6 +1193,10 @@ gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 2 (2 processing)
 gc3.gc3libs: DEBUG: Trying to remove job with uid 'aaa'.
 gc3.gc3libs: WARNING: No job with uid 'aaa' was found!
+gc3.gc3libs: DEBUG: num_jobs_processing = 0
+gc3.gc3libs: DEBUG: num_jobs_queued = 0
+gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
+gc3.gc3libs: DEBUG: Empty queue!
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)

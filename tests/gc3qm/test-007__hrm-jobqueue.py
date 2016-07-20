@@ -59,18 +59,20 @@ print "jq.joblist:", jq.joblist()
 for job in jobs:
     jq.append(job)
     print "jq.joblist:", jq.joblist()
-jq.queue_details_hr()
+
 
 print("\n\n******** retrieving jobs from queue for processing: ********")
 print "jq.joblist:", jq.joblist()
 for job in jobs:
     print "next: '%s' (joblist: %s)" % (jq.next_job()['uid'], jq.joblist())
 print "jq.joblist:", jq.joblist()
-jq.queue_details_hr()
 
 
-# create a new job queue
+
+print("\n\n\n\n******** creating a new job queue object: ********")
+print("**************************************************")
 jq = HRM.JobQueue()
+jq.queue_details_hr()
 
 print("\n\n******** adding jobs to queue: ********")
 print "jq.joblist:", jq.joblist()
@@ -95,8 +97,13 @@ jq.queue_details_hr()
 print("\n\n******** trying to removing jobs from the empty queue: ********")
 print jq.remove('aaa')
 
-# create a new job queue
+
+
+print("\n\n\n\n******** creating a new job queue object: ********")
+print("**************************************************")
 jq = HRM.JobQueue()
+jq.queue_details_hr()
+
 print("\n\n******** trying to add duplicate jobs to queue: ********")
 print "jq.joblist:", jq.joblist()
 jq.append(jobs[0])

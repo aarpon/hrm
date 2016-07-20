@@ -79,19 +79,6 @@ u111 (hrm@svi.nl): u111_fff - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
 u111 (hrm@svi.nl): u111_ggg - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc', 'u111_fff', 'u111_ggg']
-========================= queue status =========================
---- jobs retrieved for processing
-None.
-------------------------- queue status -------------------------
---- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_eee - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_fff - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ggg - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-========================= queue status =========================
 
 
 ******** retrieving jobs from queue for processing: ********
@@ -104,15 +91,15 @@ next: 'u000_ccc' (joblist: ['u111_fff', 'u111_ggg'])
 next: 'u111_fff' (joblist: ['u111_ggg'])
 next: 'u111_ggg' (joblist: [])
 jq.joblist: []
+
+
+
+
+******** creating a new job queue object: ********
+**************************************************
 ========================= queue status =========================
 --- jobs retrieved for processing
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_eee - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_fff - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ggg - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
 None.
@@ -237,6 +224,19 @@ None.
 
 ******** trying to removing jobs from the empty queue: ********
 None
+
+
+
+
+******** creating a new job queue object: ********
+**************************************************
+========================= queue status =========================
+--- jobs retrieved for processing
+None.
+------------------------- queue status -------------------------
+--- jobs queued (not yet retrieved)
+None.
+========================= queue status =========================
 
 
 ******** trying to add duplicate jobs to queue: ********

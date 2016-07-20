@@ -16,9 +16,9 @@ gc3.gc3libs: DEBUG: {'email': 'hrm@svi.nl',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1468929201.855229,
+ 'timestamp': 1469051373.581595,
  'type': 'hucore',
- 'uid': '3ed55c4baf70aba18ab391669a55f81bc245d0cd',
+ 'uid': 'a1d71cacf44cb61b3dbcbea47ea0c4d73f907b5a',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'jobfiles/decon_job.cfg'...
@@ -39,9 +39,9 @@ gc3.gc3libs: DEBUG: {'email': 'hrm@svi.nl',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1468929201.856265,
+ 'timestamp': 1469051373.582556,
  'type': 'hucore',
- 'uid': '3ed55c4baf70aba18ab391669a55f81bc245d0cd',
+ 'uid': 'a1d71cacf44cb61b3dbcbea47ea0c4d73f907b5a',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'jobfiles/decon_job.cfg'...
@@ -62,9 +62,9 @@ gc3.gc3libs: DEBUG: {'email': 'hrm@svi.nl',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1468929201.857188,
+ 'timestamp': 1469051373.583455,
  'type': 'hucore',
- 'uid': '3ed55c4baf70aba18ab391669a55f81bc245d0cd',
+ 'uid': 'a1d71cacf44cb61b3dbcbea47ea0c4d73f907b5a',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'jobfiles/decon_job.cfg'...
@@ -85,9 +85,9 @@ gc3.gc3libs: DEBUG: {'email': 'hrm@svi.nl',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1468929201.858082,
+ 'timestamp': 1469051373.584351,
  'type': 'hucore',
- 'uid': '3ed55c4baf70aba18ab391669a55f81bc245d0cd',
+ 'uid': 'a1d71cacf44cb61b3dbcbea47ea0c4d73f907b5a',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'jobfiles/decon_job.cfg'...
@@ -108,9 +108,9 @@ gc3.gc3libs: DEBUG: {'email': 'hrm@svi.nl',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1468929201.858978,
+ 'timestamp': 1469051373.585538,
  'type': 'hucore',
- 'uid': '3ed55c4baf70aba18ab391669a55f81bc245d0cd',
+ 'uid': '80343a408948ca06ea31ab5ec2f02f24aaded8cf',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'jobfiles/decon_job.cfg'...
@@ -131,9 +131,9 @@ gc3.gc3libs: DEBUG: {'email': 'hrm@svi.nl',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1468929201.860392,
+ 'timestamp': 1469051373.586631,
  'type': 'hucore',
- 'uid': '3ed55c4baf70aba18ab391669a55f81bc245d0cd',
+ 'uid': '80343a408948ca06ea31ab5ec2f02f24aaded8cf',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'jobfiles/decon_job.cfg'...
@@ -154,9 +154,9 @@ gc3.gc3libs: DEBUG: {'email': 'hrm@svi.nl',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1468929201.86129,
+ 'timestamp': 1469051373.587535,
  'type': 'hucore',
- 'uid': '3ed55c4baf70aba18ab391669a55f81bc245d0cd',
+ 'uid': '80343a408948ca06ea31ab5ec2f02f24aaded8cf',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
@@ -175,7 +175,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -203,7 +203,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -215,7 +215,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -243,7 +243,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -255,7 +255,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -267,7 +267,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.857188, 
+            "queued": 1469051373.583455, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -297,7 +297,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -309,7 +309,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858082, 
+            "queued": 1469051373.584351, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -321,7 +321,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -333,7 +333,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.857188, 
+            "queued": 1469051373.583455, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -361,7 +361,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -373,7 +373,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858082, 
+            "queued": 1469051373.584351, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -385,7 +385,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -397,7 +397,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858978, 
+            "queued": 1469051373.585538, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -409,7 +409,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.857188, 
+            "queued": 1469051373.583455, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -437,7 +437,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -449,7 +449,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858082, 
+            "queued": 1469051373.584351, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -461,7 +461,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -473,7 +473,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858978, 
+            "queued": 1469051373.585538, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -485,7 +485,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.857188, 
+            "queued": 1469051373.583455, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -497,7 +497,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.860392, 
+            "queued": 1469051373.586631, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -525,7 +525,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -537,7 +537,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858082, 
+            "queued": 1469051373.584351, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -549,7 +549,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -561,7 +561,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858978, 
+            "queued": 1469051373.585538, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -573,7 +573,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.857188, 
+            "queued": 1469051373.583455, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -585,7 +585,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.860392, 
+            "queued": 1469051373.586631, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -597,7 +597,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.86129, 
+            "queued": 1469051373.587535, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -609,9 +609,6 @@ gc3.gc3libs: DEBUG: {
     ]
 }
 gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'u000': deque(['u000_aaa', 'u000_bbb', 'u000_ccc']), 'u111': deque(['u111_ddd', 'u111_eee', 'u111_fff', 'u111_ggg'])}
-gc3.gc3libs: DEBUG: num_jobs_processing = 0
-gc3.gc3libs: DEBUG: num_jobs_queued = 7
-gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 7
 gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
@@ -668,9 +665,10 @@ gc3.gc3libs: DEBUG: len(JobQueue) = 7 (7 processing)
 gc3.gc3libs: DEBUG: num_jobs_processing = 7
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 7 (7 processing)
-gc3.gc3libs: DEBUG: num_jobs_processing = 7
+gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
-gc3.gc3libs: DEBUG: len(JobQueue) = 7 (7 processing)
+gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
+gc3.gc3libs: DEBUG: Empty queue!
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
@@ -687,7 +685,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -715,7 +713,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -727,7 +725,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -755,7 +753,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -767,7 +765,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -779,7 +777,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.857188, 
+            "queued": 1469051373.583455, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -809,7 +807,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -821,7 +819,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858082, 
+            "queued": 1469051373.584351, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -833,7 +831,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -845,7 +843,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.857188, 
+            "queued": 1469051373.583455, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -873,7 +871,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -885,7 +883,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858082, 
+            "queued": 1469051373.584351, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -897,7 +895,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -909,7 +907,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858978, 
+            "queued": 1469051373.585538, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -921,7 +919,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.857188, 
+            "queued": 1469051373.583455, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -949,7 +947,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -961,7 +959,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858082, 
+            "queued": 1469051373.584351, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -973,7 +971,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -985,7 +983,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858978, 
+            "queued": 1469051373.585538, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -997,7 +995,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.857188, 
+            "queued": 1469051373.583455, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1009,7 +1007,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.860392, 
+            "queued": 1469051373.586631, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1037,7 +1035,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1049,7 +1047,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858082, 
+            "queued": 1469051373.584351, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1061,7 +1059,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.856265, 
+            "queued": 1469051373.582556, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1073,7 +1071,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.858978, 
+            "queued": 1469051373.585538, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1085,7 +1083,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.857188, 
+            "queued": 1469051373.583455, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1097,7 +1095,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.860392, 
+            "queued": 1469051373.586631, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1109,7 +1107,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1468929201.86129, 
+            "queued": 1469051373.587535, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1135,7 +1133,7 @@ gc3.gc3libs: DEBUG: num_jobs_queued = 7
 gc3.gc3libs: DEBUG: len(JobQueue) = 7 (0 processing)
 gc3.gc3libs: DEBUG: Trying to remove job with uid 'u000_aaa'.
 gc3.gc3libs: DEBUG: Removing job 'u000_aaa' from queue 'u000'.
-gc3.gc3libs: DEBUG: Current jobs: {'u111_ddd': {'status': 'queued', 'ver': '7', 'uid': 'u111_ddd', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.858082, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_bbb': {'status': 'queued', 'ver': '7', 'uid': 'u000_bbb', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.856265, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_eee': {'status': 'queued', 'ver': '7', 'uid': 'u111_eee', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.858978, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_fff': {'status': 'queued', 'ver': '7', 'uid': 'u111_fff', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.860392, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_ggg': {'status': 'queued', 'ver': '7', 'uid': 'u111_ggg', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.86129, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_ccc': {'status': 'queued', 'ver': '7', 'uid': 'u000_ccc', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.857188, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}}
+gc3.gc3libs: DEBUG: Current jobs: {'u111_ddd': {'status': 'queued', 'ver': '7', 'uid': 'u111_ddd', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.584351, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_bbb': {'status': 'queued', 'ver': '7', 'uid': 'u000_bbb', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.582556, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_eee': {'status': 'queued', 'ver': '7', 'uid': 'u111_eee', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.585538, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_fff': {'status': 'queued', 'ver': '7', 'uid': 'u111_fff', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.586631, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_ggg': {'status': 'queued', 'ver': '7', 'uid': 'u111_ggg', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.587535, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_ccc': {'status': 'queued', 'ver': '7', 'uid': 'u000_ccc', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.583455, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}}
 gc3.gc3libs: DEBUG: Current queue categories: deque(['u000', 'u111'])
 gc3.gc3libs: DEBUG: Current contents of all queues: {'u000': deque(['u000_bbb', 'u000_ccc']), 'u111': deque(['u111_ddd', 'u111_eee', 'u111_fff', 'u111_ggg'])}
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
@@ -1143,7 +1141,7 @@ gc3.gc3libs: DEBUG: num_jobs_queued = 6
 gc3.gc3libs: DEBUG: len(JobQueue) = 6 (0 processing)
 gc3.gc3libs: DEBUG: Trying to remove job with uid 'u000_bbb'.
 gc3.gc3libs: DEBUG: Removing job 'u000_bbb' from queue 'u000'.
-gc3.gc3libs: DEBUG: Current jobs: {'u111_ddd': {'status': 'queued', 'ver': '7', 'uid': 'u111_ddd', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.858082, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_eee': {'status': 'queued', 'ver': '7', 'uid': 'u111_eee', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.858978, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_fff': {'status': 'queued', 'ver': '7', 'uid': 'u111_fff', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.860392, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_ggg': {'status': 'queued', 'ver': '7', 'uid': 'u111_ggg', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.86129, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_ccc': {'status': 'queued', 'ver': '7', 'uid': 'u000_ccc', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.857188, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}}
+gc3.gc3libs: DEBUG: Current jobs: {'u111_ddd': {'status': 'queued', 'ver': '7', 'uid': 'u111_ddd', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.584351, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_eee': {'status': 'queued', 'ver': '7', 'uid': 'u111_eee', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.585538, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_fff': {'status': 'queued', 'ver': '7', 'uid': 'u111_fff', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.586631, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_ggg': {'status': 'queued', 'ver': '7', 'uid': 'u111_ggg', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.587535, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_ccc': {'status': 'queued', 'ver': '7', 'uid': 'u000_ccc', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.583455, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}}
 gc3.gc3libs: DEBUG: Current queue categories: deque(['u000', 'u111'])
 gc3.gc3libs: DEBUG: Current contents of all queues: {'u000': deque(['u000_ccc']), 'u111': deque(['u111_ddd', 'u111_eee', 'u111_fff', 'u111_ggg'])}
 gc3.gc3libs: DEBUG: num_jobs_processing = 0
@@ -1158,7 +1156,7 @@ gc3.gc3libs: DEBUG: num_jobs_queued = 4
 gc3.gc3libs: DEBUG: len(JobQueue) = 5 (1 processing)
 gc3.gc3libs: DEBUG: Trying to remove job with uid 'u111_ggg'.
 gc3.gc3libs: DEBUG: Removing job 'u111_ggg' from queue 'u111'.
-gc3.gc3libs: DEBUG: Current jobs: {'u111_ddd': {'status': 'queued', 'ver': '7', 'uid': 'u111_ddd', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.858082, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_eee': {'status': 'queued', 'ver': '7', 'uid': 'u111_eee', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.858978, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_fff': {'status': 'queued', 'ver': '7', 'uid': 'u111_fff', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.860392, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_ccc': {'status': 'queued', 'ver': '7', 'uid': 'u000_ccc', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.857188, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}}
+gc3.gc3libs: DEBUG: Current jobs: {'u111_ddd': {'status': 'queued', 'ver': '7', 'uid': 'u111_ddd', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.584351, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_eee': {'status': 'queued', 'ver': '7', 'uid': 'u111_eee', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.585538, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_fff': {'status': 'queued', 'ver': '7', 'uid': 'u111_fff', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.586631, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_ccc': {'status': 'queued', 'ver': '7', 'uid': 'u000_ccc', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.583455, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}}
 gc3.gc3libs: DEBUG: Current queue categories: deque(['u111'])
 gc3.gc3libs: DEBUG: Current contents of all queues: {'u111': deque(['u111_ddd', 'u111_eee', 'u111_fff'])}
 gc3.gc3libs: DEBUG: num_jobs_processing = 1
@@ -1172,7 +1170,7 @@ gc3.gc3libs: DEBUG: num_jobs_queued = 2
 gc3.gc3libs: DEBUG: len(JobQueue) = 4 (2 processing)
 gc3.gc3libs: DEBUG: Trying to remove job with uid 'u111_eee'.
 gc3.gc3libs: DEBUG: Removing job 'u111_eee' from queue 'u111'.
-gc3.gc3libs: DEBUG: Current jobs: {'u111_ddd': {'status': 'queued', 'ver': '7', 'uid': 'u111_ddd', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.858082, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_fff': {'status': 'queued', 'ver': '7', 'uid': 'u111_fff', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.860392, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_ccc': {'status': 'queued', 'ver': '7', 'uid': 'u000_ccc', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.857188, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}}
+gc3.gc3libs: DEBUG: Current jobs: {'u111_ddd': {'status': 'queued', 'ver': '7', 'uid': 'u111_ddd', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.584351, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u111_fff': {'status': 'queued', 'ver': '7', 'uid': 'u111_fff', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.586631, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_ccc': {'status': 'queued', 'ver': '7', 'uid': 'u000_ccc', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.583455, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}}
 gc3.gc3libs: DEBUG: Current queue categories: deque(['u111'])
 gc3.gc3libs: DEBUG: Current contents of all queues: {'u111': deque(['u111_fff'])}
 gc3.gc3libs: DEBUG: num_jobs_processing = 2
@@ -1181,7 +1179,7 @@ gc3.gc3libs: DEBUG: len(JobQueue) = 3 (2 processing)
 gc3.gc3libs: DEBUG: Trying to remove job with uid 'u111_fff'.
 gc3.gc3libs: DEBUG: Removing job 'u111_fff' from queue 'u111'.
 gc3.gc3libs: DEBUG: Queue for category 'u111' now empty, removing it.
-gc3.gc3libs: DEBUG: Current jobs: {'u111_ddd': {'status': 'queued', 'ver': '7', 'uid': 'u111_ddd', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.858082, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_ccc': {'status': 'queued', 'ver': '7', 'uid': 'u000_ccc', 'exec': '/usr/local/bin/hucore', 'timestamp': 1468929201.857188, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}}
+gc3.gc3libs: DEBUG: Current jobs: {'u111_ddd': {'status': 'queued', 'ver': '7', 'uid': 'u111_ddd', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.584351, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u111', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}, 'u000_ccc': {'status': 'queued', 'ver': '7', 'uid': 'u000_ccc', 'exec': '/usr/local/bin/hucore', 'timestamp': 1469051373.583455, 'pid': 'N/A', 'server': 'N/A', 'start': 'N/A', 'user': 'u000', 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb', 'tasktype': 'decon', 'progress': 'N/A', 'type': 'hucore', 'email': 'hrm@svi.nl', 'infiles': ['tests/jobfiles/sandbox/bad.lsm']}}
 gc3.gc3libs: DEBUG: Current queue categories: deque([])
 gc3.gc3libs: DEBUG: Current contents of all queues: {}
 gc3.gc3libs: DEBUG: num_jobs_processing = 2
@@ -1199,6 +1197,10 @@ gc3.gc3libs: DEBUG: num_jobs_processing = 0
 gc3.gc3libs: DEBUG: num_jobs_queued = 0
 gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
 gc3.gc3libs: DEBUG: Empty queue!
+gc3.gc3libs: DEBUG: num_jobs_processing = 0
+gc3.gc3libs: DEBUG: num_jobs_queued = 0
+gc3.gc3libs: DEBUG: len(JobQueue) = 0 (0 processing)
+gc3.gc3libs: DEBUG: Empty queue!
 gc3.gc3libs: INFO: Enqueueing job 'u000_aaa' into category 'u000'.
 gc3.gc3libs: INFO: Adding a new queue for 'u000' to the JobQueue.
 gc3.gc3libs: DEBUG: Current queue categories: deque(['u000'])
@@ -1211,7 +1213,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1468929201.855229, 
+            "queued": 1469051373.581595, 
             "file": "tests/jobfiles/sandbox/bad.lsm", 
             "start": "N/A", 
             "progress": "N/A", 
