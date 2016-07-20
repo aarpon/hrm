@@ -5,7 +5,7 @@
 Run it from this directory after setting your PYTHONPATH accordingly:
 
 export PYTHONPATH=$PYTHONPATH:../../lib/python/
-python test_HRM_JobQueue.py
+python test-007__hrm-jobqueue.py
 """
 
 try:
@@ -17,9 +17,14 @@ except ImportError:
 # during a single IPython session:
 reload(HRM)
 
+from HRM.logger import set_loglevel
+
+set_loglevel('debug')
+
 jobs = list(xrange(7))
 
-jobfile = '../jobfiles/sandbox/deconvolution_job.cfg'
+# jobfile = 'jobfiles/decon_it-3_user01.cfg'
+jobfile = 'jobfiles/decon_job.cfg'
 for i in xrange(7):
     jobs[i] = HRM.JobDescription(jobfile, 'file')
 
