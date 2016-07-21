@@ -16,17 +16,21 @@ gc3.gc3libs: INFO: Excpected job description files version: 7.
 gc3.gc3libs: INFO: Received spooler queue status refresh request.
 gc3.gc3libs: WARNING: Received spooler status change request: run -> pause
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_1.cfg', processing...
-gc3.gc3libs: INFO: 'Finished initialization of JobDescription().'
-gc3.gc3libs: INFO: Enqueueing job '2cdc47b4c16d3e570e06de08dce6190bdeaec945' into category 'user01'.
+gc3.gc3libs: INFO: Parsing jobfile '/var/www/html/hrm/run/spool/new/job_1.cfg'...
+gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
+gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
+gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
+gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: INFO: Enqueueing job '91a0014429673c4a3bc66cc367d10005f7800d4b' into category 'user01'.
 gc3.gc3libs: INFO: Adding a new queue for 'user01' to the JobQueue.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['2cdc47b4c16d3e570e06de08dce6190bdeaec945'])}
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['91a0014429673c4a3bc66cc367d10005f7800d4b'])}
 gc3.gc3libs: WARNING: Received spooler status change request: pause -> run
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '2cdc47b4c16d3e570e06de08dce6190bdeaec945'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '91a0014429673c4a3bc66cc367d10005f7800d4b'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
-gc3.gc3libs: WARNING: Instantiating a DeconApp:
+gc3.gc3libs: WARNING: Instantiating a HuDeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: 2cdc47b4c16d3e570e06de08dce6190bdeaec945
-gc3.gc3libs: INFO: Successfully submitted DeconApp@7fb169c13410 to: localhost
+gc3.gc3libs: INFO: Job UID: 91a0014429673c4a3bc66cc367d10005f7800d4b
+gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7fd254f14510 to: localhost
 gc3.gc3libs: INFO: Job status changed to 'queued'.
 gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
 gc3.gc3libs: WARNING: Received spooler status change request: run -> shutdown
@@ -34,9 +38,9 @@ gc3.gc3libs: WARNING: Queue Manager shutdown initiated.
 gc3.gc3libs: INFO: QM shutdown: cleaning up spooler.
 gc3.gc3libs: WARNING: v--------------------------------------------------------------------------------v
 gc3.gc3libs: WARNING: Unfinished jobs, trying to stop them:
-gc3.gc3libs: WARNING: -- [user01] DeconApp
+gc3.gc3libs: WARNING: <KILLING> [user01] HuDeconApp
 Terminated
-gc3.gc3libs: WARNING: Job '2cdc47b4c16d3e570e06de08dce6190bdeaec945' apparently was killed by gc3pie!
+gc3.gc3libs: WARNING: Job '91a0014429673c4a3bc66cc367d10005f7800d4b' apparently was killed by gc3pie!
 gc3.gc3libs: WARNING: ^--------------------------------------------------------------------------------^
 gc3.gc3libs: INFO: Successfully terminated remaining jobs, none left.
 gc3.gc3libs: INFO: QM shutdown: spooler cleanup completed.
