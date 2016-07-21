@@ -24,8 +24,7 @@ set_loglevel('debug')
 
 jobs = list(xrange(7))
 
-# jobfile = 'jobfiles/decon_it-3_user01.cfg'
-jobfile = 'jobfiles/decon_job.cfg'
+jobfile = 'jobfiles/decon_it-3_user01.cfg'
 for i in xrange(7):
     jobs[i] = HRM.JobDescription(jobfile, 'file')
 

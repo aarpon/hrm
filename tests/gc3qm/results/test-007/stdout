@@ -7,7 +7,7 @@ jq.joblist: []
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa']
 ========================= queue status =========================
@@ -15,8 +15,8 @@ jq.joblist: ['u000_aaa']
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u000_bbb']
 ========================= queue status =========================
@@ -24,9 +24,9 @@ jq.joblist: ['u000_aaa', 'u000_bbb']
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u000_bbb', 'u000_ccc']
 ========================= queue status =========================
@@ -34,10 +34,10 @@ jq.joblist: ['u000_aaa', 'u000_bbb', 'u000_ccc']
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ddd - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u000_ccc']
 ========================= queue status =========================
@@ -45,11 +45,11 @@ jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u000_ccc']
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_eee - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ddd - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_eee - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc']
 ========================= queue status =========================
@@ -57,12 +57,12 @@ jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc']
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_eee - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_fff - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ddd - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_eee - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_fff - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc', 'u111_fff']
 ========================= queue status =========================
@@ -70,13 +70,13 @@ jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc', 'u111_f
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_eee - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_fff - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ggg - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ddd - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_eee - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_fff - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ggg - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc', 'u111_fff', 'u111_ggg']
 
@@ -113,7 +113,7 @@ jq.joblist: []
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa']
 ========================= queue status =========================
@@ -121,8 +121,8 @@ jq.joblist: ['u000_aaa']
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u000_bbb']
 ========================= queue status =========================
@@ -130,9 +130,9 @@ jq.joblist: ['u000_aaa', 'u000_bbb']
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u000_bbb', 'u000_ccc']
 ========================= queue status =========================
@@ -140,10 +140,10 @@ jq.joblist: ['u000_aaa', 'u000_bbb', 'u000_ccc']
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ddd - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u000_ccc']
 ========================= queue status =========================
@@ -151,11 +151,11 @@ jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u000_ccc']
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_eee - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ddd - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_eee - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc']
 ========================= queue status =========================
@@ -163,12 +163,12 @@ jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc']
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_eee - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_fff - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ddd - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_eee - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_fff - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc', 'u111_fff']
 ========================= queue status =========================
@@ -176,13 +176,13 @@ jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc', 'u111_f
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_eee - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_fff - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ggg - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ddd - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_eee - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_fff - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ggg - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc', 'u111_fff', 'u111_ggg']
 ========================= queue status =========================
@@ -190,13 +190,13 @@ jq.joblist: ['u000_aaa', 'u111_ddd', 'u000_bbb', 'u111_eee', 'u000_ccc', 'u111_f
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_bbb - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_eee - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_fff - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ggg - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ddd - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_bbb - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_eee - ['tests/sample_images/faba128.h5'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_fff - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ggg - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 
 
@@ -214,8 +214,8 @@ remove('u111_fff'): u111_fff (joblist: [])
 jq.joblist: []
 ========================= queue status =========================
 --- jobs retrieved for processing
-u000 (hrm@svi.nl): u000_ccc - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
-u111 (hrm@svi.nl): u111_ddd - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_ccc - ['tests/sample_images/faba128.h5'] [queued]
+u111 (user01@mail.xy): u111_ddd - ['tests/sample_images/faba128.h5'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
 None.
@@ -246,7 +246,7 @@ jq.joblist: []
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-u000 (hrm@svi.nl): u000_aaa - ['tests/jobfiles/sandbox/bad.lsm'] [queued]
+u000 (user01@mail.xy): u000_aaa - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 jq.joblist: ['u000_aaa']
 Adding duplicate job failed as expected (Job with uid 'u000_aaa' already in this queue!)!
