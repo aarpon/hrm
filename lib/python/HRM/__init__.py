@@ -956,19 +956,7 @@ class JobSpooler(object):
             logw("v%sv", "-" * 80)
             logw("Unfinished jobs, trying to stop them:")
             for app in self.apps:
-                logw("-- [%s] %s", app.job['user'], type(app).__name__)
-                app.kill()
-                self.engine.progress()
-                # TODO: clean up temporary gc3lib processing dir(s)
-                #       app.kill() leaves the temporary gc3libs spooldir (files
-                #       transferred for / generated from processing, logfiles
-                #       etc.) alone, unfortunately the fetch_output() methods
-                #       tested below do not work as suggested by the docs:
-                ### self.engine.fetch_output(app)
-                ### app.fetch_output()
-                ### self.engine.progress()
-                # this is just to trigger the stats messages in debug mode:
-                self._engine_status()
+                self.kill_running_job(app)
             logw("^%s^", "-" * 80)
             self.engine.progress()
             stats = self._engine_status()
@@ -980,6 +968,22 @@ class JobSpooler(object):
         logw("QM shutdown: checking resource directories.")
         self.resource_dirs_clean()
         logw("QM shutdown: resource directories check completed.")
+
+    def kill_running_job(self, app):
+        """Helper method to kill a running job."""
+        logw("<KILLING> [%s] %s", app.job['user'], type(app).__name__)
+        app.kill()
+        self.engine.progress()
+        # TODO: clean up temporary gc3lib processing dir(s)
+        #       app.kill() leaves the temporary gc3libs spooldir (files
+        #       transferred for / generated from processing, logfiles
+        #       etc.) alone, unfortunately the fetch_output() methods
+        #       tested below do not work as suggested by the docs:
+        ### self.engine.fetch_output(app)
+        ### app.fetch_output()
+        ### self.engine.progress()
+        # this is just to trigger the stats messages in debug mode:
+        self._engine_status()
 
     def _engine_status(self):
         """Helper to get the engine status and print a formatted log."""
