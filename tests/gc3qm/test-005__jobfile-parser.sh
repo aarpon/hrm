@@ -8,7 +8,7 @@ PFX=$(dirname $0)
 source "$PFX/functions.inc.sh"
 
 SHORT=$(parse_shortname)
-PYSCRIPT=$(basename $0 | sed 's,.sh$,.py,')
+PYSCRIPT="python_scripts/$(basename $0 | sed 's,.sh$,.py,')"
 
 ########## TEST DESCRIPTION ##########
 # intended behaviour:

@@ -1,4 +1,4 @@
-test-007__hrm-jobqueue.py
+python_scripts/test-007__hrm-jobqueue.py
 
 ******** adding jobs to queue: ********
 jq.joblist: []

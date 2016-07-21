@@ -1,4 +1,4 @@
-test-005__jobfile-parser.py
+python_scripts/test-005__jobfile-parser.py
 
 >>>>>> Testing CORRECT job description files:
 
