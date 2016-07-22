@@ -77,6 +77,7 @@ class HuCoreApp(gc3libs.Application):
         # 143: hucore.bin received the HUP signal (9)
         # 165: the .hgsb file could not be parsed (file missing or with errors)
         ##### hucore EXIT CODES #####
+        self.status_changed()
         if self.execution.exitcode is None:
             # TODO: we could let the app know it was killed
             #       currently, were guessing from the exitcode 'None' that the
