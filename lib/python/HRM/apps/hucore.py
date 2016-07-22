@@ -102,10 +102,11 @@ class HuCoreApp(gc3libs.Application):
         log message if the status changes. Return the new state if the app it
         has changed, otherwise None.
         """
-        if self.execution.state != self.laststate:
-            logi("Job status changed to '%s'.", self.job['status'])
-            self.laststate = self.execution.state
-            return self.execution.state
+        new = self.execution.state
+        if new != self.laststate:
+            logi("Job status changed from '%s' to '%s'.", self.laststate, new)
+            self.laststate = self.job['status'] = new
+            return new
         else:
             return None
 
