@@ -41,7 +41,7 @@ gc3.gc3libs: WARNING: Unfinished jobs, trying to stop them:
 gc3.gc3libs: WARNING: Status of running job: RUNNING
 gc3.gc3libs: WARNING: <KILLING> [user01] HuDeconApp
 Terminated
-gc3.gc3libs: WARNING: Job 'UID_STRIPPED' apparently was killed by gc3pie!
+gc3.gc3libs: WARNING: Job 'UID_STRIPPED' apparently was killed or crahsed!
 gc3.gc3libs: WARNING: ^--------------------------------------------------------------------------------^
 gc3.gc3libs: INFO: Successfully terminated remaining jobs, none left.
 gc3.gc3libs: INFO: QM shutdown: spooler cleanup completed.

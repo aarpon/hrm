@@ -21,16 +21,16 @@ gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNIN
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: INFO: Finished initialization of JobDescription().
-gc3.gc3libs: INFO: Enqueueing job '1c71a3a491f985cfa0e6345319287fba741f1c69' into category 'user01'.
+gc3.gc3libs: INFO: Enqueueing job '60209a90db682692d3075777354c943393a766c9' into category 'user01'.
 gc3.gc3libs: INFO: Adding a new queue for 'user01' to the JobQueue.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['1c71a3a491f985cfa0e6345319287fba741f1c69'])}
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['60209a90db682692d3075777354c943393a766c9'])}
 gc3.gc3libs: WARNING: Received spooler status change request: pause -> run
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '1c71a3a491f985cfa0e6345319287fba741f1c69'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '60209a90db682692d3075777354c943393a766c9'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HuDeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: 1c71a3a491f985cfa0e6345319287fba741f1c69
-gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7eff4c559750 to: localhost
+gc3.gc3libs: INFO: Job UID: 60209a90db682692d3075777354c943393a766c9
+gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7f81d480e750 to: localhost
 gc3.gc3libs: INFO: Job status changed from 'NEW' to 'SUBMITTED'.
 gc3.gc3libs: INFO: Job status changed from 'SUBMITTED' to 'RUNNING'.
 gc3.gc3libs: WARNING: Received spooler status change request: run -> shutdown
@@ -41,7 +41,7 @@ gc3.gc3libs: WARNING: Unfinished jobs, trying to stop them:
 gc3.gc3libs: WARNING: Status of running job: RUNNING
 gc3.gc3libs: WARNING: <KILLING> [user01] HuDeconApp
 Terminated
-gc3.gc3libs: WARNING: Job '1c71a3a491f985cfa0e6345319287fba741f1c69' apparently was killed by gc3pie!
+gc3.gc3libs: WARNING: Job '60209a90db682692d3075777354c943393a766c9' apparently was killed or crahsed!
 gc3.gc3libs: WARNING: ^--------------------------------------------------------------------------------^
 gc3.gc3libs: INFO: Successfully terminated remaining jobs, none left.
 gc3.gc3libs: INFO: QM shutdown: spooler cleanup completed.
