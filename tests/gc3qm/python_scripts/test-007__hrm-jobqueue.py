@@ -49,8 +49,9 @@ def remove_print(uid):
     print "remove('%s'): %s (joblist: %s)" % (uid, job['uid'], jq.joblist())
 
 def next_print():
-    uid = jq.next_job()['uid']
-    print "next_job(): %s (joblist: %s)" % (uid, jq.joblist())
+    job = jq.next_job()
+    uid = job['uid']
+    print "next_job(): %s (joblist: %s)" % (job['uid'], jq.joblist())
 
 jq = HRM.JobQueue()
 
