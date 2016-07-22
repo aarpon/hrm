@@ -31,11 +31,13 @@ gc3.gc3libs: WARNING: Instantiating a HuDeconApp:
 [user01]: tests/gc3qm/hucore_templates/preview_faba128.hgsb --> ['tests/sample_images/faba128.h5']
 gc3.gc3libs: INFO: Job UID: UID_STRIPPED
 gc3.gc3libs: INFO: Successfully submitted HuDeconApp@APPID_STRIPPED to: localhost
-gc3.gc3libs: INFO: Job status changed to 'queued'.
-gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
+gc3.gc3libs: INFO: Job status changed from 'NEW' to 'SUBMITTED'.
+gc3.gc3libs: INFO: Job status changed from 'SUBMITTED' to 'RUNNING'.
+gc3.gc3libs: INFO: Job status changed from 'RUNNING' to 'TERMINATING'.
 gc3.gc3libs: INFO: Job 'UID_STRIPPED' terminated successfully!
 gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_UID_STRIPPED`.
-gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
+gc3.gc3libs: INFO: Job status changed from 'TERMINATING' to 'TERMINATED'.
+gc3.gc3libs: INFO: Status of job to be removed: TERMINATED
 gc3.gc3libs: WARNING: Received spooler status change request: run -> shutdown
 gc3.gc3libs: WARNING: Queue Manager shutdown initiated.
 gc3.gc3libs: INFO: QM shutdown: cleaning up spooler.

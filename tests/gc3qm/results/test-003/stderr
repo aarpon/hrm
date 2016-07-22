@@ -21,59 +21,65 @@ gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNIN
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: INFO: Finished initialization of JobDescription().
-gc3.gc3libs: INFO: Enqueueing job 'f67479446d578631346c7b79128dfbb93db17655' into category 'user01'.
+gc3.gc3libs: INFO: Enqueueing job 'cb372f54f888dc2f658db3424d38a7057fac5f62' into category 'user01'.
 gc3.gc3libs: INFO: Adding a new queue for 'user01' to the JobQueue.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['f67479446d578631346c7b79128dfbb93db17655'])}
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['cb372f54f888dc2f658db3424d38a7057fac5f62'])}
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_2.cfg', processing...
 gc3.gc3libs: INFO: Parsing jobfile '/var/www/html/hrm/run/spool/new/job_2.cfg'...
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: INFO: Finished initialization of JobDescription().
-gc3.gc3libs: INFO: Enqueueing job 'e1b8d008cce160ec1152669f477ac4adb2b8afaf' into category 'user01'.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['f67479446d578631346c7b79128dfbb93db17655', 'e1b8d008cce160ec1152669f477ac4adb2b8afaf'])}
+gc3.gc3libs: INFO: Enqueueing job '582365ccc2430265dcfba68235aceaa660e03a91' into category 'user01'.
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['cb372f54f888dc2f658db3424d38a7057fac5f62', '582365ccc2430265dcfba68235aceaa660e03a91'])}
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_3.cfg', processing...
 gc3.gc3libs: INFO: Parsing jobfile '/var/www/html/hrm/run/spool/new/job_3.cfg'...
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: INFO: Finished initialization of JobDescription().
-gc3.gc3libs: INFO: Enqueueing job '0ae9041981da99eec08fc27351b05d483165c0bc' into category 'user01'.
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['f67479446d578631346c7b79128dfbb93db17655', 'e1b8d008cce160ec1152669f477ac4adb2b8afaf', '0ae9041981da99eec08fc27351b05d483165c0bc'])}
+gc3.gc3libs: INFO: Enqueueing job '38ee30c263e2a66c64c23eb34ebe464c504a7ff1' into category 'user01'.
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['cb372f54f888dc2f658db3424d38a7057fac5f62', '582365ccc2430265dcfba68235aceaa660e03a91', '38ee30c263e2a66c64c23eb34ebe464c504a7ff1'])}
 gc3.gc3libs: WARNING: Received spooler status change request: pause -> run
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'f67479446d578631346c7b79128dfbb93db17655'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'cb372f54f888dc2f658db3424d38a7057fac5f62'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HuDeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: f67479446d578631346c7b79128dfbb93db17655
-gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7f5293fc3350 to: localhost
-gc3.gc3libs: INFO: Job status changed to 'queued'.
-gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
-gc3.gc3libs: INFO: Job 'f67479446d578631346c7b79128dfbb93db17655' terminated successfully!
-gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_f67479446d578631346c7b79128dfbb93db17655`.
-gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'e1b8d008cce160ec1152669f477ac4adb2b8afaf'.
+gc3.gc3libs: INFO: Job UID: cb372f54f888dc2f658db3424d38a7057fac5f62
+gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7fbad07a0750 to: localhost
+gc3.gc3libs: INFO: Job status changed from 'NEW' to 'SUBMITTED'.
+gc3.gc3libs: INFO: Job status changed from 'SUBMITTED' to 'RUNNING'.
+gc3.gc3libs: INFO: Job status changed from 'RUNNING' to 'TERMINATING'.
+gc3.gc3libs: INFO: Job 'cb372f54f888dc2f658db3424d38a7057fac5f62' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_cb372f54f888dc2f658db3424d38a7057fac5f62`.
+gc3.gc3libs: INFO: Job status changed from 'TERMINATING' to 'TERMINATED'.
+gc3.gc3libs: INFO: Status of job to be removed: TERMINATED
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '582365ccc2430265dcfba68235aceaa660e03a91'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HuDeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: e1b8d008cce160ec1152669f477ac4adb2b8afaf
-gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7f5293fc36d0 to: localhost
-gc3.gc3libs: INFO: Job status changed to 'queued'.
-gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
-gc3.gc3libs: INFO: Job 'e1b8d008cce160ec1152669f477ac4adb2b8afaf' terminated successfully!
-gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_e1b8d008cce160ec1152669f477ac4adb2b8afaf`.
-gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '0ae9041981da99eec08fc27351b05d483165c0bc'.
+gc3.gc3libs: INFO: Job UID: 582365ccc2430265dcfba68235aceaa660e03a91
+gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7fbad07a0910 to: localhost
+gc3.gc3libs: INFO: Job status changed from 'NEW' to 'SUBMITTED'.
+gc3.gc3libs: INFO: Job status changed from 'SUBMITTED' to 'RUNNING'.
+gc3.gc3libs: INFO: Job status changed from 'RUNNING' to 'TERMINATING'.
+gc3.gc3libs: INFO: Job '582365ccc2430265dcfba68235aceaa660e03a91' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_582365ccc2430265dcfba68235aceaa660e03a91`.
+gc3.gc3libs: INFO: Job status changed from 'TERMINATING' to 'TERMINATED'.
+gc3.gc3libs: INFO: Status of job to be removed: TERMINATED
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '38ee30c263e2a66c64c23eb34ebe464c504a7ff1'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
 gc3.gc3libs: WARNING: Instantiating a HuDeconApp:
 [user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: 0ae9041981da99eec08fc27351b05d483165c0bc
-gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7f5293f572d0 to: localhost
-gc3.gc3libs: INFO: Job status changed to 'queued'.
-gc3.gc3libs: INFO: Job status changed to 'SUBMITTED'.
-gc3.gc3libs: INFO: Job '0ae9041981da99eec08fc27351b05d483165c0bc' terminated successfully!
-gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_0ae9041981da99eec08fc27351b05d483165c0bc`.
-gc3.gc3libs: INFO: Job status changed to 'RUNNING'.
+gc3.gc3libs: INFO: Job UID: 38ee30c263e2a66c64c23eb34ebe464c504a7ff1
+gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7fbad07a0990 to: localhost
+gc3.gc3libs: INFO: Job status changed from 'NEW' to 'SUBMITTED'.
+gc3.gc3libs: INFO: Job status changed from 'SUBMITTED' to 'RUNNING'.
+gc3.gc3libs: INFO: Job status changed from 'RUNNING' to 'TERMINATING'.
+gc3.gc3libs: INFO: Job '38ee30c263e2a66c64c23eb34ebe464c504a7ff1' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_38ee30c263e2a66c64c23eb34ebe464c504a7ff1`.
+gc3.gc3libs: INFO: Job status changed from 'TERMINATING' to 'TERMINATED'.
+gc3.gc3libs: INFO: Status of job to be removed: TERMINATED
 gc3.gc3libs: WARNING: Received spooler status change request: run -> shutdown
 gc3.gc3libs: WARNING: Queue Manager shutdown initiated.
 gc3.gc3libs: INFO: QM shutdown: cleaning up spooler.
