@@ -611,7 +611,8 @@ class JobSpooler(object):
             elif self.status == 'shutdown':
                 return True
             elif self.status == 'refresh':
-                # refresh is now handled by the status.setter method:
+                # the actual refresh action is handled by the status.setter
+                # method, so we simply pass on:
                 pass
             elif self.status == 'pause':
                 # no need to do anything, just sleep and check requests again:
