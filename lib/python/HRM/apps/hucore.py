@@ -62,6 +62,29 @@ class HuCoreApp(gc3libs.Application):
         )
         self.laststate = self.execution.state
 
+    def new(self):
+        """Called when the job state is (re)set to NEW.
+
+        Note this will not be called when the application object is created,
+        rather if the state is reset to NEW after it has already been
+        submitted.
+        """
+        self.status_changed()
+
+    def running(self):
+        """Called when the job state transitions to RUNNING."""
+        self.status_changed()
+
+    def stopped(self):
+        """Called when the job state transitions to STOPPED."""
+        self.status_changed()
+        logc("Job '%s' has been suspended for an unknown reason!!!",
+             self.job['uid'])
+
+    def submitted(self):
+        """Called when the job state transitions to SUBMITTED."""
+        self.status_changed()
+
     def terminated(self):
         """This is called when the app has terminated execution."""
         # TODO: #407 process "output_dir" after job has terminated
@@ -95,6 +118,10 @@ class HuCoreApp(gc3libs.Application):
         else:
             logi("Job '%s' terminated successfully!", self.job['uid'])
             logi("The output of the application is in `%s`.", self.output_dir)
+
+    def terminating(self):
+        """Called when the job state transitions to TERMINATING."""
+        self.status_changed()
 
     def status_changed(self):
         """Check the if the execution state of the app has changed.
