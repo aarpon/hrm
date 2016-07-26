@@ -655,6 +655,10 @@ class JobSpooler(object):
         ### self.engine.fetch_output(app)
         ### app.fetch_output()
         ### self.engine.progress()
+        # remove the job from the queue:
+        self.queue.remove(app.job['uid'])
+        # trigger the update of the queue status json file:
+        self.queue.queue_details_json()
         # this is just to trigger the stats messages in debug mode:
         self._engine_status()
 
