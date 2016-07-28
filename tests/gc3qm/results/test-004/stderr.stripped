@@ -17,9 +17,6 @@ gc3.gc3libs: INFO: Received spooler queue status refresh request.
 gc3.gc3libs: WARNING: Received spooler status change request: run -> pause
 gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/job_1.cfg', processing...
 gc3.gc3libs: INFO: Parsing jobfile '/var/www/html/hrm/run/spool/new/job_1.cfg'...
-gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
-gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: INFO: Finished initialization of JobDescription().
 gc3.gc3libs: INFO: Enqueueing job 'UID_STRIPPED' into category 'user01'.
 gc3.gc3libs: INFO: Adding a new queue for 'user01' to the JobQueue.
@@ -42,6 +39,7 @@ gc3.gc3libs: WARNING: Status of running job: RUNNING
 gc3.gc3libs: WARNING: <KILLING> [user01] HuDeconApp
 Terminated
 gc3.gc3libs: WARNING: Job 'UID_STRIPPED' apparently was killed or crahsed!
+gc3.gc3libs: INFO: Status of job to be removed: RUNNING
 gc3.gc3libs: WARNING: ^--------------------------------------------------------------------------------^
 gc3.gc3libs: INFO: Successfully terminated remaining jobs, none left.
 gc3.gc3libs: INFO: QM shutdown: spooler cleanup completed.
