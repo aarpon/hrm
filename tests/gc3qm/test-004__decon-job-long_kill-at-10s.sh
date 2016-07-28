@@ -19,6 +19,8 @@ SHORT=$(parse_shortname)
 ########## TEST DESCRIPTION ##########
 
 
+clean_all_spooldirs
+
 startup_qm
 
 qm_request pause

@@ -30,7 +30,7 @@ for TEST in $RUN_TESTS ; do
     mkdir -p $RES
     set +e
     echo "++++++++++++++++++++ Running $SHORT ($TEST) ++++++++++++++++++++"
-    check_spooldirs_clean
+    clean_all_spooldirs
     STDOUT="$RES/stdout"
     STDERR="$RES/stderr"
     EXITVAL="$RES/exitval"
