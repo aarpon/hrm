@@ -95,6 +95,23 @@ startup_qm() {
 }
 
 
+wait_for_hucore_to_finish() {
+    # try to terminate any still-running hucore processes
+    if hucore_is_running ; then
+        if [ -n "$1" ] ; then
+            echo "WARNING: Found running HuCore processes, waiting..."
+            sleep $1
+        fi
+        if hucore_is_running ; then
+            echo "==============================================================="
+            echo "WARNING: Found running HuCore processes, trying to kill them..."
+            echo "==============================================================="
+            killall hucore.bin
+        fi
+    fi
+}
+
+
 wait_for_qm_to_finish() {
     # Wait a given number of seconds for the QM process to terminate,
     # otherwise try to shut it down (gracefully, using a shutdown request), or
@@ -106,6 +123,7 @@ wait_for_qm_to_finish() {
         sleep 1
         if ! qm_is_running ; then
             echo "QM process terminated."
+            wait_for_hucore_to_finish
             return
         fi
     done
@@ -124,13 +142,7 @@ wait_for_qm_to_finish() {
     if qm_is_running ; then
         echo "ERROR: QM doesn't react to HUP, giving up!!"
     fi
-    # try to terminate any still-running hucore processes
-    if hucore_is_running ; then
-        echo "==============================================================="
-        echo "WARNING: Found running HuCore processes, trying to kill them..."
-        echo "==============================================================="
-        killall hucore.bin
-    fi
+    wait_for_hucore_to_finish 2
 }
 
 
@@ -176,13 +188,6 @@ shutdown_qm_on_empty_queue() {
     fi
     qm_request shutdown
     wait_for_qm_to_finish 5
-    # try to terminate any still-running hucore processes
-    if hucore_is_running ; then
-        echo "==============================================================="
-        echo "WARNING: Found running HuCore processes, trying to kill them..."
-        echo "==============================================================="
-        killall hucore.bin
-    fi
 }
 
 msg_finished() {
