@@ -103,6 +103,22 @@ startup_qm() {
 }
 
 
+submit_jobs() {
+    # copy jobfiles with a given prefix into the spool/new directory to submit
+    # the to a running queue manager
+    if [ -z "$1" ] ; then
+        echo "ERROR: no jobfile prefix given for submission!"
+        exit 4
+    fi
+    # we are expected to be in the HRM base dir, so use the full path:
+    for jobfile in tests/gc3qm/inputs/$SHORT/${1}*.cfg ; do
+        cp -v $jobfile "$QM_SPOOL/spool/new"
+        sleep .1
+    done
+
+}
+
+
 wait_for_hucore_to_finish() {
     # try to terminate any still-running hucore processes
     if hucore_is_running ; then

@@ -13,18 +13,18 @@ None.
 ========================= queue status =========================
 QM process started.
 Requesting QM status change to: pause
-'tests/gc3qm/inputs/test-006/job_1.cfg' -> 'run/spool/new/job_1.cfg'
+'tests/gc3qm/inputs/test-006/preview_job_1.cfg' -> 'run/spool/new/preview_job_1.cfg'
 ========================= queue status =========================
 --- jobs retrieved for processing
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 973447afa9ed3fea3a6381616fe294bd601e02cd - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): bc427485014ccfe1eb01388bc7205d5d82be5988 - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 Requesting QM status change to: run
 ========================= queue status =========================
 --- jobs retrieved for processing
-user01 (user01@mail.xy): 973447afa9ed3fea3a6381616fe294bd601e02cd - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/preview_faba128.hgsb'] [queued]
+user01 (user01@mail.xy): bc427485014ccfe1eb01388bc7205d5d82be5988 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/preview_faba128.hgsb'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
 None.

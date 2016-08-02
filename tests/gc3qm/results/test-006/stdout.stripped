@@ -13,7 +13,7 @@ None.
 ========================= queue status =========================
 QM process started.
 Requesting QM status change to: pause
-'tests/gc3qm/inputs/test-006/job_1.cfg' -> 'run/spool/new/job_1.cfg'
+'tests/gc3qm/inputs/test-006/preview_job_1.cfg' -> 'run/spool/new/preview_job_1.cfg'
 ========================= queue status =========================
 --- jobs retrieved for processing
 None.

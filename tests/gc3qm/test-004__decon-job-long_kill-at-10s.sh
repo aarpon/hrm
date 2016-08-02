@@ -26,12 +26,7 @@ startup_qm
 qm_request pause
 sleep 1
 
-# we are in the HRM base dir now, so use the full path for job files:
-for jobfile in tests/gc3qm/inputs/$SHORT/*.cfg ; do
-    cp -v $jobfile "$QM_SPOOL/spool/new"
-    sleep .1
-done
-
+submit_jobs "decon_job_"
 sleep .5
 
 qm_request run
