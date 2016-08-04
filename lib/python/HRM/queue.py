@@ -45,12 +45,16 @@ class JobQueue(object):
             UID's of jobs being processed currently
         queue : dict(deque)
             queues of each category (user)
+        deletion_list : list
+            UID's of jobs to be deleted from the queue (NOTE: this list may
+            contain UID's from other queues as well!)
         """
         self.statusfile = None
         self.cats = deque('')
         self.jobs = dict()
         self.processing = list()
         self.queue = dict()
+        self.deletion_list = list()
 
     def __len__(self):
         """Get the total number of jobs in all queues (incl. processing)."""
@@ -196,6 +200,21 @@ class JobQueue(object):
         if update_status:
             logd(self.queue_details_json())
         return job
+
+    def process_deletion_list(self):
+        """Remove jobs from this queue that are on the deletion list."""
+        for uid in self.deletion_list:
+            logi("Job %s was requested for deletion", uid)
+            removed = self.remove(uid, update_status=False)
+            if removed is None:
+                # this is to be expected, so we only print a log message if we
+                # are in debug mode...
+                logd("No job removed, invalid uid or other queue's job.")
+            else:
+                logi("Job successfully removed from the queue.")
+                self.deletion_list.remove(uid)
+        # updating the queue status file is only done now:
+        logd(self.queue_details_json())
 
     def set_jobstatus(self, job, status):
         """Update the status of a job and trigger related actions."""
