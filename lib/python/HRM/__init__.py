@@ -143,7 +143,7 @@ def process_jobfile(fname, queues, dirs):
         return
     if not queues.has_key(job['type']):
         logc("ERROR: no queue existing for jobtype '%s'!", job['type'])
-        move_file(fname, dirs['done'], safe=True)
+        job.move_jobfile(dirs['done'])
         return
     job.move_jobfile(dirs['cur'])
     # TODO: have more than one queue, decide by 'tasktype' where to put a job
