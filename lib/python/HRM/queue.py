@@ -152,7 +152,7 @@ class JobQueue(object):
         logd("Current contents of all queues: %s", self.queue)
         return self.jobs[jobid]
 
-    def remove(self, uid):
+    def remove(self, uid, update_status=True):
         """Remove a job with a given UID from the queue.
 
         Take a job UID and remove the job from the list of currently processing
@@ -160,7 +160,12 @@ class JobQueue(object):
 
         Parameters
         ----------
-        uid : str (UID of job to remove)
+        uid : str
+            UID of job to remove
+        update_status : bool (optional, default=True)
+            update the queue status file after a job has been successfully
+            removed - set to 'False' to avoid unnecessary status updates e.g.
+            in case of bulk deletion requests
 
         Returns
         -------
@@ -185,9 +190,11 @@ class JobQueue(object):
         else:
             logw("Can't find job '%s' in any of our queues!", uid)
             return None
-        logd("Current jobs: %s", self.jobs)
-        logd("Current queue categories: %s", self.cats)
-        logd("Current contents of all queues: %s", self.queue)
+        # logd("Current jobs: %s", self.jobs)
+        # logd("Current queue categories: %s", self.cats)
+        # logd("Current contents of all queues: %s", self.queue)
+        if update_status:
+            logd(self.queue_details_json())
         return job
 
     def set_jobstatus(self, job, status):
