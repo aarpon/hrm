@@ -414,11 +414,13 @@ class JobDescription(dict):
         # and the input file(s) section:
         # TODO: can we check if this section contains nonsense values?
         if 'inputfiles' not in self._sections:
-            raise ValueError("No input files defined in %s." % self.fname)
+            raise ValueError("Section 'inputfiles' missing in %s." % self.fname)
         self['infiles'] = []
         for option in self.jobparser.options('inputfiles'):
             infile = self._get_option('inputfiles', option)
             self['infiles'].append(infile)
+        if not self['infiles']:
+            raise ValueError("No input files defined in %s." % self.fname)
 
     def get_category(self):
         """Get the category of this job, in our case the value of 'user'."""
