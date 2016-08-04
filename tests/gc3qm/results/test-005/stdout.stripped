@@ -70,6 +70,23 @@ python_scripts/test-005__jobfile-parser.py
  'uid': 'UID_STRIPPED',
  'user': 'user01',
  'ver': '7'}
+----------------- parsing jobfiles/decon_it-999_user01_fixed-timestamp_45a1734.cfg -----------------
+ - Parsing worked without errors on 'jobfiles/decon_it-999_user01_fixed-timestamp_45a1734.cfg'.
+{'email': 'user01@mail.xy',
+ 'exec': '/usr/local/bin/hucore',
+ 'infiles': ['tests/sample_images/faba128.h5'],
+ 'pid': 'N/A',
+ 'progress': 'N/A',
+ 'server': 'N/A',
+ 'start': 'N/A',
+ 'status': 'N/A',
+ 'tasktype': 'decon',
+ 'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb',
+ 'timestamp': TIMESTAMP_STRIPPED,
+ 'type': 'hucore',
+ 'uid': 'UID_STRIPPED',
+ 'user': 'user01',
+ 'ver': '7'}
 ----------------- parsing jobfiles/preview_user01.cfg -----------------
  - Parsing worked without errors on 'jobfiles/preview_user01.cfg'.
 {'email': 'user01@mail.xy',
@@ -84,6 +101,20 @@ python_scripts/test-005__jobfile-parser.py
  'template': 'tests/gc3qm/hucore_templates/preview_faba128.hgsb',
  'timestamp': TIMESTAMP_STRIPPED,
  'type': 'hucore',
+ 'uid': 'UID_STRIPPED',
+ 'user': 'user01',
+ 'ver': '7'}
+----------------- parsing jobfiles/remove_job_45a1734.cfg -----------------
+ - Parsing worked without errors on 'jobfiles/remove_job_45a1734.cfg'.
+{'email': 'user01@mail.xy',
+ 'ids': ['UID_STRIPPED'],
+ 'pid': 'N/A',
+ 'progress': 'N/A',
+ 'server': 'N/A',
+ 'start': 'N/A',
+ 'status': 'N/A',
+ 'timestamp': TIMESTAMP_STRIPPED,
+ 'type': 'deletejobs',
  'uid': 'UID_STRIPPED',
  'user': 'user01',
  'ver': '7'}
@@ -109,8 +140,16 @@ python_scripts/test-005__jobfile-parser.py
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg':
    Section 'hrmjobfile' in file 'jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg' contains unknown options, jobfile is invalid: [('invalid_option', 'some-value')]
 
+----------------- parsing jobfiles/invalid/v7_broken_section_inputfiles.cfg -----------------
+ - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_inputfiles.cfg':
+   No input files defined in jobfiles/invalid/v7_broken_section_inputfiles.cfg.
+
 ----------------- parsing jobfiles/invalid/v7_broken_timestamp.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_timestamp.cfg':
    Invalid timestamp: on_parse.
+
+----------------- parsing jobfiles/invalid/v7_removejob_nojobids.cfg -----------------
+ - Got the excpected ValueError from 'jobfiles/invalid/v7_removejob_nojobids.cfg':
+   Can't find jobids in jobfiles/invalid/v7_removejob_nojobids.cfg.
 
 ************************* TEST FINISHED! *************************
