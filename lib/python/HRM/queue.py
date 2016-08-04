@@ -117,7 +117,10 @@ class JobQueue(object):
     def _is_queue_empty(self, cat):
         """Clean up if a queue of a given category is empty.
 
-        Return True if the queue was empty and removed, False otherwise.
+        Returns
+        -------
+        status : bool
+            True if the queue was empty and removed, False otherwise.
         """
         if len(self.queue[cat]) == 0:
             logd("Queue for category '%s' now empty, removing it.", cat)
