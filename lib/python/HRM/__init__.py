@@ -141,6 +141,15 @@ def process_jobfile(fname, queues, dirs):
         # move the file out of the way before returning:
         move_file(fname, dirs['done'], safe=True)
         return
+    if job['type'] == 'deletejobs':
+        logw('Received job deletion request(s)!')
+        # TODO: append only to specific queue!
+        for queue in queues.itervalues():
+            for delete_id in job['ids']:
+                queue.deletion_list.append(delete_id)
+        # we're finished, so move the jobfile and return:
+        job.move_jobfile(dirs['done'])
+        return
     if not queues.has_key(job['type']):
         logc("ERROR: no queue existing for jobtype '%s'!", job['type'])
         job.move_jobfile(dirs['done'])
@@ -590,6 +599,26 @@ class JobSpooler(object):
                 # we don't process more than one request at a time, so exit:
                 return
 
+    def check_for_jobs_to_delete(self):
+        """Process job deletion requests for all queues."""
+        ### TODO: test how this behaves in case of running jobs, maybe we need
+        ### to reverse the order (first kill running, then remove queued)...
+        # first process deletion requests for waiting jobs
+        self.queue.process_deletion_list()
+        # then process jobs that have been dispatched already:
+        for app in self.apps:
+            uid = app.job['uid']
+            if uid in self.queue.deletion_list:
+                # TODO: we need to make sure that the calls to the engine in
+                # kill_running_job() do not accidentially submit the next job
+                # as it could be potentially enlisted for removal (this will of
+                # course not happen if the queued jobs are checked for deletion
+                # requests first, but this might have to be change)...
+                self.kill_running_job(app)
+                self.queue.deletion_list.remove(uid)
+                self.queue.remove(uid)
+
+
     def spool(self):
         """Wrapper method for the spooler to catch Ctrl-C."""
         try:
@@ -603,6 +632,8 @@ class JobSpooler(object):
         while True:
             self.check_status_request()
             if self.status == 'run':
+                # process deletion requests before anything else
+                self.check_for_jobs_to_delete()
                 self.engine.progress()
                 for i, app in enumerate(self.apps):
                     new_state = app.status_changed()
