@@ -387,6 +387,8 @@ class JobDescription(dict):
         ### now call the jobtype-specific parser method(s):
         if self['type'] == 'hucore':
             self._parse_job_hucore()
+        elif self['type'] == 'deletejobs':
+            self._parse_job_deletejobs()
         else:
             raise ValueError("Unknown jobtype '%s'" % self['type'])
 
@@ -422,10 +424,29 @@ class JobDescription(dict):
         if not self['infiles']:
             raise ValueError("No input files defined in %s." % self.fname)
 
+    def _parse_job_deletejobs(self):
+        """Do the specific parsing of "deletejobs" type jobfiles.
+
+        Returns
+        -------
+        void
+            All information is added to the "self" dict.
+        """
+        if 'deletejobs' not in self._sections:
+            raise ValueError("No 'deletejobs' section in %s." % self.fname)
+            # raise ValueError("No job ID's defined in %s." % self.fname)
+        try:
+            jobids = self._get_option('deletejobs', 'ids')
+        except ConfigParser.NoOptionError:
+            raise ValueError("Can't find jobids in %s." % self.fname)
+        # split string at commas, strip whitespace from components:
+        self['ids'] = [jobid.strip() for jobid in jobids.split(',')]
+        for jobid in self['ids']:
+            logi("Request to --- DELETE --- job '%s'", jobid)
+
     def get_category(self):
         """Get the category of this job, in our case the value of 'user'."""
         return self['user']
-
 
 
 class JobSpooler(object):
