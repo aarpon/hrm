@@ -562,11 +562,6 @@ class JobSpooler(object):
     def resource_dirs_clean(self):
         """Check if the resource dirs of all resources are clean.
 
-        Parameters
-        ----------
-        engine : gc3libs.core.Engine
-            The GC3 engine to check the resource directories for.
-
         Returns
         -------
         bool
