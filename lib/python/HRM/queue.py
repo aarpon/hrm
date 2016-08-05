@@ -10,7 +10,6 @@ JobQueue()
     Job handling and scheduling.
 """
 
-import os
 import itertools
 import json
 from collections import deque
