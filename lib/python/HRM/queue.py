@@ -96,7 +96,7 @@ class JobQueue(object):
         """
         cat = job.get_category()
         uid = job['uid']
-        if self.jobs.has_key(uid):
+        if uid in self.jobs:
             raise ValueError("Job with uid '%s' already in this queue!" % uid)
         logi("Enqueueing job '%s' into category '%s'.", uid, cat)
         self.jobs[uid] = job  # store the job in the global dict
@@ -180,14 +180,14 @@ class JobQueue(object):
             The JobDescription dict of the job that was removed (on success).
         """
         logd("Trying to remove job with uid '%s'.", uid)
-        if not self.jobs.has_key(uid):
+        if uid not in self.jobs:
             logw("No job with uid '%s' was found!", uid)
             return None
         job = self.jobs[uid]   # remember the job for returning it later
         cat = job.get_category()
         logi("Status of job to be removed: %s", job['status'])
         del self.jobs[uid]     # remove the job from the jobs dict
-        if self.queue.has_key(cat) and uid in self.queue[cat]:
+        if cat in self.queue and uid in self.queue[cat]:
             logd("Removing job '%s' from queue '%s'.", uid, cat)
             self.queue[cat].remove(uid)
             self._is_queue_empty(cat)

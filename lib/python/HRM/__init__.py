@@ -149,7 +149,7 @@ def process_jobfile(fname, queues, dirs):
         # we're finished, so move the jobfile and return:
         job.move_jobfile(dirs['done'])
         return
-    if not queues.has_key(job['type']):
+    if job['type'] not in queues:
         logc("ERROR: no queue existing for jobtype '%s'!", job['type'])
         job.move_jobfile(dirs['done'])
         return
