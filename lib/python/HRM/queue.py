@@ -254,16 +254,16 @@ class JobQueue(object):
         def format_job(job):
             """Helper function to assemble the job dict."""
             fjob = {
-                "id" : job['uid'],
-                "file" : job['infiles'][0],  # TODO: see above!
-                "username" : job['user'],
+                "id"      : job['uid'],
+                "file"    : job['infiles'][0],  # TODO: see above!
+                "username": job['user'],
                 "jobType" : job['type'],
-                "status" : job['status'],
-                "server" : 'N/A',
-                "progress" : 'N/A',
-                "pid" : 'N/A',
-                "start" : 'N/A',
-                "queued" : job['timestamp'],
+                "status"  : job['status'],
+                "server"  : 'N/A',
+                "progress": 'N/A',
+                "pid"     : 'N/A',
+                "start"   : 'N/A',
+                "queued"  : job['timestamp'],
             }
             return fjob
         joblist = self.queue_details()

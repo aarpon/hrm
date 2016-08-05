@@ -57,7 +57,7 @@ class HuCoreApp(gc3libs.Application):
             outputs=['resultdir', 'previews'],
             # collect the results in a subfolder of GC3Pie's spooldir:
             output_dir=os.path.join(gc3_output, 'results_%s' % uid),
-            stderr='stdout.txt', # combine stdout & stderr
+            stderr='stdout.txt',  # combine stdout & stderr
             stdout='stdout.txt'
         )
         self.laststate = self.execution.state
@@ -94,12 +94,12 @@ class HuCoreApp(gc3libs.Application):
         # TODO: consider specifying the output dir in the jobfile
         #       for now we use the gc3spooldir as the output_dir, so results
         #       will NOT get moved across different storage locations
-        ##### hucore EXIT CODES #####
+        # ==== hucore EXIT CODES ====
         # 0: all went well
         # 130: hucore.bin was terminated with Ctrl-C (interactive console)
         # 143: hucore.bin received the HUP signal (9)
         # 165: the .hgsb file could not be parsed (file missing or with errors)
-        ##### hucore EXIT CODES #####
+        # ==== hucore EXIT CODES ====
         self.status_changed()
         if self.execution.exitcode is None:
             # TODO: we could let the app know it was killed

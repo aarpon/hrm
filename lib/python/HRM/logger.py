@@ -19,6 +19,7 @@ logd = gc3libs.log.debug
 loge = gc3libs.log.error
 logc = gc3libs.log.critical
 
+
 def set_loglevel(level):
     """Convenience function to adjust the loglevel."""
     mapping = {
