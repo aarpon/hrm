@@ -13,7 +13,7 @@ QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf -v"
 
 clean_all_spooldirs() {
     set +e
-    rm -vf $HOME/.gc3/shellcmd.d/*
+    rm -vf /data/gc3_resourcedir/shellcmd.d/*
     rm -vf "../../$QM_SPOOL/spool/cur/"*
     set -e
 }
