@@ -350,7 +350,7 @@ class JobDescription(dict):
                                  (cfg_option, self.fname))
                 # raise ValueError("Jobfile %s invalid, '%s' is missing!" %
                 #                  (self.fname, cfg_option))
-        ### by now the section should be fully parsed and therefore empty:
+        # by now the section should be fully parsed and therefore empty:
         self._check_for_remaining_options('hrmjobfile')
 
     def _parse_jobdescription(self):
@@ -361,7 +361,7 @@ class JobDescription(dict):
         processing task. Raises Exceptions in case something unexpected is
         found in the given file.
         """
-        ### prepare the parser-mapping for the generic 'hrmjobfile' section:
+        # prepare the parser-mapping for the generic 'hrmjobfile' section:
         mapping = [
             ['version', 'ver'],
             ['username', 'user'],
@@ -369,13 +369,11 @@ class JobDescription(dict):
             ['timestamp', 'timestamp'],
             ['jobtype', 'type']
         ]
-        ### now parse the section:
+        # now parse the section:
         self._parse_section_entries('hrmjobfile', mapping)
-        ### sanity-check / validate the parsed options:
-        # version
+        # sanity-check / validate the parsed options:
         if self['ver'] != JOBFILE_VER:
             raise ValueError("Unexpected jobfile version '%s'." % self['ver'])
-        # timestamp
         if self['timestamp'] == 'on_parsing':
             # the keyword "on_parsing" requires us to fill in the value:
             self['timestamp'] = time.time()
@@ -393,7 +391,7 @@ class JobDescription(dict):
                 self['timestamp'] = float(self['timestamp'])
             except ValueError:
                 raise ValueError("Invalid timestamp: %s." % self['timestamp'])
-        ### now call the jobtype-specific parser method(s):
+        # now call the jobtype-specific parser method(s):
         if self['type'] == 'hucore':
             self._parse_job_hucore()
         elif self['type'] == 'deletejobs':
@@ -412,13 +410,13 @@ class JobDescription(dict):
         void
             All information is added to the "self" dict.
         """
-        ### prepare the parser-mapping for the generic 'hrmjobfile' section:
+        # prepare the parser-mapping for the generic 'hrmjobfile' section:
         mapping = [
             ['tasktype', 'tasktype'],
             ['executable', 'exec'],
             ['template', 'template']
         ]
-        ### now parse the section:
+        # now parse the section:
         self._parse_section_entries('hucore', mapping)
         if self['tasktype'] != 'decon' and self['tasktype'] != 'preview':
             raise ValueError("Tasktype invalid: %s" % self['tasktype'])
@@ -601,8 +599,8 @@ class JobSpooler(object):
 
     def check_for_jobs_to_delete(self):
         """Process job deletion requests for all queues."""
-        ### TODO: test how this behaves in case of running jobs, maybe we need
-        ### to reverse the order (first kill running, then remove queued)...
+        # ## TODO: test how this behaves in case of running jobs, maybe we need
+        # ## to reverse the order (first kill running, then remove queued)...
         # first process deletion requests for waiting jobs
         self.queue.process_deletion_list()
         # then process jobs that have been dispatched already:
@@ -617,7 +615,6 @@ class JobSpooler(object):
                 self.kill_running_job(app)
                 self.queue.deletion_list.remove(uid)
                 self.queue.remove(uid)
-
 
     def spool(self):
         """Wrapper method for the spooler to catch Ctrl-C."""
