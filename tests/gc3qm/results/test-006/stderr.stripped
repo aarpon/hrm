@@ -9,14 +9,14 @@ gc3.gc3libs: INFO: Setting job queue status report file: run/queue/status/hucore
 gc3.gc3libs: INFO: Using gc3pie spooldir: /data/hrm_data
 gc3.gc3libs: INFO: Creating GC3Pie engine using config file "config/samples/gc3pie_localhost.conf".
 gc3.gc3libs: INFO: Computational resource 'localhost' initialized successfully.
-gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
+gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /data/gc3_resourcedir/shellcmd.d
 gc3.gc3libs: INFO: Created JobSpooler.
 gc3.gc3libs: INFO: Initialized the event handler for inotify.
 gc3.gc3libs: INFO: Excpected job description files version: 7.
 gc3.gc3libs: INFO: Received spooler queue status refresh request.
 gc3.gc3libs: WARNING: Received spooler status change request: run -> pause
-gc3.gc3libs: WARNING: Found new file '/var/www/html/hrm/run/spool/new/preview_job_1.cfg', processing...
-gc3.gc3libs: INFO: Parsing jobfile '/var/www/html/hrm/run/spool/new/preview_job_1.cfg'...
+gc3.gc3libs: INFO: New file event 'preview_job_1.cfg'
+gc3.gc3libs: INFO: Parsing jobfile 'preview_job_1.cfg'...
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
@@ -43,5 +43,5 @@ gc3.gc3libs: WARNING: Queue Manager shutdown initiated.
 gc3.gc3libs: INFO: QM shutdown: cleaning up spooler.
 gc3.gc3libs: INFO: QM shutdown: spooler cleanup completed.
 gc3.gc3libs: WARNING: QM shutdown: checking resource directories.
-gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /home/hrmuser/.gc3/shellcmd.d
+gc3.gc3libs: INFO: Checking resource dir for resource 'localhost': /data/gc3_resourcedir/shellcmd.d
 gc3.gc3libs: WARNING: QM shutdown: resource directories check completed.
