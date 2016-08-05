@@ -37,7 +37,6 @@ from HRM.queue import JobQueue
 from HRM.apps import hucore
 from HRM.logger import *
 
-
 # expected version for job description files:
 JOBFILE_VER = '7'
 
@@ -74,8 +73,8 @@ def setup_rundirs(base_dir):
     """
     full_subdirs = dict()
     tree = {
-        'spool' : ['new', 'cur', 'done'],
-        'queue' : ['status', 'requests']
+        'spool': ['new', 'cur', 'done'],
+        'queue': ['status', 'requests']
     }
     for run_dir in tree:
         for sub_dir in tree[run_dir]:
