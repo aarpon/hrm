@@ -128,8 +128,7 @@ def process_jobfile(fname, queues, dirs):
     """
     try:
         job = JobDescription(fname, 'file')
-        logd("Dict assembled from the processed job file:")
-        logd(pprint.pformat(job))
+        logd("JobDescription from processed jobfile: %s", pprint.pformat(job))
     except IOError as err:
         logw("Error reading job description file (%s), skipping.", err)
         # there is nothing to add to the queue and the IOError indicates
@@ -271,7 +270,8 @@ class JobDescription(dict):
         config_raw : str
             The file content as a single string.
         """
-        logi("Parsing jobfile '%s'...", self.fname)
+        logi("Parsing jobfile '%s'...", os.path.basename(self.fname))
+        logd("Full jobfile path: '%s'...", self.fname)
         if not os.path.exists(self.fname):
             raise IOError("Can't find file '%s'!" % self.fname)
         if not os.access(self.fname, os.R_OK):

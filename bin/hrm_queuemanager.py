@@ -69,7 +69,8 @@ class EventHandler(pyinotify.ProcessEvent):
 
     def process_IN_CREATE(self, event):
         """Method handling 'create' events."""
-        logw("Found new file '%s', processing...", event.pathname)
+        logi("New file event '%s'", os.path.basename(event.pathname))
+        logd("inotify 'IN_CREATE' event full file path '%s'", event.pathname)
         HRM.process_jobfile(event.pathname, self.queues, self.dirs)
 
 
