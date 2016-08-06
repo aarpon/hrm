@@ -692,6 +692,12 @@ class JobSpooler(object):
         logw("<KILLING> [%s] %s", app.job['user'], type(app).__name__)
         app.kill()
         self.engine.progress()
+        state = app.status_changed()
+        if state != 'TERMINATED':
+            loge("Expected status 'TERMINATED', found '%s'!", state)
+        else:
+            logw("App has terminated, removing from list of apps.")
+            self.apps.remove(app)
         # TODO: clean up temporary gc3lib processing dir(s)
         #       app.kill() leaves the temporary gc3libs spooldir (files
         #       transferred for / generated from processing, logfiles
