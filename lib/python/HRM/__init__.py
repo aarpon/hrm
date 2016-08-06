@@ -593,22 +593,18 @@ class JobSpooler(object):
 
     def check_for_jobs_to_delete(self):
         """Process job deletion requests for all queues."""
-        # ## TODO: test how this behaves in case of running jobs, maybe we need
-        # ## to reverse the order (first kill running, then remove queued)...
-        # first process deletion requests for waiting jobs
-        self.queue.process_deletion_list()
-        # then process jobs that have been dispatched already:
+        # first process jobs that have been dispatched already:
         for app in self.apps:
             uid = app.job['uid']
             if uid in self.queue.deletion_list:
                 # TODO: we need to make sure that the calls to the engine in
                 # kill_running_job() do not accidentially submit the next job
-                # as it could be potentially enlisted for removal (this will of
-                # course not happen if the queued jobs are checked for deletion
-                # requests first, but this might have to be change)...
+                # as it could be potentially enlisted for removal...
                 self.kill_running_job(app)
                 self.queue.deletion_list.remove(uid)
-                self.queue.remove(uid)
+        # then process deletion requests for waiting jobs (note: killed jobs
+        # have been removed from the queue by the kill_running_job() method)
+        self.queue.process_deletion_list()
 
     def spool(self):
         """Wrapper method for the spooler to catch Ctrl-C."""
