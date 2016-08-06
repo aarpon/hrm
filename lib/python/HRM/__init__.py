@@ -699,9 +699,9 @@ class JobSpooler(object):
         #       transferred for / generated from processing, logfiles
         #       etc.) alone, unfortunately the fetch_output() methods
         #       tested below do not work as suggested by the docs:
-        ### self.engine.fetch_output(app)
-        ### app.fetch_output()
-        ### self.engine.progress()
+        # ## self.engine.fetch_output(app)
+        # ## app.fetch_output()
+        # ## self.engine.progress()
         # remove the job from the queue:
         self.queue.remove(app.job['uid'])
         # trigger the update of the queue status json file:
