@@ -233,7 +233,7 @@ class JobDescription(dict):
         self['progress'] = "N/A"
         self['pid'] = "N/A"
         self['server'] = "N/A"
-        logi("Finished initialization of JobDescription().")
+        logd("Finished initialization of JobDescription().")
         logd(pprint.pformat(self))
 
     def move_jobfile(self, target):
