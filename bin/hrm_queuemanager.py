@@ -64,9 +64,10 @@ class EventHandler(pyinotify.ProcessEvent):
         dirs : dict
             Spooling directories in a dict, as returned by HRM.setup_rundirs().
         """
-        logi("Initialized the event handler for inotify.")
         self.queues = queues
         self.dirs = dirs
+        logi('Initialized the event handler for inotify, watching job '
+             'submission directory "%s".', self.dirs['new'])
 
     def process_IN_CREATE(self, event):
         """Method handling 'create' events.
