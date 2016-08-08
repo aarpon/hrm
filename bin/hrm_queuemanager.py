@@ -37,6 +37,8 @@ sys.path.insert(0, LPY)
 
 # pylint: disable=wrong-import-position
 import HRM
+import HRM.queue
+import HRM.jobs
 from HRM.logger import *
 
 
@@ -76,7 +78,7 @@ class EventHandler(pyinotify.ProcessEvent):
         """
         logi("New file event '%s'", os.path.basename(event.pathname))
         logd("inotify 'IN_CREATE' event full file path '%s'", event.pathname)
-        HRM.process_jobfile(event.pathname, self.queues, self.dirs)
+        HRM.jobs.process_jobfile(event.pathname, self.queues, self.dirs)
 
 
 def parse_arguments():
@@ -107,7 +109,7 @@ def main():
 
     spool_dirs = HRM.setup_rundirs(args.spooldir)
     jobqueues = dict()
-    jobqueues['hucore'] = HRM.JobQueue()
+    jobqueues['hucore'] = HRM.queue.JobQueue()
     for qname, queue in jobqueues.iteritems():
         status = os.path.join(spool_dirs['status'], qname + '.json')
         queue.set_statusfile(status)
@@ -118,7 +120,7 @@ def main():
     # process jobfiles already existing during our startup:
     for jobfile in spool_dirs['newfiles']:
         fname = os.path.join(spool_dirs['new'], jobfile)
-        HRM.process_jobfile(fname, jobqueues, spool_dirs)
+        HRM.jobs.process_jobfile(fname, jobqueues, spool_dirs)
 
 
     # select a specific resource if requested on the cmdline:
@@ -133,12 +135,6 @@ def main():
                                                        dirs=spool_dirs))
     notifier.start()
     wdd = watch_mgr.add_watch(spool_dirs['new'], mask, rec=False)
-
-    print '*' * 80
-    print('HRM Queue Manager started, watching spooldir "%s" '
-          '(Ctrl-C to abort).' % spool_dirs['new'])
-    print '*' * 80
-    logi('Excpected job description files version: %s.', HRM.JOBFILE_VER)
 
     try:
         # NOTE: spool() is blocking, as it contains the main spooling loop!
