@@ -19,7 +19,6 @@ from .logger import *
 
 
 class JobQueue(object):
-
     """Class to store a list of jobs that need to be processed.
 
     An instance of this class can be used to keep track of lists of jobs of

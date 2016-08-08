@@ -104,7 +104,6 @@ def setup_rundirs(base_dir):
 
 
 class JobSpooler(object):
-
     """Spooler class processing the queue, dispatching jobs, etc.
 
     Instance Variables

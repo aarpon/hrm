@@ -91,7 +91,6 @@ def move_file(fname, target, safe=False):
 
 
 class JobDescription(dict):
-
     """Abstraction class for handling HRM job descriptions.
 
     Read an HRM job description either from a file or a string and parse

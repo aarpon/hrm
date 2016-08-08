@@ -43,7 +43,6 @@ from HRM.logger import *
 
 
 class EventHandler(pyinotify.ProcessEvent):
-
     """Handler for pyinotify filesystem events.
 
     An instance of this class can be registered as a handler to pyinotify and
