@@ -15,7 +15,7 @@ import json
 from collections import deque
 import gc3libs
 
-from HRM.logger import *
+from .logger import *
 
 
 class JobQueue(object):
