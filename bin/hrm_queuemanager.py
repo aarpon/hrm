@@ -36,6 +36,7 @@ from HRM.spooler import JobSpooler, setup_rundirs
 from HRM.logger import *
 
 
+# FIXME: move into HRM libs!
 class EventHandler(pyinotify.ProcessEvent):
     """Handler for pyinotify filesystem events.
 
