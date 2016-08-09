@@ -9,18 +9,14 @@ Prototype of a GC3Pie-based job spooler engine.
 import sys
 import os
 import argparse
-import logging
 import pyinotify
-
-import gc3libs
-
 
 # pylint: disable=wrong-import-position
 import HRM
 import HRM.queue
 import HRM.jobs
+from HRM.logger import set_verbosity
 from HRM.spooler import JobSpooler, setup_rundirs
-from HRM.logger import *
 from HRM.inotify import EventHandler
 
 
@@ -47,8 +43,7 @@ def main():
     args = parse_arguments()
 
     # set the loglevel as requested on the commandline
-    loglevel = logging.WARN - (args.verbosity * 10)
-    gc3libs.configure_logger(loglevel, "qmgc3")
+    set_verbosity(args.verbosity)
 
     spool_dirs = setup_rundirs(args.spooldir)
     jobqueues = dict()
