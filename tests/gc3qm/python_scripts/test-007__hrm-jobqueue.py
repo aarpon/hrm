@@ -8,14 +8,13 @@ export PYTHONPATH=$PYTHONPATH:../../lib/python/
 python test-007__hrm-jobqueue.py
 """
 
-try:
-    import HRM
-except ImportError:
-    raise SystemExit(__doc__)
+import HRM.jobs
+import HRM.queue
 
 # the reload statement is here so we can us the script in subsequent calls
 # during a single IPython session:
-reload(HRM)
+reload(HRM.jobs)
+reload(HRM.queue)
 
 from HRM.logger import set_loglevel
 from HRM.logger import *
@@ -26,7 +25,7 @@ jobs = list(xrange(7))
 
 jobfile = 'jobfiles/decon_it-3_user01.cfg'
 for i in xrange(7):
-    jobs[i] = HRM.JobDescription(jobfile, 'file')
+    jobs[i] = HRM.jobs.JobDescription(jobfile, 'file')
 
 jobs[0]['uid'] = 'u000_aaa'
 jobs[0]['user'] = 'u000'
@@ -53,7 +52,7 @@ def next_print():
     uid = job['uid']
     print "next_job(): %s (joblist: %s)" % (job['uid'], jq.joblist())
 
-jq = HRM.JobQueue()
+jq = HRM.queue.JobQueue()
 
 print("\n******** adding jobs to queue: ********")
 logw("\n******** adding jobs to queue: ********")
@@ -75,7 +74,7 @@ print "jq.joblist:", jq.joblist()
 print("\n\n\n\n******** creating a new job queue object: ********")
 logw("\n\n\n\n******** creating a new job queue object: ********")
 print("**************************************************")
-jq = HRM.JobQueue()
+jq = HRM.queue.JobQueue()
 jq.queue_details_hr()
 
 print("\n\n******** adding jobs to queue: ********")
@@ -108,7 +107,7 @@ print jq.remove('aaa')
 print("\n\n\n\n******** creating a new job queue object: ********")
 logw("\n\n\n\n******** creating a new job queue object: ********")
 print("**************************************************")
-jq = HRM.JobQueue()
+jq = HRM.queue.JobQueue()
 jq.queue_details_hr()
 
 print("\n\n******** trying to add duplicate jobs to queue: ********")
