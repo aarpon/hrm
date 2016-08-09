@@ -105,6 +105,7 @@ class JobSpooler(object):
     Instance Variables
     ------------------
     queue : HRM.JobQueue
+    # queues : dict(HRM.JobQueue)  # TODO: multi-queue logic (#136, #272)
     gc3spooldir : str
     gc3conf : str
     dirs : dict
@@ -128,6 +129,7 @@ class JobSpooler(object):
             The path to a gc3pie configuration file.
         """
         self.queue = queue
+        # self.queues = dict()  # TODO: multi-queue logic (#136, #272)
         self.gc3spooldir = None
         self.gc3conf = None
         self._check_gc3conf(gc3conf)
