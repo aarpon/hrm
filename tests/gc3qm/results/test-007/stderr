@@ -6,7 +6,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -17,9 +17,9 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1470406057.296133,
+ 'timestamp': 1470723290.031999,
  'type': 'hucore',
- 'uid': '5fb410be3e70aec16bf8071f2fbe2f7c9be5cd9b',
+ 'uid': '278320d95cca403b5049863621ded87c577e0fc0',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
@@ -30,7 +30,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -41,9 +41,9 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1470406057.297164,
+ 'timestamp': 1470723290.033035,
  'type': 'hucore',
- 'uid': '5fb410be3e70aec16bf8071f2fbe2f7c9be5cd9b',
+ 'uid': '278320d95cca403b5049863621ded87c577e0fc0',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
@@ -54,7 +54,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -65,9 +65,9 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1470406057.298174,
+ 'timestamp': 1470723290.034052,
  'type': 'hucore',
- 'uid': '5fb410be3e70aec16bf8071f2fbe2f7c9be5cd9b',
+ 'uid': '278320d95cca403b5049863621ded87c577e0fc0',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
@@ -78,7 +78,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -89,9 +89,9 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1470406057.299374,
+ 'timestamp': 1470723290.035065,
  'type': 'hucore',
- 'uid': '5fb410be3e70aec16bf8071f2fbe2f7c9be5cd9b',
+ 'uid': '98921e5846e2618f876ec1b6ed749eaece57a3f7',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
@@ -102,7 +102,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -113,9 +113,9 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1470406057.300413,
+ 'timestamp': 1470723290.036116,
  'type': 'hucore',
- 'uid': '5fb410be3e70aec16bf8071f2fbe2f7c9be5cd9b',
+ 'uid': '98921e5846e2618f876ec1b6ed749eaece57a3f7',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
@@ -126,7 +126,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -137,9 +137,9 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1470406057.301405,
+ 'timestamp': 1470723290.037114,
  'type': 'hucore',
- 'uid': '5fb410be3e70aec16bf8071f2fbe2f7c9be5cd9b',
+ 'uid': '98921e5846e2618f876ec1b6ed749eaece57a3f7',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
@@ -150,7 +150,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -161,9 +161,9 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1470406057.302438,
+ 'timestamp': 1470723290.038103,
  'type': 'hucore',
- 'uid': '5fb410be3e70aec16bf8071f2fbe2f7c9be5cd9b',
+ 'uid': '98921e5846e2618f876ec1b6ed749eaece57a3f7',
  'user': 'user01',
  'ver': '7'}
 gc3.gc3libs: WARNING: 
@@ -184,7 +184,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -212,7 +212,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -224,7 +224,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -252,7 +252,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -264,7 +264,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -276,7 +276,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -306,7 +306,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -318,7 +318,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -330,7 +330,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -342,7 +342,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -370,7 +370,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -382,7 +382,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -394,7 +394,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -406,7 +406,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.300413, 
+            "queued": 1470723290.036116, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -418,7 +418,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -446,7 +446,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -458,7 +458,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -470,7 +470,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -482,7 +482,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.300413, 
+            "queued": 1470723290.036116, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -494,7 +494,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -506,7 +506,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.301405, 
+            "queued": 1470723290.037114, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -534,7 +534,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -546,7 +546,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -558,7 +558,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -570,7 +570,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.300413, 
+            "queued": 1470723290.036116, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -582,7 +582,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -594,7 +594,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.301405, 
+            "queued": 1470723290.037114, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -606,7 +606,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.302438, 
+            "queued": 1470723290.038103, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -705,7 +705,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -733,7 +733,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -745,7 +745,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -773,7 +773,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -785,7 +785,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -797,7 +797,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -827,7 +827,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -839,7 +839,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -851,7 +851,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -863,7 +863,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -891,7 +891,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -903,7 +903,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -915,7 +915,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -927,7 +927,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.300413, 
+            "queued": 1470723290.036116, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -939,7 +939,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -967,7 +967,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -979,7 +979,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -991,7 +991,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1003,7 +1003,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.300413, 
+            "queued": 1470723290.036116, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1015,7 +1015,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1027,7 +1027,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.301405, 
+            "queued": 1470723290.037114, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1055,7 +1055,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1067,7 +1067,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1079,7 +1079,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1091,7 +1091,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.300413, 
+            "queued": 1470723290.036116, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1103,7 +1103,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1115,7 +1115,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.301405, 
+            "queued": 1470723290.037114, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1127,7 +1127,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.302438, 
+            "queued": 1470723290.038103, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1165,7 +1165,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.297164, 
+            "queued": 1470723290.033035, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1177,7 +1177,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1189,7 +1189,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1201,7 +1201,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.300413, 
+            "queued": 1470723290.036116, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1213,7 +1213,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.301405, 
+            "queued": 1470723290.037114, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1225,7 +1225,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.302438, 
+            "queued": 1470723290.038103, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1250,7 +1250,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1262,7 +1262,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1274,7 +1274,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.300413, 
+            "queued": 1470723290.036116, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1286,7 +1286,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.301405, 
+            "queued": 1470723290.037114, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1298,7 +1298,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.302438, 
+            "queued": 1470723290.038103, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1330,7 +1330,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1342,7 +1342,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1354,7 +1354,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.300413, 
+            "queued": 1470723290.036116, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1366,7 +1366,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.301405, 
+            "queued": 1470723290.037114, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1397,7 +1397,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1409,7 +1409,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1421,7 +1421,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.301405, 
+            "queued": 1470723290.037114, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1447,7 +1447,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.298174, 
+            "queued": 1470723290.034052, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1459,7 +1459,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u111", 
             "status": "queued", 
-            "queued": 1470406057.299374, 
+            "queued": 1470723290.035065, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 
@@ -1506,7 +1506,7 @@ gc3.gc3libs: DEBUG: {
         {
             "username": "u000", 
             "status": "queued", 
-            "queued": 1470406057.296133, 
+            "queued": 1470723290.031999, 
             "file": "tests/sample_images/faba128.h5", 
             "start": "N/A", 
             "progress": "N/A", 

@@ -6,7 +6,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -30,7 +30,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -54,7 +54,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -78,7 +78,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -102,7 +102,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -126,7 +126,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],
@@ -150,7 +150,7 @@ gc3.gc3libs: DEBUG: Job description sections: ['hrmjobfile', 'hucore', 'inputfil
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Finished initialization of JobDescription().
+gc3.gc3libs: DEBUG: Finished initialization of JobDescription().
 gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'exec': '/usr/local/bin/hucore',
  'infiles': ['tests/sample_images/faba128.h5'],

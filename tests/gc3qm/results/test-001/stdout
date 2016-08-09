@@ -1,7 +1,7 @@
 **** Starting Queue Manager...
 python -u bin/hrm_queuemanager.py --spooldir run --config config/samples/gc3pie_localhost.conf -v
 ********************************************************************************
-HRM Queue Manager started, watching spooldir "run/spool/new" (Ctrl-C to abort).
+HRM spooler running. (Ctrl-C to abort).
 ********************************************************************************
 Requesting QM status change to: refresh
 ========================= queue status =========================

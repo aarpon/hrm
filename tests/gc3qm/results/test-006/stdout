@@ -1,7 +1,7 @@
 **** Starting Queue Manager...
 python -u bin/hrm_queuemanager.py --spooldir run --config config/samples/gc3pie_localhost.conf -v
 ********************************************************************************
-HRM Queue Manager started, watching spooldir "run/spool/new" (Ctrl-C to abort).
+HRM spooler running. (Ctrl-C to abort).
 ********************************************************************************
 Requesting QM status change to: refresh
 ========================= queue status =========================
@@ -19,12 +19,12 @@ Requesting QM status change to: pause
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): bc427485014ccfe1eb01388bc7205d5d82be5988 - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 4229769329d5a3d2d7f13b5163f5b85cb54caeec - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 Requesting QM status change to: run
 ========================= queue status =========================
 --- jobs retrieved for processing
-user01 (user01@mail.xy): bc427485014ccfe1eb01388bc7205d5d82be5988 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/preview_faba128.hgsb'] [queued]
+user01 (user01@mail.xy): 4229769329d5a3d2d7f13b5163f5b85cb54caeec - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/preview_faba128.hgsb'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
 None.
