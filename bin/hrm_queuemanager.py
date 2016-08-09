@@ -28,12 +28,6 @@ except ImportError:
     print "=" * 80
     sys.exit(1)
 
-# NOTE: this should be removed, put the logics of adjusting the PYTHONPATH into
-# some wrapper script or leave it to the user / admin to configure the system
-# appropriately before launching the queue manager:
-TOP = os.path.abspath(os.path.dirname(sys.argv[0]) + '/../')
-LPY = os.path.join(TOP, "lib", "python")
-sys.path.insert(0, LPY)
 
 # pylint: disable=wrong-import-position
 import HRM
