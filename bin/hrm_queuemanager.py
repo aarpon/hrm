@@ -9,7 +9,6 @@ Prototype of a GC3Pie-based job spooler engine.
 import sys
 import os
 import argparse
-import pyinotify
 
 # pylint: disable=wrong-import-position
 import HRM
@@ -17,7 +16,7 @@ import HRM.queue
 import HRM.jobs
 from HRM.logger import set_verbosity
 from HRM.spooler import JobSpooler, setup_rundirs
-from HRM.inotify import EventHandler
+from HRM.inotify import JobFileHandler
 
 
 def parse_arguments():
@@ -53,7 +52,9 @@ def main():
         queue.set_statusfile(status)
 
     job_spooler = JobSpooler(spool_dirs, jobqueues['hucore'], args.config)
-
+    # select a specific resource if requested on the cmdline:
+    if args.resource:
+        job_spooler.select_resource(args.resource)
 
     # process jobfiles already existing during our startup:
     for jobfile in spool_dirs['newfiles']:
@@ -61,18 +62,7 @@ def main():
         HRM.jobs.process_jobfile(fname, jobqueues, spool_dirs)
 
 
-    # select a specific resource if requested on the cmdline:
-    if args.resource:
-        job_spooler.select_resource(args.resource)
-
-    watch_mgr = pyinotify.WatchManager()
-    # set the mask which events to watch:
-    mask = pyinotify.IN_CREATE                      # pylint: disable=E1101
-    notifier = pyinotify.ThreadedNotifier(watch_mgr,
-                                          EventHandler(queues=jobqueues,
-                                                       dirs=spool_dirs))
-    notifier.start()
-    wdd = watch_mgr.add_watch(spool_dirs['new'], mask, rec=False)
+    file_handler = JobFileHandler(jobqueues, spool_dirs)
 
     try:
         # NOTE: spool() is blocking, as it contains the main spooling loop!
@@ -80,8 +70,7 @@ def main():
     finally:
         print 'Cleaning up. Remaining jobs:'
         print jobqueues['hucore'].queue
-        watch_mgr.rm_watch(wdd.values())
-        notifier.stop()
+        file_handler.shutdown()
 
 if __name__ == "__main__":
     sys.exit(main())

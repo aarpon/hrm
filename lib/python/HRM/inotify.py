@@ -10,6 +10,27 @@ from .jobs import process_jobfile
 from .logger import logi, logd
 
 
+class JobFileHandler(object):
+    """Wrapper class to set up inotify for incoming jobfiles."""
+
+    def __init__(self, queues, dirs):
+        """Initialize watch-manager and notifier."""
+        self.watch_mgr = pyinotify.WatchManager()
+        # mask which events to watch: pyinotify.IN_CREATE
+        self.wdd = self.watch_mgr.add_watch(dirs['new'],
+                                            pyinotify.IN_CREATE,
+                                            rec=False)
+        self.notifier = pyinotify.ThreadedNotifier(self.watch_mgr,
+                                                   EventHandler(queues=queues,
+                                                                dirs=dirs))
+        self.notifier.start()
+
+    def shutdown(self):
+        """Clean up watch-manager and notifier."""
+        self.watch_mgr.rm_watch(self.wdd.values())
+        self.notifier.stop()
+
+
 class EventHandler(pyinotify.ProcessEvent):
     """Handler for pyinotify filesystem events.
 
