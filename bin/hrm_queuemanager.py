@@ -33,6 +33,7 @@ except ImportError:
 import HRM
 import HRM.queue
 import HRM.jobs
+from HRM.spooler import JobSpooler
 from HRM.logger import *
 
 
@@ -108,7 +109,7 @@ def main():
         status = os.path.join(spool_dirs['status'], qname + '.json')
         queue.set_statusfile(status)
 
-    job_spooler = HRM.JobSpooler(spool_dirs, jobqueues['hucore'], args.config)
+    job_spooler = JobSpooler(spool_dirs, jobqueues['hucore'], args.config)
 
 
     # process jobfiles already existing during our startup:
