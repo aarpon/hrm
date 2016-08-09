@@ -15,7 +15,7 @@ HuSNRApp()
 import os
 import gc3libs
 
-from ..logger import *
+from .. import logi, logd, logw, logc, loge
 
 
 class HuCoreApp(gc3libs.Application):

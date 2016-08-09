@@ -17,8 +17,7 @@ import shutil
 import time
 from hashlib import sha1
 
-from . import JOBFILE_VER
-from .logger import *
+from . import logi, logd, logw, logc, loge, JOBFILE_VER
 
 
 def process_jobfile(fname, queues, dirs):

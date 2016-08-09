@@ -12,9 +12,10 @@ JobQueue()
 import itertools
 import json
 from collections import deque
-import gc3libs
 
-from .logger import *
+from . import logi, logd, logw, logc, loge
+
+import gc3libs
 
 
 class JobQueue(object):
