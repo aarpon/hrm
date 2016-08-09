@@ -10,22 +10,9 @@ import sys
 import os
 import argparse
 import logging
-
 import pyinotify
 
-# GC3Pie imports
-try:
-    import gc3libs
-except ImportError:
-    print "=" * 80
-    print """
-    ERROR: unable to import GC3Pie library package, please make sure it is
-    installed and active, e.g. by running this command before starting the HRM
-    Queue Manager:\n
-    $ source /path/to/your/gc3pie_installation/bin/activate
-    """
-    print "=" * 80
-    sys.exit(1)
+import gc3libs
 
 
 # pylint: disable=wrong-import-position
