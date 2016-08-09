@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-#
-# @(#)HRM_QueueManager.py
-#
+
 """
-The prototype of a new GC3Pie-based Queue Manager for HRM.
+Prototype of a GC3Pie-based job spooler engine.
 """
 
 # stdlib imports
