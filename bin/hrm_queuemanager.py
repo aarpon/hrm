@@ -32,7 +32,7 @@ except ImportError:
 import HRM
 import HRM.queue
 import HRM.jobs
-from HRM.spooler import JobSpooler
+from HRM.spooler import JobSpooler, setup_rundirs
 from HRM.logger import *
 
 
@@ -101,7 +101,7 @@ def main():
     loglevel = logging.WARN - (args.verbosity * 10)
     gc3libs.configure_logger(loglevel, "qmgc3")
 
-    spool_dirs = HRM.setup_rundirs(args.spooldir)
+    spool_dirs = setup_rundirs(args.spooldir)
     jobqueues = dict()
     jobqueues['hucore'] = HRM.queue.JobQueue()
     for qname, queue in jobqueues.iteritems():
