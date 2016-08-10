@@ -117,8 +117,8 @@ class JobSpooler(object):
     def __init__(self, spool_dirs, queue, gc3conf):
         """Prepare the spooler.
 
-        Check the GC3Pie config file, set up the spool directories, set up the
-        gc3 engine, check the resource directories.
+        Check the GC3Pie config file, set up the gc3 engine, check the resource
+        directories.
 
         Parameters
         ----------
