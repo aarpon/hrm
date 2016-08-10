@@ -25,7 +25,7 @@ from . import logi, logd, logw, logc, loge, JOBFILE_VER
 from .apps import hucore
 
 import gc3libs
-from gc3libs.config import Configuration
+import gc3libs.config
 
 
 def setup_rundirs(base_dir):
@@ -179,7 +179,7 @@ class JobSpooler(object):
         # ~/.gc3/gc3pie.conf if none is specified (see API for details)
         if gc3conffile is None:
             gc3conffile = '~/.gc3/gc3pie.conf'
-        gc3conf = Configuration(gc3conffile)
+        gc3conf = gc3libs.config.Configuration(gc3conffile)
         try:
             self.gc3spooldir = gc3conf.resources['localhost'].spooldir
             logi("Using gc3pie spooldir: %s", self.gc3spooldir)
