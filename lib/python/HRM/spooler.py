@@ -130,9 +130,7 @@ class JobSpooler(object):
         """
         self.queue = queue
         # self.queues = dict()  # TODO: multi-queue logic (#136, #272)
-        self.gc3spooldir = None
-        self.gc3conf = None
-        self._check_gc3conf(gc3conf)
+        self.gc3cfg = self._check_gc3conf(gc3conf)
         self.dirs = spool_dirs
         self.engine = self.setup_engine()
         self.apps = list()
@@ -169,35 +167,41 @@ class JobSpooler(object):
     def _check_gc3conf(self, gc3conffile=None):
         """Check the gc3 config file and extract the gc3 spooldir.
 
-        Helper method to check the config file and set the instance variables
-        self.gc3spooldir : str
-            The path name to the gc3 spooling directory.
-        self.gc3conf : str
-            The file NAME of the gc3 config file.
+        Parameters
+        ----------
+        gc3conffile : str
+
+        Returns
+        -------
+        cfg : dict
+            A dict with keys 'spooldir' and 'conffile'.
         """
+        cfg = dict()
         # gc3libs methods like create_engine() use the default config in
         # ~/.gc3/gc3pie.conf if none is specified (see API for details)
         if gc3conffile is None:
             gc3conffile = '~/.gc3/gc3pie.conf'
         gc3conf = gc3libs.config.Configuration(gc3conffile)
         try:
-            self.gc3spooldir = gc3conf.resources['localhost'].spooldir
-            logi("Using gc3pie spooldir: %s", self.gc3spooldir)
+            cfg['spooldir'] = gc3conf.resources['localhost'].spooldir
+            logi("Using gc3pie spooldir: %s", cfg['spooldir'])
         except AttributeError:
             raise AttributeError("Unable to parse spooldir for resource "
                                  "'localhost' from gc3pie config file '%s'!" %
                                  gc3conffile)
-        self.gc3conf = gc3conffile
+        cfg['conffile'] = gc3conffile
+        return cfg
 
     def setup_engine(self):
-        """Set up the GC3Pie engine.
+        """Wrapper to set up the GC3Pie engine.
 
         Returns
         -------
         gc3libs.core.Engine
         """
-        logi('Creating GC3Pie engine using config file "%s".', self.gc3conf)
-        return gc3libs.create_engine(self.gc3conf)
+        logi('Creating GC3Pie engine using config file "%s".',
+             self.gc3cfg['conffile'])
+        return gc3libs.create_engine(self.gc3cfg['conffile'])
 
     def select_resource(self, resource):
         """Select a specific resource for the GC3Pie engine."""
@@ -292,7 +296,7 @@ class JobSpooler(object):
                 if nextjob is not None:
                     logd("Current joblist: %s", self.queue.queue)
                     logi("Adding another job to the gc3pie engine.")
-                    app = hucore.HuDeconApp(nextjob, self.gc3spooldir)
+                    app = hucore.HuDeconApp(nextjob, self.gc3cfg['spooldir'])
                     self.apps.append(app)
                     self.engine.add(app)
                     # as a new job is dispatched now, we also print out the
