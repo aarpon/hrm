@@ -135,8 +135,6 @@ class JobSpooler(object):
         self._status = self._status_pre = 'run'  # the initial status is 'run'
         self.gc3cfg = self.check_gc3conf(gc3conf)
         self.engine = self.setup_engine()
-        if not self.resource_dirs_clean():
-            raise RuntimeError("GC3 resource dir unclean, refusing to start!")
         logi("Created JobSpooler.")
 
     @property
@@ -196,20 +194,28 @@ class JobSpooler(object):
         """
         logi('Creating GC3Pie engine using config file "%s".',
              self.gc3cfg['conffile'])
-        return gc3libs.create_engine(self.gc3cfg['conffile'])
+        engine = gc3libs.create_engine(self.gc3cfg['conffile'])
+        if not self.resource_dirs_clean(engine):
+            raise RuntimeError("GC3 resource dir unclean, refusing to start!")
+        return engine
 
     def select_resource(self, resource):
         """Select a specific resource for the GC3Pie engine."""
         self.engine.select_resource(resource)
 
-    def resource_dirs_clean(self):
+    @staticmethod
+    def resource_dirs_clean(engine):
         """Check if the resource dirs of all resources are clean.
+
+        Parameters
+        ----------
+        engine : gc3libs.core.Engine
 
         Returns
         -------
         bool
         """
-        for resource in self.engine.get_resources():
+        for resource in engine.get_resources():
             resourcedir = os.path.expandvars(resource.cfg_resourcedir)
             logi("Checking resource dir for resource '%s': %s",
                  resource.name, resourcedir)
@@ -325,7 +331,7 @@ class JobSpooler(object):
                 logi("Successfully terminated remaining jobs, none left.")
         logi("QM shutdown: spooler cleanup completed.")
         logw("QM shutdown: checking resource directories.")
-        self.resource_dirs_clean()
+        self.resource_dirs_clean(self.engine)
         logw("QM shutdown: resource directories check completed.")
 
     def kill_running_job(self, app):
