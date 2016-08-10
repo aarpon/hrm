@@ -128,17 +128,15 @@ class JobSpooler(object):
         gc3conf : str
             The path to a gc3pie configuration file.
         """
+        self.apps = list()
+        self.dirs = spool_dirs
         self.queue = queue
         # self.queues = dict()  # TODO: multi-queue logic (#136, #272)
+        self._status = self._status_pre = 'run'  # the initial status is 'run'
         self.gc3cfg = self.check_gc3conf(gc3conf)
-        self.dirs = spool_dirs
         self.engine = self.setup_engine()
-        self.apps = list()
         if not self.resource_dirs_clean():
             raise RuntimeError("GC3 resource dir unclean, refusing to start!")
-        # the default status is 'run' unless explicitly requested (which will
-        # be respected by the _spool() function anyway):
-        self._status = self._status_pre = 'run'
         logi("Created JobSpooler.")
 
     @property
