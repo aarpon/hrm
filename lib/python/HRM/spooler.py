@@ -114,7 +114,7 @@ class JobSpooler(object):
     status : str
     """
 
-    def __init__(self, spool_dirs, queue, gc3conf=None):
+    def __init__(self, spool_dirs, queue, gc3conf):
         """Prepare the spooler.
 
         Check the GC3Pie config file, set up the spool directories, set up the
@@ -164,7 +164,7 @@ class JobSpooler(object):
         logw("Received spooler status change request: %s -> %s",
              self._status_pre, self.status)
 
-    def _check_gc3conf(self, gc3conffile=None):
+    def _check_gc3conf(self, gc3conffile):
         """Check the gc3 config file and extract the gc3 spooldir.
 
         Parameters
@@ -177,10 +177,6 @@ class JobSpooler(object):
             A dict with keys 'spooldir' and 'conffile'.
         """
         cfg = dict()
-        # gc3libs methods like create_engine() use the default config in
-        # ~/.gc3/gc3pie.conf if none is specified (see API for details)
-        if gc3conffile is None:
-            gc3conffile = '~/.gc3/gc3pie.conf'
         gc3conf = gc3libs.config.Configuration(gc3conffile)
         try:
             cfg['spooldir'] = gc3conf.resources['localhost'].spooldir
