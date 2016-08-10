@@ -279,7 +279,7 @@ class JobSpooler(object):
                     if new_state == gc3libs.Run.State.TERMINATED:
                         app.job.move_jobfile(self.dirs['done'])
                         self.apps.pop(i)
-                stats = self._engine_status()
+                stats = self.engine_status()
                 # NOTE: in theory, we could simply add all apps to the engine
                 # and let gc3 decide when to dispatch the next one, however
                 # this it is causing a lot of error messages if the engine has
@@ -323,7 +323,7 @@ class JobSpooler(object):
                 self.kill_running_job(app)
             logw("^%s^", "-" * 80)
             self.engine.progress()
-            stats = self._engine_status()
+            stats = self.engine_status()
             if stats['RUNNING'] > 0:
                 logc("Killing jobs failed, %s still running.", stats['RUNNING'])
             else:
@@ -357,9 +357,9 @@ class JobSpooler(object):
         # trigger the update of the queue status json file:
         self.queue.queue_details_json()
         # this is just to trigger the stats messages in debug mode:
-        self._engine_status()
+        self.engine_status()
 
-    def _engine_status(self):
+    def engine_status(self):
         """Helper to get the engine status and print a formatted log."""
         stats = self.engine.stats()
         logd("Engine: NEW:%s  SUBM:%s  RUN:%s  TERM'ing:%s  TERM'ed:%s  "
