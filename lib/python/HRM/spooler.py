@@ -130,7 +130,7 @@ class JobSpooler(object):
         """
         self.queue = queue
         # self.queues = dict()  # TODO: multi-queue logic (#136, #272)
-        self.gc3cfg = self._check_gc3conf(gc3conf)
+        self.gc3cfg = self.check_gc3conf(gc3conf)
         self.dirs = spool_dirs
         self.engine = self.setup_engine()
         self.apps = list()
@@ -164,7 +164,8 @@ class JobSpooler(object):
         logw("Received spooler status change request: %s -> %s",
              self._status_pre, self.status)
 
-    def _check_gc3conf(self, gc3conffile):
+    @staticmethod
+    def check_gc3conf(gc3conffile):
         """Check the gc3 config file and extract the gc3 spooldir.
 
         Parameters
