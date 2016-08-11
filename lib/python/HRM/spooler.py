@@ -185,24 +185,6 @@ class JobSpooler(object):
         cfg['conffile'] = gc3conffile
         return cfg
 
-    def setup_engine(self):
-        """Wrapper to set up the GC3Pie engine.
-
-        Returns
-        -------
-        gc3libs.core.Engine
-        """
-        logi('Creating GC3Pie engine using config file "%s".',
-             self.gc3cfg['conffile'])
-        engine = gc3libs.create_engine(self.gc3cfg['conffile'])
-        if not self.resource_dirs_clean(engine):
-            raise RuntimeError("GC3 resource dir unclean, refusing to start!")
-        return engine
-
-    def select_resource(self, resource):
-        """Select a specific resource for the GC3Pie engine."""
-        self.engine.select_resource(resource)
-
     @staticmethod
     def resource_dirs_clean(engine):
         """Check if the resource dirs of all resources are clean.
@@ -226,6 +208,34 @@ class JobSpooler(object):
                 logw("Resource dir unclean: %s", files)
                 return False
         return True
+
+    def setup_engine(self):
+        """Wrapper to set up the GC3Pie engine.
+
+        Returns
+        -------
+        gc3libs.core.Engine
+        """
+        logi('Creating GC3Pie engine using config file "%s".',
+             self.gc3cfg['conffile'])
+        engine = gc3libs.create_engine(self.gc3cfg['conffile'])
+        if not self.resource_dirs_clean(engine):
+            raise RuntimeError("GC3 resource dir unclean, refusing to start!")
+        return engine
+
+    def select_resource(self, resource):
+        """Select a specific resource for the GC3Pie engine."""
+        self.engine.select_resource(resource)
+
+    def engine_status(self):
+        """Helper to get the engine status and print a formatted log."""
+        stats = self.engine.stats()
+        logd("Engine: NEW:%s  SUBM:%s  RUN:%s  TERM'ing:%s  TERM'ed:%s  "
+             "UNKNWN:%s  STOP:%s  (total:%s)",
+             stats['NEW'], stats['SUBMITTED'], stats['RUNNING'],
+             stats['TERMINATING'], stats['TERMINATED'], stats['UNKNOWN'],
+             stats['STOPPED'], stats['total'])
+        return stats
 
     def check_status_request(self):
         """Check if a status change for the QM was requested."""
@@ -360,12 +370,3 @@ class JobSpooler(object):
         # this is just to trigger the stats messages in debug mode:
         self.engine_status()
 
-    def engine_status(self):
-        """Helper to get the engine status and print a formatted log."""
-        stats = self.engine.stats()
-        logd("Engine: NEW:%s  SUBM:%s  RUN:%s  TERM'ing:%s  TERM'ed:%s  "
-             "UNKNWN:%s  STOP:%s  (total:%s)",
-             stats['NEW'], stats['SUBMITTED'], stats['RUNNING'],
-             stats['TERMINATING'], stats['TERMINATED'], stats['UNKNOWN'],
-             stats['STOPPED'], stats['total'])
-        return stats
