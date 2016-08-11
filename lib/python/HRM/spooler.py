@@ -223,10 +223,6 @@ class JobSpooler(object):
             raise RuntimeError("GC3 resource dir unclean, refusing to start!")
         return engine
 
-    def select_resource(self, resource):
-        """Select a specific resource for the GC3Pie engine."""
-        self.engine.select_resource(resource)
-
     def engine_status(self):
         """Helper to get the engine status and print a formatted log."""
         stats = self.engine.stats()

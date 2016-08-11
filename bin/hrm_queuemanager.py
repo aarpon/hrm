@@ -54,7 +54,7 @@ def main():
     job_spooler = JobSpooler(spool_dirs, jobqueues['hucore'], args.config)
     # select a specific resource if requested on the cmdline:
     if args.resource:
-        job_spooler.select_resource(args.resource)
+        job_spooler.engine.select_resource(args.resource)
 
     # process jobfiles already existing during our startup:
     for jobfile in spool_dirs['newfiles']:
