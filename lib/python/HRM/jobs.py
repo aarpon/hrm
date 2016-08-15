@@ -34,8 +34,7 @@ def process_jobfile(fname, queues, dirs):
         Spooling directories in a dict, as returned by HRM.setup_rundirs().
     """
     try:
-        job = JobDescription(fname, 'file')
-        logd("JobDescription from processed jobfile: %s", pprint.pformat(job))
+        job = JobDescription(fname, 'file', dirs)
     except IOError as err:
         logw("Error reading job description file (%s), skipping.", err)
         # there is nothing to add to the queue and the IOError indicates
@@ -104,7 +103,7 @@ class JobDescription(dict):
     _sections : list
     """
 
-    def __init__(self, job, srctype):
+    def __init__(self, job, srctype, spooldirs):
         """Initialize depending on the type of description source.
 
         Parameters
@@ -115,6 +114,8 @@ class JobDescription(dict):
         srctype : string
             One of ['file', 'string'], determines whether 'job' should be
             interpreted as a filename or as a job description string.
+        spooldirs : dict
+            The dict containing the queue's spooling directories.
 
         Example
         -------
@@ -123,6 +124,7 @@ class JobDescription(dict):
         super(JobDescription, self).__init__()
         self.jobparser = ConfigParser.RawConfigParser()
         self._sections = []
+        self.spooldirs = spooldirs
         self.srctype = srctype
         if srctype == 'file':
             self.fname = job
