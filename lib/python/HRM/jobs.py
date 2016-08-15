@@ -83,7 +83,7 @@ def move_file(fname, target, safe=False):
             if os.path.isdir(target):
                 target = os.path.join(target, fname)
             target += ".%s" % time.time()
-    logd("Moving file '%s' to '%s'.", fname, target)
+    logi("Moving file '%s' to '%s'.", fname, target)
     shutil.move(fname, target)
 
 
