@@ -41,10 +41,8 @@ def process_jobfile(fname, queues, dirs):
         # problems accessing the file, so we simply return silently:
         return
     except (SyntaxError, ValueError) as err:
-        logw("Job file unparsable (%s), skipping / moving to 'done'.", err)
-        # still nothing to add to the queue but this time we can at least
-        # move the file out of the way before returning:
-        move_file(fname, dirs['done'], safe=True)
+        # jobfile was already moved out of the way by the constructor of the
+        # JobDescription object, so we simply stop here and return:
         return
     if job['type'] == 'deletejobs':
         logw('Received job deletion request(s)!')
@@ -135,7 +133,13 @@ class JobDescription(dict):
             raise Exception("Unknown source type '%s'" % srctype)
         # store the SHA1 digest of this job, serving as the UID:
         self['uid'] = sha1(job).hexdigest()
-        self.parse_jobconfig(job)
+        try:
+            self.parse_jobconfig(job)
+        except (SyntaxError, ValueError) as err:
+            logw("Job file unparsable (%s), skipping / moving to 'done'.", err)
+            # move the unreadable file out of the way before returning:
+            self.move_jobfile(self.spooldirs['done'])
+            raise err
         # fill in keys without a reasonable value, they'll be updated later:
         self['status'] = "N/A"
         self['start'] = "N/A"
@@ -159,9 +163,6 @@ class JobDescription(dict):
         target : str
             The target directory.
         """
-        # FIXME FIXME FIXME FIXME FIXME
-        # this seems to be broken, moving unparsable jobfiles doesn't work!!!
-        # FIXME FIXME FIXME FIXME FIXME
         # make sure to only move "file" job descriptions, return otherwise:
         if self.srctype != 'file':
             return
