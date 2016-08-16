@@ -128,7 +128,7 @@ class JobDescription(dict):
         logd("Finished initialization of JobDescription().")
         logd(pprint.pformat(self))
 
-    def move_jobfile(self, target):
+    def move_jobfile(self, target, suffix=".jobfile"):
         """Move a jobfile to the desired spooling subdir.
 
         The file name will be set automatically to the job's UID with an
@@ -141,11 +141,13 @@ class JobDescription(dict):
         ----------
         target : str
             The target directory.
+        suffix : str (optional)
+            An optional suffix, by default ".jobfile" will be used if empty.
         """
         # make sure to only move "file" job descriptions, return otherwise:
         if self.srctype != 'file':
             return
-        target = os.path.join(target, self['uid'] + '.jobfile')
+        target = os.path.join(target, self['uid'] + suffix)
         if os.path.exists(target):
             target += ".%s" % time.time()
         logi("Moving file '%s' to '%s'.", self.fname, target)
