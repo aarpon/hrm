@@ -65,27 +65,6 @@ def process_jobfile(fname, queues, dirs):
         loge("Adding the newe job from '%s' failed:\n    %s", fname, err)
 
 
-def move_file(fname, target, safe=False):
-    """Helper function to move a file.
-
-    Parameters
-    ----------
-    fname : str
-        The original filename.
-    target : str
-        The target file or directory name.
-    safe : bool
-        If True, a timestamp will be added as a suffix to the filename in case
-        the target already exists.
-    """
-    if safe:
-        if os.path.exists(target):
-            if os.path.isdir(target):
-                target = os.path.join(target, fname)
-            target += ".%s" % time.time()
-    logi("Moving file '%s' to '%s'.", fname, target)
-    shutil.move(fname, target)
-
 
 class JobDescription(dict):
     """Abstraction class for handling HRM job descriptions.
@@ -167,7 +146,10 @@ class JobDescription(dict):
         if self.srctype != 'file':
             return
         target = os.path.join(target, self['uid'] + '.jobfile')
-        move_file(self.fname, target)
+        if os.path.exists(target):
+            target += ".%s" % time.time()
+        logi("Moving file '%s' to '%s'.", self.fname, target)
+        shutil.move(self.fname, target)
         # update the job's internal fname pointer:
         self.fname = target
 
