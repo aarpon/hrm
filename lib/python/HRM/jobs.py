@@ -117,7 +117,7 @@ class JobDescription(dict):
         except (SyntaxError, ValueError) as err:
             logw("Job file unparsable (%s), skipping / moving to 'done'.", err)
             # move the unreadable file out of the way before returning:
-            self.move_jobfile(self.spooldirs['done'])
+            self.move_jobfile(self.spooldirs['done'], ".invalid")
             raise err
         # fill in keys without a reasonable value, they'll be updated later:
         self['status'] = "N/A"
