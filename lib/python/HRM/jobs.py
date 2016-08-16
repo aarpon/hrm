@@ -65,7 +65,6 @@ def process_jobfile(fname, queues, dirs):
         loge("Adding the newe job from '%s' failed:\n    %s", fname, err)
 
 
-
 class JobDescription(dict):
     """Abstraction class for handling HRM job descriptions.
 
@@ -80,7 +79,7 @@ class JobDescription(dict):
     _sections : list
     """
 
-    def __init__(self, job, srctype, spooldirs):
+    def __init__(self, job, srctype, spooldirs=None):
         """Initialize depending on the type of description source.
 
         Parameters
@@ -92,7 +91,9 @@ class JobDescription(dict):
             One of ['file', 'string'], determines whether 'job' should be
             interpreted as a filename or as a job description string.
         spooldirs : dict
-            The dict containing the queue's spooling directories.
+            The dict containing the queue's spooling directories. Can be None,
+            but this only makes sense when testing the JobDescription parser,
+            not in a real-life application.
 
         Example
         -------
@@ -117,7 +118,8 @@ class JobDescription(dict):
         except (SyntaxError, ValueError) as err:
             logw("Job file unparsable (%s), skipping / moving to 'done'.", err)
             # move the unreadable file out of the way before returning:
-            self.move_jobfile(self.spooldirs['done'], ".invalid")
+            if self.spooldirs is not None:
+                self.move_jobfile(self.spooldirs['done'], ".invalid")
             raise err
         # fill in keys without a reasonable value, they'll be updated later:
         self['status'] = "N/A"
