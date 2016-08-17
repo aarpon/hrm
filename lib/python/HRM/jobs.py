@@ -131,6 +131,13 @@ class JobDescription(dict):
         logd("Finished initialization of JobDescription().")
         logd(pprint.pformat(self))
 
+    def __setitem__(self, key, value):
+        logd("Setting JobDescription key '%s' to value '%s'", key, value)
+        # on status changes, update / store the job
+        if key == "status":
+            pass  # TODO: implement!
+        super(JobDescription, self).__setitem__(key, value)
+
     def move_jobfile(self, target, suffix=".jobfile"):
         """Move a jobfile to the desired spooling subdir.
 
