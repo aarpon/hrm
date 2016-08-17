@@ -166,7 +166,7 @@ class JobDescription(dict):
         self.fname = target
 
     def _read_jobfile(self):
-        """Read in a job config file and pass it to the parser.
+        """Read in a job config file into a string.
 
         Returns
         -------
@@ -191,7 +191,7 @@ class JobDescription(dict):
             with open(self.fname, 'r') as jobfile:
                 config_raw = jobfile.read()
             if len(config_raw) > 0:
-                logd("Job parsing succeeded after %s seconds!", snooze)
+                logd("Reading the job file succeeded after %s s!", snooze)
                 break
         if len(config_raw) == 0:
             raise IOError("Unable to read job config file '%s'!" % self.fname)
