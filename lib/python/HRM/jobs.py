@@ -100,7 +100,6 @@ class JobDescription(dict):
         >>> job = HRM.JobDescription('/path/to/jobdescription.cfg', 'file')
         """
         super(JobDescription, self).__init__()
-        self.jobparser = ConfigParser.RawConfigParser()
         self._sections = []
         self.spooldirs = spooldirs
         self.srctype = srctype
@@ -113,6 +112,8 @@ class JobDescription(dict):
             raise Exception("Unknown source type '%s'" % srctype)
         # store the SHA1 digest of this job, serving as the UID:
         self['uid'] = sha1(job).hexdigest()
+        # now initialize the ConfigParser object:
+        self.jobparser = ConfigParser.RawConfigParser()
         try:
             self.parse_jobconfig(job)
         except (SyntaxError, ValueError) as err:
