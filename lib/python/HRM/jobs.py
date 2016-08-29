@@ -15,6 +15,7 @@ import os
 import pprint
 import shutil
 import time
+import json
 from hashlib import sha1
 
 from . import logi, logd, logw, logc, loge, JOBFILE_VER
@@ -339,7 +340,15 @@ class JobDescription(dict):
 
     def __setitem__(self, key, value):
         logd("Setting JobDescription key '%s' to value '%s'", key, value)
+        # on status changes, update / store the job
+        if key == "status":
+            self.store_job()
         super(JobDescription, self).__setitem__(key, value)
+
+    def store_job(self):
+        """Store the job configuration into a JSON file."""
+        # TODO: implement real storing instead of dumpung the json!
+        logw("JobDescription.store_job: %s", json.dumps(self))
 
     def move_jobfile(self, target, suffix=".jobfile"):
         """Move a jobfile to the desired spooling subdir.
