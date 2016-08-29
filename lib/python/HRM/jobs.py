@@ -65,107 +65,34 @@ def process_jobfile(fname, queues, dirs):
         loge("Adding the newe job from '%s' failed:\n    %s", fname, err)
 
 
-class JobDescription(dict):
-    """Abstraction class for handling HRM job descriptions.
+class JobConfigParser(dict):
+    """Class to parse new jobs from ini-style formatted files or strings.
 
     Read an HRM job description either from a file or a string and parse
     the sections, check them for sane values and store them in a dict.
-
-    Instance Variables
-    ------------------
-    jobparser : ConfigParser.RawConfigParser
-    srctype : str
-    fname : str
-    _sections : list
     """
 
-    def __init__(self, job, srctype, spooldirs=None):
-        """Initialize depending on the type of description source.
-
-        Parameters
-        ----------
-        job : string
-            Can be either a filename pointing to a job config file, or a
-            configuration itself, requires 'srctype' to be set accordingly!
-        srctype : string
-            One of ['file', 'string'], determines whether 'job' should be
-            interpreted as a filename or as a job description string.
-        spooldirs : dict
-            The dict containing the queue's spooling directories. Can be None,
-            but this only makes sense when testing the JobDescription parser,
-            not in a real-life application.
-
-        Example
-        -------
-        >>> job = HRM.JobDescription('/path/to/jobdescription.cfg', 'file')
-        """
-        super(JobDescription, self).__init__()
+    def __init__(self, jobconfig, srctype):
+        super(JobConfigParser, self).__init__()
         self._sections = []
-        self.spooldirs = spooldirs
-        self.srctype = srctype
         if srctype == 'file':
-            self.fname = job
-            job = self._read_jobfile()
+            self.fname = jobconfig
+            jobconfig = self.read_jobfile()
         elif srctype == 'string':
             self.fname = "string"
         else:
             raise Exception("Unknown source type '%s'" % srctype)
         # store the SHA1 digest of this job, serving as the UID:
-        self['uid'] = sha1(job).hexdigest()
-        # now initialize the ConfigParser object:
-        self.jobparser = ConfigParser.RawConfigParser()
-        try:
-            self.parse_jobconfig(job)
-        except (SyntaxError, ValueError) as err:
-            logw("Job file unparsable (%s), skipping / moving to 'done'.", err)
-            # move the unreadable file out of the way before returning:
-            if self.spooldirs is not None:
-                self.move_jobfile(self.spooldirs['done'], ".invalid")
-            raise err
+        self['uid'] = sha1(jobconfig).hexdigest()
+        self.parse_jobconfig(jobconfig)
         # fill in keys without a reasonable value, they'll be updated later:
         self['status'] = "N/A"
         self['start'] = "N/A"
         self['progress'] = "N/A"
         self['pid'] = "N/A"
         self['server'] = "N/A"
-        logd("Finished initialization of JobDescription().")
-        logd(pprint.pformat(self))
 
-    def __setitem__(self, key, value):
-        logd("Setting JobDescription key '%s' to value '%s'", key, value)
-        # on status changes, update / store the job
-        if key == "status":
-            pass  # TODO: implement!
-        super(JobDescription, self).__setitem__(key, value)
-
-    def move_jobfile(self, target, suffix=".jobfile"):
-        """Move a jobfile to the desired spooling subdir.
-
-        The file name will be set automatically to the job's UID with an
-        added suffix ".jobfile", no matter how the file was called before.
-
-        WARNING: destination file is not checked, if it exists and we have
-        write permissions, it is simply overwritten!
-
-        Parameters
-        ----------
-        target : str
-            The target directory.
-        suffix : str (optional)
-            An optional suffix, by default ".jobfile" will be used if empty.
-        """
-        # make sure to only move "file" job descriptions, return otherwise:
-        if self.srctype != 'file':
-            return
-        target = os.path.join(target, self['uid'] + suffix)
-        if os.path.exists(target):
-            target += ".%s" % time.time()
-        logi("Moving file '%s' to '%s'.", self.fname, target)
-        shutil.move(self.fname, target)
-        # update the job's internal fname pointer:
-        self.fname = target
-
-    def _read_jobfile(self):
+    def read_jobfile(self):
         """Read in a job config file into a string.
 
         Returns
@@ -199,6 +126,9 @@ class JobDescription(dict):
 
     def parse_jobconfig(self, cfg_raw):
         """Initialize ConfigParser and run parsing method."""
+        # now initialize the ConfigParser object:
+        self.jobparser = ConfigParser.RawConfigParser()
+
         try:
             self.jobparser.readfp(StringIO.StringIO(cfg_raw))
             logd("Parsed job configuration.")
@@ -353,6 +283,90 @@ class JobDescription(dict):
         self['ids'] = [jobid.strip() for jobid in jobids.split(',')]
         for jobid in self['ids']:
             logi("Request to --- DELETE --- job '%s'", jobid)
+
+
+
+class JobDescription(dict):
+    """Abstraction class for handling HRM job descriptions.
+
+    Instance Variables
+    ------------------
+    jobparser : ConfigParser.RawConfigParser
+    srctype : str
+    fname : str
+    _sections : list
+    """
+
+    spooldirs = dict()
+
+    def __init__(self, job, srctype, spooldirs=None):
+        """Initialize depending on the type of description source.
+
+        Parameters
+        ----------
+        job : string
+            Can be either a filename pointing to a job config file, or a
+            configuration itself, requires 'srctype' to be set accordingly!
+        srctype : string
+            One of ['file', 'string'], determines whether 'job' should be
+            interpreted as a filename or as a job description string.
+        spooldirs : dict
+            The dict containing the queue's spooling directories. Can be None,
+            but this only makes sense when testing the JobDescription parser,
+            not in a real-life application.
+
+        Example
+        -------
+        >>> job = HRM.JobDescription('/path/to/jobdescription.cfg', 'file')
+        """
+        super(JobDescription, self).__init__()
+
+        self.spooldirs = spooldirs
+        self.srctype = srctype
+        try:
+            parsed_job = JobConfigParser(job, srctype)
+        except (SyntaxError, ValueError) as err:
+            logw("Job file unparsable (%s), skipping / moving to 'done'.", err)
+            # move the unreadable file out of the way before returning:
+            if self.spooldirs is not None:
+                self.move_jobfile(self.spooldirs['done'], ".invalid")
+            raise err
+        self.update(parsed_job)
+        del parsed_job
+
+        logd("Finished initialization of JobDescription().")
+        logd(pprint.pformat(self))
+
+    def __setitem__(self, key, value):
+        logd("Setting JobDescription key '%s' to value '%s'", key, value)
+        super(JobDescription, self).__setitem__(key, value)
+
+    def move_jobfile(self, target, suffix=".jobfile"):
+        """Move a jobfile to the desired spooling subdir.
+
+        The file name will be set automatically to the job's UID with an
+        added suffix ".jobfile", no matter how the file was called before.
+
+        WARNING: destination file is not checked, if it exists and we have
+        write permissions, it is simply overwritten!
+
+        Parameters
+        ----------
+        target : str
+            The target directory.
+        suffix : str (optional)
+            An optional suffix, by default ".jobfile" will be used if empty.
+        """
+        # make sure to only move "file" job descriptions, return otherwise:
+        if self.srctype != 'file':
+            return
+        target = os.path.join(target, self['uid'] + suffix)
+        if os.path.exists(target):
+            target += ".%s" % time.time()
+        logi("Moving file '%s' to '%s'.", self.fname, target)
+        shutil.move(self.fname, target)
+        # update the job's internal fname pointer:
+        self.fname = target
 
     def get_category(self):
         """Get the category of this job, in our case the value of 'user'."""
