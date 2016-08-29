@@ -7,6 +7,15 @@ cd $PFX
 source "functions.inc.sh"
 set +e
 
+
+if [ -z "$VIRTUAL_ENV" ] ; then
+    GC3VER=2.4.2
+    GC3BASE=/opt/gc3pie
+    GC3HOME=$GC3BASE/gc3pie_$GC3VER
+    source $GC3HOME/bin/activate
+fi
+
+
 RES_BASE="results"
 
 # by default all tests will be run, only if the special variable "RUN_TESTS" is
