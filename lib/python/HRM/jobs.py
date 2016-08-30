@@ -137,21 +137,6 @@ class AbstractJobConfigParser(dict):
             raise IOError("Unable to read job config file '%s'!" % jobfile)
         return config_raw
 
-    def parse_jobconfig(self, cfg_raw):
-        """Initialize ConfigParser and run parsing method."""
-        # we only initialize the ConfigParser object now, not in __init__():
-        self.jobparser = ConfigParser.RawConfigParser()
-        try:
-            self.jobparser.readfp(StringIO.StringIO(cfg_raw))
-            logd("Parsed job configuration.")
-        except ConfigParser.MissingSectionHeaderError as err:
-            raise SyntaxError("ERROR in JobDescription: %s" % err)
-        self.sections = self.jobparser.sections()
-        if not self.sections:
-            raise SyntaxError("No sections found in job config!")
-        logd("Job description sections: %s", self.sections)
-        self.parse_jobdescription()
-
     def get_option(self, section, option):
         """Helper method to get an option and remove it from the section.
 
@@ -205,6 +190,20 @@ class AbstractJobConfigParser(dict):
         # by now the section should be fully parsed and therefore empty:
         self.check_for_remaining_options('hrmjobfile')
 
+    def parse_jobconfig(self, cfg_raw):
+        """Initialize ConfigParser and run parsing method."""
+        # we only initialize the ConfigParser object now, not in __init__():
+        self.jobparser = ConfigParser.RawConfigParser()
+        try:
+            self.jobparser.readfp(StringIO.StringIO(cfg_raw))
+            logd("Parsed job configuration.")
+        except ConfigParser.MissingSectionHeaderError as err:
+            raise SyntaxError("ERROR in JobDescription: %s" % err)
+        self.sections = self.jobparser.sections()
+        if not self.sections:
+            raise SyntaxError("No sections found in job config!")
+        logd("Job description sections: %s", self.sections)
+        self.parse_jobdescription()
 
 
 class HRMJobConfigParser(AbstractJobConfigParser):
