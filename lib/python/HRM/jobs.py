@@ -74,6 +74,15 @@ class AbstractJobConfigParser(dict):
     """
 
     def __init__(self, jobconfig, srctype):
+        """Set up the object for parsing job configurations.
+
+        Parameters
+        ----------
+        jobconfig : str
+            Either the path to a file, or the job configuration directly.
+        srctype : str
+            One of 'file' or 'string', denoting what's in 'jobconfig'.
+        """
         super(AbstractJobConfigParser, self).__init__()
         self.sections = []
         if srctype == 'file':
@@ -199,9 +208,18 @@ class AbstractJobConfigParser(dict):
 
 
 class HRMJobConfigParser(AbstractJobConfigParser):
-    """Parse HRM type job configurations"""
+    """Derived class to parse HRM type job configurations."""
 
     def __init__(self, jobconfig, srctype):
+        """Call the parent class constructor with the appropriate arguments.
+
+        Parameters
+        ----------
+        jobconfig : str
+            Either the path to a file, or the job configuration directly.
+        srctype : str
+            One of 'file' or 'string', denoting what's in 'jobconfig'.
+        """
         super(HRMJobConfigParser, self).__init__(jobconfig, srctype)
 
     def parse_jobdescription(self):
