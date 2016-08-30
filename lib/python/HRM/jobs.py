@@ -77,10 +77,9 @@ class JobConfigParser(dict):
         super(JobConfigParser, self).__init__()
         self._sections = []
         if srctype == 'file':
-            self.fname = jobconfig
-            jobconfig = self.read_jobfile()
+            jobconfig = self.read_jobfile(jobconfig)
         elif srctype == 'string':
-            self.fname = "string"
+            pass
         else:
             raise Exception("Unknown source type '%s'" % srctype)
         # store the SHA1 digest of this job, serving as the UID:
@@ -93,20 +92,24 @@ class JobConfigParser(dict):
         self['pid'] = "N/A"
         self['server'] = "N/A"
 
-    def read_jobfile(self):
+    def read_jobfile(self, jobfile):
         """Read in a job config file into a string.
+
+        Parameters
+        ----------
+        jobfile : str
 
         Returns
         -------
         config_raw : str
             The file content as a single string.
         """
-        logi("Parsing jobfile '%s'...", os.path.basename(self.fname))
-        logd("Full jobfile path: '%s'...", self.fname)
-        if not os.path.exists(self.fname):
-            raise IOError("Can't find file '%s'!" % self.fname)
-        if not os.access(self.fname, os.R_OK):
-            raise IOError("No permission reading file '%s'!" % self.fname)
+        logi("Parsing jobfile '%s'...", os.path.basename(jobfile))
+        logd("Full jobfile path: '%s'...", jobfile)
+        if not os.path.exists(jobfile):
+            raise IOError("Can't find file '%s'!" % jobfile)
+        if not os.access(jobfile, os.R_OK):
+            raise IOError("No permission reading file '%s'!" % jobfile)
         # sometimes the inotify event gets processed very rapidly and we're
         # trying to parse the file *BEFORE* it has been written to disk
         # entirely, which breaks the parsing, so we introduce four additional
@@ -116,20 +119,19 @@ class JobConfigParser(dict):
             if len(config_raw) == 0 and snooze > 0:
                 logd("Jobfile could not be read, re-trying in %is.", snooze)
             time.sleep(snooze)
-            with open(self.fname, 'r') as jobfile:
+            with open(jobfile, 'r') as jobfile:
                 config_raw = jobfile.read()
             if len(config_raw) > 0:
                 logd("Reading the job file succeeded after %s s!", snooze)
                 break
         if len(config_raw) == 0:
-            raise IOError("Unable to read job config file '%s'!" % self.fname)
+            raise IOError("Unable to read job config file '%s'!" % jobfile)
         return config_raw
 
     def parse_jobconfig(self, cfg_raw):
         """Initialize ConfigParser and run parsing method."""
-        # now initialize the ConfigParser object:
+        # we only initialize the ConfigParser object now, not in __init__():
         self.jobparser = ConfigParser.RawConfigParser()
-
         try:
             self.jobparser.readfp(StringIO.StringIO(cfg_raw))
             logd("Parsed job configuration.")
@@ -137,7 +139,7 @@ class JobConfigParser(dict):
             raise SyntaxError("ERROR in JobDescription: %s" % err)
         self._sections = self.jobparser.sections()
         if not self._sections:
-            raise SyntaxError("No sections found in job config %s" % self.fname)
+            raise SyntaxError("No sections found in job config!")
         logd("Job description sections: %s", self._sections)
         self._parse_jobdescription()
 
@@ -151,9 +153,8 @@ class JobConfigParser(dict):
         """Helper method to check if a section has remaining items."""
         remaining = self.jobparser.items(section)
         if remaining:
-            raise ValueError("Section '%s' in file '%s' contains unknown "
-                             "options, jobfile is invalid: %s" %
-                             (section, self.fname, remaining))
+            raise ValueError("Job config invalid, section '%s' contains "
+                             "unknown options: %s" % (section, remaining))
 
     def _parse_section_entries(self, section, options_mapping):
         """Helper function to read a given list of options from a section.
@@ -175,15 +176,13 @@ class JobConfigParser(dict):
             ]
         """
         if not self.jobparser.has_section(section):
-            raise ValueError("Error parsing job from %s." % self.fname)
+            raise ValueError("Section '%s' missing in job config!" % section)
         for cfg_option, job_key in options_mapping:
             try:
                 self[job_key] = self._get_option(section, cfg_option)
             except ConfigParser.NoOptionError:
-                raise ValueError("Can't find %s in %s." %
-                                 (cfg_option, self.fname))
-                # raise ValueError("Jobfile %s invalid, '%s' is missing!" %
-                #                  (self.fname, cfg_option))
+                raise ValueError("Option '%s' missing from section '%s'!" %
+                                 (cfg_option, section))
         # by now the section should be fully parsed and therefore empty:
         self._check_for_remaining_options('hrmjobfile')
 
@@ -257,13 +256,13 @@ class JobConfigParser(dict):
         # and the input file(s) section:
         # TODO: can we check if this section contains nonsense values?
         if 'inputfiles' not in self._sections:
-            raise ValueError("Section 'inputfiles' missing in %s." % self.fname)
+            raise ValueError("Section 'inputfiles' missing in job config!")
         self['infiles'] = []
         for option in self.jobparser.options('inputfiles'):
             infile = self._get_option('inputfiles', option)
             self['infiles'].append(infile)
         if not self['infiles']:
-            raise ValueError("No input files defined in %s." % self.fname)
+            raise ValueError("No input files defined in job config!")
 
     def _parse_job_deletejobs(self):
         """Do the specific parsing of "deletejobs" type jobfiles.
@@ -274,12 +273,11 @@ class JobConfigParser(dict):
             All information is added to the "self" dict.
         """
         if 'deletejobs' not in self._sections:
-            raise ValueError("No 'deletejobs' section in %s." % self.fname)
-            # raise ValueError("No job ID's defined in %s." % self.fname)
+            raise ValueError("No 'deletejobs' section in job config!")
         try:
             jobids = self._get_option('deletejobs', 'ids')
         except ConfigParser.NoOptionError:
-            raise ValueError("Can't find jobids in %s." % self.fname)
+            raise ValueError("Can't find job IDs in job config!")
         # split string at commas, strip whitespace from components:
         self['ids'] = [jobid.strip() for jobid in jobids.split(',')]
         for jobid in self['ids']:
@@ -327,10 +325,12 @@ class JobDescription(dict):
         try:
             parsed_job = JobConfigParser(job, srctype)
         except (SyntaxError, ValueError) as err:
-            logw("Job file unparsable (%s), skipping / moving to 'done'.", err)
-            # move the unreadable file out of the way before returning:
-            if self.spooldirs is not None:
-                self.move_jobfile(self.spooldirs['done'], ".invalid")
+            logw("Ignoring job config, parsing failed: %s", err)
+            if srctype == 'file':
+                logw("Invalid job config file: %s", job)
+                # move the unreadable file out of the way before returning:
+                if self.spooldirs is not None:
+                    self.move_jobfile(self.spooldirs['done'], ".invalid")
             raise err
         self.update(parsed_job)
         del parsed_job
