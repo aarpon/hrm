@@ -10,17 +10,25 @@ gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNIN
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: WARNING: Job file unparsable (Error parsing job from jobfiles/invalid/v1_broken_section-title.cfg.), skipping / moving to 'done'.
-gc3.gc3libs: WARNING: Job file unparsable (Can't find useremail in jobfiles/invalid/v2_broken_section-content_inputfiles.cfg.), skipping / moving to 'done'.
-gc3.gc3libs: WARNING: Job file unparsable (Can't find useremail in jobfiles/invalid/v7_broken_section_hrmjobfile.cfg.), skipping / moving to 'done'.
+gc3.gc3libs: WARNING: Ignoring job config, parsing failed: Section 'hrmjobfile' missing in job config!
+gc3.gc3libs: WARNING: Invalid job config file: jobfiles/invalid/v1_broken_section-title.cfg
+gc3.gc3libs: WARNING: Ignoring job config, parsing failed: Option 'useremail' missing from section 'hrmjobfile'!
+gc3.gc3libs: WARNING: Invalid job config file: jobfiles/invalid/v2_broken_section-content_inputfiles.cfg
+gc3.gc3libs: WARNING: Ignoring job config, parsing failed: Option 'useremail' missing from section 'hrmjobfile'!
+gc3.gc3libs: WARNING: Invalid job config file: jobfiles/invalid/v7_broken_section_hrmjobfile.cfg
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: WARNING: Job file unparsable (Can't find tasktype in jobfiles/invalid/v7_broken_section_hucore.cfg.), skipping / moving to 'done'.
-gc3.gc3libs: WARNING: Job file unparsable (Section 'hrmjobfile' in file 'jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg' contains unknown options, jobfile is invalid: [('invalid_option', 'some-value')]), skipping / moving to 'done'.
+gc3.gc3libs: WARNING: Ignoring job config, parsing failed: Option 'tasktype' missing from section 'hucore'!
+gc3.gc3libs: WARNING: Invalid job config file: jobfiles/invalid/v7_broken_section_hucore.cfg
+gc3.gc3libs: WARNING: Ignoring job config, parsing failed: Job config invalid, section 'hrmjobfile' contains unknown options: [('invalid_option', 'some-value')]
+gc3.gc3libs: WARNING: Invalid job config file: jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: WARNING: Job file unparsable (No input files defined in jobfiles/invalid/v7_broken_section_inputfiles.cfg.), skipping / moving to 'done'.
-gc3.gc3libs: WARNING: Job file unparsable (Invalid timestamp: on_parse.), skipping / moving to 'done'.
-gc3.gc3libs: WARNING: Job file unparsable (Can't find jobids in jobfiles/invalid/v7_removejob_nojobids.cfg.), skipping / moving to 'done'.
+gc3.gc3libs: WARNING: Ignoring job config, parsing failed: No input files defined in job config!
+gc3.gc3libs: WARNING: Invalid job config file: jobfiles/invalid/v7_broken_section_inputfiles.cfg
+gc3.gc3libs: WARNING: Ignoring job config, parsing failed: Invalid timestamp: on_parse.
+gc3.gc3libs: WARNING: Invalid job config file: jobfiles/invalid/v7_broken_timestamp.cfg
+gc3.gc3libs: WARNING: Ignoring job config, parsing failed: Can't find job IDs in job config!
+gc3.gc3libs: WARNING: Invalid job config file: jobfiles/invalid/v7_removejob_nojobids.cfg

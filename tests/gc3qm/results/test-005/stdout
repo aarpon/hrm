@@ -14,9 +14,9 @@ python_scripts/test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1472533775.786357,
+ 'timestamp': 1472540102.605943,
  'type': 'hucore',
- 'uid': '026ff582827b87741fe5dcd3422521f672740295',
+ 'uid': '9e73a171cc91db7b64080e982b5029a4e8c2a5f5',
  'user': 'user01',
  'ver': '7'}
 ----------------- parsing jobfiles/decon_it-3_user01_fixed-timestamp.cfg -----------------
@@ -48,9 +48,9 @@ python_scripts/test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1472533775.788695,
+ 'timestamp': 1472540102.607586,
  'type': 'hucore',
- 'uid': '026ff582827b87741fe5dcd3422521f672740295',
+ 'uid': '9e73a171cc91db7b64080e982b5029a4e8c2a5f5',
  'user': 'user02',
  'ver': '7'}
 ----------------- parsing jobfiles/decon_it-999_user01.cfg -----------------
@@ -65,9 +65,9 @@ python_scripts/test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb',
- 'timestamp': 1472533775.789452,
+ 'timestamp': 1472540102.60835,
  'type': 'hucore',
- 'uid': '026ff582827b87741fe5dcd3422521f672740295',
+ 'uid': '9e73a171cc91db7b64080e982b5029a4e8c2a5f5',
  'user': 'user01',
  'ver': '7'}
 ----------------- parsing jobfiles/decon_it-999_user01_fixed-timestamp_45a1734.cfg -----------------
@@ -99,9 +99,9 @@ python_scripts/test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'preview',
  'template': 'tests/gc3qm/hucore_templates/preview_faba128.hgsb',
- 'timestamp': 1472533775.790883,
+ 'timestamp': 1472540102.609658,
  'type': 'hucore',
- 'uid': '026ff582827b87741fe5dcd3422521f672740295',
+ 'uid': '9e73a171cc91db7b64080e982b5029a4e8c2a5f5',
  'user': 'user01',
  'ver': '7'}
 ----------------- parsing jobfiles/remove_job_45a1734.cfg -----------------
@@ -122,27 +122,27 @@ python_scripts/test-005__jobfile-parser.py
 >>>>>> Testing INVALID job description files:
 ----------------- parsing jobfiles/invalid/v1_broken_section-title.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v1_broken_section-title.cfg':
-   Error parsing job from jobfiles/invalid/v1_broken_section-title.cfg.
+   Section 'hrmjobfile' missing in job config!
 
 ----------------- parsing jobfiles/invalid/v2_broken_section-content_inputfiles.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v2_broken_section-content_inputfiles.cfg':
-   Can't find useremail in jobfiles/invalid/v2_broken_section-content_inputfiles.cfg.
+   Option 'useremail' missing from section 'hrmjobfile'!
 
 ----------------- parsing jobfiles/invalid/v7_broken_section_hrmjobfile.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hrmjobfile.cfg':
-   Can't find useremail in jobfiles/invalid/v7_broken_section_hrmjobfile.cfg.
+   Option 'useremail' missing from section 'hrmjobfile'!
 
 ----------------- parsing jobfiles/invalid/v7_broken_section_hucore.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hucore.cfg':
-   Can't find tasktype in jobfiles/invalid/v7_broken_section_hucore.cfg.
+   Option 'tasktype' missing from section 'hucore'!
 
 ----------------- parsing jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg':
-   Section 'hrmjobfile' in file 'jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg' contains unknown options, jobfile is invalid: [('invalid_option', 'some-value')]
+   Job config invalid, section 'hrmjobfile' contains unknown options: [('invalid_option', 'some-value')]
 
 ----------------- parsing jobfiles/invalid/v7_broken_section_inputfiles.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_section_inputfiles.cfg':
-   No input files defined in jobfiles/invalid/v7_broken_section_inputfiles.cfg.
+   No input files defined in job config!
 
 ----------------- parsing jobfiles/invalid/v7_broken_timestamp.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_broken_timestamp.cfg':
@@ -150,6 +150,6 @@ python_scripts/test-005__jobfile-parser.py
 
 ----------------- parsing jobfiles/invalid/v7_removejob_nojobids.cfg -----------------
  - Got the excpected ValueError from 'jobfiles/invalid/v7_removejob_nojobids.cfg':
-   Can't find jobids in jobfiles/invalid/v7_removejob_nojobids.cfg.
+   Can't find job IDs in job config!
 
 ************************* TEST FINISHED! *************************
