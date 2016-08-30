@@ -66,15 +66,15 @@ def process_jobfile(fname, queues, dirs):
         loge("Adding the new job from '%s' failed:\n    %s", fname, err)
 
 
-class JobConfigParser(dict):
-    """Class to parse new jobs from ini-style formatted files or strings.
+class AbstractJobConfigParser(dict):
+    """Abstract class to parse new jobs from an ini-style syntax.
 
-    Read an HRM job description either from a file or a string and parse
+    Read a job description either from a file or a string and parse
     the sections, check them for sane values and store them in a dict.
     """
 
     def __init__(self, jobconfig, srctype):
-        super(JobConfigParser, self).__init__()
+        super(AbstractJobConfigParser, self).__init__()
         self.sections = []
         if srctype == 'file':
             jobconfig = self.read_jobfile(jobconfig)
@@ -195,6 +195,14 @@ class JobConfigParser(dict):
                                  (cfg_option, section))
         # by now the section should be fully parsed and therefore empty:
         self.check_for_remaining_options('hrmjobfile')
+
+
+
+class HRMJobConfigParser(AbstractJobConfigParser):
+    """Parse HRM type job configurations"""
+
+    def __init__(self, jobconfig, srctype):
+        super(HRMJobConfigParser, self).__init__(jobconfig, srctype)
 
     def parse_jobdescription(self):
         """Parse details for an HRM job and check for sanity.
@@ -322,7 +330,7 @@ class JobDescription(dict):
         self.spooldirs = spooldirs
         self.srctype = srctype
         try:
-            parsed_job = JobConfigParser(job, srctype)
+            parsed_job = HRMJobConfigParser(job, srctype)
         except (SyntaxError, ValueError) as err:
             logw("Ignoring job config, parsing failed: %s", err)
             if srctype == 'file':
