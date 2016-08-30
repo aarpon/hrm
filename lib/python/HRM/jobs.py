@@ -143,8 +143,18 @@ class JobConfigParser(dict):
         logd("Job description sections: %s", self._sections)
         self._parse_jobdescription()
 
-    def _get_option(self, section, option):
-        """Helper method to get an option and remove it from the section."""
+    def get_option(self, section, option):
+        """Helper method to get an option and remove it from the section.
+
+        Parameters
+        ----------
+        section : str
+        option : str
+
+        Returns
+        -------
+        value : str
+        """
         value = self.jobparser.get(section, option)
         self.jobparser.remove_option(section, option)
         return value
@@ -179,7 +189,7 @@ class JobConfigParser(dict):
             raise ValueError("Section '%s' missing in job config!" % section)
         for cfg_option, job_key in options_mapping:
             try:
-                self[job_key] = self._get_option(section, cfg_option)
+                self[job_key] = self.get_option(section, cfg_option)
             except ConfigParser.NoOptionError:
                 raise ValueError("Option '%s' missing from section '%s'!" %
                                  (cfg_option, section))
@@ -259,7 +269,7 @@ class JobConfigParser(dict):
             raise ValueError("Section 'inputfiles' missing in job config!")
         self['infiles'] = []
         for option in self.jobparser.options('inputfiles'):
-            infile = self._get_option('inputfiles', option)
+            infile = self.get_option('inputfiles', option)
             self['infiles'].append(infile)
         if not self['infiles']:
             raise ValueError("No input files defined in job config!")
@@ -275,7 +285,7 @@ class JobConfigParser(dict):
         if 'deletejobs' not in self._sections:
             raise ValueError("No 'deletejobs' section in job config!")
         try:
-            jobids = self._get_option('deletejobs', 'ids')
+            jobids = self.get_option('deletejobs', 'ids')
         except ConfigParser.NoOptionError:
             raise ValueError("Can't find job IDs in job config!")
         # split string at commas, strip whitespace from components:
