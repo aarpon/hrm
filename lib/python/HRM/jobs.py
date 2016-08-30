@@ -101,7 +101,8 @@ class AbstractJobConfigParser(dict):
         self['pid'] = "N/A"
         self['server'] = "N/A"
 
-    def read_jobfile(self, jobfile):
+    @staticmethod
+    def read_jobfile(jobfile):
         """Read in a job config file into a string.
 
         Parameters
