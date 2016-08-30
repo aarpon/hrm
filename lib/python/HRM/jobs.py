@@ -63,7 +63,7 @@ def process_jobfile(fname, queues, dirs):
     try:
         queues[job['type']].append(job)
     except ValueError as err:
-        loge("Adding the newe job from '%s' failed:\n    %s", fname, err)
+        loge("Adding the new job from '%s' failed:\n    %s", fname, err)
 
 
 class JobConfigParser(dict):
