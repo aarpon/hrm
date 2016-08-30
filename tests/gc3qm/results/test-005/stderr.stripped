@@ -10,9 +10,17 @@ gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNIN
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
+gc3.gc3libs: WARNING: Job file unparsable (Error parsing job from jobfiles/invalid/v1_broken_section-title.cfg.), skipping / moving to 'done'.
+gc3.gc3libs: WARNING: Job file unparsable (Can't find useremail in jobfiles/invalid/v2_broken_section-content_inputfiles.cfg.), skipping / moving to 'done'.
+gc3.gc3libs: WARNING: Job file unparsable (Can't find useremail in jobfiles/invalid/v7_broken_section_hrmjobfile.cfg.), skipping / moving to 'done'.
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
+gc3.gc3libs: WARNING: Job file unparsable (Can't find tasktype in jobfiles/invalid/v7_broken_section_hucore.cfg.), skipping / moving to 'done'.
+gc3.gc3libs: WARNING: Job file unparsable (Section 'hrmjobfile' in file 'jobfiles/invalid/v7_broken_section_hucore_unknown-option.cfg' contains unknown options, jobfile is invalid: [('invalid_option', 'some-value')]), skipping / moving to 'done'.
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
+gc3.gc3libs: WARNING: Job file unparsable (No input files defined in jobfiles/invalid/v7_broken_section_inputfiles.cfg.), skipping / moving to 'done'.
+gc3.gc3libs: WARNING: Job file unparsable (Invalid timestamp: on_parse.), skipping / moving to 'done'.
+gc3.gc3libs: WARNING: Job file unparsable (Can't find jobids in jobfiles/invalid/v7_removejob_nojobids.cfg.), skipping / moving to 'done'.
