@@ -75,7 +75,7 @@ class JobConfigParser(dict):
 
     def __init__(self, jobconfig, srctype):
         super(JobConfigParser, self).__init__()
-        self._sections = []
+        self.sections = []
         if srctype == 'file':
             jobconfig = self.read_jobfile(jobconfig)
         elif srctype == 'string':
@@ -137,10 +137,10 @@ class JobConfigParser(dict):
             logd("Parsed job configuration.")
         except ConfigParser.MissingSectionHeaderError as err:
             raise SyntaxError("ERROR in JobDescription: %s" % err)
-        self._sections = self.jobparser.sections()
-        if not self._sections:
+        self.sections = self.jobparser.sections()
+        if not self.sections:
             raise SyntaxError("No sections found in job config!")
-        logd("Job description sections: %s", self._sections)
+        logd("Job description sections: %s", self.sections)
         self._parse_jobdescription()
 
     def get_option(self, section, option):
@@ -159,21 +159,21 @@ class JobConfigParser(dict):
         self.jobparser.remove_option(section, option)
         return value
 
-    def _check_for_remaining_options(self, section):
+    def check_for_remaining_options(self, section):
         """Helper method to check if a section has remaining items."""
         remaining = self.jobparser.items(section)
         if remaining:
             raise ValueError("Job config invalid, section '%s' contains "
                              "unknown options: %s" % (section, remaining))
 
-    def _parse_section_entries(self, section, options_mapping):
+    def _parse_section_entries(self, section, mapping):
         """Helper function to read a given list of options from a section.
 
         Parameters
         ----------
         section : str
             The name of the section to parse.
-        options_mapping : list of tuples
+        mapping : list of tuples
             A list of tuples containing the mapping from the option names in
             the config file to the key names in the JobDescription object, e.g.
 
@@ -187,14 +187,14 @@ class JobConfigParser(dict):
         """
         if not self.jobparser.has_section(section):
             raise ValueError("Section '%s' missing in job config!" % section)
-        for cfg_option, job_key in options_mapping:
+        for cfg_option, job_key in mapping:
             try:
                 self[job_key] = self.get_option(section, cfg_option)
             except ConfigParser.NoOptionError:
                 raise ValueError("Option '%s' missing from section '%s'!" %
                                  (cfg_option, section))
         # by now the section should be fully parsed and therefore empty:
-        self._check_for_remaining_options('hrmjobfile')
+        self.check_for_remaining_options('hrmjobfile')
 
     def _parse_jobdescription(self):
         """Parse details for an HRM job and check for sanity.
@@ -265,7 +265,7 @@ class JobConfigParser(dict):
             raise ValueError("Tasktype invalid: %s" % self['tasktype'])
         # and the input file(s) section:
         # TODO: can we check if this section contains nonsense values?
-        if 'inputfiles' not in self._sections:
+        if 'inputfiles' not in self.sections:
             raise ValueError("Section 'inputfiles' missing in job config!")
         self['infiles'] = []
         for option in self.jobparser.options('inputfiles'):
@@ -282,7 +282,7 @@ class JobConfigParser(dict):
         void
             All information is added to the "self" dict.
         """
-        if 'deletejobs' not in self._sections:
+        if 'deletejobs' not in self.sections:
             raise ValueError("No 'deletejobs' section in job config!")
         try:
             jobids = self.get_option('deletejobs', 'ids')
