@@ -205,6 +205,15 @@ class AbstractJobConfigParser(dict):
         logd("Job description sections: %s", self.sections)
         self.parse_jobdescription()
 
+    def parse_jobdescription(self):
+        """Abstract method to be overridden in derived classes.
+
+        Raises a NotImplementedError if called.
+        """
+        raise NotImplementedError("This is an abstract class, which is not "
+                                  "meant to be instantiated!")
+
+
 
 class HRMJobConfigParser(AbstractJobConfigParser):
     """Derived class to parse HRM type job configurations."""
