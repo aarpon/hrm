@@ -166,7 +166,7 @@ class JobConfigParser(dict):
             raise ValueError("Job config invalid, section '%s' contains "
                              "unknown options: %s" % (section, remaining))
 
-    def _parse_section_entries(self, section, mapping):
+    def parse_section_entries(self, section, mapping):
         """Helper function to read a given list of options from a section.
 
         Parameters
@@ -213,7 +213,7 @@ class JobConfigParser(dict):
             ['jobtype', 'type']
         ]
         # now parse the section:
-        self._parse_section_entries('hrmjobfile', mapping)
+        self.parse_section_entries('hrmjobfile', mapping)
         # sanity-check / validate the parsed options:
         if self['ver'] != JOBFILE_VER:
             raise ValueError("Unexpected jobfile version '%s'." % self['ver'])
@@ -260,7 +260,7 @@ class JobConfigParser(dict):
             ['template', 'template']
         ]
         # now parse the section:
-        self._parse_section_entries('hucore', mapping)
+        self.parse_section_entries('hucore', mapping)
         if self['tasktype'] != 'decon' and self['tasktype'] != 'preview':
             raise ValueError("Tasktype invalid: %s" % self['tasktype'])
         # and the input file(s) section:
