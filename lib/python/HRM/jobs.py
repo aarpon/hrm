@@ -141,7 +141,7 @@ class JobConfigParser(dict):
         if not self.sections:
             raise SyntaxError("No sections found in job config!")
         logd("Job description sections: %s", self.sections)
-        self._parse_jobdescription()
+        self.parse_jobdescription()
 
     def get_option(self, section, option):
         """Helper method to get an option and remove it from the section.
@@ -196,7 +196,7 @@ class JobConfigParser(dict):
         # by now the section should be fully parsed and therefore empty:
         self.check_for_remaining_options('hrmjobfile')
 
-    def _parse_jobdescription(self):
+    def parse_jobdescription(self):
         """Parse details for an HRM job and check for sanity.
 
         Use the ConfigParser object and assemble a dicitonary with the
@@ -236,22 +236,17 @@ class JobConfigParser(dict):
                 raise ValueError("Invalid timestamp: %s." % self['timestamp'])
         # now call the jobtype-specific parser method(s):
         if self['type'] == 'hucore':
-            self._parse_job_hucore()
+            self.parse_job_hucore()
         elif self['type'] == 'deletejobs':
-            self._parse_job_deletejobs()
+            self.parse_job_deletejobs()
         else:
             raise ValueError("Unknown jobtype '%s'" % self['type'])
 
-    def _parse_job_hucore(self):
+    def parse_job_hucore(self):
         """Do the specific parsing of "hucore" type jobfiles.
 
         Parse the "hucore" and the "inputfiles" sections of HRM job
         configuration files.
-
-        Returns
-        -------
-        void
-            All information is added to the "self" dict.
         """
         # prepare the parser-mapping for the generic 'hrmjobfile' section:
         mapping = [
@@ -274,14 +269,8 @@ class JobConfigParser(dict):
         if not self['infiles']:
             raise ValueError("No input files defined in job config!")
 
-    def _parse_job_deletejobs(self):
-        """Do the specific parsing of "deletejobs" type jobfiles.
-
-        Returns
-        -------
-        void
-            All information is added to the "self" dict.
-        """
+    def parse_job_deletejobs(self):
+        """Do the specific parsing of "deletejobs" type jobfiles."""
         if 'deletejobs' not in self.sections:
             raise ValueError("No 'deletejobs' section in job config!")
         try:
