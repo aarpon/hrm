@@ -407,7 +407,8 @@ class JobDescription(dict):
         target = os.path.join(target, self['uid'] + suffix)
         if os.path.exists(target):
             target += ".%s" % time.time()
-        logi("Moving file '%s' to '%s'.", self.fname, target)
+        logi("Moving file '%s' to '%s'.", os.path.basename(self.fname), target)
+        logd("Full path of original file: '%s'.", self.fname)
         shutil.move(self.fname, target)
         # update the job's internal fname pointer:
         self.fname = target
