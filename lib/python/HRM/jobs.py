@@ -215,7 +215,6 @@ class AbstractJobConfigParser(dict):
                                   "meant to be instantiated!")
 
 
-
 class HRMJobConfigParser(AbstractJobConfigParser):
     """Derived class to parse HRM type job configurations."""
 
@@ -316,7 +315,6 @@ class HRMJobConfigParser(AbstractJobConfigParser):
         self['ids'] = [jobid.strip() for jobid in jobids.split(',')]
         for jobid in self['ids']:
             logi("Request to --- DELETE --- job '%s'", jobid)
-
 
 
 class JobDescription(dict):
