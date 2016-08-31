@@ -355,7 +355,10 @@ class JobDescription(dict):
         super(JobDescription, self).__init__()
 
         self.spooldirs = spooldirs
-        self.srctype = srctype
+        if srctype == 'file':
+            self.fname = job
+        else:
+            self.fname = None
         try:
             parsed_job = HRMJobConfigParser(job, srctype)
         except (SyntaxError, ValueError) as err:
@@ -401,7 +404,7 @@ class JobDescription(dict):
             An optional suffix, by default ".jobfile" will be used if empty.
         """
         # make sure to only move "file" job descriptions, return otherwise:
-        if self.srctype != 'file':
+        if self.fname is None:
             return
         target = os.path.join(target, self['uid'] + suffix)
         if os.path.exists(target):
