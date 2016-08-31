@@ -375,10 +375,10 @@ class JobDescription(dict):
 
     def __setitem__(self, key, value):
         logd("Setting JobDescription key '%s' to value '%s'", key, value)
+        super(JobDescription, self).__setitem__(key, value)
         # on status changes, update / store the job
         if key == "status":
             self.store_job()
-        super(JobDescription, self).__setitem__(key, value)
 
     def store_job(self):
         """Store the job configuration into a JSON file."""
