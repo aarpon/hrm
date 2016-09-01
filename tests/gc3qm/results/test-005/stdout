@@ -14,9 +14,9 @@ python_scripts/test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1472540102.605943,
+ 'timestamp': 1472732068.677446,
  'type': 'hucore',
- 'uid': '9e73a171cc91db7b64080e982b5029a4e8c2a5f5',
+ 'uid': '699760b7ba36a7cb903e5bdfe91697fbd9420aca',
  'user': 'user01',
  'ver': '7'}
 ----------------- parsing jobfiles/decon_it-3_user01_fixed-timestamp.cfg -----------------
@@ -48,9 +48,9 @@ python_scripts/test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb',
- 'timestamp': 1472540102.607586,
+ 'timestamp': 1472732068.67916,
  'type': 'hucore',
- 'uid': '9e73a171cc91db7b64080e982b5029a4e8c2a5f5',
+ 'uid': '699760b7ba36a7cb903e5bdfe91697fbd9420aca',
  'user': 'user02',
  'ver': '7'}
 ----------------- parsing jobfiles/decon_it-999_user01.cfg -----------------
@@ -65,9 +65,9 @@ python_scripts/test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'decon',
  'template': 'tests/gc3qm/hucore_templates/decon_faba128_it-999_q-0.00000001.hgsb',
- 'timestamp': 1472540102.60835,
+ 'timestamp': 1472732068.680033,
  'type': 'hucore',
- 'uid': '9e73a171cc91db7b64080e982b5029a4e8c2a5f5',
+ 'uid': '699760b7ba36a7cb903e5bdfe91697fbd9420aca',
  'user': 'user01',
  'ver': '7'}
 ----------------- parsing jobfiles/decon_it-999_user01_fixed-timestamp_45a1734.cfg -----------------
@@ -99,9 +99,9 @@ python_scripts/test-005__jobfile-parser.py
  'status': 'N/A',
  'tasktype': 'preview',
  'template': 'tests/gc3qm/hucore_templates/preview_faba128.hgsb',
- 'timestamp': 1472540102.609658,
+ 'timestamp': 1472732068.681515,
  'type': 'hucore',
- 'uid': '9e73a171cc91db7b64080e982b5029a4e8c2a5f5',
+ 'uid': '699760b7ba36a7cb903e5bdfe91697fbd9420aca',
  'user': 'user01',
  'ver': '7'}
 ----------------- parsing jobfiles/remove_job_45a1734.cfg -----------------

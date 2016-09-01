@@ -1,3 +1,4 @@
+gc3.gc3libs: CRITICAL: Class variable 'spooldirs' is 'None', this is not intended for production use! TESTING ONLY!!
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Full jobfile path: 'jobfiles/decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Reading the job file succeeded after 0 s!
@@ -22,6 +23,7 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'uid': 'UID_STRIPPED',
  'user': 'user01',
  'ver': '7'}
+gc3.gc3libs: CRITICAL: Class variable 'spooldirs' is 'None', this is not intended for production use! TESTING ONLY!!
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Full jobfile path: 'jobfiles/decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Reading the job file succeeded after 0 s!
@@ -46,6 +48,7 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'uid': 'UID_STRIPPED',
  'user': 'user01',
  'ver': '7'}
+gc3.gc3libs: CRITICAL: Class variable 'spooldirs' is 'None', this is not intended for production use! TESTING ONLY!!
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Full jobfile path: 'jobfiles/decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Reading the job file succeeded after 0 s!
@@ -70,6 +73,7 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'uid': 'UID_STRIPPED',
  'user': 'user01',
  'ver': '7'}
+gc3.gc3libs: CRITICAL: Class variable 'spooldirs' is 'None', this is not intended for production use! TESTING ONLY!!
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Full jobfile path: 'jobfiles/decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Reading the job file succeeded after 0 s!
@@ -94,6 +98,7 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'uid': 'UID_STRIPPED',
  'user': 'user01',
  'ver': '7'}
+gc3.gc3libs: CRITICAL: Class variable 'spooldirs' is 'None', this is not intended for production use! TESTING ONLY!!
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Full jobfile path: 'jobfiles/decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Reading the job file succeeded after 0 s!
@@ -118,6 +123,7 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'uid': 'UID_STRIPPED',
  'user': 'user01',
  'ver': '7'}
+gc3.gc3libs: CRITICAL: Class variable 'spooldirs' is 'None', this is not intended for production use! TESTING ONLY!!
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Full jobfile path: 'jobfiles/decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Reading the job file succeeded after 0 s!
@@ -142,6 +148,7 @@ gc3.gc3libs: DEBUG: {'email': 'user01@mail.xy',
  'uid': 'UID_STRIPPED',
  'user': 'user01',
  'ver': '7'}
+gc3.gc3libs: CRITICAL: Class variable 'spooldirs' is 'None', this is not intended for production use! TESTING ONLY!!
 gc3.gc3libs: INFO: Parsing jobfile 'decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Full jobfile path: 'jobfiles/decon_it-3_user01.cfg'...
 gc3.gc3libs: DEBUG: Reading the job file succeeded after 0 s!

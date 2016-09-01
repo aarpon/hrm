@@ -35,7 +35,7 @@ gc3.gc3libs: INFO: New file event 'remove_job_1.cfg'
 gc3.gc3libs: INFO: Parsing jobfile 'remove_job_1.cfg'...
 gc3.gc3libs: INFO: Request to --- DELETE --- job 'UID_STRIPPED'
 gc3.gc3libs: WARNING: Received job deletion request(s)!
-gc3.gc3libs: INFO: Moving file 'remove_job_1.cfg' to 'run/spool/done/UID_STRIPPED.jobfile.1472682810.6'.
+gc3.gc3libs: INFO: Moving file 'remove_job_1.cfg' to 'run/spool/done/UID_STRIPPED.jobfile.TIMESTAMP_STRIPPED'.
 gc3.gc3libs: WARNING: <KILLING> [user01] HuDeconApp
 Terminated
 gc3.gc3libs: INFO: Job status changed from 'SUBMITTED' to 'RUNNING'.
