@@ -19,12 +19,12 @@ Requesting QM status change to: pause
 None.
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
-user01 (user01@mail.xy): 4229769329d5a3d2d7f13b5163f5b85cb54caeec - ['tests/sample_images/faba128.h5'] [queued]
+user01 (user01@mail.xy): 619128c3a6edc37d1596f08c65ddd174a34587a8 - ['tests/sample_images/faba128.h5'] [queued]
 ========================= queue status =========================
 Requesting QM status change to: run
 ========================= queue status =========================
 --- jobs retrieved for processing
-user01 (user01@mail.xy): 4229769329d5a3d2d7f13b5163f5b85cb54caeec - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/preview_faba128.hgsb'] [queued]
+user01 (user01@mail.xy): 619128c3a6edc37d1596f08c65ddd174a34587a8 - ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/preview_faba128.hgsb'] [queued]
 ------------------------- queue status -------------------------
 --- jobs queued (not yet retrieved)
 None.
