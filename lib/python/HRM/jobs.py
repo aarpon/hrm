@@ -328,10 +328,7 @@ class JobDescription(dict):
 
     Instance Variables
     ------------------
-    jobparser : ConfigParser.RawConfigParser
-    srctype : str
     fname : str
-    _sections : list
     """
 
     spooldirs = dict()
