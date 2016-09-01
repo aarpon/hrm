@@ -13,7 +13,7 @@ import argparse
 # pylint: disable=wrong-import-position
 import HRM
 import HRM.queue
-import HRM.jobs
+from HRM.jobs import JobDescription, process_jobfile
 from HRM.logger import set_verbosity
 from HRM.spooler import JobSpooler, setup_rundirs
 from HRM.inotify import JobFileHandler
@@ -45,6 +45,7 @@ def main():
     set_verbosity(args.verbosity)
 
     spool_dirs = setup_rundirs(args.spooldir)
+    JobDescription.spooldirs = spool_dirs   # set the spooldirs class variable
     jobqueues = dict()
     jobqueues['hucore'] = HRM.queue.JobQueue()
     for qname, queue in jobqueues.iteritems():
@@ -59,7 +60,7 @@ def main():
     # process jobfiles already existing during our startup:
     for jobfile in spool_dirs['newfiles']:
         fname = os.path.join(spool_dirs['new'], jobfile)
-        HRM.jobs.process_jobfile(fname, jobqueues, spool_dirs)
+        process_jobfile(fname, jobqueues, spool_dirs)
 
 
     file_handler = JobFileHandler(jobqueues, spool_dirs)

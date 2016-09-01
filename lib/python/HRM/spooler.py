@@ -284,7 +284,7 @@ class JobSpooler(object):
                     if new_state is not None:
                         self.queue.set_jobstatus(app.job, new_state)
                     if new_state == gc3libs.Run.State.TERMINATED:
-                        app.job.move_jobfile(self.dirs['done'])
+                        app.job.move_jobfile('done')
                         self.apps.pop(i)
                 stats = self.engine_status()
                 # NOTE: in theory, we could simply add all apps to the engine

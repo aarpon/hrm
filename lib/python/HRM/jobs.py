@@ -35,7 +35,7 @@ def process_jobfile(fname, queues, dirs):
         Spooling directories in a dict, as returned by HRM.setup_rundirs().
     """
     try:
-        job = JobDescription(fname, 'file', dirs)
+        job = JobDescription(fname, 'file')
     except IOError as err:
         logw("Error reading job description file (%s), skipping.", err)
         # there is nothing to add to the queue and the IOError indicates
@@ -52,13 +52,13 @@ def process_jobfile(fname, queues, dirs):
             for delete_id in job['ids']:
                 queue.deletion_list.append(delete_id)
         # we're finished, so move the jobfile and return:
-        job.move_jobfile(dirs['done'])
+        job.move_jobfile('done')
         return
     if job['type'] not in queues:
         logc("ERROR: no queue existing for jobtype '%s'!", job['type'])
-        job.move_jobfile(dirs['done'])
+        job.move_jobfile('done')
         return
-    job.move_jobfile(dirs['cur'])
+    job.move_jobfile('cur')
     # TODO: have more than one queue, decide by 'tasktype' where to put a job
     try:
         queues[job['type']].append(job)
@@ -326,14 +326,24 @@ class HRMJobConfigParser(AbstractJobConfigParser):
 class JobDescription(dict):
     """Abstraction class for handling HRM job descriptions.
 
+    Class Variables
+    ---------------
+    spooldirs : dict
+        The spooldirs dict is supposed to be set explicitly before the first
+        instance of a JobDescription is created, this way giving all objects
+        access to the same dict. Can be left at its default 'None', but this
+        only makes sense for testing, probably not in a real scenario.
+
     Instance Variables
     ------------------
     fname : str
+        The file name from where the job configuration has been parsed, or
+        'None' in case the job was supplied in a string directly.
     """
 
-    spooldirs = dict()
+    spooldirs = None
 
-    def __init__(self, job, srctype, spooldirs=None):
+    def __init__(self, job, srctype):
         """Initialize depending on the type of description source.
 
         Parameters
@@ -344,10 +354,6 @@ class JobDescription(dict):
         srctype : string
             One of ['file', 'string'], determines whether 'job' should be
             interpreted as a filename or as a job description string.
-        spooldirs : dict
-            The dict containing the queue's spooling directories. Can be None,
-            but this only makes sense when testing the JobDescription parser,
-            not in a real-life application.
 
         Example
         -------
@@ -355,7 +361,9 @@ class JobDescription(dict):
         """
         super(JobDescription, self).__init__()
 
-        self.spooldirs = spooldirs
+        if JobDescription.spooldirs is None:
+            logc("Class variable 'spooldirs' is 'None', this is not intended "
+                 "for production use! TESTING ONLY!!")
         if srctype == 'file':
             self.fname = job
         else:
@@ -367,8 +375,7 @@ class JobDescription(dict):
             if srctype == 'file':
                 logw("Invalid job config file: %s", job)
                 # move the unreadable file out of the way before returning:
-                if self.spooldirs is not None:
-                    self.move_jobfile(self.spooldirs['done'], ".invalid")
+                self.move_jobfile('done', ".invalid")
             raise err
         self.update(parsed_job)
         del parsed_job
@@ -400,14 +407,18 @@ class JobDescription(dict):
         Parameters
         ----------
         target : str
-            The target directory.
+            The key for the spooldirs-dict denoting the target directory.
         suffix : str (optional)
             An optional suffix, by default ".jobfile" will be used if empty.
         """
         # make sure to only move "file" job descriptions, return otherwise:
         if self.fname is None:
             return
-        target = os.path.join(target, self['uid'] + suffix)
+        if JobDescription.spooldirs is None:
+            logw("Not moving jobfile as 'spooldirs' class variable is unset!")
+            return
+        target = os.path.join(JobDescription.spooldirs[target],
+                              self['uid'] + suffix)
         if os.path.exists(target):
             target += ".%s" % time.time()
         logi("Moving file '%s' to '%s'.", os.path.basename(self.fname), target)
