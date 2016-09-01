@@ -129,8 +129,14 @@ class AbstractJobConfigParser(dict):
             if len(config_raw) == 0 and snooze > 0:
                 logd("Jobfile could not be read, re-trying in %is.", snooze)
             time.sleep(snooze)
-            with open(jobfile, 'r') as jobfile:
-                config_raw = jobfile.read()
+            try:
+                with open(jobfile, 'r') as jobfile:
+                    config_raw = jobfile.read()
+            except TypeError as err:
+                # sometimes the 'with open' statement raises a TypeError
+                # ("coercing to Unicode: need string or buffer, file found"),
+                # which is probably some race condition - just try again...
+                logd("'with open' statement resulted in error: %s", err)
             if len(config_raw) > 0:
                 logd("Reading the job file succeeded after %s s!", snooze)
                 break
