@@ -18,6 +18,53 @@ import gc3libs
 from .. import logi, logd, logw, logc, loge
 
 
+class DummySleepApp(gc3libs.Application):
+    """Dummy app class that just issues a 'sleep' (intended for testing)."""
+
+    def __init__(self, job, output_dir):
+        """Set up the sleep job.
+
+        Parameters
+        ----------
+        job : HRM.jobs.JobDescription
+        output_dir : str
+        """
+        self.job = job
+        logw('Instantiating a %s: [%s], UID = %s',
+             self.__class__.__name__,
+             self.job['user'],
+             self.job['uid'])
+        gc3_output_dir = os.path.join(output_dir, 'results_%s' % self.job['uid'])
+        logi('gc3_output_dir: %s', gc3_output_dir)
+        logi('self.job: %s', self.job)
+        super(DummySleepApp, self).__init__(
+                arguments=['/bin/sleep',
+                           '1.6'],
+                inputs=[],
+                outputs=[],
+                output_dir=gc3_output_dir,
+                stderr='stdout.txt',  # combine stdout & stderr
+                stdout='stdout.txt'
+        )
+        self.laststate = self.execution.state
+
+    def status_changed(self):
+        """Check the if the execution state of the app has changed.
+
+        Track and update the internal execution status of the app and print a
+        log message if the status changes. Return the new state if the app it
+        has changed, otherwise None.
+        """
+        new = self.execution.state
+        if new != self.laststate:
+            logi("Job status changed from '%s' to '%s'.", self.laststate,
+                 new)
+            self.laststate = self.job['status'] = new
+            return new
+        else:
+            return None
+
+
 class HuCoreApp(gc3libs.Application):
 
     """App object for generic 'hucore' jobs.
