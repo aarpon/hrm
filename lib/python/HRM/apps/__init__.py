@@ -24,14 +24,12 @@ class AbstractApp(gc3libs.Application):
 
     def __init__(self, job, appconfig):
         if self.__class__.__name__ == 'AbstractApp':
-            raise TypeError("Not instantiating the virtual class 'GenericApp'!")
+            raise TypeError("Refusing to instantiate class 'AbstractApp'!")
         self.job = job   # remember the job object
-        logi('gc3_output_dir: %s', appconfig['output_dir'])
-        logi('self.job: %s', self.job)
-        logw('Instantiating a %s: [%s], UID = %s',
-             self.__class__.__name__,
-             self.job['user'],
-             self.job['uid'])
+        logd('gc3_output_dir: %s', appconfig['output_dir'])
+        logd('self.job: %s', job)
+        logw('Instantiating a %s: [[user: %s]] [[uid: %s]]',
+             self.__class__.__name__, job['user'], job['uid'])
         super(AbstractApp, self).__init__(**appconfig)
         self.laststate = self.execution.state
 
