@@ -13,12 +13,12 @@ HuSNRApp()
 """
 
 import os
-import gc3libs
 
+from . import AbstractApp
 from .. import logi, logd, logw, logc, loge
 
 
-class HuCoreApp(gc3libs.Application):
+class HuCoreApp(AbstractApp):
 
     """App object for generic 'hucore' jobs.
 
@@ -31,58 +31,35 @@ class HuCoreApp(gc3libs.Application):
     def __init__(self, job, gc3_output):
         if self.__class__.__name__ == 'HuCoreApp':
             raise TypeError("Not instantiating the virtual class 'HuCoreApp'!")
-        self.job = job   # remember the job object
-        logw('Instantiating a %s:\n[%s]: %s --> %s',
-             self.__class__.__name__,
-             self.job['user'],
-             self.job['template'],
-             self.job['infiles'])
-        uid = self.job['uid']
-        logi('Job UID: %s', uid)
         # we need to add the template (with the local path) to the list of
         # files that need to be transferred to the system running hucore:
-        self.job['infiles'].append(self.job['template'])
+        job['infiles'].append(job['template'])
         # for the execution on the remote host, we need to strip all paths from
         # this string as the template file will end up in the temporary
         # processing directory together with all the images:
-        templ_on_tgt = self.job['template'].split('/')[-1]
-        super(HuCoreApp, self).__init__(
-            arguments=[self.job['exec'],
+        templ_on_tgt = job['template'].split('/')[-1]
+        # mandatory application parameters
+        appconfig = dict(
+            arguments=[job['exec'],
                        '-exitOnDone',
                        '-noExecLog',
                        '-checkForUpdates', 'disable',
                        '-template', templ_on_tgt],
-            inputs=self.job['infiles'],
+            inputs=job['infiles'],
             outputs=['resultdir', 'previews'],
             # collect the results in a subfolder of GC3Pie's spooldir:
-            output_dir=os.path.join(gc3_output, 'results_%s' % uid),
+            output_dir=os.path.join(gc3_output, 'results_%s' % job['uid'])
+        )
+        # extra application parameters
+        appconfig.update(
             stderr='stdout.txt',  # combine stdout & stderr
             stdout='stdout.txt'
         )
-        self.laststate = self.execution.state
-
-    def new(self):
-        """Called when the job state is (re)set to NEW.
-
-        Note this will not be called when the application object is created,
-        rather if the state is reset to NEW after it has already been
-        submitted.
-        """
-        self.status_changed()
-
-    def running(self):
-        """Called when the job state transitions to RUNNING."""
-        self.status_changed()
-
-    def stopped(self):
-        """Called when the job state transitions to STOPPED."""
-        self.status_changed()
-        logc("Job '%s' has been suspended for an unknown reason!!!",
-             self.job['uid'])
-
-    def submitted(self):
-        """Called when the job state transitions to SUBMITTED."""
-        self.status_changed()
+        super(HuCoreApp, self).__init__(job, appconfig)
+        logw('Additional %s parameters: [[template: %s]] [[infiles: %s]]',
+             self.__class__.__name__,
+             job['template'],
+             job['infiles'])
 
     def terminated(self):
         """This is called when the app has terminated execution."""
@@ -99,43 +76,7 @@ class HuCoreApp(gc3libs.Application):
         # 143: hucore.bin received the HUP signal (9)
         # 165: the .hgsb file could not be parsed (file missing or with errors)
         # ==== hucore EXIT CODES ====
-        self.status_changed()
-        if self.execution.exitcode is None:
-            # TODO: we could let the app know it was killed
-            #       currently, were guessing from the exitcode 'None' that the
-            #       app was explicitly killed by gc3pie - it would be cleaner
-            #       to explicitly cover this situation e.g. in the spooler's
-            #       cleanup() method by telling the app it is requested to stop
-            logw("Job '%s' apparently was killed or crahsed!", self.job['uid'])
-        elif self.execution.exitcode != 0:
-            # IMPORTANT: gc3pie does NOT seem to pass on the exit code of
-            # hucore in this value, instead every non-zero exit code is
-            # represented as 255 - which means we can NOT DERIVE from this how
-            # hucore has finished!
-            logc("Job '%s' terminated with unexpected EXIT CODE: %s!",
-                 self.job['uid'], self.execution.exitcode)
-        else:
-            logi("Job '%s' terminated successfully!", self.job['uid'])
-            logi("The output of the application is in `%s`.", self.output_dir)
-
-    def terminating(self):
-        """Called when the job state transitions to TERMINATING."""
-        self.status_changed()
-
-    def status_changed(self):
-        """Check the if the execution state of the app has changed.
-
-        Track and update the internal execution status of the app and print a
-        log message if the status changes. Return the new state if the app it
-        has changed, otherwise None.
-        """
-        new = self.execution.state
-        if new != self.laststate:
-            logi("Job status changed from '%s' to '%s'.", self.laststate, new)
-            self.laststate = self.job['status'] = new
-            return new
-        else:
-            return None
+        super(HuCoreApp, self).terminated()
 
 
 class HuDeconApp(HuCoreApp):
