@@ -23,6 +23,15 @@ class AbstractApp(gc3libs.Application):
     """
 
     def __init__(self, job, appconfig):
+        """Set up the application.
+
+        Parameters
+        ----------
+        job : HRM.jobs.JobDescription
+        appconfig : dict
+            A dict with at least all mandatory parameters for a
+            gc3libs.Application, plus possibly extra parameters.
+        """
         if self.__class__.__name__ == 'AbstractApp':
             raise TypeError("Refusing to instantiate class 'AbstractApp'!")
         self.job = job   # remember the job object
