@@ -393,7 +393,7 @@ class JobDescription(dict):
     def store_job(self):
         """Store the job configuration into a JSON file."""
         # TODO: implement real storing instead of dumpung the json!
-        logi("JobDescription.store_job: %s", json.dumps(self))
+        logd("JobDescription.store_job: %s", json.dumps(self))
 
     def move_jobfile(self, target, suffix=".jobfile"):
         """Move a jobfile to the desired spooling subdir.
