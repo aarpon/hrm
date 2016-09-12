@@ -99,7 +99,7 @@ class AbstractApp(gc3libs.Application):
         """
         new = self.execution.state
         if new != self.laststate:
-            logi("%s: job status changed from '%s' to '%s'.",
+            logi("%s status: '%s' -> '%s'",
                  self.__class__.__name__, self.laststate, new)
             self.laststate = self.job['status'] = new
             return new
