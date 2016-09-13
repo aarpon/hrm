@@ -68,6 +68,7 @@ class AbstractApp(gc3libs.Application):
     def terminated(self):
         """This is called when the app has terminated execution."""
         self.status_changed()
+        self.execution_stats()
         if self.execution.exitcode is None:
             # TODO: we could let the app know it was killed
             #       currently, were guessing from the exitcode 'None' that the
@@ -105,3 +106,13 @@ class AbstractApp(gc3libs.Application):
             return new
         else:
             return None
+
+    def execution_stats(self):
+        """Log execution stats: cpu and walltime, maximum memory."""
+        logi("Job finished. Execution stats:\n"
+             "\t[[ cpu time: %s ]]\n"
+             "\t[[ wall time: %s ]]\n"
+             "\t[[ max memory: %s ]]",
+             self.execution.used_cpu_time,
+             self.execution.duration,
+             self.execution.max_used_memory)
