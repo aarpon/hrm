@@ -5012,6 +5012,7 @@ if ($current_revision < $n) {
         password C(255) NOTNULL,
         email C(255) NOTNULL,
         research_group C(255) NOTNULL,
+        institution C(255) DEFAULT NULL,
         role C(30) NOTNULL DEFAULT user,
         authentication C(30) NOTNULL DEFAULT integrated,
         creation_date T DEFAULT NULL,
@@ -5040,9 +5041,9 @@ if ($current_revision < $n) {
 
     // Prepared statement
     $sql="INSERT INTO $tabname " .
-        "(name, password, email, research_group, role, authentication, " .
+        "(name, password, email, research_group, institution, role, authentication, " .
         "creation_date, last_access_date, status) VALUES " .
-        "(?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
     $db->StartTrans();
 
@@ -5060,6 +5061,7 @@ if ($current_revision < $n) {
             "password" => $row["password"], //uniqid('', true),
             "email" => $row["email"],
             "research_group" => $row["research_group"],
+            "institution" => "",
             "role" => $role,
             "authentication" => $defaultAuthMode,
             "creation_date" => $row["creation_date"],
