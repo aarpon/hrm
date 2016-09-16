@@ -8,7 +8,12 @@ QM_PY="bin/hrm_queuemanager.py"
 # order in which the program(s) were sending them:
 QM_EXEC="python -u $QM_PY"
 QM_SPOOL="run"  # TODO: read this from hrm.conf once it's there!
-QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf -v"
+if [ -n "$VERBOSE" ] ; then
+    VERB="-vv"
+else
+    VERB="-v"
+fi
+QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf $VERB"
 
 
 clean_all_spooldirs() {
