@@ -109,10 +109,15 @@ class AbstractApp(gc3libs.Application):
 
     def execution_stats(self):
         """Log execution stats: cpu and walltime, maximum memory."""
+        # NOTE: as of now, the upstream gc3libs does not provide the execution
+        # stats for the "shellcmd" backend (despite what the documentation
+        # says), so we need to be careful when retrieving them and replace them
+        # with defaults if they're not available:
+        used_cpu_time = getattr(self.execution, 'used_cpu_time', 'N/A')
+        duration = getattr(self.execution, 'duration', 'N/A')
+        max_used_memory = getattr(self.execution, 'max_used_memory', 'N/A')
         logi("Job finished. Execution stats:\n"
              "\t[[ cpu time: %s ]]\n"
              "\t[[ wall time: %s ]]\n"
              "\t[[ max memory: %s ]]",
-             self.execution.used_cpu_time,
-             self.execution.duration,
-             self.execution.max_used_memory)
+             used_cpu_time, duration, max_used_memory)
