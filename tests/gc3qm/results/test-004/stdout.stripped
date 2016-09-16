@@ -1,3 +1,5 @@
+Found Python package 'gc3libs'.
+Found Python package 'HRM'.
 **** Starting Queue Manager...
 python -u bin/hrm_queuemanager.py --spooldir run --config config/samples/gc3pie_localhost.conf -v
 ********************************************************************************

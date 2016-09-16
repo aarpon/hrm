@@ -20,90 +20,78 @@ gc3.gc3libs: INFO: Parsing jobfile 'decon_job_1.cfg'...
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Moving file 'decon_job_1.cfg' to 'run/spool/cur/ab2cae610479fc30ceefeae0d2b84164f816ee82.jobfile'.
-gc3.gc3libs: INFO: Enqueueing job 'ab2cae610479fc30ceefeae0d2b84164f816ee82' into category 'user01'.
+gc3.gc3libs: INFO: Moving file 'decon_job_1.cfg' to 'run/spool/cur/038cbaf64a59981a41a3c2592b728cc474179b59.jobfile'.
+gc3.gc3libs: INFO: Enqueueing job '038cbaf64a59981a41a3c2592b728cc474179b59' into category 'user01'.
 gc3.gc3libs: INFO: Adding a new queue for 'user01' to the JobQueue.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "queued", "ver": "7", "uid": "ab2cae610479fc30ceefeae0d2b84164f816ee82", "exec": "/usr/local/bin/hucore", "timestamp": 1472662272.914165, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5"]}
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['ab2cae610479fc30ceefeae0d2b84164f816ee82'])}
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['038cbaf64a59981a41a3c2592b728cc474179b59'])}
 gc3.gc3libs: INFO: New file event 'decon_job_2.cfg'
 gc3.gc3libs: INFO: Parsing jobfile 'decon_job_2.cfg'...
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Moving file 'decon_job_2.cfg' to 'run/spool/cur/4fbe7acfdd5ee9b86a8b014cada0ca045b374c53.jobfile'.
-gc3.gc3libs: INFO: Enqueueing job '4fbe7acfdd5ee9b86a8b014cada0ca045b374c53' into category 'user01'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "queued", "ver": "7", "uid": "4fbe7acfdd5ee9b86a8b014cada0ca045b374c53", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.015747, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5"]}
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['ab2cae610479fc30ceefeae0d2b84164f816ee82', '4fbe7acfdd5ee9b86a8b014cada0ca045b374c53'])}
+gc3.gc3libs: INFO: Moving file 'decon_job_2.cfg' to 'run/spool/cur/70f1928f5376c7d664ceb3d2e4eb1806016be40a.jobfile'.
+gc3.gc3libs: INFO: Enqueueing job '70f1928f5376c7d664ceb3d2e4eb1806016be40a' into category 'user01'.
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['038cbaf64a59981a41a3c2592b728cc474179b59', '70f1928f5376c7d664ceb3d2e4eb1806016be40a'])}
 gc3.gc3libs: INFO: New file event 'decon_job_3.cfg'
 gc3.gc3libs: INFO: Parsing jobfile 'decon_job_3.cfg'...
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
 gc3.gc3libs: WARNING: "timestamp = on_parsing" is meant for testing only!!!
 gc3.gc3libs: WARNING: === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING === WARNING ===
-gc3.gc3libs: INFO: Moving file 'decon_job_3.cfg' to 'run/spool/cur/9d7d8187cb0da05a8ab53436e1a7acae48867326.jobfile'.
-gc3.gc3libs: INFO: Enqueueing job '9d7d8187cb0da05a8ab53436e1a7acae48867326' into category 'user01'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "queued", "ver": "7", "uid": "9d7d8187cb0da05a8ab53436e1a7acae48867326", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.117516, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5"]}
-gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['ab2cae610479fc30ceefeae0d2b84164f816ee82', '4fbe7acfdd5ee9b86a8b014cada0ca045b374c53', '9d7d8187cb0da05a8ab53436e1a7acae48867326'])}
+gc3.gc3libs: INFO: Moving file 'decon_job_3.cfg' to 'run/spool/cur/c9c447e55bdc563112f1eb5cc16ee041bf3d065d.jobfile'.
+gc3.gc3libs: INFO: Enqueueing job 'c9c447e55bdc563112f1eb5cc16ee041bf3d065d' into category 'user01'.
+gc3.gc3libs: INFO: Job (type 'hucore') added. New queue: {'user01': deque(['038cbaf64a59981a41a3c2592b728cc474179b59', '70f1928f5376c7d664ceb3d2e4eb1806016be40a', 'c9c447e55bdc563112f1eb5cc16ee041bf3d065d'])}
 gc3.gc3libs: WARNING: Received spooler status change request: pause -> run
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'ab2cae610479fc30ceefeae0d2b84164f816ee82'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '038cbaf64a59981a41a3c2592b728cc474179b59'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
-gc3.gc3libs: WARNING: Instantiating a HuDeconApp:
-[user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: ab2cae610479fc30ceefeae0d2b84164f816ee82
-gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7f563ca372d0 to: localhost
-gc3.gc3libs: INFO: Job status changed from 'NEW' to 'SUBMITTED'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "SUBMITTED", "ver": "7", "uid": "ab2cae610479fc30ceefeae0d2b84164f816ee82", "exec": "/usr/local/bin/hucore", "timestamp": 1472662272.914165, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: Job status changed from 'SUBMITTED' to 'RUNNING'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "RUNNING", "ver": "7", "uid": "ab2cae610479fc30ceefeae0d2b84164f816ee82", "exec": "/usr/local/bin/hucore", "timestamp": 1472662272.914165, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "RUNNING", "ver": "7", "uid": "ab2cae610479fc30ceefeae0d2b84164f816ee82", "exec": "/usr/local/bin/hucore", "timestamp": 1472662272.914165, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: Job status changed from 'RUNNING' to 'TERMINATING'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "TERMINATING", "ver": "7", "uid": "ab2cae610479fc30ceefeae0d2b84164f816ee82", "exec": "/usr/local/bin/hucore", "timestamp": 1472662272.914165, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: Job 'ab2cae610479fc30ceefeae0d2b84164f816ee82' terminated successfully!
-gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_ab2cae610479fc30ceefeae0d2b84164f816ee82`.
-gc3.gc3libs: INFO: Job status changed from 'TERMINATING' to 'TERMINATED'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "TERMINATED", "ver": "7", "uid": "ab2cae610479fc30ceefeae0d2b84164f816ee82", "exec": "/usr/local/bin/hucore", "timestamp": 1472662272.914165, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "TERMINATED", "ver": "7", "uid": "ab2cae610479fc30ceefeae0d2b84164f816ee82", "exec": "/usr/local/bin/hucore", "timestamp": 1472662272.914165, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
+gc3.gc3libs: WARNING: Instantiating a HuDeconApp: [[user: user01]] [[uid: 038cbaf64a59981a41a3c2592b728cc474179b59]]
+gc3.gc3libs: WARNING: Additional HuDeconApp parameters: [[template: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb]] [[infiles: ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb']]]
+gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7fb05d0a6490 to: localhost
+gc3.gc3libs: INFO: HuDeconApp status: 'NEW' -> 'SUBMITTED'
+gc3.gc3libs: INFO: HuDeconApp status: 'SUBMITTED' -> 'RUNNING'
+gc3.gc3libs: INFO: HuDeconApp status: 'RUNNING' -> 'TERMINATING'
+gc3.gc3libs: INFO: Job finished. Execution stats:
+	[[ cpu time: 2.05s ]]
+	[[ wall time: 7.28s ]]
+	[[ max memory: 129668kB ]]
+gc3.gc3libs: INFO: Job '038cbaf64a59981a41a3c2592b728cc474179b59' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_038cbaf64a59981a41a3c2592b728cc474179b59`.
+gc3.gc3libs: INFO: HuDeconApp status: 'TERMINATING' -> 'TERMINATED'
 gc3.gc3libs: INFO: Status of job to be removed: TERMINATED
-gc3.gc3libs: INFO: Moving file 'ab2cae610479fc30ceefeae0d2b84164f816ee82.jobfile' to 'run/spool/done/ab2cae610479fc30ceefeae0d2b84164f816ee82.jobfile'.
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '4fbe7acfdd5ee9b86a8b014cada0ca045b374c53'.
+gc3.gc3libs: INFO: Moving file '038cbaf64a59981a41a3c2592b728cc474179b59.jobfile' to 'run/spool/done/038cbaf64a59981a41a3c2592b728cc474179b59.jobfile'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '70f1928f5376c7d664ceb3d2e4eb1806016be40a'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
-gc3.gc3libs: WARNING: Instantiating a HuDeconApp:
-[user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: 4fbe7acfdd5ee9b86a8b014cada0ca045b374c53
-gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7f563ca37590 to: localhost
-gc3.gc3libs: INFO: Job status changed from 'NEW' to 'SUBMITTED'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "SUBMITTED", "ver": "7", "uid": "4fbe7acfdd5ee9b86a8b014cada0ca045b374c53", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.015747, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: Job status changed from 'SUBMITTED' to 'RUNNING'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "RUNNING", "ver": "7", "uid": "4fbe7acfdd5ee9b86a8b014cada0ca045b374c53", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.015747, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "RUNNING", "ver": "7", "uid": "4fbe7acfdd5ee9b86a8b014cada0ca045b374c53", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.015747, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: Job status changed from 'RUNNING' to 'TERMINATING'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "TERMINATING", "ver": "7", "uid": "4fbe7acfdd5ee9b86a8b014cada0ca045b374c53", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.015747, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: Job '4fbe7acfdd5ee9b86a8b014cada0ca045b374c53' terminated successfully!
-gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_4fbe7acfdd5ee9b86a8b014cada0ca045b374c53`.
-gc3.gc3libs: INFO: Job status changed from 'TERMINATING' to 'TERMINATED'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "TERMINATED", "ver": "7", "uid": "4fbe7acfdd5ee9b86a8b014cada0ca045b374c53", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.015747, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "TERMINATED", "ver": "7", "uid": "4fbe7acfdd5ee9b86a8b014cada0ca045b374c53", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.015747, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
+gc3.gc3libs: WARNING: Instantiating a HuDeconApp: [[user: user01]] [[uid: 70f1928f5376c7d664ceb3d2e4eb1806016be40a]]
+gc3.gc3libs: WARNING: Additional HuDeconApp parameters: [[template: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb]] [[infiles: ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb']]]
+gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7fb05d0a64d0 to: localhost
+gc3.gc3libs: INFO: HuDeconApp status: 'NEW' -> 'SUBMITTED'
+gc3.gc3libs: INFO: HuDeconApp status: 'SUBMITTED' -> 'RUNNING'
+gc3.gc3libs: INFO: HuDeconApp status: 'RUNNING' -> 'TERMINATING'
+gc3.gc3libs: INFO: Job finished. Execution stats:
+	[[ cpu time: 2.02s ]]
+	[[ wall time: 7.43s ]]
+	[[ max memory: 129708kB ]]
+gc3.gc3libs: INFO: Job '70f1928f5376c7d664ceb3d2e4eb1806016be40a' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_70f1928f5376c7d664ceb3d2e4eb1806016be40a`.
+gc3.gc3libs: INFO: HuDeconApp status: 'TERMINATING' -> 'TERMINATED'
 gc3.gc3libs: INFO: Status of job to be removed: TERMINATED
-gc3.gc3libs: INFO: Moving file '4fbe7acfdd5ee9b86a8b014cada0ca045b374c53.jobfile' to 'run/spool/done/4fbe7acfdd5ee9b86a8b014cada0ca045b374c53.jobfile'.
-gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid '9d7d8187cb0da05a8ab53436e1a7acae48867326'.
+gc3.gc3libs: INFO: Moving file '70f1928f5376c7d664ceb3d2e4eb1806016be40a.jobfile' to 'run/spool/done/70f1928f5376c7d664ceb3d2e4eb1806016be40a.jobfile'.
+gc3.gc3libs: INFO: Retrieving next job: category 'user01', uid 'c9c447e55bdc563112f1eb5cc16ee041bf3d065d'.
 gc3.gc3libs: INFO: Adding another job to the gc3pie engine.
-gc3.gc3libs: WARNING: Instantiating a HuDeconApp:
-[user01]: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb --> ['tests/sample_images/faba128.h5']
-gc3.gc3libs: INFO: Job UID: 9d7d8187cb0da05a8ab53436e1a7acae48867326
-gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7f563ca375d0 to: localhost
-gc3.gc3libs: INFO: Job status changed from 'NEW' to 'SUBMITTED'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "SUBMITTED", "ver": "7", "uid": "9d7d8187cb0da05a8ab53436e1a7acae48867326", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.117516, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: Job status changed from 'SUBMITTED' to 'RUNNING'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "RUNNING", "ver": "7", "uid": "9d7d8187cb0da05a8ab53436e1a7acae48867326", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.117516, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "RUNNING", "ver": "7", "uid": "9d7d8187cb0da05a8ab53436e1a7acae48867326", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.117516, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: Job status changed from 'RUNNING' to 'TERMINATING'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "TERMINATING", "ver": "7", "uid": "9d7d8187cb0da05a8ab53436e1a7acae48867326", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.117516, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: Job '9d7d8187cb0da05a8ab53436e1a7acae48867326' terminated successfully!
-gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_9d7d8187cb0da05a8ab53436e1a7acae48867326`.
-gc3.gc3libs: INFO: Job status changed from 'TERMINATING' to 'TERMINATED'.
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "TERMINATED", "ver": "7", "uid": "9d7d8187cb0da05a8ab53436e1a7acae48867326", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.117516, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
-gc3.gc3libs: INFO: JobDescription.store_job: {"status": "TERMINATED", "ver": "7", "uid": "9d7d8187cb0da05a8ab53436e1a7acae48867326", "exec": "/usr/local/bin/hucore", "timestamp": 1472662273.117516, "pid": "N/A", "server": "N/A", "start": "N/A", "user": "user01", "template": "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb", "tasktype": "decon", "progress": "N/A", "type": "hucore", "email": "user01@mail.xy", "infiles": ["tests/sample_images/faba128.h5", "tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb"]}
+gc3.gc3libs: WARNING: Instantiating a HuDeconApp: [[user: user01]] [[uid: c9c447e55bdc563112f1eb5cc16ee041bf3d065d]]
+gc3.gc3libs: WARNING: Additional HuDeconApp parameters: [[template: tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb]] [[infiles: ['tests/sample_images/faba128.h5', 'tests/gc3qm/hucore_templates/decon_faba128_it-3_q-0.5.hgsb']]]
+gc3.gc3libs: INFO: Successfully submitted HuDeconApp@7fb05d0a6890 to: localhost
+gc3.gc3libs: INFO: HuDeconApp status: 'NEW' -> 'SUBMITTED'
+gc3.gc3libs: INFO: HuDeconApp status: 'SUBMITTED' -> 'RUNNING'
+gc3.gc3libs: INFO: HuDeconApp status: 'RUNNING' -> 'TERMINATING'
+gc3.gc3libs: INFO: Job finished. Execution stats:
+	[[ cpu time: 1.90s ]]
+	[[ wall time: 6.99s ]]
+	[[ max memory: 129908kB ]]
+gc3.gc3libs: INFO: Job 'c9c447e55bdc563112f1eb5cc16ee041bf3d065d' terminated successfully!
+gc3.gc3libs: INFO: The output of the application is in `/data/hrm_data/results_c9c447e55bdc563112f1eb5cc16ee041bf3d065d`.
+gc3.gc3libs: INFO: HuDeconApp status: 'TERMINATING' -> 'TERMINATED'
 gc3.gc3libs: INFO: Status of job to be removed: TERMINATED
-gc3.gc3libs: INFO: Moving file '9d7d8187cb0da05a8ab53436e1a7acae48867326.jobfile' to 'run/spool/done/9d7d8187cb0da05a8ab53436e1a7acae48867326.jobfile'.
+gc3.gc3libs: INFO: Moving file 'c9c447e55bdc563112f1eb5cc16ee041bf3d065d.jobfile' to 'run/spool/done/c9c447e55bdc563112f1eb5cc16ee041bf3d065d.jobfile'.
 gc3.gc3libs: WARNING: Received spooler status change request: run -> shutdown
 gc3.gc3libs: WARNING: Queue Manager shutdown initiated.
 gc3.gc3libs: INFO: QM shutdown: cleaning up spooler.
