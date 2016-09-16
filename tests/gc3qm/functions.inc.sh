@@ -20,6 +20,7 @@ clean_all_spooldirs() {
     set +e
     rm -vf /data/gc3_resourcedir/shellcmd.d/*
     rm -vf "../../$QM_SPOOL/spool/cur/"*
+    rm -vf "../../$QM_SPOOL/spool/new/"*
     rm -vf "../../$QM_SPOOL/queue/requests/"*
     set -e
 }
