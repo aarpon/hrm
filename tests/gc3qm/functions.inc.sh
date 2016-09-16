@@ -16,6 +16,35 @@ fi
 QM_OPTS="--spooldir $QM_SPOOL --config config/samples/gc3pie_localhost.conf $VERB"
 
 
+python_can_import() {
+    if python -c "import $1" 2> /dev/null ; then
+        echo "Found Python package '$1'."
+        return 0
+    else
+        echo "ERROR: can't import module '$1'!"
+        return -1
+    fi
+}
+
+
+check_python_packages() {
+    if ! python_can_import "gc3libs" ; then
+        echo "Make sure to have the required virtualenv active, e.g."
+        GC3VER=2.4.2
+        GC3BASE=/opt/gc3pie
+        GC3HOME=$GC3BASE/gc3pie_$GC3VER
+        echo -e "\nsource $GC3HOME/bin/activate\n"
+        exit 255
+    fi
+    if ! python_can_import "HRM" ; then
+        echo "Please adjust your PYTHONPATH accordingly, e.g."
+        cd ../..
+        echo -e "\nexport PYTHONPATH=\"$(pwd)/lib/python:\$PYTHONPATH\"\n"
+        exit 255
+    fi
+}
+
+
 clean_all_spooldirs() {
     set +e
     rm -vf /data/gc3_resourcedir/shellcmd.d/*
@@ -80,6 +109,7 @@ qm_request() {
 startup_qm() {
     # Start a fresh instance of the QM, making sure no other one is running.
     # NOTE: this changes the working directory to the base HRM dir!
+    check_python_packages
     if ! [ -f "$PFX/../../$QM_PY" ] ; then
         echo "ERROR: can't find queue manager executable!"
         exit 2
