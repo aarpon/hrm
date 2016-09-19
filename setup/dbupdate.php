@@ -5008,12 +5008,12 @@ if ($current_revision < $n) {
     // Create new table: username
     $flds = "
         id I(11) NOTNULL AUTOINCREMENT PRIMARY,
-        name C(255) NOTNULL INDEX,
+        name C(255) NOTNULL UNIQUE INDEX,
         password C(255) NOTNULL,
         email C(255) NOTNULL,
         research_group C(255) NOTNULL,
         institution C(255) DEFAULT NULL,
-        role C(30) NOTNULL DEFAULT user,
+        role I(11) NOTNULL DEFAULT 3,
         authentication C(30) NOTNULL DEFAULT integrated,
         creation_date T DEFAULT NULL,
         last_access_date T DEFAULT NULL,
@@ -5050,9 +5050,9 @@ if ($current_revision < $n) {
     foreach ($rows as $row) {
 
         // Default role
-        $role = "user";
+        $role = 3;
         if ($row["name"] == "admin") {
-            $role = "admin";
+            $role = 0;
         }
 
         // Complete the user
