@@ -12,6 +12,7 @@ namespace hrm\user\proxy;
 
 use hrm\DatabaseConnection;
 use hrm\Log;
+use hrm\user\UserManager;
 use hrm\user\UserConstants;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
@@ -37,6 +38,26 @@ class DatabaseProxy extends AbstractProxy {
     {
         return 'Integrated';
     }
+
+    /**
+     * Return whether the proxy allows changing the e-mail address.
+     * @return bool True if the e-mail address can be changed, false otherwise.
+     */
+    public function canModifyEmailAddress() { return true; }
+
+    /**
+     * Return whether the proxy allows changing the group.
+     * @return bool True if the group can be changed, false otherwise.
+     */
+    public function canModifyGroup() { return true; }
+
+    /**
+     * Return whether the User must exist in the database before first
+     * authentication is allowed. If false, the User will be created on
+     * first successful authentication (to the external backend).
+     * @return bool True if the User must exist, false otherwise.
+     */
+    public function usersMustExistBeforeFirstAuthentication() { return true; }
 
     /**
      * Authenticates the User with given username and password against the
@@ -156,8 +177,7 @@ class DatabaseProxy extends AbstractProxy {
      * @return bool True if the user is outdated, false otherwise.
      */
     public function isOutdated($username) {
-        $db = new DatabaseConnection();
-        return ($db->getUserStatus($username) == UserConstants::STATUS_OUTDATED);
+        return (UserManager::getUserStatus($username) == UserConstants::STATUS_OUTDATED);
     }
 
     /**
@@ -166,8 +186,7 @@ class DatabaseProxy extends AbstractProxy {
      * @return bool|void True if the status could be updated, false otherwise.
      */
     public function setOutdated($username) {
-        $db = new DatabaseConnection();
-        return ($db->setUserStatus($username, UserConstants::STATUS_OUTDATED));
+        return (UserManager::setUserStatus($username, UserConstants::STATUS_OUTDATED));
     }
 
     /* ========================= PRIVATE FUNCTIONS ========================== */
@@ -247,7 +266,8 @@ class DatabaseProxy extends AbstractProxy {
      * @return string Encrypted password.
      * @deprecated
      */
-    private function encrypt($string, $seed) {
+    private function encrypt($string, $seed)
+    {
         global $useDESEncryption;
         if ($useDESEncryption) {
             $result = crypt($string, $seed);

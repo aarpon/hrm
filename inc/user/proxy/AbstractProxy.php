@@ -10,7 +10,7 @@
 
 namespace hrm\user\proxy;
 
-use hrm\DatabaseConnection;
+use hrm\user\UserManager;
 use hrm\user\UserConstants;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
@@ -34,6 +34,26 @@ abstract class AbstractProxy {
      * @return string Friendly name.
      */
     abstract public function friendlyName();
+
+    /**
+     * Return whether the proxy allows changing the e-mail address.
+     * @return bool True if the e-mail address can be changed, false otherwise.
+     */
+    public function canModifyEmailAddress() { return false; }
+
+    /**
+     * Return whether the proxy allows changing the group.
+     * @return bool True if the group can be changed, false otherwise.
+     */
+    public function canModifyGroup() { return false; }
+
+    /**
+     * Return whether the User must exist in the database before first
+     * authentication is allowed. If false, the User will be created on
+     * first successful authentication (to the external backend).
+     * @return bool True if the User must exist, false otherwise.
+     */
+    public function usersMustExistBeforeFirstAuthentication() { return false; }
 
     /**
      * Authenticates the User with given username and password.
@@ -65,8 +85,7 @@ abstract class AbstractProxy {
      * @override
      */
     public function isActive($username) {
-        $db = new DatabaseConnection();
-        return ($db->getUserStatus($username) == UserConstants::STATUS_ACTIVE);
+        return (UserManager::getUserStatus($username) == UserConstants::STATUS_ACTIVE);
     }
 
     /**
@@ -76,8 +95,7 @@ abstract class AbstractProxy {
      * @return bool True if the user was disabled, false otherwise.
      */
     public function isDisabled($username) {
-        $db = new DatabaseConnection();
-        return ($db->getUserStatus($username) == UserConstants::STATUS_DISABLED);
+        return (UserManager::getUserStatus($username) == UserConstants::STATUS_DISABLED);
     }
 
     /**
@@ -97,8 +115,7 @@ abstract class AbstractProxy {
      * @param string $username User name.
      */
     public function setActive($username) {
-        $db = new DatabaseConnection();
-        $db->setUserStatus($username, UserConstants::STATUS_ACTIVE);
+        UserManager::setUserStatus($username, UserConstants::STATUS_ACTIVE);
     }
 
     /**
@@ -106,8 +123,7 @@ abstract class AbstractProxy {
      * @param string $username User name.
      */
     public function setDisabled($username) {
-        $db = new DatabaseConnection();
-        $db->setUserStatus($username, UserConstants::STATUS_DISABLED);
+        UserManager::setUserStatus($username, UserConstants::STATUS_DISABLED);
     }
 
     /**

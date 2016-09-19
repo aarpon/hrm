@@ -351,42 +351,6 @@ class DatabaseConnection
     }
 
     /**
-     * Updates the status of an existing user in the database (username is
-     * expected to be already validated!)
-     * @param string $username The name of the user.
-     * @param string $status One of 'd', 'a', ...
-     * @return bool True if user status could be updated successfully; false
-     * otherwise.
-     */
-    public function updateUserStatus($username, $status)
-    {
-        $query = "UPDATE username SET status = '$status' WHERE name = '$username'";
-        $result = $this->execute($query);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Updates the status of all non-admin users in the database.
-     * @param string $status One of 'd', 'a', ...
-     * @return bool True if the status of all users could be updated successfully;
-     * false otherwise.
-     */
-    public function updateAllUsersStatus($status)
-    {
-        $query = "UPDATE username SET status = '$status' WHERE name NOT LIKE 'admin'";
-        $result = $this->execute($query);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Returns the password of a given user name.
      * @param string $name Name of the user.
      * @return string Password for the requested user.
@@ -1320,7 +1284,7 @@ class DatabaseConnection
         /** @var UserV2 $user */
         $user = $desc->owner();
         $owner = $user->name();
-        $group = $user->userGroup();
+        $group = $user->group();
 
         $parameter = $parameterSetting->parameter('ImageFileFormat');
         $inFormat = $parameter->value();
@@ -1668,29 +1632,6 @@ class DatabaseConnection
     }
 
     /**
-     * Returns the number of jobs currently in the queue for a given username.
-     * @param string $username Name of the user
-     * @return int Number of jobs in queue.
-     */
-    public function getNumberOfQueuedJobsForUser($username)
-    {
-        $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $username . "';";
-        $row = $this->execute($query)->FetchRow();
-        return $row[0];
-    }
-
-    /**
-     * Returns the total number of jobs currently in the queue.
-     * @return int Total number of jobs in queue.
-     */
-    public function getTotalNumberOfQueuedJobs()
-    {
-        $query = "SELECT COUNT(id) FROM job_queue;";
-        $row = $this->execute($query)->FetchRow();
-        return $row[0];
-    }
-
-    /**
      * Returns the name of the user who created the job with given id.
      * @param string $id SId of the job.
      * @return string Name of the user.
@@ -2033,44 +1974,6 @@ class DatabaseConnection
     }
 
     /**
-     * Check whether a user exists.
-     * @param string $name Name of the user.
-     * @return bool True if the user exists, false otherwise.
-     */
-    public function checkUser($name)
-    {
-        $query = "select status from username where name = '$name'";
-        $result = $this->queryLastValue($query);
-        if ($result) $result = true;
-        return $result;
-    }
-
-    /**
-     * Get the status of a user.
-     * @param string $name Name of the user.
-     * @return string status ('a', 'd', ...).
-     */
-    public function getUserStatus($name)
-    {
-        $query = "select status from username where name = '$name'";
-        $result = $this->queryLastValue($query);
-        return $result;
-    }
-
-    /**
-     * Set the status of a user.
-     * @param string $name Name of the user.
-     * @param string $status ('a', 'd', ...).
-     * @return \ADORecordSet_empty|\ADORecordSet_mysql|False
-     */
-    public function setUserStatus($name, $status)
-    {
-        $query = "update username set status='$status' where name='$name'";
-        $result = $this->execute($query);
-        return $result;
-    }
-
-    /**
      * Return the list of known users (without the administrator).
      * @param string String User name to filter out from the list (optional).
      * @return array Filtered array of users.
@@ -2130,19 +2033,6 @@ class DatabaseConnection
         $result = $this->execute($cmd);
         return $result;
     }
-
-    /**
-     * Updates the last access date of a user.
-     * @param string $userName Name of the user.
-     * @return array Query result.
-     */
-    public function updateLastAccessDate($userName)
-    {
-        $query = "UPDATE username SET last_access_date = CURRENT_TIMESTAMP WHERE name = '$userName'";
-        $result = $this->execute($query);
-        return $result;
-    }
-
 
     /**
      * Gets the maximum number of channels from the database.
@@ -2425,28 +2315,6 @@ class DatabaseConnection
         }
 
         return true;
-
-    }
-
-    /**
-     * Checks whether a user with a given seed exists in the database.
-     *
-     * If a user requests an account, his username is added to the database with
-     * a random seed as status.
-     *
-     * @param string $seed Seed associated to the User request.
-     * @return bool True if a user with given seed exists, false otherwise.
-     * @deprecated
-     */
-    public function existsUserRequestWithSeed($seed)
-    {
-        $query = "SELECT status FROM username WHERE status = '$seed';";
-        $value = $this->queryLastValue($query);
-        if ($value == false) {
-            return false;
-        } else {
-            return ($value == $seed);
-        }
 
     }
 

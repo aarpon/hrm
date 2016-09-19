@@ -27,6 +27,26 @@ class UserConstants
     const STATUS_OUTDATED = 'o';
 
     /**
+     * The user is an HRM instance administrator.
+     */
+    const ROLE_ADMIN = 0;
+
+    /**
+     * The user is an HRM institution manager.
+     */
+    const ROLE_MANAGER = 1;
+
+    /**
+     * The user is an HRM super user.
+     */
+    const ROLE_SUPERUSER = 2;
+
+    /**
+     * The user is an HRM standard user.
+     */
+    const ROLE_USER = 3;
+
+    /**
      * The password hashing algorithm
      */
     const HASH_ALGORITHM = PASSWORD_BCRYPT;

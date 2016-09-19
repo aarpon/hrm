@@ -13,7 +13,6 @@ namespace hrm\user\proxy;
 // Include the HRM configuration files.
 use hrm\DatabaseConnection;
 use hrm\Log;
-use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 

@@ -23,6 +23,10 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
  * Manages a User and its state and authenticates against the
  * configured authentication mechanism.
  *
+ * The User class is fundamentally read-only. Changes to the User properties
+ * are performed through a UserManager (see below). Persistence of some of
+ * those changes are dependent on the underlying authentication system.
+ *
  * A User known to HRM is always stored in the database, no matter what the
  * user management backend is.
  *
@@ -68,11 +72,17 @@ class UserV2 {
     protected $group;
 
     /**
+     * Institution of the user.
+     * @var string
+     */
+    protected $institution;
+
+    /**
      * User role, one of:
-     *     "admin": HRM administrator
-     *     "manager: facility manager
-     *     "superuser": user with additional rights
-     *     "user": standard HRM user
+     *    * 0 : HRM administrator
+     *    * 1 : facility manager
+     *    * 2 : HRM superuser (user with additional rights)
+     *    * 3 : standard HRM user
      * @var string
      */
     protected $role;
@@ -90,10 +100,10 @@ class UserV2 {
 
     /**
      * Authentication mechanism, one of:
-     *     "integrated": integrated authentication
-     *     "active_dir": Microsoft Active Directory
-     *     "ldap": generic LDAP
-     *     "auth0": Auth0
+     *    * "integrated": integrated authentication
+     *    * "active_dir": Microsoft Active Directory
+     *    * "ldap": generic LDAP
+     *    * "auth0": Auth0
      * @var string
      */
     protected $authMode;
@@ -130,7 +140,7 @@ class UserV2 {
      * True if the user is an administrator, false otherwise.
      *
      * The value is cached to prevent an overhead of communication with
-     * with the database.
+     * the database.
      *
      * @var bool
      */
@@ -147,18 +157,20 @@ class UserV2 {
         // and/or has not yet been loaded.
         $this->id = -1;
 
-        // By default, the User has no name, e-mail address, or group.
+        // By default, the User has no name, e-mail address, group, or
+        // institution.
         $this->name = "";
         $this->emailAddress = "";
+        $this->institution = "";
         $this->group = "";
 
         // A User is by default a user.
-        $this->role = "user";
+        $this->role = UserConstants::ROLE_USER;
 
         // The default authentication mode is the "integrated" one.
         $this->authMode = "integrated";
 
-        // Creation and last access date are not defined yet
+        // Creation and Last access dates are not known
         $this->creationDate = null;
         $this->lastAccessDate = null;
 
@@ -173,10 +185,10 @@ class UserV2 {
     }
 
     /**
-     * Returns the User Id
-     * @return int User Id.
+     * Returns the User id
+     * @return int User id.
      */
-    public function Id() {
+    public function id() {
         return $this->id;
     }
 
@@ -217,15 +229,14 @@ class UserV2 {
      */
     private function setLastAccessDate() {
 
-        if ($this->lastAccessDate == null) {
-            $this->lastAccessDate = date("Y-m-d H:i:s");
-        }
+        // Set the last access date to now
+        $this->lastAccessDate = date("Y-m-d H:i:s");
 
         // Store it in the database
         $db = new DatabaseConnection();
-        $sql = "UPDATE username SET last_access_date=? WHERE name=?;";
-        $result = $db->connection()->Execute(
-            $sql, array($this->lastAccessDate, $this->name)
+        $query = "UPDATE username SET last_access_date=? WHERE name=?;";
+        $result = $db->connection()->Execute($query,
+            array($this->lastAccessDate, $this->name)
         );
 
         if ($result === false) {
@@ -234,8 +245,6 @@ class UserV2 {
         }
 
         return true;
-
-
     }
 
     /**
@@ -244,6 +253,14 @@ class UserV2 {
      */
     public function role() {
         return $this->role;
+    }
+
+    /**
+     * Returns the institution of the User.
+     * @return string Institution of the User.
+     */
+    public function institution() {
+        return $this->institution;
     }
 
     /**
@@ -261,6 +278,15 @@ class UserV2 {
     public function status() {
         return $this->status;
     }
+
+    /**
+     * Returns the proxy of the User.
+     * @return AbstractProxy Proxy of the User.
+     */
+    public function proxy() {
+        return $this->proxy;
+    }
+
     /**
      * Checks whether the user is logged in.
      * @return bool True if the user is logged in, false otherwise.
@@ -275,19 +301,19 @@ class UserV2 {
      * This function will use different authentication modes depending on the
      * value of the global configuration variable $authenticateAgainst.
      *
-     * @param  string $name User name
      * @param  string $password Password (plain)
      * @return bool True if the user could be logged in, false otherwise.
+     * @throws \Exception If the User does not have a name.
      */
-    public function logIn($name, $password) {
+    public function logIn($password) {
 
-        // Set the name
-        if ($this->name != $name) {
-            $this->setName($name);
+        // Check the name the name
+        if ($this->name == null) {
+            throw new \Exception("User does not have a name!");
         }
 
         // Get the appropriate proxy
-        $this->proxy = ProxyFactory::getProxy($name);
+        $this->proxy = ProxyFactory::getProxy($this->name());
 
         // Try authenticating the user
         $this->isLoggedIn = $this->proxy->authenticate($this->name(), $password);
@@ -295,13 +321,14 @@ class UserV2 {
         // Update the user information for a successful login
         if ($this->isLoggedIn == true) {
 
-            // Load User information from relevant sources
-            $this->load();
-
-            // Store the last access time
+            // Update the last access date in the database
             $this->setLastAccessDate();
 
-            // Store the change in the database
+            // Load all User information (this retrieves data from all
+            // relevant sources)
+            $this->load();
+
+            // Update the User in the database
             $this->save();
         }
 
@@ -386,7 +413,7 @@ class UserV2 {
             $rows = $res->GetRows();
 
             // Store
-            $this->isAdmin = ($rows[0]['role'] == "admin");
+            $this->isAdmin = ($rows[0]['role'] == UserConstants::ROLE_ADMIN);
         }
 
         // Return cached version
@@ -397,7 +424,7 @@ class UserV2 {
      * Returns the user to which the User belongs.
      * @return string Group name.
      */
-    public function userGroup() {
+    public function group() {
 
         // If the group is already stored in the object, return it; otherwise
         // retrieve it.
@@ -423,9 +450,9 @@ class UserV2 {
         $sql = "SELECT * FROM username WHERE name = ?;";
         $result = $db->connection()->Execute($sql, array($this->name));
         $rows = $result->GetRows();
-        if (count($rows) != 1)
+        if (count($rows) == 0)
         {
-            Log::error("Could not load data for user $this->name.");
+            // A User with the specified name does not exist; return
             return;
         }
         $row = $rows[0];
@@ -449,53 +476,52 @@ class UserV2 {
             $this->group = $row["research_group"];
         }
 
+        // User institution
+        $this->institution = $row["institution"];
+
         // User role
         $this->role = $row["role"];
 
         // User status
         $this->status = $row["status"];
 
+        // Creation date
+        $this->creationDate = $row["creation_date"];
+
+        // Last access data
+        $this->lastAccessDate = $row["last_access_date"];
+
+        // Authentication mode
+        $this->authMode = $row["authentication"];
+
         // Cache the isAdmin check
-        $this->isAdmin = ($this->role == "admin");
+        $this->isAdmin = ($this->role == UserConstants::ROLE_ADMIN);
     }
 
     /**
-     * Save current state of the User to the database.
+     * Update the user in the database.
      *
-     * This is a private method since saving the User data is a
-     * delicate operation.
+     * This method is private, since it should better be called
+     * at the right time!
      *
-     * The stored entries are:
-     *     * e-mail address
-     *     * group
-     *     * role
-     *     * status
+     * This function does not change the password!
      *
      * @return bool True if saving was successful, false otherwise.
      */
     private function save()
     {
-        // Not all info needs to be updated
         $db = new DatabaseConnection();
-        $sql = "UPDATE username SET email=?, research_group=?, " .
-            "role=?, status=? WHERE name=?;";
-        $result = $db->connection()->Execute(
-            $sql,
-            array(
-                $this->emailAddress,
-                $this->group,
-                $this->role,
-                $this->status,
-                $this->name)
-        );
 
+        $sql = "UPDATE username SET name=?, email=?, research_group=?, " .
+            "institution=?, role=?, status=? WHERE id=?;";
+        $result = $db->connection()->Execute($sql,
+            array($this->name(), $this->emailAddress(), $this->group(),
+                $this->institution(), $this->role(), $this->status(),
+                $this->id()));
         if ($result === false) {
-            Log::error("Could not update user $this->name in the database!");
             return false;
         }
-
         return true;
     }
-
 };
 
