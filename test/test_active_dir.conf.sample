@@ -1,0 +1,31 @@
+<?php
+
+/*
+Use these settings for the ActiveDirUserTest unit test.
+
+Copy this file to test_active_dir.conf and edit it.
+
+Make sure NOT to commit and push this file to some centralized repository!
+/*
+
+$TEST_ACTIVE_DIR_SETTINGS = array();
+
+// User name.
+$TEST_ACTIVE_DIR_SETTINGS["username"] = "";
+
+// E-mail for registration - set it to something else than the
+// e-mail address stored in Active Directory.
+$TEST_ACTIVE_DIR_SETTINGS["email"] = "";
+
+// Group for registration - set it to something else than the
+// group stored in Active Directory.
+$TEST_ACTIVE_DIR_SETTINGS["group"] = "";
+
+// Institution
+$TEST_ACTIVE_DIR_SETTINGS["institution"] = "";
+
+// These are the real values stored in Active Directory
+$TEST_ACTIVE_DIR_SETTINGS["password"] = "";
+$TEST_ACTIVE_DIR_SETTINGS["email_from_activedir"] = "";
+$TEST_ACTIVE_DIR_SETTINGS["group_from_activedir"] = "";
+
