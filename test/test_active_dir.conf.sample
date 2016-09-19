@@ -6,7 +6,7 @@ Use these settings for the ActiveDirUserTest unit test.
 Copy this file to test_active_dir.conf and edit it.
 
 Make sure NOT to commit and push this file to some centralized repository!
-/*
+*/
 
 $TEST_ACTIVE_DIR_SETTINGS = array();
 
