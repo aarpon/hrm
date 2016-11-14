@@ -279,7 +279,7 @@ class HuygensTemplate
     private $thumbType;
 
     /**
-     * Whether to make thumbnails for lif and czi sub images.
+     * Whether to make thumbnails for lif, lof and czi sub images.
      * @var string
      */
     private $thumbSubImg;
@@ -3037,8 +3037,8 @@ class HuygensTemplate
         $this->srcImage = $this->jobDescription->sourceImageName();
 
         /*If a (string) comes after the file name, the string is interpreted
-         as a subimage. Currently this is for LIF and CZI files only. */
-        if (preg_match("/^(.*\.(lif|czi))\s\((.*)\)/i",
+         as a subimage. Currently this is for LIF, LOF and CZI files only. */
+        if (preg_match("/^(.*\.(lif|czi|lof))\s\((.*)\)/i",
             $this->srcImage, $match)) {
             $this->srcImage = $match[1];
             $this->subImage = $match[3]; // @todo Is this correct?

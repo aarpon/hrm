@@ -520,7 +520,7 @@ include("header_fb.inc.php");
                     forceMultipart: true,
                     customHeaders: {
                         "DestinationFolder" : "<?php echo($_SESSION['fileserver']->sourceFolder()); ?>",
-                        "ImageExtensions" : ['dv', 'ims', 'lif', 'lsm', 'oif', 'pic', 'r3d', 'stk',
+                            "ImageExtensions" : ['dv', 'ims', 'lif', 'lof', 'lsm', 'oif', 'pic', 'r3d', 'stk',
                             'zvi', 'czi', 'nd2', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
                             'ome.tiff', 'ome', 'ics', 'ids']
                     }
@@ -543,9 +543,9 @@ include("header_fb.inc.php");
                         global $max_upload_limit;
                         echo ((isset($max_upload_limit)) ? $max_upload_limit * 1e6 : 0);
                         ?>,
-                    acceptFiles: ".dv,.ims,.lif,.lsm,.oif,.pic,.3rd,.stk,.zvi,.czi,.nd2,.tf2,.tf8,.btf,.h5," +
+                    acceptFiles: ".dv,.ims,.lif,.lof,.lsm,.oif,.pic,.3rd,.stk,.zvi,.czi,.nd2,.tf2,.tf8,.btf,.h5," +
                         ".tif,.tiff,.ome.tif,.ome.tiff,.ics,.ids,.zip,.tgz,.tar,.tar.gz",
-                    allowedExtensions: ['dv', 'ims', 'lif', 'lsm', 'oif', 'pic', 'r3d', 'stk',
+                    allowedExtensions: ['dv', 'ims', 'lif', 'lof', 'lsm', 'oif', 'pic', 'r3d', 'stk',
                         'zvi', 'czi', 'nd2', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
                         'ome.tiff', 'ome', 'ics', 'ids', 'zip', 'tgz', 'tar', 'tar.gz'],
                 },

@@ -479,7 +479,7 @@ class JobDescription
     }
 
     /**
-     * Returns the file base name. Special handling for LIF and CZI files.
+     * Returns the file base name. Special handling for LIF, LOF and CZI files.
      * @return string File base name.
      * @todo This must go into the Fileserver class!
      */
@@ -494,7 +494,8 @@ class JobDescription
         //$parameterSetting = $this->parameterSetting;
         //$parameter = $parameterSetting->parameter('ImageFileFormat');
         //$fileFormat = $parameter->value();
-        if (preg_match("/^(.*)\.(lif|czi)\s\((.*)\)/i", $inputFile[0], $match)) {
+        if (preg_match("/^(.*)\.(lif|lof|czi)\s\((.*)\)/i",
+                       $inputFile[0], $match)) {
             $inputFile = $match[1] . '_' . $match[2];
         } else {
             $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));

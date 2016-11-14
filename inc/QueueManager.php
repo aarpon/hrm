@@ -315,7 +315,7 @@ class QueueManager
         foreach ($files as $file) {
             $counter++;
             $match = array();
-            if (preg_match("/^(.*\.(lif|czi))\s\((.*)\)/i", $file, $match)) {
+            if (preg_match("/^(.*\.(lif|lof|czi))\s\((.*)\)/i", $file, $match)) {
                 $filteredFiles[$counter] = $match[1];
             } else {
                 $filteredFiles[$counter] = $file;
