@@ -5049,16 +5049,19 @@ if ($current_revision < $n) {
         if ($row["name"] == "admin") {
             $role = 0;
             $currentAuthMode = "integrated";
+            global $email_admin;
+            $currentEmail = $email_admin;
         } else {
             $role = 3;
             $currentAuthMode = $defaultAuthMode;
+            $currentEmail = $row["email"];
         }
 
         // Complete the user
         $ext_user = array(
             "name" => $row["name"],
             "password" => $row["password"], //uniqid('', true),
-            "email" => $row["email"],
+            "email" => $currentEmail,
             "research_group" => $row["research_group"],
             "institution" => "",
             "role" => $role,
