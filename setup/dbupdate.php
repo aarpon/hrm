@@ -3977,10 +3977,6 @@ if ($current_revision < $n) {
 $n = 14;
 if ($current_revision < $n) {
 
-    $msg = "Trying to update the DB to revision " . $n . ".";
-    write_message($msg);
-    write_to_error($msg);
-
     // Add GPUenabled = 0 into global_variables
     $tabname = "global_variables";
     $record = array();
@@ -5049,10 +5045,13 @@ if ($current_revision < $n) {
 
     foreach ($rows as $row) {
 
-        // Default role
-        $role = 3;
+        // Treat the original admin user differently
         if ($row["name"] == "admin") {
             $role = 0;
+            $currentAuthMode = "integrated";
+        } else {
+            $role = 3;
+            $currentAuthMode = $defaultAuthMode;
         }
 
         // Complete the user
@@ -5063,7 +5062,7 @@ if ($current_revision < $n) {
             "research_group" => $row["research_group"],
             "institution" => "",
             "role" => $role,
-            "authentication" => $defaultAuthMode,
+            "authentication" => $currentAuthMode,
             "creation_date" => $row["creation_date"],
             "last_access_date" => $row["last_access_date"],
             "status" => "o" // Outdated, i.e. in need of a password rehash.
