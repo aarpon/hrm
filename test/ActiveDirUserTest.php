@@ -48,6 +48,30 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test login before the User is created
+     */
+    public function testLoginBeforeCreation()
+    {
+
+        global $TEST_ACTIVE_DIR_SETTINGS;
+
+        // New User
+        $user = new UserV2();
+        $user->setName($TEST_ACTIVE_DIR_SETTINGS["username"]);
+
+        // Log in
+        $this->assertTrue($user->logIn($TEST_ACTIVE_DIR_SETTINGS["password"]));
+
+        // Store the User
+        $this->assertTrue($user);
+
+        // Check that the User now exists
+        $this->assertTrue(
+            UserManager::findUserByName(
+                $TEST_ACTIVE_DIR_SETTINGS["username"]) != null);
+    }
+
+    /**
      * Test adding a user to the database.
      */
     public function testAddUser()
@@ -123,7 +147,7 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         global $TEST_ACTIVE_DIR_SETTINGS;
 
         # Find and load the User.
-        $user = UserManager::findUserByName("pontia");
+        $user = UserManager::findUserByName($TEST_ACTIVE_DIR_SETTINGS["username"]);
 
         # Make sure the User is loaded properly
         $this->assertTrue($user->name() == $TEST_ACTIVE_DIR_SETTINGS["username"]);

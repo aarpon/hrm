@@ -41,13 +41,8 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
  *   * LDAPProxy (read only): interface to generic LDAP (version 3)
  *   * Auth0Proxy (read only): interface to Auth0.
  *
- * Moreover, transparently linked to the underlying proxy, HRM offers some
- * UserManagement classes:
- *
- *   * IntegratedUserManager: uses DatabaseProxy and allows for read/write
- *     operations.
- *   * ExternalReadOnlyUserManager: uses ActiveDirectoryProxy, LDAPProxy and
- *     Auth0 proxy for read-only operations.
+ * The default authentication mode (and therefore proxy) is defined in the
+ * HRM settings.
  *
  * @package hrm
  */
@@ -148,8 +143,12 @@ class UserV2 {
 
     /**
      * Constructor. Creates a new (unnamed) User with default with values.
+     * @param string $name Optional (default = null). Name of the User. If
+     * omitted, an empty User with default authentication mode is created.
+     * If the name is specified and the User exists, it is loaded from the
+     * database. If the User does not exist, only the name is set.
      */
-    public function __construct() {
+    public function __construct($name = null) {
 
         // Initialize members to default values
 
@@ -167,8 +166,8 @@ class UserV2 {
         // A User is by default a user.
         $this->role = UserConstants::ROLE_USER;
 
-        // The default authentication mode is the "integrated" one.
-        $this->authMode = "integrated";
+        // The default authentication mode is defined in the settings.
+        $this->authMode = ProxyFactory::getDefaultAuthenticationMode();
 
         // Creation and Last access dates are not known
         $this->creationDate = null;
@@ -182,6 +181,11 @@ class UserV2 {
 
         // The User is not logged in by default.
         $this->isLoggedIn = False;
+
+        // If the name is specified, we try to load the User
+        if ($name != null) {
+            $this->setName($name);
+        }
     }
 
     /**
@@ -202,6 +206,8 @@ class UserV2 {
 
     /**
      * Sets the name of the User.
+     *
+     * If a User with the given name exists in the database, it is loaded.
      * @param string $name The name of the User.
      */
     public function setName($name) {
@@ -328,8 +334,6 @@ class UserV2 {
             // relevant sources)
             $this->load();
 
-            // Update the User in the database
-            $this->save();
         }
 
         return $this->isLoggedIn;
@@ -498,30 +502,5 @@ class UserV2 {
         $this->isAdmin = ($this->role == UserConstants::ROLE_ADMIN);
     }
 
-    /**
-     * Update the user in the database.
-     *
-     * This method is private, since it should better be called
-     * at the right time!
-     *
-     * This function does not change the password!
-     *
-     * @return bool True if saving was successful, false otherwise.
-     */
-    private function save()
-    {
-        $db = new DatabaseConnection();
-
-        $sql = "UPDATE username SET name=?, email=?, research_group=?, " .
-            "institution=?, role=?, status=? WHERE id=?;";
-        $result = $db->connection()->Execute($sql,
-            array($this->name(), $this->emailAddress(), $this->group(),
-                $this->institution(), $this->role(), $this->status(),
-                $this->id()));
-        if ($result === false) {
-            return false;
-        }
-        return true;
-    }
 };
 

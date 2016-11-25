@@ -107,7 +107,6 @@ class UserManager
         if (self::existsUserWithName($username)) {
             $user = new UserV2();
             $user->setName($username);
-            $user->load();
             return $user;
         } else {
             return null;
@@ -208,7 +207,7 @@ class UserManager
                                $status = UserConstants::STATUS_ACTIVE) {
 
         // The password MUST exist, even if a different authentication
-        // system than the intagrated one will be used.
+        // system than the integrated one will be used.
         if ($password == "") {
             throw new \Exception("The password must not be empty!");
         }
@@ -247,32 +246,60 @@ class UserManager
     }
 
     /**
-     * Update the user.
+     * Update or create the User after a successful login.
      *
-     * This function does not change the password!
+     * If the User is not logged in, the method returns false immediately
+     * unless the argument $force is set to True (default is False).
+     *
+     * Otherwise, if the User exists, it is updated. If it does not exist,
+     * it is created with a random password.
      *
      * @param UserV2 $user User to be updated in the database!
-     * @return bool
+     * @param bool $force User to be updated in the database!
+     * @return bool True if the User could be updated or creted successfully,
+     * false otherwise.
      */
-    public static function updateUser(UserV2 $user)
+    public static function storeUser(UserV2 $user, $force=false)
     {
-        $db = new DatabaseConnection();
-
-        $record = array();
-        $record["email"] = $user->emailAddress();
-        $record["research_group"] = $user->group();
-        $record["institution"] = $user->institution();
-        $record["role"] = $user->role();
-        $record["authentication"] = $user->authenticationMode();
-        $record["status"] = $user->status();
-
-        $table = "username";
-        $name = $user->name();
-        if (!$db->connection()->AutoExecute($table,
-            $record, 'UPDATE', "name = '$name'")) {
+        if (!($user->isLoggedIn()) && !($force)) {
             return false;
         }
-        return True;
+
+        $db = new DatabaseConnection();
+
+        if (self::findUserByName($user->name()) == null) {
+
+            // Create the User with a random password
+            return self::createUser(
+                $user->name(),
+                self::generateRandomPlainPassword(),
+                $user->emailAddress(),
+                $user->group(),
+                $user->institution(),
+                $user->authenticationMode(),
+                $user->role(),
+                $user->status()
+            );
+
+        } else {
+
+            // Update the User
+            $sql = "UPDATE username SET name=?, email=?, research_group=?, " .
+                "institution=?, role=?, status=? WHERE id=?;";
+            $result = $db->connection()->Execute($sql,
+                array(
+                    $user->name(),
+                    $user->emailAddress(),
+                    $user->group(),
+                    $user->institution(),
+                    $user->role(),
+                    $user->status(),
+                    $user->id()));
+            if ($result === false) {
+                return false;
+            }
+            return true;
+        }
     }
 
     /**
@@ -351,7 +378,13 @@ class UserManager
     }
 
     /**
-     * Sets the user role.
+     * Sets the user role in the database.
+     *
+     * Notice that the User itself is not changed, to update the User
+     * after a database change, use:
+     *
+     *     $user->load();
+     *
      * @param string $username Name of the user to modify.
      * @param int $role Role, one of UserConstants::ROLE_* (default
      * UserConstants::ROLE_USER).
@@ -369,7 +402,13 @@ class UserManager
     }
 
     /**
-     * Sets the authentication mode for the user with given name.
+     * Sets the authentication mode for the user with given name in the database.
+     *
+     * Notice that the User itself is not changed, to update the User
+     * after a database change, use:
+     *
+     *     $user->load();
+     *
      * @param string $username Name of the user.
      * @param string $mode One of the enabled authentication modes. Subset of
      * {'integrated', 'active_dir', 'ldap', 'auth0'}, depending on the
@@ -580,7 +619,11 @@ class UserManager
     }
 
     /**
-     * Get the status of a Uuser.
+     * Get the status of a User.
+     *
+     * By definition (not to prevent logging in against an external
+     * authentication system), if a User does not exist, its status is active.
+     *
      * @param string $name Name of the user.
      * @return string status ('a', 'd', ...).
      */
@@ -589,6 +632,10 @@ class UserManager
         $db = new DatabaseConnection();
         $query = "select status from username where name = '$name'";
         $result = $db->queryLastValue($query);
+        if ($result === false) {
+            // User not found. Return 'active'.
+            return UserConstants::STATUS_ACTIVE;
+        }
         return $result;
     }
 

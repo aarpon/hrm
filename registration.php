@@ -5,6 +5,7 @@
 use hrm\DatabaseConnection;
 use hrm\Mail;
 use hrm\Nav;
+use hrm\user\UserManager;
 use hrm\Validator;
 use hrm\Util;
 
@@ -99,7 +100,7 @@ if (isset($_POST["OK"])) {
                         $db = new DatabaseConnection();
                         if ($db->isReachable()) {
                             if ($db->emailAddress($clean["username"]) == "") {
-                                $id = Util::get_rand_id(10);
+                                $id = UserManager::generateRandomPlainPassword();
                                 $result = $db->addNewUser($clean["username"],
                                     $clean["pass1"], $clean["email"], $clean["group"], $id);
 

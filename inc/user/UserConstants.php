@@ -1,14 +1,20 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: aaron
- * Date: 23/06/16
- * Time: 10:39
+ * UserConstants
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
  */
 
 namespace hrm\user;
 
-
+/**
+ * Defines some constants to be used in User management.
+ *
+ * @package hrm
+ */
 class UserConstants
 {
     /**
@@ -47,12 +53,12 @@ class UserConstants
     const ROLE_USER = 3;
 
     /**
-     * The password hashing algorithm
+     * The password hashing algorithm.
      */
     const HASH_ALGORITHM = PASSWORD_BCRYPT;
 
     /**
-     * The password hashing algorithm cost
+     * The password hashing algorithm cost.
      */
     const HASH_ALGORITHM_COST = 15;
 

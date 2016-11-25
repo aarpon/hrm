@@ -648,6 +648,7 @@ include("footer.inc.php");
         }
 
         // No templates can be shared with the admin
+        // TODO: Check the role, not the user name!
         if (username == "admin") {
             return;
         }

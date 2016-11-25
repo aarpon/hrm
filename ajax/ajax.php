@@ -66,8 +66,7 @@ function getNumberOfUserJobsInQueue(UserV2 $user)
  */
 function getTotalNumberOfJobsInQueue()
 {
-    $db = new DatabaseConnection();
-    $allJobsInQueue = $db->getTotalNumberOfQueuedJobs();
+    $allJobsInQueue = UserManager::getTotalNumberOfQueuedJobs();
     $data = 'There ';
     if ($allJobsInQueue == 0) {
         $data .= "are no jobs";

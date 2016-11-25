@@ -77,11 +77,12 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
 
         // Create a user
         $tentativeUser = new UserV2();
+        $tentativeUser->setName($clean['username']);
 
         // Get the correct UserManager for the User
         $userManager = UserManagerFactory::getUserManager($tentativeUser->name());
 
-        if ($tentativeUser->logIn($clean['username'], $clean['password'])) {
+        if ($tentativeUser->logIn($clean['password'])) {
 
             // Register the user in the session
             $_SESSION['user'] = $tentativeUser;
