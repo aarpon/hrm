@@ -4,7 +4,7 @@
 
 use hrm\Log;
 use hrm\Nav;
-use hrm\user\mngm\UserManager;
+use hrm\user\UserManager;
 use hrm\user\proxy\ProxyFactory;
 use hrm\Util;
 

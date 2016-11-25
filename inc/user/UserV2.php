@@ -223,6 +223,14 @@ class UserV2 {
     }
 
     /**
+     * Returns the creation date of the User.
+     * @return string Creation date of the User.
+     */
+    public function creationDate() {
+        return $this->creationDate;
+    }
+
+    /**
      * Returns the last access date of the User.
      * @return string Last access date of the User.
      */
@@ -235,11 +243,18 @@ class UserV2 {
      */
     private function setLastAccessDate() {
 
+        // The user might not yet exist in the database. This is not
+        // necessarily an error.
+        $db = new DatabaseConnection();
+        if ($db->queryLastValue("SELECT id FROM username WHERE name='$this->name';") === false) {
+            return;
+        }
+
         // Set the last access date to now
         $this->lastAccessDate = date("Y-m-d H:i:s");
 
         // Store it in the database
-        $db = new DatabaseConnection();
+
         $query = "UPDATE username SET last_access_date=? WHERE name=?;";
         $result = $db->connection()->Execute($query,
             array($this->lastAccessDate, $this->name)
@@ -327,12 +342,12 @@ class UserV2 {
         // Update the user information for a successful login
         if ($this->isLoggedIn == true) {
 
-            // Update the last access date in the database
-            $this->setLastAccessDate();
-
             // Load all User information (this retrieves data from all
             // relevant sources)
             $this->load();
+
+            // Update the last access date in the database
+            $this->setLastAccessDate();
 
         }
 
@@ -408,8 +423,9 @@ class UserV2 {
         if ($this->isAdmin === null) {
 
             $db = new DatabaseConnection();
-            $sql = "SELECT role FROM username WHERE name=?;";
-            $res = $db->connection()->Execute($sql, array($this->name));
+            $res = $db->connection()->Execute(
+                "SELECT role FROM username WHERE name=?;",
+                array($this->name));
             if ($res === false) {
                 Log::error("Could not retrieve role for user $this->name.");
                 return false;
@@ -443,31 +459,46 @@ class UserV2 {
     /**
      * Load the User data from the database.
      *
+     * This function is private because it should only be used internally!
      * This function does not load the password!
      */
-    public function load()
+    private function load()
     {
         // Instantiate the database connection
         $db = new DatabaseConnection();
 
         // Load all information for current user
-        $sql = "SELECT * FROM username WHERE name = ?;";
-        $result = $db->connection()->Execute($sql, array($this->name));
+        $result = $db->connection()->Execute(
+            "SELECT * FROM username WHERE name = ?;",
+            array($this->name));
         $rows = $result->GetRows();
         if (count($rows) == 0)
         {
-            // A User with the specified name does not exist; return
-            return;
-        }
-        $row = $rows[0];
 
-        // Update the User object
+            // A user with current name does not yet exist: we create it.
+            $row = array();
+            $row["name"] = $this->name();
+            $row["email"] = $this->emailAddress();
+            $row["research_group"] = $this->group();
+            $row["institution"] = $this->institution();
+            $row["role"] = $this->role();
+            $row["authentication"] = $this->authenticationMode();
+            $row["creation_date"] = $this->creationDate();
+            $row["last_access_date"] = $this->lastAccessDate();
+            $row["status"] = $this->status();
+
+        } else {
+
+            $row = $rows[0];
+        }
 
         // User ID
         $this->id = intval($row["id"]);
 
         // User e-mail address
         if ($this->isLoggedIn) {
+            // If the User is logged in, always retrieve the e-mail address
+            // via the  correct proxy.
             $this->emailAddress = $this->proxy->getEmailAddress($this->name);
         } else {
             $this->emailAddress = $row["email"];
@@ -475,6 +506,8 @@ class UserV2 {
 
         // User (research) group
         if ($this->isLoggedIn) {
+            // If the User is logged in, always retrieve the research group
+            // via the  correct proxy.
             $this->group = $this->proxy->getGroup($this->name);
         } else {
             $this->group = $row["research_group"];
@@ -500,7 +533,7 @@ class UserV2 {
 
         // Cache the isAdmin check
         $this->isAdmin = ($this->role == UserConstants::ROLE_ADMIN);
-    }
 
+    }
 };
 

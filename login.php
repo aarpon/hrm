@@ -5,8 +5,8 @@
 use hrm\Fileserver;
 use hrm\Log;
 use hrm\Nav;
-use hrm\user\mngm\UserManagerFactory;
 use hrm\user\proxy\ProxyFactory;
+use hrm\user\UserManager;
 use hrm\user\UserV2;
 use hrm\Validator;
 use hrm\DatabaseConnection;
@@ -76,13 +76,14 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
     if ($clean['password'] != "" && $clean['username'] != "") {
 
         // Create a user
-        $tentativeUser = new UserV2();
-        $tentativeUser->setName($clean['username']);
-
-        // Get the correct UserManager for the User
-        $userManager = UserManagerFactory::getUserManager($tentativeUser->name());
+        $tentativeUser = new UserV2($clean['username']);
 
         if ($tentativeUser->logIn($clean['password'])) {
+
+            // If the user does not exist yet in the system, we add it
+            if (! UserManager::existsUser($tentativeUser)) {
+                UserManager::addUser($tentativeUser, $clean['password']);
+            }
 
             // Register the user in the session
             $_SESSION['user'] = $tentativeUser;
@@ -90,7 +91,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
             // Make sure that the user source and destination folders exist
             $fileServer = new Fileserver($tentativeUser->name());
             if (!$fileServer->isReachable()) {
-                $userManager->createUserFolders($tentativeUser->name());
+                UserManager::createUserFolders($tentativeUser->name());
             }
 
             // Log successful logon
@@ -119,7 +120,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                 }
             }
 
-        } else if ($userManager->isLoginRestrictedToAdmin()) {
+        } else if (UserManager::isLoginRestrictedToAdmin()) {
             if ($tentativeUser->isAdmin()) {
                 $message = "Wrong password";
             } else {

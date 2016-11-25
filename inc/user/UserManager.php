@@ -183,9 +183,36 @@ class UserManager
     }
 
     /**
-     * Creates a new user.
+     * Adds a User to the database.
+     * @param UserV2 $user
+     * @param $password string User password The password is not stored in the User object.
+     * Set $password to "" to create a random password (useful for external authentication
+     * mechanisms).
+     */
+    public static function addUser(UserV2 $user, $password="") {
+
+        // Create a random password if needed
+        if ($password == "") {
+            $password = self::generateRandomPlainPassword();
+        }
+
+        // Call the UserManager::createUser method
+        self::createUser(
+            $user->name(),
+            $password,
+            $user->emailAddress(),
+            $user->group(),
+            $user->institution(),
+            $user->authenticationMode(),
+            $user->role(),
+            $user->status()
+            );
+    }
+
+    /**
+     * Creates a new User.
      * @param string $username User login name.
-     * @param string $password User password in plain text.
+     * @param string $password User password in plain text. Set to "" to create a random one.
      * @param string $emailAddress User e-mail address.
      * @param string $group User group.
      * @param string $institution User institution.
@@ -206,10 +233,9 @@ class UserManager
                                $role = UserConstants::ROLE_USER,
                                $status = UserConstants::STATUS_ACTIVE) {
 
-        // The password MUST exist, even if a different authentication
-        // system than the integrated one will be used.
+        // Create a random password if needed
         if ($password == "") {
-            throw new \Exception("The password must not be empty!");
+            $password = self::generateRandomPlainPassword();
         }
 
         // If the User already exists, return false
@@ -232,7 +258,7 @@ class UserManager
         $record["role"] = $role;
         $record["authentication"] = $authentication;
         $record["creation_date"] = date("Y-m-d H:i:s");
-        $record["last_access_date"] = null;
+        $record["last_access_date"] = $record["creation_date"];
         $record["status"] = $status;
         $table = "username";
         $insertSQL = $db->connection()->GetInsertSQL($table, $record);
