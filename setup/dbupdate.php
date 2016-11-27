@@ -4983,6 +4983,51 @@ if ($current_revision < $n) {
 $n = 15;
 if ($current_revision < $n) {
 
+    // Refresh the table list
+    $tables = $db->MetaTables();
+
+    // Create new table: institution
+    $flds = "
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        name C(255) NOTNULL UNIQUE INDEX,
+        address C(255),
+        url C(255)
+    ";
+
+    $tabname = "institution";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds)) {
+            $msg = "Could not create table $tabname!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+
+        // Prepared statement
+        $sql="INSERT INTO $tabname (name, address, url) VALUES (?, ?, ?);";
+
+        // Add default institution
+        $default_institution = array(
+            "name" => "Default",
+            "address" => "Default",
+            "url" => "http://www.example.com"
+        );
+
+        // Run prepared query
+        $rs = $db->Execute($sql, $default_institution);
+        if($rs === false) {
+            $err = $db->ErrorMsg();
+            trigger_error("Could not add default institution " .
+                ": $err", E_USER_ERROR);
+        }
+    }
+
+    // Get ID of the default institution
+    $institution_ids = $db->Execute("SELECT id FROM $tabname;");
+    $rows = $institution_ids->GetRows();
+    $row = $rows[0];
+    $default_institution_id = intval($row['id']);
+
     // Get current tables
     $tables = $db->MetaTables();
 
@@ -5000,6 +5045,16 @@ if ($current_revision < $n) {
         }
     }
 
+    // Drop current index on 'name' from old username table (if the
+    // index is no longer there because the database update was run
+    // more than once in developement, we silently continue).
+    $dropIndexSQL = $datadict->DropIndexSQL("idx_name", $tabname);
+    if(!$db->Execute($dropIndexSQL[0])) {
+        // The index could not be dropped. We continue.
+    }
+
+    // Refresh the table list
+    $tables = $db->MetaTables();
 
     // Create new table: username
     $flds = "
@@ -5008,7 +5063,7 @@ if ($current_revision < $n) {
         password C(255) NOTNULL,
         email C(255) NOTNULL,
         research_group C(255) NOTNULL,
-        institution C(255) DEFAULT NULL,
+        institution_id I(11) CONSTRAINTS 'FOREIGN KEY REFERENCES institution (id)',
         role I(11) NOTNULL DEFAULT 3,
         authentication C(30) NOTNULL DEFAULT integrated,
         creation_date T DEFAULT NULL,
@@ -5016,12 +5071,10 @@ if ($current_revision < $n) {
         status C(10) DEFAULT NULL
     ";
 
-    // Refresh the table list
-    $tables = $db->MetaTables();
-
     if (!in_array($tabname, $tables)) {
         if (!create_table($tabname, $flds)) {
-            $msg = "Could not create table $tabname!";
+            $err = $db->ErrorMsg();
+            $msg = "Could not create table $tabname! Error was: " . $err;
             write_message($msg);
             write_to_error($msg);
             return;
@@ -5037,7 +5090,7 @@ if ($current_revision < $n) {
 
     // Prepared statement
     $sql="INSERT INTO $tabname " .
-        "(name, password, email, research_group, institution, role, authentication, " .
+        "(name, password, email, research_group, institution_id, role, authentication, " .
         "creation_date, last_access_date, status) VALUES " .
         "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
@@ -5063,7 +5116,7 @@ if ($current_revision < $n) {
             "password" => $row["password"], //uniqid('', true),
             "email" => $currentEmail,
             "research_group" => $row["research_group"],
-            "institution" => "",
+            "institution_id" => $default_institution_id,
             "role" => $role,
             "authentication" => $currentAuthMode,
             "creation_date" => $row["creation_date"],
@@ -5075,9 +5128,8 @@ if ($current_revision < $n) {
         $rs = $db->Execute($sql, $ext_user);
         if($rs === false) {
             $err = $db->ErrorMsg();
-
             trigger_error("Could not migrate user " . $row['name'] .
-                "': $db->ErrorMsg()", E_USER_ERROR);
+                "': $err", E_USER_ERROR);
         }
     }
 
