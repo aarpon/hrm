@@ -11,7 +11,7 @@ namespace hrm\setting\base;
 
 use hrm\DatabaseConnection;
 use hrm\HuygensTools;
-use hrm\user\User;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
@@ -26,7 +26,7 @@ abstract class SettingEditor
 
     /**
      * Current user.
-     * @var User
+     * @var UserV2
      */
     protected $user;
 
@@ -46,9 +46,9 @@ abstract class SettingEditor
      * SettingEditor constructor.
      *
      * Selects the default Setting if a default Setting exists.
-     * @param User $user Current User.
+     * @param UserV2 $user Current User.
      */
-    protected function __construct(User $user)
+    protected function __construct(UserV2 $user)
     {
         $this->user = $user;
         $this->message = '';

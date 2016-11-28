@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# Requirements:
+#
+#  - php-xdebug
+#  - php-xml
+#
 
 #
 # Set project directory

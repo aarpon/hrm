@@ -11,7 +11,8 @@
 namespace hrm\stats;
 
 use hrm\DatabaseConnection;
-use hrm\user\User;
+use hrm\user\mngm\UserManager;
+use hrm\user\UserV2;
 use hrm\Util;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
@@ -352,7 +353,9 @@ class Stats
      */
     private function isAdmin()
     {
-        return ($this->m_Username == User::getAdminName());
+        $user = new UserV2();
+        $user->setName($this->m_Username);
+        $user->isAdmin();
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 /**
- * ActiveDirectoryAuthenticator
+ * ActiveDirectoryProxy
  *
  * @package hrm
  *
@@ -8,7 +8,7 @@
  * Copyright and license notice: see license.txt
  */
 
-namespace hrm\user\auth;
+namespace hrm\user\proxy;
 
 use adLDAP\adLDAP;
 use adLDAP\adLDAPException;
@@ -27,7 +27,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  *
  * @package hrm
  */
-class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
+class ActiveDirectoryProxy extends AbstractProxy {
 
     /**
      * The adLDAP object.
@@ -94,8 +94,8 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
     private $m_UsernameSuffixReplaceString;
 
     /**
-     * ActiveDirectoryAuthenticator constructor: instantiates an
-     * ActiveDirectoryAuthenticator object with the settings specified in
+     * ActiveDirectoryProxy constructor: instantiates an
+     * ActiveDirectoryProxy object with the settings specified in
      * the configuration file.
      *
      * No parameters are passed to the constructor.
@@ -109,8 +109,16 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
                $AD_USERNAME_SUFFIX_REPLACE;
 
 
-        // Include configuration file
-        include(dirname(__FILE__) . "/../../../config/active_directory_config.inc");
+        // Include the configuration file
+        $conf = dirname(__FILE__) . "/../../../config/active_directory_config.inc";
+        if (! is_file($conf)) {
+            $msg = "The Active Directory configuration file " .
+                "'active_directory_config.inc' is missing!";
+            Log::error($msg);
+            throw new \Exception($msg);
+        }
+        /** @noinspection PhpIncludeInspection */
+        include($conf);
 
         // Set up the adLDAP object
         $options = array(
@@ -178,6 +186,15 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
     }
 
     /**
+     * Return a friendly name for the proxy to be displayed in the ui.
+     * @return string 'active directory'.
+     */
+    public function friendlyName()
+    {
+        return 'Active Directory';
+    }
+
+    /**
      * Authenticates the User with given username and password against Active
      * Directory.
      * @param string $username Username for authentication.
@@ -213,7 +230,6 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // Get the user groups from AD
         $userGroups = $this->m_AdLDAP->user()->groups($username);
-        $this->m_AdLDAP->close();
 
         // Test for intersection
         $b = count(array_intersect($userGroups, $this->m_AuthorizedGroups)) > 0;
@@ -245,7 +261,6 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         // Get the email from AD
         $info = $this->m_AdLDAP->user()->infoCollection($username, array("mail"));
 
-        $this->m_AdLDAP->close();
         if (!$info) {
             Log::warning('No email address found for username "' . $username . '"');
             return "";
@@ -273,7 +288,6 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
 
         // Get the user groups from AD
         $userGroups = $this->m_AdLDAP->user()->groups($username);
-        $this->m_AdLDAP->close();
 
         // If no groups found, return ""
         if (!$userGroups) {

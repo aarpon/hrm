@@ -72,7 +72,8 @@ use hrm\Mail;
 use hrm\setting\ParameterSetting;
 use hrm\System;
 use hrm\setting\TaskSetting;
-use hrm\user\User;
+use hrm\user\UserManager;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 
@@ -306,10 +307,10 @@ function jsonGetUserAndTotalNumberOfJobsInQueue() {
 
     // Get the total number of jobs
     $db = new DatabaseConnection();
-    $json["numAllJobsInQueue"] = $db->getTotalNumberOfQueuedJobs();
+    $json["numAllJobsInQueue"] = UserManager::getTotalNumberOfQueuedJobs();
 
     // Get the number of jobs for current user
-    /** @var $user User */
+    /** @var $user UserV2 */
     $user = $_SESSION['user'];
     if ($user->isAdmin()) {
         $numUserJobsInQueue = 0;

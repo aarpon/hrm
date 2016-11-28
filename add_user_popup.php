@@ -4,6 +4,8 @@
 
 use hrm\DatabaseConnection;
 use hrm\Mail;
+use hrm\user\UserConstants;
+use hrm\user\UserManager;
 use hrm\Util;
 use hrm\Validator;
 
@@ -70,46 +72,55 @@ if (isset($_POST["group"])) {
  *
  */
 
-// TODO refactor from here
+// Add the user
 if (isset($_POST['add'])) {
-    //$user = new User();
-    //$user->setName( $clean['username'] );
 
-    if ($clean["username"] != "") {
-        if ($clean["email"] != "") {
-            if ($clean['group'] != "") {
-                $db = new DatabaseConnection();
-                // Is the user name already taken?
-                if ($db->emailAddress($clean['username']) == "") {
-                    $password = Util::get_rand_id(8);
-                    $result = $db->addNewUser($clean["username"],
-                        $password, $clean["email"],
-                        $clean["group"], 'a');
+    if ($clean["username"] == "") {
+        $message = "Please provide a user name!";
+    } else if ($clean["email"] == "") {
+        $message = "Please provide a valid email address!";
+    } else if ($clean['group'] == "") {
+        $message = "Please a group!";
+    } else {
 
-                    // TODO refactor
-                    if ($result) {
-                        $text = "Your account has been activated:\n\n";
-                        $text .= "\t      Username: " . $clean["username"] . "\n";
-                        $text .= "\t      Password: " . $password . "\n\n";
-                        $text .= "Login here\n";
-                        $text .= $hrm_url . "\n\n";
-                        $folder = $image_folder . "/" . $clean["username"];
-                        $text .= "Source and destination folders for your images are " .
-                            "located on server " . $image_host . " under " . $folder . ".";
-                        $mail = new Mail($email_sender);
-                        $mail->setReceiver($clean['email']);
-                        $mail->setSubject('Account activated');
-                        $mail->setMessage($text);
-                        $mail->send();
-                        //$user->setName( '' );
-                        $message = "New user successfully added to the system";
-                        shell_exec("$userManagerScript create \"" . $clean["username"] . "\"");
-                        $added = True;
-                    } else $message = "Database error, please inform the person in charge";
-                } else $message = "This user name is already in use";
-            } else $message = "Please fill in group field";
-        } else $message = "Please fill in email field with a valid address";
-    } else $message = "Please fill in name field";
+        // Make sure that there is no user with same name
+        if (UserManager::existsUserWithName($clean['username'])) {
+            $name = $clean['username'];
+            $message = "Sorry, a user with name $name exists already!";
+        } else {
+
+            // Add the user
+            // TODO: add institution and authentication mode!
+            $institution_id = 1;
+            $password = UserManager::generateRandomPlainPassword();
+            $result = UserManager::createUser($clean["username"],
+                $password, $clean["email"], $clean["group"], $institution_id,
+                UserConstants::STATUS_ACTIVE);
+
+            // TODO refactor
+            if ($result) {
+                $text = "Your account has been activated:\n\n";
+                $text .= "\t      Username: " . $clean["username"] . "\n";
+                $text .= "\t      Password: " . $password . "\n\n";
+                $text .= "Login here\n";
+                $text .= $hrm_url . "\n\n";
+                $folder = $image_folder . "/" . $clean["username"];
+                $text .= "Source and destination folders for your images are " .
+                    "located on server " . $image_host . " under " . $folder . ".";
+                $mail = new Mail($email_sender);
+                $mail->setReceiver($clean['email']);
+                $mail->setSubject('Account activated');
+                $mail->setMessage($text);
+                $mail->send();
+
+                $message = "New user successfully added to the system";
+                shell_exec("$userManagerScript create \"" . $clean["username"] . "\"");
+                $added = True;
+            } else {
+                $message = "Sorry, the user could not be registered. Please contact your administrator.";
+            }
+        }
+    }
 }
 
 ?>

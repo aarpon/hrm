@@ -159,8 +159,17 @@ $email_admin = "hrm@localhost";
 // instead of the standard ',' for distribution lists.
 $email_list_separator = ",";    // Valid options are ',' and ';'.
 
-// Authentication type: MYSQL, ACTIVE_DIR or LDAP
-$authenticateAgainst = "MYSQL";
+// Supported authentication types. Possible values are 'integrated', 'active_dir', 'ldap'.
+// These values replace the previous ones (but the old ones are still recognized):
+// 'integrated' replaces 'MYSQL';
+// 'active_dir' replaces 'ACTIVE_DIR';
+// 'ldap' replaces 'LDAP'.
+// You can use more than one authentication mechanism by listing them all in the
+// $authenticateAgainst array below. The first entry in the array is the default
+// authentication mode that will be used for new users. Administrators can then
+// change the authentication mode for individual users in the user management pages.
+// Make sure to properly configure all authentication modes (see sample files in config/samples).
+$authenticateAgainst = array("integrated");
 
 // If true, use DES password encryption; if false, use MD5
 $useDESEncryption = false;

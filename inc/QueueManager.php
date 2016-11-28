@@ -12,8 +12,8 @@ namespace hrm;
 use hrm\job\Job;
 use hrm\job\JobDescription;
 use hrm\job\JobQueue;
-use hrm\user\User;
 use hrm\shell\ExternalProcessFactory;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/bootstrap.php';
 
@@ -546,7 +546,7 @@ class QueueManager
             /** @var JobDescription $desc */
             $user = $desc->owner();
 
-            /** @var User $user */
+            /** @var UserV2 $user */
             $fileserver = new Fileserver($user->name());
             if (!$fileserver->isReachable())
                 continue;
@@ -950,6 +950,11 @@ class QueueManager
         Log::info("Huygens Remote Manager started on "
             . date("Y-m-d H:i:s") . "\n");
 
+        // Fill admin user information in the database
+        if (!$this->fillInAdminInfoInTheDatabase()) {
+            Log::error("Could not store the information for the admin user in the database!");
+            return;
+        }
 
         if (!FileserverV2::createUpDownloadFolderIfMissing()) {
             Log::error("The upload and download folders do not exist or are not writable!");
@@ -1459,6 +1464,26 @@ class QueueManager
         }
 
         return $confidenceLevels;
+    }
+
+    /**
+     * Transfers info about the admin user from the configuration
+     * files to the database.
+     */
+    private function fillInAdminInfoInTheDatabase()
+    {
+        global $email_admin;
+
+        $success = true;
+
+        $db = new DatabaseConnection();
+        $sql = "SELECT email FROM username WHERE name='admin';";
+        $email = $db->queryLastValue($sql);
+        if ($email == "") {
+            $sqlUp = "UPDATE username SET email='$email_admin' WHERE name='admin';";
+            $success &= $db->execute($sqlUp);
+        }
+        return $success;
     }
 
 }

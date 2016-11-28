@@ -4,8 +4,9 @@
 
 use hrm\Mail;
 use hrm\Nav;
-use hrm\user\mngm\UserManagerFactory;
-use hrm\user\User;
+use hrm\user\UserManager;
+use hrm\user\proxy\ProxyFactory;
+use hrm\user\UserV2;
 use hrm\Util;
 use hrm\Validator;
 
@@ -21,13 +22,6 @@ global $userManagerScript;
 global $authenticateAgainst;
 
 session_start();
-
-// Make sure that we don't even show this page if the user
-// management is disabled!
-if ($authenticateAgainst != "MYSQL") {
-    header("Location: " . "home.php");
-    exit();
-}
 
 /*
  *
@@ -95,11 +89,8 @@ if (!$_SESSION['user']->isAdmin()) {
     exit();
 }
 
-// Get the UserManager
-$userManager = UserManagerFactory::getUserManager($_SESSION['user']->isAdmin());
-
 if (isset($_GET['seed'])) {
-    if (!$userManager->existsUserRequestWithSeed($_GET['seed'])) {
+    if (! UserManager::existsUserRequestWithSeed($_GET['seed'])) {
         header("Location: " . "login.php");
         exit();
     }
@@ -118,27 +109,25 @@ if (isset($_SESSION['admin_referer'])) {
     unset($_SESSION['admin_referer']);
 }
 
-if (isset($_SESSION['account_user']) &&
-    gettype($_SESSION['account_user']) != "object"
-) {
-    $message = $_SESSION['account_user'];
-    unset($_SESSION['account_user']);
-}
-
 if (!isset($_SESSION['index'])) {
     $_SESSION['index'] = "";
 } else if (isset($_GET['index'])) {
     $_SESSION['index'] = $_GET['index'];
 }
 
+// Check if there is a message from the account page that we need to
+// display
 $message = "";
+if (isset($_SESSION['account_update_message'])) {
+    $message = $_SESSION['account_update_message'];
+    unset($_SESSION['account_update_message']);
+}
 
 if (isset($_POST['accept'])) {
-    $result = $userManager->acceptUser($clean['username']);
+    $result = UserManager::acceptUser($clean['username']);
     // TODO refactor
     if ($result) {
-        $accepted_user = new User();
-        $accepted_user->setName($clean['username']);
+        $accepted_user = new UserV2($clean['username']);
         $email = $accepted_user->emailAddress();
         $text = "Your account has been activated:\n\n";
         $text .= "\t      Username: " . $clean['username'] . "\n";
@@ -156,10 +145,9 @@ if (isset($_POST['accept'])) {
         shell_exec("$userManagerScript create \"" . $clean['username'] . "\"");
     } else $message = "Database error, please inform the administrator";
 } else if (isset($_POST['reject'])) {
-    $user_to_reject = new User();
-    $user_to_reject->setName($clean['username']);
+    $user_to_reject = new UserV2($clean['username']);
     $email = $user_to_reject->emailAddress();
-    $result = $userManager->deleteUser($user_to_reject->name());
+    $result = UserManager::deleteUser($user_to_reject->name());
     // TODO refactor
     if (!$result) {
         $message = "Database error, please inform the administrator";
@@ -173,7 +161,7 @@ if (isset($_POST['accept'])) {
     $mail->send();
 } else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
     if ($clean['username'] != "admin") {
-        $result = $userManager->deleteUser($clean['username']);
+        $result = UserManager::deleteUser($clean['username']);
         if (!$result) {
             $message = "Database error, please inform the administrator";
         }
@@ -181,8 +169,7 @@ if (isset($_POST['accept'])) {
         $message = "Database error, please inform the administrator";
     }
 } else if (isset($_POST['edit'])) {
-    $_SESSION['account_user'] = new User();
-    $_SESSION['account_user']->setName($clean['username']);
+    $_SESSION['account_user'] = new UserV2($clean['username']);
     if (isset($c) || isset($_GET['c']) || isset($_POST['c'])) {
         if (isset($_GET['c'])) $_SESSION['c'] = $_GET['c'];
         else if (isset($_POST['c'])) $_SESSION['c'] = $_POST['c'];
@@ -190,14 +177,14 @@ if (isset($_POST['accept'])) {
     header("Location: " . "account.php");
     exit();
 } else if (isset($_POST['enable'])) {
-    $result = $userManager->enableUser($clean['username']);
+    $result = UserManager::enableUser($clean['username']);
 } else if (isset($_POST['disable'])) {
-    $result = $userManager->disableUser($clean['username']);
+    $result = UserManager::disableUser($clean['username']);
 } else if (isset($_POST['action'])) {
     if ($_POST['action'] == "disable") {
-        $result = $userManager->disableAllUsers();
+        $result = UserManager::disableAllUsers();
     } else if ($_POST['action'] == "enable") {
-        $result = $userManager->enableAllUsers();
+        $result = UserManager::enableAllUsers();
     }
 }
 // TODO refactor to here
@@ -234,7 +221,9 @@ include("header.inc.php");
 
     <?php
 
-    $rows = $userManager->getAllUserDBRows();
+    // GEt list of users with pending requests
+    $rows = UserManager::getAllPendingUserDBRows();
+
     $i = 0;
     foreach ($rows as $row) {
         $name = $row["name"];
@@ -242,7 +231,6 @@ include("header.inc.php");
         $group = $row["research_group"];
         $creation_date = date("j M Y, G:i", strtotime($row["creation_date"]));
         $status = $row["status"];
-        if ($status != "a" && $status != "d") {
 
             ?>
             <form method="post" action="">
@@ -293,10 +281,9 @@ include("header.inc.php");
             <?php
 
             $i++;
-        }
     }
 
-    if (!$i) {
+    if ($i == 0) {
 
         ?>
         <p>There are no pending requests.</p>
@@ -311,10 +298,10 @@ include("header.inc.php");
             <?php
 
             // All users (independent of their status), including the administrator
-            $count = $userManager->getTotalNumberOfUsers();
+            $count = UserManager::getTotalNumberOfUsers();
 
             // Active users
-            $rows = $userManager->getAllActiveUserDBRows();
+            $rows = UserManager::getAllActiveUserDBRows();
             $emails = array();
             foreach ($rows as $row) {
                 $e = trim($row['email']);
@@ -350,7 +337,7 @@ include("header.inc.php");
 
             /* Get the number of users with names starting with each of the letters
             of the alphabet. */
-            $counts = $userManager->getNumberCountPerInitialLetter();
+            $counts = UserManager::getNumberCountPerInitialLetter();
             $letters = array_keys($counts);
             ?>
 
@@ -399,9 +386,9 @@ include("header.inc.php");
 
                 if ($_SESSION['index'] != "") {
                     if ($_SESSION['index'] != "all") {
-                        $rows = $userManager->getAllUserDBRowsByInitialLetter($_SESSION['index']);
+                        $rows = UserManager::getAllUserDBRowsByInitialLetter($_SESSION['index']);
                     } else {
-                        $rows = $userManager->getAllUserDBRows();
+                        $rows = UserManager::getAllUserDBRows();
                     }
                     $i = 0;
                     foreach ($rows as $row) {
@@ -409,18 +396,18 @@ include("header.inc.php");
                             $name = $row['name'];
                             $email = $row['email'];
                             $group = $row['research_group'];
+                            if ($row['last_access_date'] === null) {
+                                $last_access_date = "never";
+                            } else {
                             $last_access_date = date("j M Y, G:i",
                                 strtotime($row['last_access_date']));
-                            if ($last_access_date == "30 Nov 1999, 0:00") {
-                                $last_access_date = "never";
                             }
                             $status = $row['status'];
-                            if ($status == "a" || $status == "d") {
+                            if ($status == "a" || $status == "d" || $status == "o") {
                                 if ($i > 0) {
                                     echo "                    " .
                                         "<tr><td colspan=\"3\" class=\"hr\">&nbsp;</td></tr>\n";
                                 }
-
                                 ?>
                                 <tr class="upline<?php
                                 if ($status == "d") {
@@ -441,15 +428,32 @@ include("header.inc.php");
                                         </a>
                                     </td>
                                 </tr>
+                                <tr class="middleline"<?php
+                                if ($status == "d") {
+                                    echo " disabled";
+                                }
+                                ?>">
+                                <td colspan="1" class="auth">
+                                    authentication
+                                </td>
+                                <td colspan="2" class="auth">
+                                    <?php
+                                    echo(ProxyFactory::getProxy($name)->friendlyName());
+                                    ?>
+                                </td>
+                                </tr>
                                 <tr class="bottomline<?php
                                 if ($status == "d") {
                                     echo " disabled";
                                 }
                                 ?>">
-                                    <td colspan="2" class="date">
-                                        last
-                                        access: <?php echo $last_access_date . "\n" ?>
+                                    <td colspan="1" class="date">
+                                        last access
                                     </td>
+                                    <td colspan="1" class="date">
+                                        <?php echo $last_access_date . "\n" ?>
+                                    </td>
+
                                     <td class="operations">
                                         <form method="post" action="">
                                             <div>
@@ -468,7 +472,7 @@ include("header.inc.php");
                                                        class="submit"/>
                                                 <?php
 
-                                                if ($name != $_SESSION['user']->getAdminName()) {
+                                                if ($_SESSION['user']->isAdmin()) {
                                                     if ($status == "d") {
 
                                                         ?>

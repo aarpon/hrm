@@ -400,7 +400,7 @@ class FileserverV2
 
     /**
      * Create the download and upload (chunk and files) folder if they do not exist.
-     * 
+     *
      * The folder paths are taken from inc/hrm_config.inc.php (advanced parameters).
      */
     public static function createUpDownloadFolderIfMissing() {
@@ -500,5 +500,4 @@ class FileserverV2
         // Return global result
         return $result;
     }
-
 }

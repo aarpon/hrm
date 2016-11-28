@@ -7,7 +7,7 @@ use hrm\setting\AnalysisSetting;
 use hrm\setting\TaskSettingEditor;
 use hrm\System;
 use hrm\setting\TaskSetting;
-use hrm\user\User;
+use hrm\user\UserV2;
 use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
@@ -52,7 +52,7 @@ $goNextMessage  = "Continue to step $nextStep/$numberSteps" . $goNextMessage;
 
 // add public setting support
 if (!$_SESSION['user']->isAdmin()) {
-  $admin = new User();
+  $admin = new UserV2();
   $admin->setName( "admin" );
   $admin_editor = new TaskSettingEditor($admin);
   $_SESSION['admin_taskeditor'] = $admin_editor;
@@ -648,6 +648,7 @@ include("footer.inc.php");
         }
 
         // No templates can be shared with the admin
+        // TODO: Check the role, not the user name!
         if (username == "admin") {
             return;
         }

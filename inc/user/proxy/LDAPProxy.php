@@ -1,6 +1,6 @@
 <?php
 /**
- * LDAPAuthenticator
+ * LDAPProxy
  *
  * @package hrm
  *
@@ -8,7 +8,7 @@
  * Copyright and license notice: see license.txt
  */
 
-namespace hrm\user\auth;
+namespace hrm\user\proxy;
 
 use hrm\Log;
 
@@ -17,14 +17,14 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
 /**
  * Manages LDAP connections through built-in PHP LDAP support
  *
- * The configuration file for the LDAPAuthenticator class is config/ldap_config.inc.
+ * The configuration file for the LDAPProxy class is config/ldap_config.inc.
  * A sample configuration file is config/samples/ldap_config.inc.sample.
  * A user with read-access to the LDAP server must be set up in the
  * configuration file for queries to be possible.
  *
  * @package hrm
  */
-class LDAPAuthenticator extends AbstractAuthenticator {
+class LDAPProxy extends AbstractProxy {
 
     /**
      * LDAP connection object
@@ -91,7 +91,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
     private $m_LDAP_User_Search_DN;
 
     /**
-     * LDAPAuthenticator manager OU: used in case the Ldap_Manager is in some
+     * LDAPProxy manager OU: used in case the Ldap_Manager is in some
      * special OU that distinguishes it from the other users.
      *
      * @var string
@@ -117,7 +117,7 @@ class LDAPAuthenticator extends AbstractAuthenticator {
     private $m_LDAP_Authorized_Groups;
 
     /**
-     * LDAPAuthenticator constructor: : instantiates an LDAPAuthenticator object
+     * LDAPProxy constructor: : instantiates an LDAPProxy object
      * with the settings specified in the configuration file.
      */
     public function __construct() {
@@ -127,7 +127,14 @@ class LDAPAuthenticator extends AbstractAuthenticator {
                $ldap_manager_ou, $ldap_valid_groups, $ldap_authorized_groups;
 
         // Include the configuration file
-        include(dirname(__FILE__) . "/../../../config/ldap_config.inc");
+        $conf = dirname(__FILE__) . "/../../../config/ldap_config.inc";
+        if (! is_file($conf)) {
+            $msg = "The LDAP configuration file 'ldap_config.inc' is missing!";
+            Log::error($msg);
+            throw new \Exception($msg);
+        }
+        /** @noinspection PhpIncludeInspection */
+        include($conf);
 
         // Assign the variables
         $this->m_LDAP_Host = $ldap_host;
@@ -197,6 +204,15 @@ class LDAPAuthenticator extends AbstractAuthenticator {
         if ($this->isConnected()) {
             @ldap_close($this->m_Connection);
         }
+    }
+
+    /**
+     * Return a friendly name for the proxy to be displayed in the ui.
+     * @return string 'generic ldap'.
+     */
+    public function friendlyName()
+    {
+        return 'Generic LDAP';
     }
 
     /**
