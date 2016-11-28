@@ -186,6 +186,21 @@ class UserManager
     }
 
     /**
+     * Return all institution rows.
+     */
+    public static function getAllInstitutions() {
+
+        $db = new DatabaseConnection();
+        $query = "SELECT * FROM institution;";
+        $rows = $db->execute($query);
+        if ($rows == false) {
+            return false;
+        } else {
+            return $rows->getRows();
+        }
+    }
+
+    /**
      * Returns the number of jobs currently in the queue for current User.
      * @param string $username User name to query.
      * @return int Number of jobs in queue.
@@ -472,11 +487,6 @@ class UserManager
     /**
      * Sets the authentication mode for the user with given name in the database.
      *
-     * Notice that the User itself is not changed, to update the User
-     * after a database change, use:
-     *
-     *     $user->load();
-     *
      * @param string $username Name of the user.
      * @param string $mode One of the enabled authentication modes. Subset of
      * {'integrated', 'active_dir', 'ldap', 'auth0'}, depending on the
@@ -727,7 +737,7 @@ class UserManager
      * @return bool True if user status could be updated successfully; false
      * otherwise.
      */
-    public static function updateUserStatus($username, $status)
+    private static function updateUserStatus($username, $status)
     {
         $db = new DatabaseConnection();
         $query = "UPDATE username SET status = '$status', seedid = '' WHERE name = '$username'";
@@ -745,7 +755,7 @@ class UserManager
      * @return bool True if the status of all users could be updated successfully;
      * false otherwise.
      */
-    public static function updateAllUsersStatus($status)
+    private static function updateAllUsersStatus($status)
     {
         // @TODO Might want to change the admin check
         $db = new DatabaseConnection();

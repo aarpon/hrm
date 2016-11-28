@@ -6,7 +6,6 @@ use hrm\Fileserver;
 use hrm\Log;
 use hrm\Nav;
 use hrm\System;
-use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserManager;
 use hrm\user\UserV2;
 use hrm\Validator;

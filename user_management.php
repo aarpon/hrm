@@ -293,7 +293,44 @@ include("header.inc.php");
 
     ?>
 
-    <div id="listusers">
+    <?php
+    $institution_rows = UserManager::getAllInstitutions();
+    if ($institution_rows != false) {
+        ?>
+
+        <div id="listusers">
+            <fieldset>
+                <legend>Institutions</legend>
+
+
+                <table class="name">
+                    <tr>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Url</th>
+                    </tr>
+
+                    <tr class="name">
+                        <?php
+                        foreach ($institution_rows as $row) {
+                            ?>
+                            <td><?php echo($row['name']); ?></td>
+                            <td><?php echo($row['address']); ?></td>
+                            <td><?php echo($row['url']); ?></td>
+                            <?php
+                        }
+                        ?>
+                    </tr>
+                </table>
+
+
+            </fieldset>
+        </div>
+        <?php
+        }
+        ?>
+
+        <div id="listusers">
         <fieldset>
             <?php
 
