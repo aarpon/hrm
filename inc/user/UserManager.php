@@ -114,7 +114,7 @@ class UserManager
     }
 
     /**
-     * Generates a random (plain) password of given length.
+     * Generates a random (plain) password.
      *
      * The password returned should still be encrypted (by whatever means)
      * before it is stored into a database.
@@ -124,6 +124,16 @@ class UserManager
     public static function generateRandomPlainPassword() {
 
         return (md5(uniqid()));
+    }
+
+    /**
+     * Generates a random unique id.
+     *
+     * @return string Id.
+     */
+    public static function generateUniqueId() {
+
+        return uniqid();
     }
 
     /**
@@ -148,12 +158,30 @@ class UserManager
     public static function existsUserRequestWithSeed($seed)
     {
         $db = new DatabaseConnection();
-        $query = "SELECT status FROM username WHERE status = '$seed';";
+        $query = "SELECT seedid FROM username WHERE seedid = '$seed';";
         $value = $db->queryLastValue($query);
         if ($value == false) {
             return false;
         } else {
             return ($value == $seed);
+        }
+    }
+
+    /**
+     * Resets the seed for User with given name.
+     *
+     * @param string $name Name of the user for which the seed is to be reset.
+     * @return bool True if the seed was reset, false otherwise.
+     */
+    public static function resetSeed($name)
+    {
+        $db = new DatabaseConnection();
+        $query = "UPDATE username SET seedid=NULL WHERE name = '$name';";
+        $value = $db->execute($query);
+        if ($value == false) {
+            return false;
+        } else {
+            true;
         }
     }
 
@@ -202,10 +230,11 @@ class UserManager
             $password,
             $user->emailAddress(),
             $user->group(),
-            $user->institution(),
+            $user->institution_id(),
             $user->authenticationMode(),
             $user->role(),
-            $user->status()
+            $user->status(),
+            "" // Seed
             );
     }
 
@@ -215,27 +244,38 @@ class UserManager
      * @param string $password User password in plain text. Set to "" to create a random one.
      * @param string $emailAddress User e-mail address.
      * @param string $group User group.
-     * @param string $institution User institution.
-     * @param string $authentication User authentication mode (ignored, since
-     * it is always integrated).
+     * @param int $institution_id User institution id (default = 1).
+     * @param string $authentication User authentication mode (by default, it is the
+     * default authentication mode: @see ProxyFactory::getDefaultAuthenticationMode()
      * @param int $role User role (optional, default is UserConstants::ROLE_USER).
      * @param string $status User status (optional, the user is activated by
      * default).
+     * @param string $seed Seed used to label a user registration request in the database.
      * @return True if the User could be created, false otherwise.
-     * @throws \Exception If an empty password is passed.
+     * @throws \Exception If the authentication mode is not supported.
      */
     public static function createUser($username,
                                $password,
                                $emailAddress,
                                $group,
-                               $institution = '',
-                               $authentication = "integrated",
+                               $institution_id = 1,
+                               $authentication = "",
                                $role = UserConstants::ROLE_USER,
-                               $status = UserConstants::STATUS_ACTIVE) {
+                               $status = UserConstants::STATUS_ACTIVE,
+                               $seed = "") {
 
         // Create a random password if needed
         if ($password == "") {
             $password = self::generateRandomPlainPassword();
+        }
+
+        if ($authentication == "") {
+            $authentication = ProxyFactory::getDefaultAuthenticationMode();
+        }
+
+        // Check that the authentication is supported.
+        if (! array_key_exists($authentication, ProxyFactory::getAllConfiguredAuthenticationModes())) {
+            throw new \Exception("Authentication mode not configured or not supported!");
         }
 
         // If the User already exists, return false
@@ -254,12 +294,13 @@ class UserManager
         $record["password"] = $password;
         $record["email"] = $emailAddress;
         $record["research_group"] = $group;
-        $record["institution"] = $institution;
+        $record["institution_id"] = $institution_id;
         $record["role"] = $role;
         $record["authentication"] = $authentication;
         $record["creation_date"] = date("Y-m-d H:i:s");
         $record["last_access_date"] = $record["creation_date"];
         $record["status"] = $status;
+        $record["seedid"] = $seed;
         $table = "username";
         $insertSQL = $db->connection()->GetInsertSQL($table, $record);
         if(!$db->execute($insertSQL)) {
@@ -282,7 +323,7 @@ class UserManager
      *
      * @param UserV2 $user User to be updated in the database!
      * @param bool $force User to be updated in the database!
-     * @return bool True if the User could be updated or creted successfully,
+     * @return bool True if the User could be updated or created successfully,
      * false otherwise.
      */
     public static function storeUser(UserV2 $user, $force=false)
@@ -301,23 +342,24 @@ class UserManager
                 self::generateRandomPlainPassword(),
                 $user->emailAddress(),
                 $user->group(),
-                $user->institution(),
+                $user->institution_id(),
                 $user->authenticationMode(),
                 $user->role(),
-                $user->status()
+                $user->status(),
+                "" // Seed
             );
 
         } else {
 
             // Update the User
             $sql = "UPDATE username SET name=?, email=?, research_group=?, " .
-                "institution=?, role=?, status=? WHERE id=?;";
+                "institution_id=?, role=?, status=? WHERE id=?;";
             $result = $db->connection()->Execute($sql,
                 array(
                     $user->name(),
                     $user->emailAddress(),
                     $user->group(),
-                    $user->institution(),
+                    $user->institution_id(),
                     $user->role(),
                     $user->status(),
                     $user->id()));
@@ -532,7 +574,7 @@ class UserManager
     {
         $db = new DatabaseConnection();
         $rows = $db->query("SELECT * FROM username WHERE status = '" .
-            UserConstants::STATUS_ACTIVE . "' ORDER BY name");
+            UserConstants::STATUS_ACTIVE . "' AND length(seedid) = 0 ORDER BY name;");
         return $rows;
     }
 
@@ -545,10 +587,7 @@ class UserManager
     public static function getAllPendingUserDBRows()
     {
         $db = new DatabaseConnection();
-        $rows = $db->query("SELECT * FROM username WHERE status != '" .
-            UserConstants::STATUS_ACTIVE . "' AND status != '" .
-            UserConstants::STATUS_DISABLED . "' AND status != '" .
-            UserConstants::STATUS_OUTDATED . "' ORDER BY name");
+        $rows = $db->query("SELECT * FROM username WHERE length(seedid) > 0 ORDER BY name;");
         return $rows;
     }
 
@@ -563,7 +602,7 @@ class UserManager
     {
         $c = strtolower($c);
         $db = new DatabaseConnection();
-        $rows = $db->query("SELECT * FROM username WHERE name LIKE '$c%' ORDER BY name");
+        $rows = $db->query("SELECT * FROM username WHERE name LIKE '$c%' ORDER BY name;");
         return $rows;
     }
 
@@ -576,7 +615,7 @@ class UserManager
     {
         $db = new DatabaseConnection();
         $count = $db->queryLastValue(
-            "SELECT count(*) FROM username WHERE TRUE");
+            "SELECT count(*) FROM username WHERE TRUE;");
         return $count;
     }
 
@@ -600,12 +639,9 @@ class UserManager
             // Initial letter (filter)
             $c = chr(97 + $i);
 
-            // Get users with name staring by $c
+            // Get users with name starting by $c
             $query = "SELECT * FROM username WHERE name LIKE '$c%' AND " .
-                "name != 'admin' AND (status = '" .
-                UserConstants::STATUS_ACTIVE . "' OR status = '" .
-                UserConstants::STATUS_DISABLED . "' OR status = '" .
-                UserConstants::STATUS_OUTDATED . "')";
+                "name != 'admin' AND length(seedid) > 0 ORDER BY NAME;";
             $result = $db->query($query);
 
             // Store the count
@@ -685,16 +721,16 @@ class UserManager
 
     /**
      * Updates the status of an existing user in the database (username is
-     * expected to be already validated!)
+     * expected to be already validated!). It also clears the request seed.
      * @param string $username The name of the user.
-     * @param string $status One of 'd', 'a', ...
+     * @param string $status One of UserConstants::STATUS_ACTIVE, UserConstants::STATUS_DISABLE.
      * @return bool True if user status could be updated successfully; false
      * otherwise.
      */
     public static function updateUserStatus($username, $status)
     {
         $db = new DatabaseConnection();
-        $query = "UPDATE username SET status = '$status' WHERE name = '$username'";
+        $query = "UPDATE username SET status = '$status', seedid = '' WHERE name = '$username'";
         $result = $db->execute($query);
         if ($result) {
             return true;
@@ -704,15 +740,16 @@ class UserManager
     }
 
     /**
-     * Updates the status of all non-admin users in the database.
-     * @param string $status One of 'd', 'a', ...
+     * Updates the status of all non-admin users in the database. It also clears the request seeds!
+     * @param string $status UserConstants::STATUS_ACTIVE, UserConstants::STATUS_DISABLE.
      * @return bool True if the status of all users could be updated successfully;
      * false otherwise.
      */
     public static function updateAllUsersStatus($status)
     {
+        // @TODO Might want to change the admin check
         $db = new DatabaseConnection();
-        $query = "UPDATE username SET status = '$status' WHERE name NOT LIKE 'admin'";
+        $query = "UPDATE username SET status = '$status', seedid = NULL WHERE role != 0";
         $result = $db->execute($query);
         if ($result) {
             return true;

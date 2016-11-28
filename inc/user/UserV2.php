@@ -67,10 +67,10 @@ class UserV2 {
     protected $group;
 
     /**
-     * Institution of the user.
-     * @var string
+     * Institution of the user (id).
+     * @var int
      */
-    protected $institution;
+    protected $institution_id;
 
     /**
      * User role, one of:
@@ -157,10 +157,10 @@ class UserV2 {
         $this->id = -1;
 
         // By default, the User has no name, e-mail address, group, or
-        // institution.
+        // institution (id).
         $this->name = "";
         $this->emailAddress = "";
-        $this->institution = "";
+        $this->institution_id = null;
         $this->group = "";
 
         // A User is by default a user.
@@ -239,36 +239,6 @@ class UserV2 {
     }
 
     /**
-     * Sets the e-last access date of the User (and stores it in the database).
-     */
-    private function setLastAccessDate() {
-
-        // The user might not yet exist in the database. This is not
-        // necessarily an error.
-        $db = new DatabaseConnection();
-        if ($db->queryLastValue("SELECT id FROM username WHERE name='$this->name';") === false) {
-            return;
-        }
-
-        // Set the last access date to now
-        $this->lastAccessDate = date("Y-m-d H:i:s");
-
-        // Store it in the database
-
-        $query = "UPDATE username SET last_access_date=? WHERE name=?;";
-        $result = $db->connection()->Execute($query,
-            array($this->lastAccessDate, $this->name)
-        );
-
-        if ($result === false) {
-            Log::error("Could not update user $this->name in the database!");
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Returns the role of the User.
      * @return string Role of the User.
      */
@@ -280,8 +250,26 @@ class UserV2 {
      * Returns the institution of the User.
      * @return string Institution of the User.
      */
-    public function institution() {
-        return $this->institution;
+    public function institution_id() {
+        return $this->institution_id;
+    }
+
+    /**
+     * Set the institution Id for ther User.
+     * @param $institution_id int Institution Id.
+     */
+    public function set_institution_id($institution_id) {
+        $this->institution_id = $institution_id;
+    }
+
+    /**
+     * Returns the institution of the User.
+     * @return string Institution name of the User.
+     */
+    public function institution_name() {
+        $db = new DatabaseConnection();
+        $name = $db->queryLastValue("SELECT name FROM institution WHERE id=$this->id;");
+        return $name;
     }
 
     /**
@@ -293,11 +281,39 @@ class UserV2 {
     }
 
     /**
+     * Sets the authentication mode for the User.
+     * @param $authMode string Authentication mode for the User.
+     * @throws \Exception If the authentication mode is not configured or recognized.
+     */
+    public function setAuthenticationMode($authMode) {
+        $authModes = ProxyFactory::getAllConfiguredAuthenticationModes();
+        if (! in_array($authMode, $authModes)) {
+            throw new \Exception("The authentication mode is not configured or recognized.");
+        }
+        $this->authMode = $authMode;
+    }
+
+    /**
      * Returns the status of the User.
      * @return string Status of the User.
      */
     public function status() {
         return $this->status;
+    }
+
+    /**
+     * Set the status of the User.
+     * @param $status int Status of the User: one of UserConstants::STATUS_ACTIVE,
+     * UserConstants::STATUS_DISABLED.
+     * @throws \Exception If the status is not valid.
+     */
+    public function setStatus($status) {
+        if ($status != UserConstants::STATUS_ACTIVE &&
+            $status != UserConstants::STATUS_DISABLED &&
+            $status != UserConstants::STATUS_OUTDATED) {
+                throw new \Exception("Invalid status!");
+        }
+        $this->status = $status;
     }
 
     /**
@@ -414,6 +430,23 @@ class UserV2 {
     }
 
     /**
+     * Sets the User e-mail address.
+     * @param $emailAddress string The User e-mail address.
+     * @throws \Exception If the underlying proxy does not allow modifying the e-mail address.
+     */
+    public function SetEmailAddress($emailAddress) {
+
+        if (! $this->proxy()->canModifyEmailAddress()) {
+            throw new \Exception("The e-mail address of this user cannot be modified by the proxy!");
+        }
+
+        // If the email is already stored in the object, return it; otherwise
+        // retrieve it.
+        $this->emailAddress = $emailAddress;
+
+    }
+
+    /**
      * Checks whether the user is the administrator.
      * @return bool True if the user is the administrator, false otherwise.
      */
@@ -457,6 +490,23 @@ class UserV2 {
     }
 
     /**
+     * Sets the User group.
+     * @param $group string The User group.
+     * @throws \Exception If the underlying proxy does not allow modifying the group.
+     */
+    public function SetGroup($group) {
+
+        if (! $this->proxy()->canModifyGroup()) {
+            throw new \Exception("The group of this user cannot be modified by the proxy!");
+        }
+
+        // If the email is already stored in the object, return it; otherwise
+        // retrieve it.
+        $this->group = $group;
+
+    }
+
+    /**
      * Load the User data from the database.
      *
      * This function is private because it should only be used internally!
@@ -480,7 +530,7 @@ class UserV2 {
             $row["name"] = $this->name();
             $row["email"] = $this->emailAddress();
             $row["research_group"] = $this->group();
-            $row["institution"] = $this->institution();
+            $row["institution_id"] = $this->institution_id();
             $row["role"] = $this->role();
             $row["authentication"] = $this->authenticationMode();
             $row["creation_date"] = $this->creationDate();
@@ -513,8 +563,8 @@ class UserV2 {
             $this->group = $row["research_group"];
         }
 
-        // User institution
-        $this->institution = $row["institution"];
+        // User institution ID
+        $this->institution_id = $row["institution_id"];
 
         // User role
         $this->role = $row["role"];
@@ -535,5 +585,36 @@ class UserV2 {
         $this->isAdmin = ($this->role == UserConstants::ROLE_ADMIN);
 
     }
+
+    /**
+     * Sets the e-last access date of the User (and stores it in the database).
+     */
+    private function setLastAccessDate() {
+
+        // The user might not yet exist in the database. This is not
+        // necessarily an error.
+        $db = new DatabaseConnection();
+        if ($db->queryLastValue("SELECT id FROM username WHERE name='$this->name';") === false) {
+            return;
+        }
+
+        // Set the last access date to now
+        $this->lastAccessDate = date("Y-m-d H:i:s");
+
+        // Store it in the database
+
+        $query = "UPDATE username SET last_access_date=? WHERE name=?;";
+        $result = $db->connection()->Execute($query,
+            array($this->lastAccessDate, $this->name)
+        );
+
+        if ($result === false) {
+            Log::error("Could not update user $this->name in the database!");
+            return false;
+        }
+
+        return true;
+    }
+
 };
 

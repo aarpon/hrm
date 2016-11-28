@@ -258,99 +258,6 @@ class DatabaseConnection
     }
 
     /**
-     * Adds a new user to the database (all parameters are expected to be
-     * already validated!
-     * @param string $username The name of the user.
-     * @param string $password Password (plain).
-     * @param string $email E-mail address.
-     * @param string $group Research group.
-     * @param string $status Status or ID.
-     * @return bool True if the user was added successfully; false otherwise.
-     */
-    public function addNewUser($username, $password, $email, $group, $status)
-    {
-        $cryptPass = md5($password);
-        $query = "INSERT INTO username (name, password, email, research_group, status) " .
-            "VALUES ('$username', '$cryptPass', '$email', '$group', '$status');";
-        $result = $this->execute($query);
-        if ($result) {
-            $query = "UPDATE username SET creation_date = CURRENT_TIMESTAMP WHERE name = '$username';";
-            $result = $this->execute($query);
-        }
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Updates an existing user in the database (all parameters are expected to
-     * be already validated!)
-     * @param bool $isadmin True if the user is the HRM admin.
-     * @param string $username The name of the user.
-     * @param string $password Password (plain).
-     * @param string $email E-mail address.
-     * @param string $group Research group.
-     * @return bool True if the user was updated successfully; false otherwise.
-     */
-    public function updateExistingUser($isadmin, $username, $password, $email = "", $group = "")
-    {
-        // Get the User
-        $db = new DatabaseConnection();
-
-        // The admin user does not have a group and stores his password in the
-        // configuration files. The only variable is the password.
-        if ($isadmin === True) {
-            $query = "UPDATE username SET password = '" . md5($password) . "' " .
-                "WHERE name = '$username';";
-        } else {
-            $query = "UPDATE username SET email ='$email', " .
-                "research_group ='$group', " .
-                "password = '" . md5($password) . "' " .
-                "WHERE name = '$username';";
-        }
-        $result = $this->execute($query);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Updates an existing user in the database but without changing the password
-     * (all parameters are expected to be already validated!)
-     *
-     * The last access time will be updated as well.
-     *
-     * @param string $username The name of the user (used to query).
-     * @param string $email E-mail address.
-     * @param string $group Research group.
-     * @return bool True if the user was updated successfully; false otherwise.
-     */
-    public function updateUserNoPassword($username, $email, $group)
-    {
-
-        if ($email == "" || $group == "") {
-            Log::warning("User data update: e-mail and group cannot be empty! " .
-                "No changes to the database!");
-            return false;
-        }
-
-        // Build query
-        $query = "UPDATE username SET email ='$email', " .
-            "research_group ='$group' WHERE name = '$username';";
-
-        $result = $this->execute($query);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Returns the password of a given user name.
      * @param string $name Name of the user.
      * @return string Password for the requested user.
@@ -359,18 +266,6 @@ class DatabaseConnection
     {
         $string = "select password from username where name='$name'";
         return $string;
-    }
-
-    /**
-     * Returns the e-mail address of a given user name.
-     * @param string $username Name of the user.
-     * @return string E-mail address for the requested user.
-     */
-    public function emailAddress($username)
-    {
-        $query = "select email from username where name = '$username'";
-        $result = $this->queryLastValue($query);
-        return $result;
     }
 
     /**

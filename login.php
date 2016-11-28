@@ -5,12 +5,12 @@
 use hrm\Fileserver;
 use hrm\Log;
 use hrm\Nav;
+use hrm\System;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserManager;
 use hrm\user\UserV2;
 use hrm\Validator;
 use hrm\DatabaseConnection;
-use hrm\System;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -383,7 +383,7 @@ include("header.inc.php");
             </fieldset>
 
             <?php
-            if (ProxyFactory::getDefaultAuthenticationMode() == "integrated") {
+            //if (ProxyFactory::getDefaultAuthenticationMode() == "integrated") {
                 ?>
                 <fieldset>
                     <legend>
@@ -409,7 +409,7 @@ include("header.inc.php");
 
                 </fieldset>
                 <?php
-            }
+            //}
             ?>
 
         </form>

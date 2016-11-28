@@ -5072,7 +5072,8 @@ if ($current_revision < $n) {
         authentication C(30) NOTNULL DEFAULT integrated,
         creation_date T DEFAULT NULL,
         last_access_date T DEFAULT NULL,
-        status C(10) DEFAULT NULL
+        status C(10) DEFAULT NULL,
+        seedid C(255) DEFAULT NULL
     ";
 
     if (!in_array($tabname, $tables)) {
@@ -5095,8 +5096,8 @@ if ($current_revision < $n) {
     // Prepared statement
     $sql="INSERT INTO $tabname " .
         "(name, password, email, research_group, institution_id, role, authentication, " .
-        "creation_date, last_access_date, status) VALUES " .
-        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        "creation_date, last_access_date, status, seedid) VALUES " .
+        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
     $db->StartTrans();
 
@@ -5117,7 +5118,7 @@ if ($current_revision < $n) {
         // Complete the user
         $ext_user = array(
             "name" => $row["name"],
-            "password" => $row["password"], //uniqid('', true),
+            "password" => $row["password"],
             "email" => $currentEmail,
             "research_group" => $row["research_group"],
             "institution_id" => $default_institution_id,
@@ -5125,7 +5126,8 @@ if ($current_revision < $n) {
             "authentication" => $currentAuthMode,
             "creation_date" => $row["creation_date"],
             "last_access_date" => $row["last_access_date"],
-            "status" => "o" // Outdated, i.e. in need of a password rehash.
+            "status" => "o", // Outdated, i.e. in need of a password rehash.
+            "seedid" => ""
         );
 
         // Run prepared query

@@ -4,7 +4,7 @@
 
 use hrm\Mail;
 use hrm\Nav;
-use hrm\user\mngm\UserManagerFactory;
+use hrm\user\UserManager;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserV2;
 use hrm\Util;
@@ -89,11 +89,8 @@ if (!$_SESSION['user']->isAdmin()) {
     exit();
 }
 
-// Get the UserManager
-$userManager = UserManagerFactory::getUserManager($_SESSION['user']->name());
-
 if (isset($_GET['seed'])) {
-    if (!$userManager->existsUserRequestWithSeed($_GET['seed'])) {
+    if (! UserManager::existsUserRequestWithSeed($_GET['seed'])) {
         header("Location: " . "login.php");
         exit();
     }
@@ -127,11 +124,10 @@ if (isset($_SESSION['account_update_message'])) {
 }
 
 if (isset($_POST['accept'])) {
-    $result = $userManager->acceptUser($clean['username']);
+    $result = UserManager::acceptUser($clean['username']);
     // TODO refactor
     if ($result) {
-        $accepted_user = new UserV2();
-        $accepted_user->setName($clean['username']);
+        $accepted_user = new UserV2($clean['username']);
         $email = $accepted_user->emailAddress();
         $text = "Your account has been activated:\n\n";
         $text .= "\t      Username: " . $clean['username'] . "\n";
@@ -149,10 +145,9 @@ if (isset($_POST['accept'])) {
         shell_exec("$userManagerScript create \"" . $clean['username'] . "\"");
     } else $message = "Database error, please inform the administrator";
 } else if (isset($_POST['reject'])) {
-    $user_to_reject = new UserV2();
-    $user_to_reject->setName($clean['username']);
+    $user_to_reject = new UserV2($clean['username']);
     $email = $user_to_reject->emailAddress();
-    $result = $userManager->deleteUser($user_to_reject->name());
+    $result = UserManager::deleteUser($user_to_reject->name());
     // TODO refactor
     if (!$result) {
         $message = "Database error, please inform the administrator";
@@ -166,7 +161,7 @@ if (isset($_POST['accept'])) {
     $mail->send();
 } else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
     if ($clean['username'] != "admin") {
-        $result = $userManager->deleteUser($clean['username']);
+        $result = UserManager::deleteUser($clean['username']);
         if (!$result) {
             $message = "Database error, please inform the administrator";
         }
@@ -174,8 +169,7 @@ if (isset($_POST['accept'])) {
         $message = "Database error, please inform the administrator";
     }
 } else if (isset($_POST['edit'])) {
-    $_SESSION['account_user'] = new UserV2();
-    $_SESSION['account_user']->setName($clean['username']);
+    $_SESSION['account_user'] = new UserV2($clean['username']);
     if (isset($c) || isset($_GET['c']) || isset($_POST['c'])) {
         if (isset($_GET['c'])) $_SESSION['c'] = $_GET['c'];
         else if (isset($_POST['c'])) $_SESSION['c'] = $_POST['c'];
@@ -183,14 +177,14 @@ if (isset($_POST['accept'])) {
     header("Location: " . "account.php");
     exit();
 } else if (isset($_POST['enable'])) {
-    $result = $userManager->enableUser($clean['username']);
+    $result = UserManager::enableUser($clean['username']);
 } else if (isset($_POST['disable'])) {
-    $result = $userManager->disableUser($clean['username']);
+    $result = UserManager::disableUser($clean['username']);
 } else if (isset($_POST['action'])) {
     if ($_POST['action'] == "disable") {
-        $result = $userManager->disableAllUsers();
+        $result = UserManager::disableAllUsers();
     } else if ($_POST['action'] == "enable") {
-        $result = $userManager->enableAllUsers();
+        $result = UserManager::enableAllUsers();
     }
 }
 // TODO refactor to here
@@ -228,7 +222,7 @@ include("header.inc.php");
     <?php
 
     // GEt list of users with pending requests
-    $rows = $userManager->getAllPendingUserDBRows();
+    $rows = UserManager::getAllPendingUserDBRows();
 
     $i = 0;
     foreach ($rows as $row) {
@@ -237,7 +231,6 @@ include("header.inc.php");
         $group = $row["research_group"];
         $creation_date = date("j M Y, G:i", strtotime($row["creation_date"]));
         $status = $row["status"];
-        if ($status != "a" && $status != "d" && $status!="o") {
 
             ?>
             <form method="post" action="">
@@ -288,7 +281,6 @@ include("header.inc.php");
             <?php
 
             $i++;
-        }
     }
 
     if ($i == 0) {
@@ -306,10 +298,10 @@ include("header.inc.php");
             <?php
 
             // All users (independent of their status), including the administrator
-            $count = $userManager->getTotalNumberOfUsers();
+            $count = UserManager::getTotalNumberOfUsers();
 
             // Active users
-            $rows = $userManager->getAllActiveUserDBRows();
+            $rows = UserManager::getAllActiveUserDBRows();
             $emails = array();
             foreach ($rows as $row) {
                 $e = trim($row['email']);
@@ -345,7 +337,7 @@ include("header.inc.php");
 
             /* Get the number of users with names starting with each of the letters
             of the alphabet. */
-            $counts = $userManager->getNumberCountPerInitialLetter();
+            $counts = UserManager::getNumberCountPerInitialLetter();
             $letters = array_keys($counts);
             ?>
 
@@ -394,9 +386,9 @@ include("header.inc.php");
 
                 if ($_SESSION['index'] != "") {
                     if ($_SESSION['index'] != "all") {
-                        $rows = $userManager->getAllUserDBRowsByInitialLetter($_SESSION['index']);
+                        $rows = UserManager::getAllUserDBRowsByInitialLetter($_SESSION['index']);
                     } else {
-                        $rows = $userManager->getAllUserDBRows();
+                        $rows = UserManager::getAllUserDBRows();
                     }
                     $i = 0;
                     foreach ($rows as $row) {

@@ -6,7 +6,7 @@ use hrm\Nav;
 use hrm\user\proxy\ProxyFactory;
 use hrm\Util;
 use hrm\Validator;
-use hrm\user\mngm\UserManagerFactory;
+use hrm\user\UserManager;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -88,8 +88,6 @@ if (isset($_SESSION['account_user'])) {
 
     // Make sure the User is properly loaded
     $edit_user = $_SESSION['account_user'];
-    $edit_user->load();
-
 
 } else {
     $edit_user = $_SESSION['user'];
@@ -105,17 +103,11 @@ $message = "";
 
 if (isset($_POST['modify'])) {
 
-    // Get the user manager
-    $userManager = UserManagerFactory::getUserManager($edit_user->name());
-
-    // Make sure the User is fully loaded
-    $edit_user->load();
-
     // Initialize the result to True
     $result = True;
 
     // E-mail address
-    if ($userManager->canModifyEmailAddress()) {
+    if (UserManager::canModifyEmailAddress($edit_user)) {
 
         // Check that a valid e-mail address was provided
         if ($clean['email'] == "") {
@@ -133,7 +125,7 @@ if (isset($_POST['modify'])) {
     }
 
     // User group
-    if ($userManager->canModifyUserGroup()) {
+    if (UserManager::canModifyGroup($edit_user)) {
 
         // Check that a valid group was provided
         if ($clean['group'] == "") {
@@ -167,20 +159,24 @@ if (isset($_POST['modify'])) {
     if ($result == true) {
 
         // Update the User information
-        $success = $userManager->updateUser($edit_user->name(), $emailToUse,
-            $groupToUse);
+        if (UserManager::canModifyEmailAddress($edit_user)) {
+            $edit_user->SetEmailAddress($emailToUse);
+        }
+        if (UserManager::canModifyGroup($edit_user)) {
+            $edit_user->SetGroup($groupToUse);
+        }
+        $success = UserManager::storeUser($edit_user, true);
 
         if ($success == true) {
 
             // Now we need to update the password (and update the success
             // status).
-            $success &= $userManager->changeUserPassword($edit_user->name(),
+            $success &= UserManager::changeUserPassword($edit_user->name(),
                 $passToUse);
-
 
             // And also the authentication mode
             if (isset($_SESSION['account_user']) && isset($clean["authMode"])) {
-                $success &= $userManager->setAuthenticationMode(
+                $success &= UserManager::setAuthenticationMode(
                     $edit_user->name(), $clean["authMode"]);
             }
         }
@@ -191,9 +187,6 @@ if (isset($_POST['modify'])) {
                 "not be updated!";
 
         } else {
-
-            // Make sure to reload the User with the new changes
-            $edit_user->load();
 
             // If updating some other User setting, remove the modified
             // User from the session and return to the user management page.
@@ -257,10 +250,7 @@ include("header.inc.php");
         <div id="adduser">
             <?php
 
-            // Get the appropriate UserManager for the User
-            $userManager = UserManagerFactory::getUserManager($edit_user->name());
-
-            if ($userManager->canModifyEmailAddress()) {
+            if (UserManager::canModifyEmailAddress($edit_user)) {
 
                 $emailForForm = "";
                 if ($clean['email'] != "") {
@@ -283,13 +273,13 @@ include("header.inc.php");
             <br/>
             <?php
 
-            if ($userManager->canModifyUserGroup()) {
+            if (UserManager::canModifyGroup($edit_user)) {
 
                 $emailForForm = "";
                 if ($clean['group'] != "") {
                     $groupForForm = $clean['group'];
                 } else {
-                    $groupForForm = $edit_user->userGroup();
+                    $groupForForm = $edit_user->group();
                 }
 
                 ?>
@@ -323,7 +313,8 @@ include("header.inc.php");
 
                     ?>
 
-                    <br/>
+                    <p>Authentication mode</p>
+
                     <select name="authMode" id="authMode">
 
                     <?php
