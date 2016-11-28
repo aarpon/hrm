@@ -4983,6 +4983,10 @@ if ($current_revision < $n) {
 $n = 15;
 if ($current_revision < $n) {
 
+    //
+    // Enhanced user management
+    //
+
     // Refresh the table list
     $tables = $db->MetaTables();
 
@@ -5138,23 +5142,11 @@ if ($current_revision < $n) {
     // Drop the 'usernameold' table
     // @todo
 
-    // Update revision
-    if(!update_dbrevision($n))
-        return;
 
-    $current_revision = $n;
-    $msg = "Database successfully updated to revision " . $current_revision . ".";
-    write_message($msg);
-    write_to_log($msg);
+    //
+    // Support for lof file format in HRM
+    //
 
-}
-
-// -----------------------------------------------------------------------------
-// Update to revision 15
-// Description: support for lof file format in HRM
-// -----------------------------------------------------------------------------
-$n = 15;
-if ($current_revision < $n) {
     $tabname = "file_extension";
     $record = array();
     $record["file_format"] = "lof";
@@ -5162,19 +5154,18 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE file_format='" . $record['file_format'] .
-             "' AND extension='" . $record['extension'] . "'";
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
         }
     }
-
 
     $tabname = "file_format";
     $record = array();
@@ -5185,18 +5176,17 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE name='" . $record['name'] . "'";
+        " WHERE name='" . $record['name'] . "'";
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
-
 
     $tabname = "possible_values";
     $record = array();
@@ -5207,17 +5197,17 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE value='" . $record['value'] .
-             "' AND parameter='" . $record['parameter'] . "'";
+        " WHERE value='" . $record['value'] .
+        "' AND parameter='" . $record['parameter'] . "'";
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
     // Update revision
@@ -5228,8 +5218,8 @@ if ($current_revision < $n) {
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
-}
 
+}
 
 fclose($fh);
 
