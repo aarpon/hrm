@@ -431,6 +431,7 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'dv':
             case 'ims':
             case 'lif':
+            case 'lof':
             case 'lsm':
             case 'oif':
             case 'pic':
