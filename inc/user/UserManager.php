@@ -664,7 +664,7 @@ class UserManager
 
             // Get users with name starting by $c
             $query = "SELECT * FROM username WHERE name LIKE '$c%' AND " .
-                "name != 'admin' AND length(seedid) > 0 ORDER BY NAME;";
+                "name != 'admin' ORDER BY NAME;";
             $result = $db->query($query);
 
             // Store the count
