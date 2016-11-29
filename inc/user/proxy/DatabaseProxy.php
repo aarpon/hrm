@@ -52,6 +52,12 @@ class DatabaseProxy extends AbstractProxy {
     public function canModifyGroup() { return true; }
 
     /**
+     * Return whether the proxy allows changing the password.
+     * @return bool True if the password can be changed, false otherwise.
+     */
+    public function canModifyPassword() { return true; }
+
+    /**
      * Return whether the User must exist in the database before first
      * authentication is allowed. If false, the User will be created on
      * first successful authentication (to the external backend).

@@ -245,6 +245,8 @@ include("header.inc.php");
         <div id="adduser">
             <?php
 
+            $somethingToChange = false;
+
             if (UserManager::canModifyEmailAddress($edit_user)) {
 
                 $emailForForm = "";
@@ -254,6 +256,7 @@ include("header.inc.php");
                     $emailForForm = $edit_user->emailAddress();
                 }
 
+                $somethingToChange = true;
                 ?>
 
                 <label for="email">E-mail address: </label>
@@ -277,6 +280,8 @@ include("header.inc.php");
                     $groupForForm = $edit_user->group();
                 }
 
+                $somethingToChange = true;
+
                 ?>
 
                 <label for="group">Research group: </label>
@@ -291,33 +296,58 @@ include("header.inc.php");
             ?>
 
             <br/>
-            <label for="pass1">New password: </label>
-            <input name="pass1" id="pass1" type="password"/>
-            <br/>
-            <label for="pass2">(verify) New password: </label>
-            <input name="pass2" id="pass2" type="password"/>
-            <input name="modify" type="hidden" value="modify"/>
+            <?php
+            if (UserManager::canModifyPassword($edit_user)) {
+                ?>
+                <label for="pass1">New password: </label>
+                <input name="pass1" id="pass1" type="password"/>
+                <br/>
+                <label for="pass2">(verify) New password: </label>
+                <input name="pass2" id="pass2" type="password"/>
+                <input name="modify" type="hidden" value="modify"/>
 
-            <p />
+                <?php
+
+                $somethingToChange = true;
+            }
+            ?>
+            <p/>
 
             <?php
             $referer = $_SESSION['referer'];
             ?>
         </div>
 
-        <div id="controls">
-            <input type="button" name="cancel" value=""
-                   class="icon cancel"
-                   onmouseover="TagToTip('ttSpanCancel' )"
-                   onmouseout="UnTip()"
-                   onclick="document.location.href='<?php echo $referer ?>'"/>
-            <input type="button" name="save" value=""
-                   class="icon save"
-                   onmouseover="TagToTip('ttSpanSave' )"
-                   onmouseout="UnTip()"
-                   onclick="document.forms['useraccount'].submit()"/>
-        </div>
+        <?php
+        if ($somethingToChange == true) {
+            ?>
+            <div id="controls">
+                <input type="button" name="cancel" value=""
+                       class="icon cancel"
+                       onmouseover="TagToTip('ttSpanCancel' )"
+                       onmouseout="UnTip()"
+                       onclick="document.location.href='<?php echo $referer ?>'"/>
+                <input type="button" name="save" value=""
+                       class="icon save"
+                       onmouseover="TagToTip('ttSpanSave' )"
+                       onmouseout="UnTip()"
+                       onclick="document.forms['useraccount'].submit()"/>
+            </div>
+            <?php
+        } else {
+            ?>
+            <p>The authentication backend does not allow the HRM to make any change!</p>
+            <div id="controls">
+                <input type="button" name="cancel" value=""
+                       class="icon cancel"
+                       onmouseover="TagToTip('ttSpanCancel' )"
+                       onmouseout="UnTip()"
+                       onclick="document.location.href='<?php echo $referer ?>'"/>
+            </div>
 
+        <?php
+        }
+        ?>
     </form>
 
 </div> <!-- content -->

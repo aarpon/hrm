@@ -51,6 +51,19 @@ class UserManager
     }
 
     /**
+     * Return true if the UserManager can modify a User's password in the
+     * backing user management system (e.g. Integrated, Active Directory,
+     * LDAP, or Auth0).
+     *
+     * @param UserV2 $user User to be queried.
+     * @return bool True if the UserManager can modify tue User's password
+     * in the backing user management system, false otherwise.
+     */
+    public static function canModifyPassword(UserV2 $user) {
+        return $user->proxy()->canModifyPassword();
+    }
+
+    /**
      * Return true if the UserManager must add new Users to the database
      * before the first authentication is possible.
      *
