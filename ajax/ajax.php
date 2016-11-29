@@ -8,10 +8,9 @@
  * Copyright and license notice: see license.txt
  */
 
-use hrm\DatabaseConnection;
 use hrm\job\JobQueue;
 use hrm\setting\ParameterSettingEditor;
-use hrm\user\mngm\UserManager;
+use hrm\user\UserManager;
 use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.php';
