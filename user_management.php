@@ -307,6 +307,7 @@ include("header.inc.php");
                     <tr>
                     <th>Name</th>
                     <th>Location</th>
+                    <th>Managers</th>
                     <th>Url</th>
                     </tr>
 
@@ -316,6 +317,7 @@ include("header.inc.php");
                             ?>
                             <td><?php echo($row['name']); ?></td>
                             <td><?php echo($row['address']); ?></td>
+                            <td><?php echo("&nbsp;"); ?></td>
                             <td><?php echo($row['url']); ?></td>
                             <?php
                         }
