@@ -474,9 +474,11 @@ include("header.inc.php");
                                     authentication
                                 </td>
                                 <td colspan="2" class="auth">
+                                    <a href="authentication_mode.php?name=<?php echo($name); ?>">
                                     <?php
                                     echo(ProxyFactory::getProxy($name)->friendlyName());
                                     ?>
+                                    </a>
                                 </td>
                                 </tr>
                                 <tr class="bottomline<?php

@@ -174,11 +174,6 @@ if (isset($_POST['modify'])) {
             $success &= UserManager::changeUserPassword($edit_user->name(),
                 $passToUse);
 
-            // And also the authentication mode
-            if (isset($_SESSION['account_user']) && isset($clean["authMode"])) {
-                $success &= UserManager::setAuthenticationMode(
-                    $edit_user->name(), $clean["authMode"]);
-            }
         }
 
         if (!$success) {
@@ -242,7 +237,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3><img alt="SelectImages" src="./images/account_title.png"
+    <h3><img alt="Account" src="./images/account_title.png"
              width="40"/>&nbsp;Your account</h3>
 
     <form method="post" action="" id="useraccount">
@@ -303,44 +298,7 @@ include("header.inc.php");
             <input name="pass2" id="pass2" type="password"/>
             <input name="modify" type="hidden" value="modify"/>
 
-            <?php
-
-            if (isset($_SESSION['account_user'])) {
-                // Retrieve all configured authentication modes
-                $allAuthMap = ProxyFactory::getAllConfiguredAuthenticationModes();
-
-                if (count($allAuthMap) > 1) {
-
-                    ?>
-
-                    <p>Authentication mode</p>
-
-                    <select name="authMode" id="authMode">
-
-                    <?php
-
-                    // Get current authentication mode
-                    $currentAuthMode = $edit_user->authenticationMode();
-                    $auth_keys = array_keys($allAuthMap);
-                    for ($i = 0; $i < count($allAuthMap); $i++) {
-                        $value = $auth_keys[$i];
-                        $text = $allAuthMap[$value];
-                        if ($currentAuthMode == $value) {
-                            $selected = "selected";
-                        } else {
-                            $selected = "";
-                        }
-                        echo("<option value='$value' $selected>$text</option>");
-                    }
-                }
-
-                ?>
-                </select>
-
-                <?php
-            }
-            ?>
-            <p>&nbsp;</p>
+            <p />
 
             <?php
             $referer = $_SESSION['referer'];
