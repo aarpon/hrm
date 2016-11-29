@@ -29,8 +29,7 @@
       "email": "olivier.burri@epfl.ch"
     }
   ],
-  "minimum-stability": "dev",
-  "prefer-stable": true,
+  "minimum-stability": "stable",
   "require": {
     "php": ">5.5.0",
     "adodb/adodb-php": "v5.20.4",
