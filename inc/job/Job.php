@@ -42,6 +42,8 @@ class Job
      */
     private $server;
 
+    private $gpu;
+
     /**
      * Process identifier associated with the deconvolution job.
      * @var int
@@ -111,56 +113,56 @@ class Job
         $this->huTemplate = '';
         $this->jobDescription = $jobDescription;
 
-        $this->pipeProducts = array('main' => 'scheduler_client0.log',
-            'history' => '_history.txt',
-            'tmp' => '.tmp.txt',
-            'parameters' => '.parameters.txt',
-            'coloc' => '.coloc.txt',
-            'out' => '_out.txt',
-            'error' => '_error.txt');
+        $this->pipeProducts = array('main'       => 'scheduler_client0.log',
+                                    'history'    => '_history.txt',
+                                    'tmp'        => '.tmp.txt',
+                                    'parameters' => '.parameters.txt',
+                                    'coloc'      => '.coloc.txt',
+                                    'out'        => '_out.txt',
+                                    'error'      => '_error.txt');
 
         $this->imgParam = array(
-            'dx' => 'X pixel size (&mu;m)',
-            'dy' => 'Y pixel size (&mu;m)',
-            'dz' => 'Z step size  (&mu;m)',
-            'dt' => 'Time interval (s)',
-            'iFacePrim' => '',
-            'iFaceScnd' => '',
-            'objQuality' => '',
-            'exBeamFill' => '',
-            'imagingDir' => '',
-            'pcnt' => '',
-            'na' => 'Numerical aperture',
-            'ri' => 'Sample refractive index',
-            'ril' => 'Lens refractive index',
-            'pr' => 'Pinhole size (nm)',
-            'ps' => 'Pinhole spacing (&mu;m)',
-            'ex' => 'Excitation wavelength (nm)',
-            'em' => 'Emission wavelength (nm)',
-            'micr' => 'Microscope type',
-            'stedMode' => 'STED depletion mode',
-            'stedLambda' => 'STED wavelength',
-            'stedSatFact' => 'STED saturation factor (%)',
-            'stedImmunity' => 'STED immunity (%)',
-            'sted3D' => 'STED 3D (%)',
-            'spimExcMode' => 'SPIM excitation mode',
-            'spimGaussWidth' => 'SPIM Gauss Width (&mu;m)',
+            'dx'               => 'X pixel size (&mu;m)',
+            'dy'               => 'Y pixel size (&mu;m)',
+            'dz'               => 'Z step size  (&mu;m)',
+            'dt'               => 'Time interval (s)',
+            'iFacePrim'        => '',
+            'iFaceScnd'        => '',
+            'objQuality'       => '',
+            'exBeamFill'       => '',
+            'imagingDir'       => '',
+            'pcnt'             => '',
+            'na'               => 'Numerical aperture',
+            'ri'               => 'Sample refractive index',
+            'ril'              => 'Lens refractive index',
+            'pr'               => 'Pinhole size (nm)',
+            'ps'               => 'Pinhole spacing (&mu;m)',
+            'ex'               => 'Excitation wavelength (nm)',
+            'em'               => 'Emission wavelength (nm)',
+            'micr'             => 'Microscope type',
+            'stedMode'         => 'STED depletion mode',
+            'stedLambda'       => 'STED wavelength',
+            'stedSatFact'      => 'STED saturation factor (%)',
+            'stedImmunity'     => 'STED immunity (%)',
+            'sted3D'           => 'STED 3D (%)',
+            'spimExcMode'      => 'SPIM excitation mode',
+            'spimGaussWidth'   => 'SPIM Gauss Width (&mu;m)',
             'spimCenterOffset' => 'SPIM Center Offset (&mu;m)',
-            'spimFocusOffset' => 'SPIM Focus Offset (&mu;m)',
-            'spimNA' => 'SPIM NA',
-            'spimFill' => 'SPIM Fill Factor',
-            'spimDir' => 'SPIM Direction (degrees)'
+            'spimFocusOffset'  => 'SPIM Focus Offset (&mu;m)',
+            'spimNA'           => 'SPIM NA',
+            'spimFill'         => 'SPIM Fill Factor',
+            'spimDir'          => 'SPIM Direction (degrees)'
         );
 
-        $this->restParam = array('algorithm' => 'Deconvolution algorithm',
-            'iterations' => 'Number of iterations',
-            'quality' => 'Quality stop criterion',
-            'format' => 'Output file format',
-            'absolute' => 'Background absolute value',
-            'estimation' => 'Background estimation',
-            'ratio' => 'Signal/Noise ratio',
-            'autocrop' => 'Autocrop',
-            'stabilization' => 'Z Stabilization');
+        $this->restParam = array('algorithm'     => 'Deconvolution algorithm',
+                                 'iterations'    => 'Number of iterations',
+                                 'quality'       => 'Quality stop criterion',
+                                 'format'        => 'Output file format',
+                                 'absolute'      => 'Background absolute value',
+                                 'estimation'    => 'Background estimation',
+                                 'ratio'         => 'Signal/Noise ratio',
+                                 'autocrop'      => 'Autocrop',
+                                 'stabilization' => 'Z Stabilization');
     }
 
     /**
@@ -198,6 +200,24 @@ class Job
     public function server()
     {
         return $this->server;
+    }
+
+    /**
+     * Sets the server which will run the Job.
+     * @param string $server Server name.
+     */
+    public function setGPU($gpu)
+    {
+        $this->gpu = $gpu;
+    }
+
+    /**
+     * Returns the name of the server associated with the Job.
+     * @return string Server name.
+     */
+    public function gpu()
+    {
+        return $this->gpu;
     }
 
     /**
@@ -261,7 +281,9 @@ class Job
     public function createHuygensTemplate()
     {
         $jobDescription = $this->description();
-        $huTemplate = new HuygensTemplate($jobDescription);
+        $gpuId = $this->gpu();
+
+        $huTemplate = new HuygensTemplate($jobDescription, $gpuId);
         $this->huTemplate = $huTemplate->template;
     }
 

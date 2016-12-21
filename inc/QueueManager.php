@@ -37,6 +37,8 @@ class QueueManager
      */
     private $freeServer;
 
+    private $freeGpu;
+
     /**
      * A Job object.
      * @todo This seems to be unused. Confirm and remove.
@@ -100,7 +102,8 @@ class QueueManager
             $result = exec($cmd);
         } else {
             $cmd = "'$cmd'";
-            $result = exec("ssh " . $huygens_user . "@" . $server_hostname . " " . $cmd);
+            $result = exec("ssh " . $huygens_user . "@" . $server_hostname .
+                           " " . $cmd);
         }
     }
 
@@ -131,9 +134,8 @@ class QueueManager
         Log::info(">>>>> Executing template: " .
             $imageProcessingIsOnQueueManager . " " .
             $copy_images_to_huygens_server);
-        if (!$imageProcessingIsOnQueueManager &&
-            $copy_images_to_huygens_server
-        ) {
+        if (!$imageProcessingIsOnQueueManager
+            &&  $copy_images_to_huygens_server) {
             $clientTemplatePath =
                 $this->copyImagesToServer($job, $server_hostname);
             Log::info("images copied to IP server");
@@ -427,6 +429,7 @@ class QueueManager
         }
         $job = new Job($jobDescription);
         $job->setServer($this->freeServer);
+        $job->setGPU($this->freeGpu);
         return $job;
     }
 
@@ -763,7 +766,7 @@ class QueueManager
         $id = $desc->id();
         $pid = $job->pid();
         $server = $job->server();
-        $job->createHuygensTemplate();
+        // $job->createHuygensTemplate();
 
         /* Email destination. */
         $user = $desc->owner();
@@ -864,6 +867,7 @@ class QueueManager
                 if ($this->isProcessingServerReachable($server)) {
                     $this->nping[$server] = 0;
                     $this->freeServer = $server;
+                    $this->freeGpu = $db->getGPUID($server);
                     return True;
                 } else {
                     $this->incNPing($server);

@@ -2256,6 +2256,20 @@ class DatabaseConnection
         }
     }
 
+    /**
+     * Get the state of GPU acceleration (as string).
+     * @return string One "true" or "false".
+     */
+    public function getGPUID($server)
+    {
+        $query = "SELECT gpuId FROM server WHERE name = '$server';";
+        
+        $result = $this->queryLastValue($query);
+
+        return intval($result);
+    }
+
+
     /* ------------------------ PRIVATE FUNCTIONS --------------------------- */
 
     /**

@@ -5221,6 +5221,26 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 
+
+    // ------------------ Add entries to 'server' -------------------------
+    $tabname   = "server";
+    $newcolumn = "gpuId";
+    $type = "INT(2)";
+
+    // Does the column exist already?
+    $columns = $db->MetaColumnNames( $tabname );
+    if ( !array_key_exists( strtoupper( $newcolumn ), $columns ) ) {
+        $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn .
+            " " . $type;
+        if(!$db->Execute($SQLquery)) {
+            $msg = "An error occurred while updating the database to revision " .
+                $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
 }
 
 fclose($fh);
