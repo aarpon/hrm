@@ -4,6 +4,7 @@
 
 use hrm\Mail;
 use hrm\Nav;
+use hrm\user\UserConstants;
 use hrm\user\UserManager;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserV2;
@@ -58,6 +59,15 @@ if (isset($_POST["email"])) {
 if (isset($_POST["group"])) {
     if (Validator::isGroupNameValid($_POST["group"])) {
         $clean["group"] = $_POST["group"];
+    }
+}
+
+// Is admin flag
+if (isset($_POST["role_change"])) {
+    if (isset($_POST["is_admin"])) {
+        UserManager::setRole($_POST["role_change"], UserConstants::ROLE_ADMIN);
+    } else {
+        UserManager::setRole($_POST["role_change"], UserConstants::ROLE_USER);
     }
 }
 
@@ -396,6 +406,7 @@ include("header.inc.php");
                             $name = $row['name'];
                             $email = $row['email'];
                             $group = $row['research_group'];
+                            $is_admin = ($row['role'] == UserConstants::ROLE_ADMIN);
                             if ($row['last_access_date'] === null) {
                                 $last_access_date = "never";
                             } else {
@@ -436,12 +447,30 @@ include("header.inc.php");
                                 <td colspan="1" class="auth">
                                     authentication
                                 </td>
-                                <td colspan="2" class="auth">
+                                <td colspan="1" class="auth">
                                     <a href="authentication_mode.php?name=<?php echo($name); ?>">
                                     <?php
                                     echo(ProxyFactory::getProxy($name)->friendlyName());
                                     ?>
                                     </a>
+                                </td>
+                                <td colspan="1" class="auth">
+                                    <?php
+                                    if ($is_admin) {
+                                        $checked = " checked";
+                                    } else {
+                                        $checked = "";
+                                    }
+                                    ?>
+                                    <form method="post" action="">
+                                        <input type="hidden"
+                                               name="role_change"
+                                               value="<?php echo $name ?>">
+                                        <input type="checkbox"
+                                               name="is_admin"
+                                               value="1" <?php echo($checked); ?>
+                                               onChange="this.form.submit()"> admin
+                                    </form>
                                 </td>
                                 </tr>
                                 <tr class="bottomline<?php
