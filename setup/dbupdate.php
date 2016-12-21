@@ -37,6 +37,7 @@
 // Include hrm_config.inc.php
 use hrm\System;
 use hrm\user\proxy\ProxyFactory;
+use hrm\user\UserConstants;
 
 require_once  dirname( __FILE__ ) . '/../inc/bootstrap.php';
 
@@ -5105,12 +5106,12 @@ if ($current_revision < $n) {
 
         // Treat the original admin user differently
         if ($row["name"] == "admin") {
-            $role = 0;
+            $role = UserConstants::ROLE_SUPERADMIN;
             $currentAuthMode = "integrated";
             global $email_admin;
             $currentEmail = $email_admin;
         } else {
-            $role = 3;
+            $role = UserConstants::ROLE_USER;
             $currentAuthMode = $defaultAuthMode;
             $currentEmail = $row["email"];
         }

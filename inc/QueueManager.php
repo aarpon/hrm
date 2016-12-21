@@ -13,6 +13,7 @@ use hrm\job\Job;
 use hrm\job\JobDescription;
 use hrm\job\JobQueue;
 use hrm\shell\ExternalProcessFactory;
+use hrm\user\UserConstants;
 use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/bootstrap.php';
@@ -951,7 +952,7 @@ class QueueManager
             . date("Y-m-d H:i:s") . "\n");
 
         // Fill admin user information in the database
-        if (!$this->fillInAdminInfoInTheDatabase()) {
+        if (!$this->fillInSuperAdminInfoInTheDatabase()) {
             Log::error("Could not store the information for the admin user in the database!");
             return;
         }
@@ -1348,7 +1349,7 @@ class QueueManager
                 $params['lambdaEx'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter lambdaEx\!";
+                    $fileFormat . " and parameter lambdaEx!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1361,7 +1362,7 @@ class QueueManager
                 $params['lambdaEm'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter lambdaEm\!";
+                    $fileFormat . " and parameter lambdaEm!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1374,7 +1375,7 @@ class QueueManager
                 $params['mType'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter mType\!";
+                    $fileFormat . " and parameter mType!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1387,7 +1388,7 @@ class QueueManager
                 $params['NA'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter NA\!";
+                    $fileFormat . " and parameter NA!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1400,7 +1401,7 @@ class QueueManager
                 $params['RIMedia'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter RIMedia\!";
+                    $fileFormat . " and parameter RIMedia!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1413,7 +1414,7 @@ class QueueManager
                 $params['RILens'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter RILens\!";
+                    $fileFormat . " and parameter RILens!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1426,7 +1427,7 @@ class QueueManager
                 $params['photonCnt'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter photonCnt\!";
+                    $fileFormat . " and parameter photonCnt!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1439,7 +1440,7 @@ class QueueManager
                 $params['exBeamFill'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter exBeamFill\!";
+                    $fileFormat . " and parameter exBeamFill!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1453,7 +1454,7 @@ class QueueManager
                     $params[$stedParam] = $match[1];
                 } else {
                     $msg = "Could not find confidence level for file format " .
-                        $fileFormat . " and parameter $stedParam\!";
+                        $fileFormat . " and parameter $stedParam!";
                     Log::error($msg);
                     exit($msg);
                 }
@@ -1470,17 +1471,19 @@ class QueueManager
      * Transfers info about the admin user from the configuration
      * files to the database.
      */
-    private function fillInAdminInfoInTheDatabase()
+    private function fillInSuperAdminInfoInTheDatabase()
     {
         global $email_admin;
 
         $success = true;
 
         $db = new DatabaseConnection();
-        $sql = "SELECT email FROM username WHERE name='admin';";
+        $role = UserConstants::ROLE_SUPERADMIN;
+        $sql = "SELECT email FROM username WHERE name='admin' AND role='$role';";
         $email = $db->queryLastValue($sql);
+        // If the e-mail is not in the database yet, we store it.
         if ($email == "") {
-            $sqlUp = "UPDATE username SET email='$email_admin' WHERE name='admin';";
+            $sqlUp = "UPDATE username SET email='$email_admin' WHERE name='admin' AND role='$role';";
             $success &= $db->execute($sqlUp);
         }
         return $success;

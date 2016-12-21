@@ -132,6 +132,16 @@ class UserV2 {
     private $isLoggedIn;
 
     /**
+     * True if the user is the super administrator, false otherwise.
+     *
+     * The value is cached to prevent an overhead of communication with
+     * the database.
+     *
+     * @var bool
+     */
+    private $isSuperAdmin;
+
+    /**
      * True if the user is an administrator, false otherwise.
      *
      * The value is cached to prevent an overhead of communication with
@@ -447,8 +457,8 @@ class UserV2 {
     }
 
     /**
-     * Checks whether the user is the administrator.
-     * @return bool True if the user is the administrator, false otherwise.
+     * Checks whether the user is an administrator or the super administrator.
+     * @return bool True if the user is an administrator, false otherwise.
      */
     public function isAdmin() {
 
@@ -466,11 +476,38 @@ class UserV2 {
             $rows = $res->GetRows();
 
             // Store
-            $this->isAdmin = ($rows[0]['role'] == UserConstants::ROLE_ADMIN);
+            $this->isAdmin = ($rows[0]['role'] == UserConstants::ROLE_ADMIN ||
+                              $rows[0]['role'] == UserConstants::ROLE_SUPERADMIN);
         }
 
         // Return cached version
         return $this->isAdmin;
+    }
+
+    /**
+     * Checks whether the user is the super administrator.
+     * @return bool True if the user is the super administrator, false otherwise.
+     */
+    public function isSuperAdmin() {
+
+        // If needed, retrieve.
+        if ($this->isSuperAdmin === null) {
+
+            $db = new DatabaseConnection();
+            $res = $db->connection()->Execute(
+                "SELECT role FROM username WHERE name=?;", array($this->name));
+            if ($res === false) {
+                Log::error("Could not retrieve role for user $this->name.");
+                return false;
+            }
+            $rows = $res->GetRows();
+
+            // Store
+            $this->isSuperAdmin = ($rows[0]['role'] == UserConstants::ROLE_SUPERADMIN);
+        }
+
+        // Return cached version
+        return $this->isSuperAdmin;
     }
 
     /**
@@ -595,7 +632,7 @@ class UserV2 {
         // necessarily an error.
         $db = new DatabaseConnection();
         if ($db->queryLastValue("SELECT id FROM username WHERE name='$this->name';") === false) {
-            return;
+            return true;
         }
 
         // Set the last access date to now

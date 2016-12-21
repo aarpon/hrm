@@ -770,9 +770,10 @@ class UserManager
      */
     private static function updateAllUsersStatus($status)
     {
-        // @TODO Might want to change the admin check
+        // Only the super admin is left untouched
         $db = new DatabaseConnection();
-        $query = "UPDATE username SET status = '$status', seedid = NULL WHERE role != 0";
+        $role = UserConstants::ROLE_SUPERADMIN;
+        $query = "UPDATE username SET status = '$status', seedid = NULL WHERE role != $role";
         $result = $db->execute($query);
         if ($result) {
             return true;
