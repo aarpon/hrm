@@ -284,7 +284,12 @@ class HuygensTemplate
      */
     private $thumbSubImg;
 
+    /**
+     * The ID of the GPU card where to run this job.
+     * @var string
+     */
     private $gpuId;
+    
 
     /* -------------------------- Constructor ------------------------------- */
 
@@ -292,9 +297,9 @@ class HuygensTemplate
      * Constructor
      * @param JobDescription $jobDescription JobDescription object
      */
-    public function __construct(JobDescription $jobDescription, $gpuId)
+    public function __construct(JobDescription $jobDescription)
     {
-        $this->initialize($jobDescription, $gpuId);
+        $this->initialize($jobDescription);
         $this->setJobInfoList();
         $this->setJobTasksList();
         $this->setEnvList();
@@ -308,13 +313,13 @@ class HuygensTemplate
      * Sets general class properties to initial values
      * @param JobDescription $jobDescription JobDescription object.
      */
-    private function initialize(JobDescription $jobDescription, $gpuId)
+    private function initialize(JobDescription $jobDescription)
     {
         $this->jobDescription = $jobDescription;
-        $this->microSetting = $jobDescription->parameterSetting;
-        $this->deconSetting = $jobDescription->taskSetting;
-        $this->analysisSetting = $jobDescription->analysisSetting;
-        $this->gpuId = $gpuId;
+        $this->microSetting = $jobDescription->parameterSetting();
+        $this->deconSetting = $jobDescription->taskSetting();
+        $this->analysisSetting = $jobDescription->analysisSetting();
+        $this->gpuId = $jobDescription->gpu();
 
         $this->initializeImg();
         $this->initializeThumbCounter();

@@ -37,6 +37,10 @@ class QueueManager
      */
     private $freeServer;
 
+    /**
+     * Name of a free GPU card at server 'freeServer'.
+     * @var string
+     */
     private $freeGpu;
 
     /**

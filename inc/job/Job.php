@@ -42,6 +42,10 @@ class Job
      */
     private $server;
 
+    /**
+     * The GPU where the deconvolution job will be processed at server 'server'.
+     * @var string
+     */
     private $gpu;
 
     /**
@@ -203,8 +207,8 @@ class Job
     }
 
     /**
-     * Sets the server which will run the Job.
-     * @param string $server Server name.
+     * Sets the GPU card which will run the Job at server 'server'.
+     * @param string $gpu GPU identifier.
      */
     public function setGPU($gpu)
     {
@@ -212,8 +216,8 @@ class Job
     }
 
     /**
-     * Returns the name of the server associated with the Job.
-     * @return string Server name.
+     * Returns the name of the GPU card associated with the Job.
+     * @return string GPU identifier.
      */
     public function gpu()
     {
@@ -280,10 +284,11 @@ class Job
      */
     public function createHuygensTemplate()
     {
+        $jobGpuId = $this->gpu();
         $jobDescription = $this->description();
-        $gpuId = $this->gpu();
+        $jobDescription->setGpu($jobGpuId);
 
-        $huTemplate = new HuygensTemplate($jobDescription, $gpuId);
+        $huTemplate = new HuygensTemplate($jobDescription);
         $this->huTemplate = $huTemplate->template;
     }
 
