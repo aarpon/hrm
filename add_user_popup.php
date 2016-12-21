@@ -4,6 +4,7 @@
 
 use hrm\DatabaseConnection;
 use hrm\Mail;
+use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserConstants;
 use hrm\user\UserManager;
 use hrm\Util;
@@ -95,7 +96,8 @@ if (isset($_POST['add'])) {
             $password = UserManager::generateRandomPlainPassword();
             $result = UserManager::createUser($clean["username"],
                 $password, $clean["email"], $clean["group"], $institution_id,
-                UserConstants::STATUS_ACTIVE);
+                ProxyFactory::getDefaultAuthenticationMode(),
+                UserConstants::ROLE_USER, UserConstants::STATUS_ACTIVE);
 
             // TODO refactor
             if ($result) {
