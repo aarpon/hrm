@@ -428,7 +428,7 @@ include("header.inc.php");
                                         </a>
                                     </td>
                                 </tr>
-                                <tr class="middleline"<?php
+                                <tr class="middleline<?php
                                 if ($status == "d") {
                                     echo " disabled";
                                 }
