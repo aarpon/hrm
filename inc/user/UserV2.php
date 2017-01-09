@@ -619,7 +619,10 @@ class UserV2 {
         $this->authMode = $row["authentication"];
 
         // Cache the isAdmin check
-        $this->isAdmin = ($this->role == UserConstants::ROLE_ADMIN);
+        $this->isAdmin = ($this->role == UserConstants::ROLE_ADMIN || $this->role == UserConstants::ROLE_SUPERADMIN);
+
+        // Cache the isSuperAdmin check
+        $this->isSuperAdmin = ($this->role == UserConstants::ROLE_SUPERADMIN);
 
     }
 
