@@ -267,7 +267,7 @@ class DatabaseProxy extends AbstractProxy {
      * This uses the encryption algorithm defined in the configuration files.
      *
      * @param string $string Plain-text password to be encrypted.
-     * @param string $seed Seed to be used for the crypt() funtion (ignored
+     * @param string $seed Seed to be used for the crypt() function (ignored
      * for md5()).
      * @return string Encrypted password.
      * @deprecated
