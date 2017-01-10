@@ -5140,11 +5140,16 @@ if ($current_revision < $n) {
         }
     }
 
-    $db->CompleteTrans();
-
     // Drop the 'usernameold' table
-    // @todo
+    $dropTableSQL = $datadict->DropTableSQL("usernameold");
+    if(!$db->Execute($dropTableSQL[0])) {
+        $msg = "Could not drop the old username table!";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
 
+    $db->CompleteTrans();
 
     //
     // Support for lof file format in HRM
