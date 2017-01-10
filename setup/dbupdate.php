@@ -5036,33 +5036,47 @@ if ($current_revision < $n) {
     // Get current tables
     $tables = $db->MetaTables();
 
-    // Rename username table to usernameold
-    $tabname = "username";
-    $oldtabname = "usernameold";
-    if (!in_array($oldtabname, $tables)) {
-        $renameSQL = $datadict->RenameTableSQL($tabname, $oldtabname);
-        if(!$db->Execute($renameSQL[0])) {
-            $msg = "Cannot rename username table! " .
-                "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-            write_message($msg);
-            write_to_error($msg);
-            return;
+    // Make sure not to update the username table a second time, or all password
+    // will not be recoverable!
+    $usernameColumns = $db->MetaColumnNames('username');
+    if (! (array_key_exists("ID", $usernameColumns) &&
+        array_key_exists("INSTITUTION_ID", $usernameColumns) &&
+        array_key_exists("ROLE", $usernameColumns)  &&
+        array_key_exists("AUTHENTICATION", $usernameColumns))) {
+
+        // All columns above are new in latest username table and
+        // MUST all exist!
+
+        // Start transaction
+        $db->StartTrans();
+
+        // Rename username table to usernameold
+        $tabname = "username";
+        $oldtabname = "usernameold";
+        if (!in_array($oldtabname, $tables)) {
+            $renameSQL = $datadict->RenameTableSQL($tabname, $oldtabname);
+            if (!$db->Execute($renameSQL[0])) {
+                $msg = "Cannot rename username table! " .
+                    "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
         }
-    }
 
-    // Drop current index on 'name' from old username table (if the
-    // index is no longer there because the database update was run
-    // more than once in developement, we silently continue).
-    $dropIndexSQL = $datadict->DropIndexSQL("idx_name", $tabname);
-    if(!$db->Execute($dropIndexSQL[0])) {
-        // The index could not be dropped. We continue.
-    }
+        // Drop current index on 'name' from old username table (if the
+        // index is no longer there because the database update was run
+        // more than once in developement, we silently continue).
+        $dropIndexSQL = $datadict->DropIndexSQL("idx_name", $tabname);
+        if (!$db->Execute($dropIndexSQL[0])) {
+            // The index could not be dropped. We continue.
+        }
 
-    // Refresh the table list
-    $tables = $db->MetaTables();
+        // Refresh the table list
+        $tables = $db->MetaTables();
 
-    // Create new table: username
-    $flds = "
+        // Create new table: username
+        $flds = "
         id I(11) NOTNULL AUTOINCREMENT PRIMARY,
         name C(255) NOTNULL UNIQUE INDEX,
         password C(255) NOTNULL,
@@ -5077,79 +5091,80 @@ if ($current_revision < $n) {
         seedid C(255) DEFAULT NULL
     ";
 
-    if (!in_array($tabname, $tables)) {
-        if (!create_table($tabname, $flds)) {
-            $err = $db->ErrorMsg();
-            $msg = "Could not create table $tabname! Error was: " . $err;
+        if (!in_array($tabname, $tables)) {
+            if (!create_table($tabname, $flds)) {
+                $err = $db->ErrorMsg();
+                $msg = "Could not create table $tabname! Error was: " . $err;
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+
+        // Migrate users from 'usernameold' to 'userdata'
+        $allUsers = $db->Execute("SELECT * FROM $oldtabname;");
+        $rows = $allUsers->GetRows();
+
+        // Get the default authentication method
+        $defaultAuthMode = ProxyFactory::getDefaultAuthenticationMode();
+
+        // Prepared statement
+        $sql = "INSERT INTO $tabname " .
+            "(name, password, email, research_group, institution_id, role, authentication, " .
+            "creation_date, last_access_date, status, seedid) VALUES " .
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        foreach ($rows as $row) {
+
+            // Treat the original admin user differently
+            if ($row["name"] == "admin") {
+                $role = UserConstants::ROLE_SUPERADMIN;
+                $currentAuthMode = "integrated";
+                global $email_admin;
+                $currentEmail = $email_admin;
+            } else {
+                $role = UserConstants::ROLE_USER;
+                $currentAuthMode = $defaultAuthMode;
+                $currentEmail = $row["email"];
+            }
+
+            // Complete the user
+            $ext_user = array(
+                "name" => $row["name"],
+                "password" => $row["password"],
+                "email" => $currentEmail,
+                "research_group" => $row["research_group"],
+                "institution_id" => $default_institution_id,
+                "role" => $role,
+                "authentication" => $currentAuthMode,
+                "creation_date" => $row["creation_date"],
+                "last_access_date" => $row["last_access_date"],
+                "status" => "o", // Outdated, i.e. in need of a password rehash.
+                "seedid" => ""
+            );
+
+            // Run prepared query
+            $rs = $db->Execute($sql, $ext_user);
+            if ($rs === false) {
+                $err = $db->ErrorMsg();
+                trigger_error("Could not migrate user " . $row['name'] .
+                    "': $err", E_USER_ERROR);
+            }
+        }
+
+        // Drop the 'usernameold' table
+        $dropTableSQL = $datadict->DropTableSQL("usernameold");
+        if (!$db->Execute($dropTableSQL[0])) {
+            $msg = "Could not drop the old username table!";
             write_message($msg);
             write_to_error($msg);
             return;
         }
+
+        // Complete the transaction
+        $db->CompleteTrans();
+
     }
-
-    // Migrate users from 'usernameold' to 'userdata'
-    $allUsers = $db->Execute("SELECT * FROM $oldtabname;");
-    $rows = $allUsers->GetRows();
-
-    // Get the default authentication method
-    $defaultAuthMode = ProxyFactory::getDefaultAuthenticationMode();
-
-    // Prepared statement
-    $sql="INSERT INTO $tabname " .
-        "(name, password, email, research_group, institution_id, role, authentication, " .
-        "creation_date, last_access_date, status, seedid) VALUES " .
-        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-
-    $db->StartTrans();
-
-    foreach ($rows as $row) {
-
-        // Treat the original admin user differently
-        if ($row["name"] == "admin") {
-            $role = UserConstants::ROLE_SUPERADMIN;
-            $currentAuthMode = "integrated";
-            global $email_admin;
-            $currentEmail = $email_admin;
-        } else {
-            $role = UserConstants::ROLE_USER;
-            $currentAuthMode = $defaultAuthMode;
-            $currentEmail = $row["email"];
-        }
-
-        // Complete the user
-        $ext_user = array(
-            "name" => $row["name"],
-            "password" => $row["password"],
-            "email" => $currentEmail,
-            "research_group" => $row["research_group"],
-            "institution_id" => $default_institution_id,
-            "role" => $role,
-            "authentication" => $currentAuthMode,
-            "creation_date" => $row["creation_date"],
-            "last_access_date" => $row["last_access_date"],
-            "status" => "o", // Outdated, i.e. in need of a password rehash.
-            "seedid" => ""
-        );
-
-        // Run prepared query
-        $rs = $db->Execute($sql, $ext_user);
-        if($rs === false) {
-            $err = $db->ErrorMsg();
-            trigger_error("Could not migrate user " . $row['name'] .
-                "': $err", E_USER_ERROR);
-        }
-    }
-
-    // Drop the 'usernameold' table
-    $dropTableSQL = $datadict->DropTableSQL("usernameold");
-    if(!$db->Execute($dropTableSQL[0])) {
-        $msg = "Could not drop the old username table!";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-    $db->CompleteTrans();
 
     //
     // Support for lof file format in HRM
