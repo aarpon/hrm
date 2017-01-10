@@ -168,10 +168,16 @@ $email_list_separator = ",";    // Valid options are ',' and ';'.
 // 'active_dir' replaces 'ACTIVE_DIR';
 // 'ldap' replaces 'LDAP'.
 // You can use more than one authentication mechanism by listing them all in the
-// $authenticateAgainst array below. The first entry in the array is the default
-// authentication mode that will be used for new users. Administrators can then
-// change the authentication mode for individual users in the user management pages.
-// Make sure to properly configure all authentication modes (see sample files in config/samples).
+// $authenticateAgainst array below.
+//
+// e.g. $authenticateAgainst = array("active_dir", integrated");
+//
+// The first entry in the array is the default authentication mode that will be used
+// for new users. Administrators can then change the authentication mode for individual
+// users in the user management pages.
+//
+// Make sure to properly configure all authentication modes
+//(see sample files in config/samples).
 $authenticateAgainst = array("integrated");
 
 // If true, use DES password encryption; if false, use MD5
