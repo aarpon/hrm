@@ -639,7 +639,7 @@ include("footer.inc.php");
     $(document).ready(function() {
 
         // Get the user name from the session
-        var username = "";
+        var username;
         username = <?php echo("'" . $_SESSION['user']->name() . "'");?>;
 
         // Check that we have a user name
@@ -648,8 +648,14 @@ include("footer.inc.php");
         }
 
         // No templates can be shared with the admin
-        // TODO: Check the role, not the user name!
-        if (username == "admin") {
+        <?php
+        if ($_SESSION['user']->isAdmin()) {
+            echo("var isAdmin = true;" . PHP_EOL);
+        } else {
+            echo("var isAdmin = false;" . PHP_EOL);
+        }
+        ?>
+        if (isAdmin == true) {
             return;
         }
 

@@ -161,9 +161,10 @@ class JobQueue
      * Marks Jobs with given ids as 'broken' (i.e. to be removed).
      * @param array $ids Job ids.
      * @param string $owner Name of the user who owns the Job.
+     * @param bool $isAdmin True if the owner is an admin (default = false).
      * @return bool True if Job the job could be marked, false otherwise.
      */
-    function markJobsAsRemoved(array $ids, $owner)
+    function markJobsAsRemoved(array $ids, $owner, $isAdmin=false)
     {
         $result = True;
         if (count($ids) == 0) {
@@ -172,7 +173,7 @@ class JobQueue
         $db = new DatabaseConnection();
         foreach ($ids as $id) {
             // loop through all the jobs selected, which have to be deleted
-            if ($owner != "admin" && $db->getJobOwner($id) != $owner) {
+            if (!$isAdmin && $db->getJobOwner($id) != $owner) {
                 continue;
             }
             $result = $result && $db->markJobAsRemoved($id);

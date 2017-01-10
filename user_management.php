@@ -153,14 +153,16 @@ if (isset($_POST['accept'])) {
         $mail->setMessage($text);
         $mail->send();
         shell_exec("$userManagerScript create \"" . $clean['username'] . "\"");
-    } else $message = "Database error, please inform the administrator";
+    } else {
+        $message = "Could not accept the user! Please inform the administrator.";
+    }
 } else if (isset($_POST['reject'])) {
     $user_to_reject = new UserV2($clean['username']);
     $email = $user_to_reject->emailAddress();
     $result = UserManager::deleteUser($user_to_reject->name());
     // TODO refactor
     if (!$result) {
-        $message = "Database error, please inform the administrator";
+        $message = "There was an error rejecting the new user request! Please contact the administrator.";
     }
     $text = "Your request for an HRM account has been rejected. Please " .
         "contact " . $email_admin . " for any enquiries.\n";
@@ -170,13 +172,14 @@ if (isset($_POST['accept'])) {
     $mail->setMessage($text);
     $mail->send();
 } else if (isset($_POST['annihilate']) && $_POST['annihilate'] == "yes") {
-    if ($clean['username'] != "admin") {
+    $user_to_delete = new UserV2($clean['username']);
+    if (! ($user_to_delete->isSuperAdmin())) {
         $result = UserManager::deleteUser($clean['username']);
         if (!$result) {
-            $message = "Database error, please inform the administrator";
+            $message = "The user could not be deleted! Please inform the administrator.";
         }
     } else {
-        $message = "Database error, please inform the administrator";
+        $message = "Cannot delete the super administrator!";
     }
 } else if (isset($_POST['edit'])) {
     $_SESSION['account_user'] = new UserV2($clean['username']);
