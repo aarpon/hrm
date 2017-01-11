@@ -75,7 +75,7 @@ class DatabaseProxy extends AbstractProxy {
     public function authenticate($username, $password) {
 
         // Get the User password hash
-        $dbPassword = $this->password($username);
+        $dbPassword = $this->retrievePassword($username);
         if (!$dbPassword) {
             return false;
         }
@@ -83,9 +83,8 @@ class DatabaseProxy extends AbstractProxy {
         // If the User's status is 'outdated', we need to upgrade its password.
         if ($this->isOutdated($username)) {
 
-            // First try authenticating against the old password
-            $success = ($dbPassword ==
-                ($this->encrypt($password, substr($dbPassword, 0, 2))));
+            // First try authenticating against the old md5-encrypted password
+            $success = ($dbPassword == md5($password));
 
             if (!$success) {
                 return false;
@@ -189,10 +188,10 @@ class DatabaseProxy extends AbstractProxy {
     /**
      * Set the User status to outdated (in need of a password update).
      * @param string $username User name.
-     * @return bool|void True if the status could be updated, false otherwise.
+     * @return void.
      */
     public function setOutdated($username) {
-        return (UserManager::setUserStatus($username, UserConstants::STATUS_OUTDATED));
+        UserManager::setUserStatus($username, UserConstants::STATUS_OUTDATED);
     }
 
     /* ========================= PRIVATE FUNCTIONS ========================== */
@@ -235,52 +234,15 @@ class DatabaseProxy extends AbstractProxy {
         return true;
     }
 
-    /* ----------------------- DEPRECATED FUNCTIONS ------------------------- */
-
     /**
      * Returns the user (encrypted) password (deprecated).
      *
      * @param string $name User name.
      * @return string The encrypted password.
-     * @deprecated
      */
-    private function password($name) {
+    private function retrievePassword($name) {
         $db = new DatabaseConnection();
-        return $db->queryLastValue($db->passwordQueryString($name));
-    }
-
-    /**
-     * Encrypts a string either with md5 or DES (deprecated).
-     *
-     * The encryption algorithm used is defined by the $useDESEncryption
-     * variable in the HRM configuration files.
-     *
-     * @param string $string The string to be encrypted.
-     * @param string $seed The seed (this is used only by the DES algorithm)
-     * @return string The encrypted string.
-     * @deprecated
-     */
-
-    /**
-     * Encrypt the password.
-     *
-     * This uses the encryption algorithm defined in the configuration files.
-     *
-     * @param string $string Plain-text password to be encrypted.
-     * @param string $seed Seed to be used for the crypt() function (ignored
-     * for md5()).
-     * @return string Encrypted password.
-     * @deprecated
-     */
-    private function encrypt($string, $seed)
-    {
-        global $useDESEncryption;
-        if ($useDESEncryption) {
-            $result = crypt($string, $seed);
-        } else {
-            $result = md5($string);
-        }
-        return $result;
+        return $db->queryLastValue("select password from username where name='$name'");
     }
 
 };

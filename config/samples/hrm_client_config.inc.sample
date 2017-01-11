@@ -180,10 +180,6 @@ $email_list_separator = ",";    // Valid options are ',' and ';'.
 //(see sample files in config/samples).
 $authenticateAgainst = array("integrated");
 
-// If true, use DES password encryption; if false, use MD5
-// This variable is DEPRECATED and will be removed in the next HRM version!
-$useDESEncryption = false;
-
 // If true, the queue manager and the image processing server run on the same
 // machine
 $imageProcessingIsOnQueueManager = true;

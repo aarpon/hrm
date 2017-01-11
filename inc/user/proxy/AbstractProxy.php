@@ -139,8 +139,8 @@ abstract class AbstractProxy {
      * Inheriting classes might need to reimplement this.
      *
      * @param string $username User name.
-     * @return bool True if the User must be updated, false otherwise.
+     * @return void.
      */
-    public function setOutdated($username = "ignored") { return false; }
+    public function setOutdated($username = "ignored") { }
 
 };

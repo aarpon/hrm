@@ -258,17 +258,6 @@ class DatabaseConnection
     }
 
     /**
-     * Returns the password of a given user name.
-     * @param string $name Name of the user.
-     * @return string Password for the requested user.
-     */
-    public function passwordQueryString($name)
-    {
-        $string = "select password from username where name='$name'";
-        return $string;
-    }
-
-    /**
      * Saves the parameter values of the setting object into the database.
      *
      * If the setting already exists, the old values are overwritten, otherwise

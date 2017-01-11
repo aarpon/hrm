@@ -51,7 +51,7 @@
 			"log_verbosity", "logdir", "logfile", "logfile_max_size",
 			"send_mail", "email_sender", "email_admin",
 			"email_list_separator", "authenticateAgainst",
-            "useDESEncryption", "imageProcessingIsOnQueueManager",
+            "imageProcessingIsOnQueueManager",
 			"copy_images_to_huygens_server", "useThumbnails",
 			"genThumbnails", "movieMaxSize", "saveSfpPreviews",
 			"maxComparisonSize", "ping_command", "ping_parameter",
@@ -62,7 +62,7 @@
 			"adodb", "enableUserAdmin", "allow_reservation_users",
 			"resultImagesOwnedByUser", "resultImagesRenamed",
 			"runningLocation", "convertBin", "enable_code_for_huygens",
-			"change_ownership");
+			"change_ownership", "useDESEncryption");
 
 		// Check for variables that must exist
 		$numMissingVariables = 0;
@@ -84,6 +84,7 @@
 
         // Check the values of the $authenticateAgainst variable
         $numVariableToFix = 0;
+        global $authenticateAgainst;
         if (!is_array($authenticateAgainst)) {
             echo "* * * Error: variable 'authenticateAgainst' must be an array!" . PHP_EOL;
             if ($authenticateAgainst == "MYSQL") {
