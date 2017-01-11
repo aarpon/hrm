@@ -58,7 +58,7 @@ $image_host = "localhost";
 $image_user = "hrm";
 $image_group = "hrm";
 
-// File server base folder (without trailing /)
+// File server base folder
 $image_folder = "/scratch/hrm_data";
 
 // File server image source folder
@@ -67,8 +67,8 @@ $image_source = "src";
 // File server image destination folder
 $image_destination = "dst";
 
-// File server base folder as seen from the Huygens server machines (with trailing /)
-$huygens_server_image_folder = "/scratch/hrm_data/";
+// File server base folder as seen from the Huygens server machines
+$huygens_server_image_folder = "/scratch/hrm_data";
 
 // Allow HTTP transfer of the restored (download) images
 $allowHttpTransfer = true;

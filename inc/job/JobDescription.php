@@ -514,7 +514,7 @@ class JobDescription
         global $huygens_server_image_folder;
         global $image_source;
         $user = $this->owner();
-        $result = $huygens_server_image_folder .
+        $result = $huygens_server_image_folder . "/" .
             $user->name() . "/" . $image_source . "/";
         return $result;
     }
@@ -604,7 +604,7 @@ class JobDescription
         $relSrcPath = str_replace(" ", "_", $relSrcPath);
 
         // avoid redundant slashes in path
-        $result = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $relSrcPath;
+        $result = $huygens_server_image_folder . "/" . $user->name() . "/" . $image_destination . "/" . $relSrcPath;
 
         return $result;
     }

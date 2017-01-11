@@ -369,7 +369,7 @@ class Job
 
         // If fileshare is not on the same host as Huygens
         if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
-            $image = $huygens_server_image_folder . $user->name() .
+            $image = $huygens_server_image_folder . "/" . $user->name() .
                 "/" . $image_destination . "/" .
                 $desc->relativeSourcePath() . $destFileName . "*";
             $previews = $huygens_server_image_folder;
@@ -458,7 +458,7 @@ class Job
         if (!$imageProcessingIsOnQueueManager) {
 
             // Old code: to be removed.
-            // $marker = $huygens_server_image_folder . $user->name() .
+            // $marker = $huygens_server_image_folder . "/" . $user->name() .
             // "/" . $image_destination . "/" . $finishedMarker;
 
             // Copy the finished marker

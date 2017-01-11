@@ -389,7 +389,7 @@ class QueueManager
         exec("rm -f " . $batch_filename);
         // >>
 
-        return $huygens_server_image_folder . $user->name() . "/" .
+        return $huygens_server_image_folder . "/" . $user->name() . "/" .
         $image_source . "/";
     }
 
