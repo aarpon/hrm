@@ -136,7 +136,8 @@ class UserManager
      */
     public static function generateRandomPlainPassword() {
 
-        return (md5(uniqid()));
+        // md5() is just to make the password harder
+        return (md5(UserManager::generateUniqueId()));
     }
 
     /**
@@ -163,21 +164,69 @@ class UserManager
     /**
      * Checks whether a seed for a user creation request exists.
      *
-     * This function returns false by default and must be reimplemented for
-     * those user management implementations that support this.
+     * Notice, that the user must also have status != UserConstants::STATUS_PASSWORD_RESET
+     * in the database.
+     *
      * @param string $seed Seed to be compared.
      * @return bool True if a user with given seed exists, false otherwise.
      */
-    public static function existsUserRequestWithSeed($seed)
+    public static function existsUserRegistrationRequestWithSeed($seed)
     {
         $db = new DatabaseConnection();
-        $query = "SELECT seedid FROM username WHERE seedid = '$seed';";
+        $query = "SELECT seedid FROM username WHERE status!='" .
+            UserConstants::STATUS_PASSWORD_RESET . "' AND seedid = '$seed';";
         $value = $db->queryLastValue($query);
         if ($value == false) {
             return false;
         } else {
             return ($value == $seed);
         }
+    }
+
+    /**
+     * Checks whether a seed for a password reset request exists.
+     *
+     * Notice, that the user must also have status = UserConstants::STATUS_PASSWORD_RESET
+     * in the database.
+     *
+     * This function returns false by default and must be reimplemented for
+     * those user management implementations that support this.
+     * @param string $seed Seed to be compared.
+     * @username string User name that is expected to have the specified seed.
+     * @return bool True if a user with given seed exists, false otherwise.
+     */
+    public static function existsUserPasswordResetRequestWithSeed($username, $seed)
+    {
+        $db = new DatabaseConnection();
+        $query = "SELECT seedid FROM username WHERE " .
+            "name='" . $username ."' AND status='" .
+            UserConstants::STATUS_PASSWORD_RESET . "' AND seedid='$seed';";
+        $value = $db->queryLastValue($query);
+        if ($value == false) {
+            return false;
+        } else {
+            return ($value == $seed);
+        }
+    }
+
+    /**
+     * Generate and set a random seed for User with given name. This also changes
+     * the status of the user to UserConstants::STATUS_PASSWORD_RESET.
+     *
+     * @param string $name Name of the user for which the seed is to be generated.
+     * @return string Generated seed. If the seed could not be set, the function returns "".
+     */
+    public static function generateAndSetSeed($name)
+    {
+        $seed = UserManager::generateUniqueId();
+        $db = new DatabaseConnection();
+        $query = "UPDATE username SET seedid='$seed' WHERE name = '$name';";
+        $value = $db->execute($query);
+        if ($value == false) {
+            return "";
+        }
+        UserManager::markUserForPasswordReset($name);
+        return $seed;
     }
 
     /**
@@ -579,6 +628,16 @@ class UserManager
     }
 
     /**
+     * Accepts user with given username.
+     * @param string $username Name of the user to accept.
+     * @return bool True if the user could be accepted; false otherwise.
+     */
+    public static function markUserForPasswordReset($username)
+    {
+        return (self::updateUserStatus($username, UserConstants::STATUS_PASSWORD_RESET));
+    }
+
+    /**
      * Returns all user rows from the database (sorted by user name).
      * @return array Array of user rows sorted by user name.
      */
@@ -610,7 +669,8 @@ class UserManager
     public static function getAllPendingUserDBRows()
     {
         $db = new DatabaseConnection();
-        $rows = $db->query("SELECT * FROM username WHERE length(seedid) > 0 ORDER BY name;");
+        $rows = $db->query("SELECT * FROM username WHERE length(seedid) > 0 " .
+            " AND status!='" . UserConstants::STATUS_PASSWORD_RESET . "' ORDER BY name;");
         return $rows;
     }
 
@@ -744,7 +804,13 @@ class UserManager
 
     /**
      * Updates the status of an existing user in the database (username is
-     * expected to be already validated!). It also clears the request seed.
+     * expected to be already validated!).
+     *
+     * For status UserConstants::STATUS_ACTIVE and UserConstants::STATUS_DISABLE the seed is reset.
+     * For status UserConstants::STATUS_PASSWORD_RESET the seed is NOT reset (a valid seed is expected
+     * to be stored already:
+     * @see UserManager::markUserForPasswordReset();
+     *
      * @param string $username The name of the user.
      * @param string $status One of UserConstants::STATUS_ACTIVE, UserConstants::STATUS_DISABLE.
      * @return bool True if user status could be updated successfully; false
@@ -753,7 +819,11 @@ class UserManager
     private static function updateUserStatus($username, $status)
     {
         $db = new DatabaseConnection();
-        $query = "UPDATE username SET status = '$status', seedid = '' WHERE name = '$username'";
+        if ($status == UserConstants::STATUS_PASSWORD_RESET) {
+            $query = "UPDATE username SET status = '$status' WHERE name = '$username'";
+        } else {
+            $query = "UPDATE username SET status = '$status', seedid = '' WHERE name = '$username'";
+        }
         $result = $db->execute($query);
         if ($result) {
             return true;

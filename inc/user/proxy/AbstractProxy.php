@@ -141,6 +141,18 @@ abstract class AbstractProxy {
      * @param string $username User name.
      * @return void.
      */
-    public function setOutdated($username = "ignored") { }
+    public function setOutdated($username = "ignored") {}
 
+    /**
+     * Mark password reset.
+     *
+     * This method must be overridden by classes for which canModifyPassword()
+     * returns true!
+     * @param string $username Name of the user to mark for password update.
+     * @return string string
+     * @throws \Exception The base implementation of this method throws an exception.
+     */
+    public function markPasswordReset($username = "ignored") {
+        throw new \Exception("Re-implement this method!");
+    }
 };

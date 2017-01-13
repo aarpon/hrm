@@ -33,6 +33,11 @@ class UserConstants
     const STATUS_OUTDATED = 'o';
 
     /**
+     * The user requested a password reset.
+     */
+    const STATUS_PASSWORD_RESET = 'r';
+
+    /**
      * This is the one and only HRM super administrator.
      */
     const ROLE_SUPERADMIN = 0;

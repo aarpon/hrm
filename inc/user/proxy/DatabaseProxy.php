@@ -245,4 +245,14 @@ class DatabaseProxy extends AbstractProxy {
         return $db->queryLastValue("select password from username where name='$name'");
     }
 
+    /**
+     * Mark password reset.
+     * @param string $username Name of the user to mark.
+     * @return string|void Return seed.
+     * @throws \Exception if the method is not reimplemented.
+     */
+    public function markPasswordReset($username) {
+        throw new \Exception("Reimplement this method!");
+    }
+
 };
