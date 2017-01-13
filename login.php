@@ -377,39 +377,34 @@ include("header.inc.php");
                 <input id="password" name="password" type="password"
                        class="textfield"
                        tabindex="2"/> <br/>
+                <a href="reset_password.php">Forgot my password</a>
                 <input type="hidden" name="request" value="<?php echo $req ?>"/>
                 <input type="submit" class="button" value="login"/>
             </fieldset>
 
-            <?php
-            //if (ProxyFactory::getDefaultAuthenticationMode() == "integrated") {
-                ?>
-                <fieldset>
-                    <legend>
-                        <a href="openWindow(
+            <fieldset>
+                <legend>
+                    <a href="openWindow(
                'http://www.svi.nl/HuygensRemoteManagerHelpRegistration')">
-                            <img src="images/help.png" alt="?"/></a>
-                        Registration
-                    </legend>
+                        <img src="images/help.png" alt="?"/></a>
+                    Registration
+                </legend>
 
-                    <div id="login_registration">
-                        <table>
-                            <tr>
-                                <td class="icon"
-                                    onclick="document.location.href='registration.php'">
-                                </td>
-                                <td class="text">
-                                    <b>No HRM account yet?</b><br/>
-                                    Please register <a href="registration.php">here</a>.
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                <div id="login_registration">
+                    <table>
+                        <tr>
+                            <td class="icon"
+                                onclick="document.location.href='registration.php'">
+                            </td>
+                            <td class="text">
+                                <b>No HRM account yet?</b><br/>
+                                Please register <a href="registration.php">here</a>.
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
-                </fieldset>
-                <?php
-            //}
-            ?>
+            </fieldset>
 
         </form>
     </div>

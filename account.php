@@ -3,7 +3,6 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
-use hrm\user\proxy\ProxyFactory;
 use hrm\Util;
 use hrm\Validator;
 use hrm\user\UserManager;

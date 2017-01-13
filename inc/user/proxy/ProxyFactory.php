@@ -66,7 +66,7 @@ class ProxyFactory {
      * Return the authentication mode for the user.
      *
      * The authentication method specified in the database is returned;
-     * if none is found, the default one specified in the configurati
+     * if none is found, the default one specified in the configuration
      * files. One of 'integrated', 'active_dir', 'ldap'.
      *
      * @param string $username name of the User to query.

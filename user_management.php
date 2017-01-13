@@ -100,7 +100,7 @@ if (!$_SESSION['user']->isAdmin()) {
 }
 
 if (isset($_GET['seed'])) {
-    if (! UserManager::existsUserRequestWithSeed($_GET['seed'])) {
+    if (! UserManager::existsUserRegistrationRequestWithSeed($_GET['seed'])) {
         header("Location: " . "login.php");
         exit();
     }
