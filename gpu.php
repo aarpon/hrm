@@ -104,10 +104,10 @@ include("header.inc.php");
                           $name = split(" ", $serverName);
                           $name = $name[0];
                       }
-                      if (strpos($key, 'huscript_path') === false) {
+                      if (strpos($key, 'huscript_path') !== false) {
                           $path = $value;
                       }
-                      if (strpos($key, 'gpuId') === false) {
+                      if (strpos($key, 'gpuId') !== false) {
                           $gpuId = $value;
                       }
                    }
@@ -136,6 +136,7 @@ include("header.inc.php");
        </table>
     </form>
 
+                    
 <br /><br />
     <fieldset>
         <legend>log</legend>
