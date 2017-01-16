@@ -85,44 +85,51 @@ if (isset($_POST['requestusername']) && isset($_POST['username'])) {
         $clean['username'] = $_POST['username'];
     }
 
-    // Retrieve the authentication mechanism for the user
-    $authProxy = ProxyFactory::getProxy($clean['username']);
-    if (!$authProxy->canModifyPassword()) {
-        $message = "The " . $authProxy->friendlyName() . " authentication does not " .
+    // Is there such a user?
+    if (UserManager::existsUserWithName($clean['username'])) {
+
+        // Retrieve the authentication mechanism for the user
+        $authProxy = ProxyFactory::getProxy($clean['username']);
+
+        if (!$authProxy->canModifyPassword()) {
+            $message = "The " . $authProxy->friendlyName() . " authentication does not " .
             "allow changing the password for user " . $clean['username'] . "!";
-    } else {
-
-        // Retrieve the user e-mail
-        $email = $authProxy->getEmailAddress($clean['username']);
-
-        if ($email == "") {
-            $message = "Cannot retrieve e-mail address for user " . $clean['username'] . "!";
         } else {
 
-            # Mark the
-            $seed = UserManager::generateAndSetSeed($clean['username']);
-            if ($seed == "") {
-                $message = "Could not mark the user to password reset!";
+            // Retrieve the user e-mail
+            $email = $authProxy->getEmailAddress($clean['username']);
+
+            if ($email == "") {
+                $message = "Cannot retrieve e-mail address for user " . $clean['username'] . "!";
             } else {
 
-                # Email the user with instructions
-                $mail = new Mail($email_sender);
-                $tmp_username = $clean['username'];
-                $text = "Please reset your password here: $hrm_url/reset_password.php?user=$tmp_username&seed=$seed";
-                $mail->setReceiver($email);
-                $mail->setSubject("HRM's password reset");
-                $mail->setMessage($text);
-                if (!$mail->send()) {
-                    $notice = "Could not send an email to user $tmp_username! " .
-                        "Please contact your administrator.";
-                    $actionMode = "genericErrorWithMessage";
+                # Mark the
+                $seed = UserManager::generateAndSetSeed($clean['username']);
+                if ($seed == "") {
+                    $message = "Could not mark the user to password reset!";
                 } else {
-                    $actionMode = "emailSentSuccessfully";
+
+                    # Email the user with instructions
+                    $mail = new Mail($email_sender);
+                    $tmp_username = $clean['username'];
+                    $text = "Please reset your password here: $hrm_url/reset_password.php?user=$tmp_username&seed=$seed";
+                    $mail->setReceiver($email);
+                    $mail->setSubject("HRM's password reset");
+                    $mail->setMessage($text);
+                    if (!$mail->send()) {
+                        $notice = "Could not send an email to user $tmp_username! " .
+                            "Please contact your administrator.";
+                        $actionMode = "genericErrorWithMessage";
+                    } else {
+                        $actionMode = "emailSentSuccessfully";
+                    }
                 }
             }
         }
-    }
+    } else {
 
+        $message = "Sorry, could not find user " . $clean['username'] . ".";
+    }
 }
 
 // If the new password has been submitted already, check it and set it
