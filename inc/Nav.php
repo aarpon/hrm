@@ -211,7 +211,7 @@ class Nav
      *
      * @return string HTML code to link back to the login page.
      */
-    public static function exit_to_login()
+    public static function exitToLogin()
     {
         return self::buildLinkHTMLElement("Exit", "login.php",
             "images/exit.png", "Exit", false);

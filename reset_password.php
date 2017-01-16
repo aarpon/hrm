@@ -188,7 +188,7 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpAccount'));
+            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpResetPassword'));
             ?>
         </ul>
     </div>
@@ -196,7 +196,7 @@ include("header.inc.php");
         <ul>
             <li>
                 <?php
-                echo(Nav::linkLogOut(Util::getThisPageName()));
+                echo(Nav::exitToLogin());
                 ?>
             </li>
         </ul>
@@ -206,7 +206,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3><img alt="Account" src="./images/account_title.png"
+    <h3><img alt="Account" src="./images/forgot_pwd.png"
              width="40"/>&nbspReset your password</h3>
 
     <?php

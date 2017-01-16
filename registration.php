@@ -171,7 +171,7 @@ include("header.inc.php");
     <div id="navright">
         <ul>
             <?php
-            echo(Nav::exit_to_login());
+            echo(Nav::exitToLogin());
             ?>
         </ul>
     </div>
