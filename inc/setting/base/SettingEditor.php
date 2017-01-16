@@ -409,6 +409,26 @@ abstract class SettingEditor
     }
 
     /**
+     * Check if a Setting with given name exists. If it does not, return the
+     * same name. Otherwise append numerical suffixes until a name that does not
+     * exist is found. Return this modified name.
+     *
+     * @param string $name Name of the Setting to try.
+     * @return string Setting name with optional numeric suffix that does not yet exist in the system.
+     */
+    public function getValidNewSettingName($name)
+    {
+        $numIndex = "";
+        $i = 0;
+        while (array_key_exists($name . $numIndex, $this->settings())) {
+            // A setting with this name exists already, try appending a numerical index
+            $i = $i + 1;
+            $numIndex = "$i";
+        }
+        return ($name . $numIndex);
+    }
+
+    /**
      * Checks whether a Setting is selected and whether the selection points to
      * an actually existing Setting.
      * @return bool True if an existing Setting is selected, false otherwise.

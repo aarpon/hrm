@@ -116,7 +116,7 @@ if (isset($_POST['copy_public'])) {
     if ($_POST['fileselection'] != 'Choose a file') {
         $filestring = $_POST['fileselection'];
         $path_parts = pathinfo($filestring);
-        $hrmtemplatename = 'Based on ' . $path_parts['filename'];
+        $hrmtemplatename = $_SESSION['editor']->getValidNewSettingName('Based on ' . $path_parts['filename']);
         $setting = $_SESSION['editor']->createNewSetting($hrmtemplatename);
         // @todo This should react appropriately to the return status of image2hrmTemplate()
         $result = $_SESSION['editor']->image2hrmTemplate($setting,
