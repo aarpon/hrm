@@ -176,7 +176,8 @@ if (isset($_POST['accept'])) {
     if (! ($user_to_delete->isSuperAdmin())) {
         $result = UserManager::deleteUser($clean['username']);
         if (!$result) {
-            $message = "The user could not be deleted! Please inform the administrator.";
+            $message = "The user could not be deleted! " .
+                "Please make sure that there are no jobs in the queue for this user.";
         }
     } else {
         $message = "Cannot delete the super administrator!";

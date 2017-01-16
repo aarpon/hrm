@@ -2055,3 +2055,9 @@ div.StedDeplModeValues {
     text-align: left;
     font-weight: bold;
 }
+
+.explanation {
+    text-align: left;
+    font-size: 0.8em;
+    font-style: italic;
+}

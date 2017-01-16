@@ -2,12 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-use hrm\DatabaseConnection;
 use hrm\Mail;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserConstants;
 use hrm\user\UserManager;
-use hrm\Util;
 use hrm\Validator;
 
 // Settings
@@ -67,6 +65,12 @@ if (isset($_POST["group"])) {
     }
 }
 
+// Inform the user on creation?
+$informUserOnCreation = false;
+if (isset($_POST["inform"]) && $_POST["inform"] == "Yes") {
+    $informUserOnCreation = true;
+}
+
 /*
  *
  * END OF SANITIZE INPUT
@@ -101,20 +105,26 @@ if (isset($_POST['add'])) {
 
             // TODO refactor
             if ($result) {
-                $text = "Your account has been activated:\n\n";
-                $text .= "\t      Username: " . $clean["username"] . "\n";
-                $text .= "\t      Password: " . $password . "\n\n";
-                $text .= "Login here\n";
-                $text .= $hrm_url . "\n\n";
-                $folder = $image_folder . "/" . $clean["username"];
-                $text .= "Source and destination folders for your images are " .
-                    "located on server " . $image_host . " under " . $folder . ".";
-                $mail = new Mail($email_sender);
-                $mail->setReceiver($clean['email']);
-                $mail->setSubject('Account activated');
-                $mail->setMessage($text);
-                $mail->send();
-
+                if ($informUserOnCreation) {
+                    $text = "Your account has been activated:\n\n";
+                    $text .= "\t      Username: " . $clean["username"] . "\n";
+                    if (ProxyFactory::getDefaultAuthenticationMode() == "restricted") {
+                        $text .= "\t      Password: " . $password . "\n\n";
+                    } else {
+                        $text .= "\t      Password: Use your " . ProxyFactory::getDefaultProxy()->friendlyName() .
+                            " password to login.\n\n";
+                    }
+                    $text .= "Login here\n";
+                    $text .= $hrm_url . "\n\n";
+                    $folder = $image_folder . "/" . $clean["username"];
+                    $text .= "Source and destination folders for your images are " .
+                        "located on server " . $image_host . " under " . $folder . ".";
+                    $mail = new Mail($email_sender);
+                    $mail->setReceiver($clean['email']);
+                    $mail->setSubject('Account activated');
+                    $mail->setMessage($text);
+                    $mail->send();
+                }
                 $message = "New user successfully added to the system";
                 shell_exec("$userManagerScript create \"" . $clean["username"] . "\"");
                 $added = True;
@@ -162,12 +172,15 @@ if (isset($_POST['add'])) {
 
                 <div id="adduser">
 
+                    <p>The user will be created with <?php echo(ProxyFactory::getDefaultProxy()->friendlyName()); ?>
+                    authentication.</p>
+
                     <label for="username">Username: </label>
                     <input type="text"
                            name="username"
                            id="username"
                            value=""
-                           class="texfield"/>
+                           class=""/>
 
                     <br/>
 
@@ -176,7 +189,7 @@ if (isset($_POST['add'])) {
                            name="email"
                            id="email"
                            value=""
-                           class="texfield"/>
+                           class=""/>
 
                     <br/>
 
@@ -185,18 +198,31 @@ if (isset($_POST['add'])) {
                            name="group"
                            id="group"
                            value=""
-                           class="texfield"/>
+                           class=""/>
 
                     <br/>
 
-                    <input name="add"
-                           type="submit"
-                           value="add"
-                           class="button"/>
 
                 </div>
 
+                <p>
+                <input type="checkbox"
+                       name="inform"
+                       id="inform"
+                       value='Yes' />Send an e-mail to the user on creation?
+                </p>
+
+                <p class="explanation">Do not send an e-mail to the user yet
+                    if you still plan to change the authentication mode.</p>
+
+                <input name="add"
+                       type="submit"
+                       value="add"
+                       class="button"/>
+
             </fieldset>
+
+            <br />
 
             <div>
                 <input type="button"
