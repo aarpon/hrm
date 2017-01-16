@@ -25,13 +25,33 @@ if ((!isset($_SESSION['user'])) ||
 
 $message = "";
 
-if (isset($_GET["turnon"])) {
-    $db = new DatabaseConnection();
-    $message = $db->switchGPUState("On");
+$db = new DatabaseConnection();
+
+if (!isset($_GET["add"]["name"]) || empty($_GET["add"]["name"])) {
+    $message .= "One or more fields empty: no servers to add.\n";
+} elseif (!isset($_GET["add"]["path"]) || empty($_GET["add"]["path"])) {
+    $message .= "One or more fields empty: no servers to add.\n";
+} elseif (!isset($_GET["add"]["gpuId"]) || empty($_GET["add"]["gpuId"])) {
+    $message .= "One or more fields empty: no servers to add.\n";
+} else {
+    $serverName = $_GET["add"]["name"];
+    $huPath     = $_GET["add"]["path"];
+    $gpuId      = $_GET["add"]["gpuId"];
+    if ($db->addServer($serverName, $huPath, $gpuId)) {
+        $message .= "Server could not be added.\n";
+    } else {
+        $message .= "Server '$serverName' added successfully.\n";
+    }
 }
-if (isset($_GET["turnoff"])) {
-    $db = new DatabaseConnection();
-    $message = $db->switchGPUState("Off");
+
+if (isset($_GET["remove"]) && !empty($_GET["remove"])) {
+    foreach ($_GET["remove"] as $serverName => $action) {
+        if ($db->removeServer($serverName)) {
+            $message .= "Server '$serverName' could not be removed.\n";
+        } else {
+            $message .= "Server '$serverName' successfully removed.\n";
+        }
+    }
 }
 
 
@@ -59,13 +79,67 @@ include("header.inc.php");
 </div>
 
 <div id="content">
+    <h3>
+          <img alt="Servers&GPUs" src="./images/gpu.png" width="40"/>
+                Servers & GPUs
+    </h3>
 
-    <h3><img alt="SwitchGPU" src="./images/gpu.png"
-             width="40"/>&nbsp;&nbsp;Switch GPU</h3>
+                
+    <form method="GET" action="" id="GPU">
+       <table id="Servers&GPUs">
+          <tr>
+              <td class="header">Server Name</td>
+              <td class="header">Hucore Path</td>
+              <td class="header">GPU ID</td>
+              <td class="header">Action</td>
+          </tr>
 
+          <?php
+                /* First, show the existing servers with a 'Remove' button. */
+                $servers = $db->getAllServers();
+                foreach ($servers as $server) {
+                   foreach ($server as $key => $value) {
+                      if (strpos($key, 'name') !== false) {
+                          $serverName = $value;
+                          $name = split(" ", $serverName);
+                          $name = $name[0];
+                      }
+                      if (strpos($key, 'huscript_path') === false) {
+                          $path = $value;
+                      }
+                      if (strpos($key, 'gpuId') === false) {
+                          $gpuId = $value;
+                      }
+                   }
+                 ?>
+
+                 <tr>
+                 <td><?php echo $name;?> </td>
+                 <td><?php echo $path;?> </td>
+                 <td><?php echo $gpuId;?></td>
+                 <td><input type="submit"
+                       name="remove[<?php echo $serverName;?>]"
+                       value="Remove"
+                       onclick="document.forms[\'GPU\'].submit()"/>
+                 </td> 
+                 </tr>
+          <?php 
+          }
+          ?>
+
+          <td><input name="add[name]" type="text" size="6"></td>
+          <td><input name="add[path]" type="text" size="6"></td>
+          <td><input name="add[gpuId]" type="text" size="2"></td>
+          <td><input type="submit" value="Add"
+               onclick="document.forms['GPU'].submit()"/></td>
+
+       </table>
+    </form>
+
+<br /><br />
     <fieldset>
         <legend>log</legend>
-            <textarea title="Log" rows="15" readonly="readonly">
+            <textarea title="Log" rows="10" readonly="readonly">
 <?php
 
 echo $message;
@@ -83,13 +157,13 @@ echo $message;
         <h3>Quick help</h3>
 
         <p>
-            This page allows you to toggle the GPU option in Huygens.
+            This page allows you to manage processing machines and GPU cards.
             Please visit <a href="https://svi.nl/HuygensGPU">Huygens GPU</a>
             for detailed instructions on how to install CUDA.
         </p>
 
         <p>
-            Each deconvolution job has a log that can be reached via the
+            The Huygens deconvolution logs can be reached via the
             user account: <b>'Results' -> 'Select an image' ->
                 'Detailed view' -> 'log'.</b>
             The log shows whether the image has been processed on the CPU
@@ -98,19 +172,9 @@ echo $message;
 
         <p>
             GPU deconvolution is available in Huygens from version
-            <b>15.10</b> onwards.
-        </p>
-
+            <b>15.10</b> onwards. Multi GPU support can be found in Huygens
+            <b>16.10.1</b> or higher.
         <br>
-
-        <form method="GET" action="" id="GPU">
-            <input type="submit" name="turnon" value="ON"
-                   onclick="document.forms['GPU'].submit()"/>
-
-            <input type="submit" name="turnoff" value="OFF"
-                   onclick="document.forms['GPU'].submit()"/>
-        </form>
-
 
     </div>
 

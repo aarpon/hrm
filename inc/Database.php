@@ -2270,6 +2270,49 @@ class DatabaseConnection
     }
 
 
+    /**
+     * Add a server (including GPU info) to the list of processing machines
+       for the queue manager.
+     * @return integer > 0 on failure; 0 on success.
+     */
+    public function addServer($serverName, $huPath, $gpuId)
+    {
+        if (!is_numeric($gpuId)) {
+            return "error: invalid GPU ID";
+        }
+
+        $query = "INSERT INTO server VALUES " .
+            "('$serverName','$huPath','free','NULL','$gpuId')";
+        $result = $this->queryLastValue($query);
+
+        return intval($result);
+    }
+
+
+    /**
+     * Remove a server from the list of processing machines for the queue
+       manager.
+     * @return integer > 0 on failure; 0 on success.
+     */
+    public function removeServer($serverName)
+    {
+        $query = "DELETE FROM server WHERE name='$serverName';";
+        $result = $this->queryLastValue($query);
+
+        return intval($result);
+    }
+    
+
+    public function getAllServers($server)
+    {
+        $query = "SELECT * FROM server;";
+
+        $result = $this->query($query);
+
+        return $result;
+    }
+
+
     /* ------------------------ PRIVATE FUNCTIONS --------------------------- */
 
     /**

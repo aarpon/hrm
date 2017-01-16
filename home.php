@@ -290,10 +290,9 @@ include("header.inc.php");
 
                 <td class="text">
                     <div class="cell">
-                        <a href="./gpu.php">GPU switch</a>
+                        <a href="./gpu.php">Servers & GPU's</a>
                         <br/>
-                        <p>Enable/Disable GPU deconvolution on all processing
-                            machines.</p>
+                        <p>Add servers and GPU cards for faster processing.</p>
                     </div>
                 </td>
 
