@@ -483,6 +483,13 @@ class UserManager
         // Delete the user
         $db = new DatabaseConnection();
 
+        // If there are jobs in the queue for the user, we do not delete
+        $sql = "SELECT id FROM job_queue WHERE name=?;";
+        $result = $db->connection()->Execute($sql, array($username));
+        if ($result != false) {
+            return false;
+        }
+
         // Start transaction: if error, everything will be rolled back.
         $db->connection()->StartTrans();
 
@@ -490,6 +497,7 @@ class UserManager
         $sql = "DELETE FROM username WHERE name=?;";
         $db->connection()->Execute($sql, array($username));
 
+        // Delete all references to the uses in the parameters and settings tables
         $sql = "DELETE FROM parameter WHERE owner=?;";
         $db->connection()->Execute($sql, array($username));
 
@@ -506,6 +514,50 @@ class UserManager
         $db->connection()->Execute($sql, array($username));
 
         $sql = "DELETE FROM analysis_setting WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        // Delete all references to the uses in the parameters and settings tables
+        $sql = "DELETE FROM shared_parameter WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM shared_parameter_setting WHERE owner=? OR previous_owner=?;";
+        $db->connection()->Execute($sql, array($username, $username));
+
+        $sql = "DELETE FROM shared_task_parameter WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM shared_task_setting WHERE owner=? OR previous_owner=?;";
+        $db->connection()->Execute($sql, array($username, $username));
+
+        $sql = "DELETE FROM shared_analysis_parameter WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM shared_analysis_setting WHERE owner=? OR previous_owner=?;";
+        $db->connection()->Execute($sql, array($username, $username));
+
+        // Delete all references to the uses in the job tables
+        $sql = "DELETE FROM job_analysis_parameter WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM job_analysis_setting WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM job_parameter WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM job_parameter_setting WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM job_task_parameter WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM job_task_setting WHERE owner=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM job_queue WHERE username=?;";
+        $db->connection()->Execute($sql, array($username));
+
+        $sql = "DELETE FROM job_files WHERE owner=?;";
         $db->connection()->Execute($sql, array($username));
 
         // Complete the transaction (or roll back if failed).
