@@ -80,7 +80,7 @@ include("header.inc.php");
 
 <div id="content">
     <h3>
-          <img alt="Servers&GPUs" src="./images/gpu.png" width="40"/>
+          <img alt="Servers&GPUs" src="./images/servers.png" width="40"/>
                 Servers & GPUs
     </h3>
 
