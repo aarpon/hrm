@@ -5182,8 +5182,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                "the database to revision " . $n . ".";
+            $msg = "An error occurred while adding support for the Leica LOF file format.";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -5203,8 +5202,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                "the database to revision " . $n . ".";
+            $msg = "An error occurred while adding support for the Leica LOF file format.";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -5225,8 +5223,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                "the database to revision " . $n . ".";
+            $msg = "An error occurred while adding support for the Leica LOF file format.";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -5244,7 +5241,7 @@ if ($current_revision < $n) {
         $sqlarray = $datadict->ChangeTableSQL($tabname, "$newcolumn I", $dropOldFlds=false);
         $rs = $datadict->ExecuteSQLArray($sqlarray);
         if($rs != 2) {
-            $msg = "An error occurred while updating the $tabname table.";
+            $msg = "An error occurred while adding support for multi GPU deconvolution.";
             write_message($msg);
             write_to_error($msg);
             return;
