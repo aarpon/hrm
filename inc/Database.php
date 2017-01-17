@@ -2281,8 +2281,13 @@ class DatabaseConnection
             return "error: invalid GPU ID";
         }
 
+        /* This allows for multiple entries for the same machine. */
+        /* The queue manager only looks at the machine name and rejecting
+           anything after the blank. */
+        $server = "$serverName $gpuId";
+
         $query = "INSERT INTO server VALUES " .
-            "('$serverName','$huPath','free','NULL','$gpuId')";
+            "('$server','$huPath','free','NULL','$gpuId')";
         $result = $this->queryLastValue($query);
 
         return intval($result);

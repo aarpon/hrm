@@ -159,23 +159,36 @@ echo $message;
 
         <p>
             This page allows you to manage processing machines and GPU cards.
+       </p>
+
+        <p>
+            To enable a <b>new processing machine</b> just add an
+            entry to the table on the left and restart the HRM daemon
+            (Queue Manager).
+       </p>
+                    
+        <p>
+            If a machine has no GPUs the GPU ID can take any numeric value.
+            Huygens will process the data on the CPU instead.
+       </p>
+
+        <p>
+            If a machine has multiple GPUs each GPU can be registered
+            independently. Each GPU will be used for the deconvolution of
+            one image. Therefore, the HRM queue will run as many images in
+            parallel as the total number of GPUs.
+       </p>
+                    
+        <p>
+            The list of GPU IDs can be retrieved by starting HuCore on
+            each processing machine and executing 'huOpt gpu -query devices'.
+       </p>
+
+        <p>
             Please visit <a href="https://svi.nl/HuygensGPU">Huygens GPU</a>
             for detailed instructions on how to install CUDA.
         </p>
 
-        <p>
-            The Huygens deconvolution logs can be reached via the
-            user account: <b>'Results' -> 'Select an image' ->
-                'Detailed view' -> 'log'.</b>
-            The log shows whether the image has been processed on the CPU
-            or on the GPU.
-        </p>
-
-        <p>
-            GPU deconvolution is available in Huygens from version
-            <b>15.10</b> onwards. Multi GPU support can be found in Huygens
-            <b>16.10.1</b> or higher.
-        <br>
 
     </div>
 
