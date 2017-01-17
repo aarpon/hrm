@@ -64,12 +64,13 @@ $emSetting = $emSettingArr[$chan];
 
             <fieldset>
 
-                <legend>available PSF files</legend>
+                <legend>Available PSF files</legend>
                 <?php
                 $files = $_SESSION['fileserver']->getPSFiles();
                 $data = $_SESSION['fileserver']->getMetaDataFromFiles($files);
 
                 ?>
+
                 <div id="userfiles">
                     <select name="userfiles[]" title="Available PSF files"
                             size="10" onchange="lock(this)">
@@ -105,7 +106,6 @@ $emSetting = $emSettingArr[$chan];
                             }
 
                             if (!isset($emSetting) || $emSetting == '') {
-                                $emSetting = "? ";
                                 $mismatch = true;
                             } elseif (abs($em - $emSetting) / $emSetting > .05) {
                                 $mismatch = true;
@@ -140,18 +140,33 @@ $emSetting = $emSettingArr[$chan];
                 <input type="button" value="close" onclick="window.close()"/>
             </div>
 
-        <div id="message">
+        <div>
             <?php
 
-            # echo "<p>$message</p>";
-
             if ($showWarning) {
-                print "<p>&nbsp;<br />" .
-                    "Files with parameters very different than those " .
-                    "in the current setting " .
-                    "($mTypeSetting, NA=$NAsetting, emission = $emSetting nm) " .
-                    "are <i class=\"highlightedPSF\">highligthed</i> and could produce " .
-                    "unexpected results.</p>";
+
+                if (!isset($mTypeSetting) || $mTypeSetting == '') {
+                    $mTypeDisplay = "type: unspecified";
+                } else {
+                    $mTypeDisplay = "type: $mTypeSetting";
+                }
+
+                if (!isset($NAsetting) || $NAsetting == '') {
+                    $NADisplay = "NA = unspecified";
+                } else {
+                    $NADisplay = "NA = $NAsetting";
+                }
+                if (!isset($emSetting) || $emSetting == '') {
+                    $emSettingDisplay = "Emission wavelength: unspecified";
+                } else {
+                    $emSettingDisplay = "Emission wavelength: $emSetting nm";
+                }
+
+                echo("<p>&nbsp;<br />" .
+                    "Files with parameters very different than current ones (" .
+                    "$mTypeDisplay, $NADisplay, $emSettingDisplay" .
+                    ") are <i class=\"highlightedPSF\">highligthed</i>
+                     since they could produce wrong or unexpected results.</p>");
             }
 
             // The PSF popup sets the fileserver to HDF5 and ICS in order to be able to read
