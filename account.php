@@ -241,7 +241,7 @@ include("header.inc.php");
 
     <form method="post" action="" id="useraccount">
 
-        <div id="adduser">
+        <div id="account">
             <?php
 
             $somethingToChange = false;
@@ -301,7 +301,7 @@ include("header.inc.php");
                 <label for="pass1">New password: </label>
                 <input name="pass1" id="pass1" type="password"/>
                 <br/>
-                <label for="pass2">(verify) New password: </label>
+                <label for="pass2">Verify password: </label>
                 <input name="pass2" id="pass2" type="password"/>
                 <input name="modify" type="hidden" value="modify"/>
 

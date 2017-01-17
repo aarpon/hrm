@@ -40,9 +40,8 @@ $clean = array(
     "username" => "",
     "email" => '',
     "group" => "",
-    "pass1" => "",
-    "pass2" => "",
-    "note" => "");
+    "authMode" => "",
+    "informUserOnCreation" => false);
 
 // Username
 if (isset($_POST["username"])) {
@@ -65,10 +64,16 @@ if (isset($_POST["group"])) {
     }
 }
 
+// Authentication mode
+$clean["authMode"] = ProxyFactory::getDefaultAuthenticationMode();
+if (isset($_POST["authMode"])) {
+    $clean["authMode"] = $_POST["authMode"];
+}
+
 // Inform the user on creation?
-$informUserOnCreation = false;
+$clean["informUserOnCreation"] = false;
 if (isset($_POST["inform"]) && $_POST["inform"] == "Yes") {
-    $informUserOnCreation = true;
+    $clean["informUserOnCreation"] = true;
 }
 
 /*
@@ -105,10 +110,10 @@ if (isset($_POST['add'])) {
 
             // TODO refactor
             if ($result) {
-                if ($informUserOnCreation) {
+                if ($clean["informUserOnCreation"]) {
                     $text = "Your account has been activated:\n\n";
                     $text .= "\t      Username: " . $clean["username"] . "\n";
-                    if (ProxyFactory::getDefaultAuthenticationMode() == "restricted") {
+                    if ($clean["authMode"] == "integrated") {
                         $text .= "\t      Password: " . $password . "\n\n";
                     } else {
                         $text .= "\t      Password: Use your " . ProxyFactory::getDefaultProxy()->friendlyName() .
@@ -125,7 +130,7 @@ if (isset($_POST['add'])) {
                     $mail->setMessage($text);
                     $mail->send();
                 }
-                $message = "New user successfully added to the system";
+                $message = "New user successfully added to the system.";
                 shell_exec("$userManagerScript create \"" . $clean["username"] . "\"");
                 $added = True;
             } else {
@@ -164,16 +169,18 @@ if (isset($_POST['add'])) {
 
     <form method="post" action="">
 
-        <div id="box">
-
             <fieldset>
 
-                <legend>account details</legend>
+                <legend>New account details</legend>
 
                 <div id="adduser">
 
-                    <p>The user will be created with <?php echo(ProxyFactory::getDefaultProxy()->friendlyName()); ?>
-                    authentication.</p>
+                    <div id="notice">
+                        <?php echo "$message"; ?>
+                    </div>
+
+                    <p>Default authentication mechanism
+                        is <?php echo(ProxyFactory::getDefaultProxy()->friendlyName()); ?>.</p>
 
                     <label for="username">Username: </label>
                     <input type="text"
@@ -203,17 +210,43 @@ if (isset($_POST['add'])) {
                     <br/>
 
 
+                    <br/>
+
+                    <select title="Authentication mode" name="authMode" id="authMode">
+
+                        <?php
+
+                        // Retrieve all configured authentication modes
+                        $allAuthMap = ProxyFactory::getAllConfiguredAuthenticationModes();
+
+                        // Get default authentication mode
+                        $defaultAuthMode = ProxyFactory::getDefaultAuthenticationMode();
+
+                        $auth_keys = array_keys($allAuthMap);
+                        for ($i = 0; $i < count($allAuthMap); $i++) {
+                            $value = $auth_keys[$i];
+                            $text = $allAuthMap[$value];
+                            if ($defaultAuthMode == $value) {
+                                $selected = "selected";
+                            } else {
+                                $selected = "";
+                            }
+                            echo("<option value='$value' $selected>$text</option>");
+                        }
+
+                        ?>
+                    </select>
+
                 </div>
 
                 <p>
-                <input type="checkbox"
-                       name="inform"
-                       id="inform"
-                       value='Yes' />Send an e-mail to the user on creation?
-                </p>
 
-                <p class="explanation">Do not send an e-mail to the user yet
-                    if you still plan to change the authentication mode.</p>
+                    <input title="Send an e-mail to the user"
+                           type="checkbox"
+                           name="inform"
+                           id="inform"
+                           value='Yes'/>Send an e-mail to the user on creation?
+                </p>
 
                 <input name="add"
                        type="submit"
@@ -222,23 +255,13 @@ if (isset($_POST['add'])) {
 
             </fieldset>
 
-            <br />
+            <br/>
 
             <div>
                 <input type="button"
                        value="close"
                        onclick="window.close();"/>
             </div>
-
-        </div> <!-- box -->
-
-        <div id="notice">
-            <?php
-
-            echo "<p>$message</p>";
-
-            ?>
-        </div>
 
     </form>
 

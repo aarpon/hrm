@@ -62,8 +62,6 @@ $emSetting = $emSettingArr[$chan];
 
     <form method="get" action="">
 
-        <div id="box">
-
             <fieldset>
 
                 <legend>available PSF files</legend>
@@ -100,12 +98,14 @@ $emSetting = $emSettingArr[$chan];
                             }
 
                             if (!isset($NA) || $NA == '') {
+                                $NA = "unknown";
                                 $mismatch = true;
                             } elseif (abs($NA - $NAsetting) / $NA > .02) {
                                 $mismatch = true;
                             }
 
                             if (!isset($emSetting) || $emSetting == '') {
+                                $emSetting = "? ";
                                 $mismatch = true;
                             } elseif (abs($em - $emSetting) / $emSetting > .05) {
                                 $mismatch = true;
@@ -113,7 +113,7 @@ $emSetting = $emSettingArr[$chan];
 
                             if ($mismatch) {
                                 $showWarning = true;
-                                $style = "class=\"info\" ";
+                                $style = "class=\"highlightedPSF\" ";
                             }
 
                             print "            <option value=\"$file\" $style>$file " .
@@ -140,8 +140,6 @@ $emSetting = $emSettingArr[$chan];
                 <input type="button" value="close" onclick="window.close()"/>
             </div>
 
-        </div> <!-- box -->
-
         <div id="message">
             <?php
 
@@ -152,7 +150,7 @@ $emSetting = $emSettingArr[$chan];
                     "Files with parameters very different than those " .
                     "in the current setting " .
                     "($mTypeSetting, NA=$NAsetting, emission = $emSetting nm) " .
-                    "are <i class=\"info\">highligthed</i> and could produce " .
+                    "are <i class=\"highlightedPSF\">highligthed</i> and could produce " .
                     "unexpected results.</p>";
             }
 

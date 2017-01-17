@@ -1296,12 +1296,30 @@ a.filled {
     font-size: 9px;
 }
 
-#box #adduser {
-    padding-right: 5em;
+#account {
+    text-align: right;
+}
+
+#account label {
+    vertical-align: top;
+    display: inline-block;
+}
+
+#account input {
+    display: inline-block;
+    vertical-align: top;
+    width: 300px;
+    margin-left: 10px;
+    margin-bottom: 3px;
 }
 
 #adduser {
     text-align: right;
+}
+
+#adduser #notice {
+    text-align: center;
+    color: red;
 }
 
 #adduser label {
@@ -1312,7 +1330,7 @@ a.filled {
 #adduser input {
     display: inline-block;
     vertical-align: top;
-    width: 300px;
+    width: 400px;
     margin-left: 10px;
     margin-bottom: 3px;
 }
@@ -1606,6 +1624,13 @@ option.default {
 
 .info {
     color: red;
+}
+
+.highlightedPSF {
+    color: red;
+    font-style: italic;
+    font-weight: bold;
+    text-decoration: line-through;
 }
 
 .dbOutDated {
@@ -2056,8 +2081,3 @@ div.StedDeplModeValues {
     font-weight: bold;
 }
 
-.explanation {
-    text-align: left;
-    font-size: 0.8em;
-    font-style: italic;
-}
