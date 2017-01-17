@@ -86,12 +86,12 @@ include("header.inc.php");
 
                 
     <form method="GET" action="" id="GPU">
-       <table id="Servers&GPUs">
+       <table id="Servers">
           <tr>
-              <td class="header">Server Name</td>
-              <td class="header">Hucore Path</td>
-              <td class="header">GPU ID</td>
-              <td class="header">Action</td>
+              <th>Server Name</th>
+              <th>Hucore Path</th>
+              <th>GPU ID</th>
+              <th>Action</th>
           </tr>
 
           <?php
