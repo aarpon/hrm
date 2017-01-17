@@ -25,20 +25,20 @@ $message = "";
 
 $db = new DatabaseConnection();
 
-if (!isset($_GET["add"]["name"]) || empty($_GET["add"]["name"])) {
-    $message .= "One or more invalid fields: no servers to add.\n";
-} elseif (!isset($_GET["add"]["path"]) || empty($_GET["add"]["path"])) {
-    $message .= "One or more invalid fields: no servers to add.\n";
-} elseif (!isset($_GET["add"]["gpuId"]) || !is_numeric($_GET["add"]["gpuId"])) {
-    $message .= "One or more invalid fields: no servers to add.\n";
-} else {
-    $serverName = $_GET["add"]["name"];
-    $huPath     = $_GET["add"]["path"];
-    $gpuId      = $_GET["add"]["gpuId"];
-    if ($db->addServer($serverName, $huPath, $gpuId)) {
-        $message .= "Server could not be added.\n";
+if (isset($_GET["add"]["name"]) && !empty($_GET["add"]["name"])) {
+    if (!isset($_GET["add"]["path"]) || empty($_GET["add"]["path"])) {
+        $message .= "One or more invalid fields: no servers to add.\n";
+    } elseif (!isset($_GET["add"]["gpuId"]) || !is_numeric($_GET["add"]["gpuId"])) {
+        $message .= "One or more invalid fields: no servers to add.\n";
     } else {
-        $message .= "Server '$serverName' added successfully.\n";
+        $serverName = $_GET["add"]["name"];
+        $huPath     = $_GET["add"]["path"];
+        $gpuId      = $_GET["add"]["gpuId"];
+        if ($db->addServer($serverName, $huPath, $gpuId)) {
+            $message .= "Server could not be added.\n";
+        } else {
+            $message .= "Server '$serverName' added successfully.\n";
+        }
     }
 }
 
