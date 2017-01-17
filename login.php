@@ -80,7 +80,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
         if ($tentativeUser->logIn($clean['password'])) {
 
             // If the user does not exist yet in the system, we add it
-            if (! UserManager::existsUser($tentativeUser)) {
+            if (!UserManager::existsUser($tentativeUser)) {
                 UserManager::addUser($tentativeUser, $clean['password']);
             }
 
@@ -221,7 +221,7 @@ include("header.inc.php");
     <h2>Welcome</h2>
 
     <p class="intro">The <a
-            href="javascript:openWindow('http://hrm.sourceforge.net')">Huygens
+                href="javascript:openWindow('http://hrm.sourceforge.net')">Huygens
             Remote Manager</a> is an easy to use interface to the Huygens
         Software
         by <a href="javascript:openWindow('http://www.svi.nl')">Scientific
@@ -377,35 +377,44 @@ include("header.inc.php");
                 <input id="password" name="password" type="password"
                        class="textfield"
                        tabindex="2"/> <br/>
-                <a href="reset_password.php"><img src="images/forgot_pwd.png" width="24" />
+                <a href="reset_password.php"><img src="images/forgot_pwd.png"
+                                                  width="24"/>
                     &nbsp;Forgot my password</a>
                 <input type="hidden" name="request" value="<?php echo $req ?>"/>
                 <input type="submit" class="button" value="login"/>
             </fieldset>
 
-            <fieldset>
-                <legend>
-                    <a href="openWindow(
+            <?php
+            if (ProxyFactory::getDefaultAuthenticationMode() == "integrated") {
+                ?>
+
+                <fieldset>
+                    <legend>
+                        <a href="openWindow(
                'http://www.svi.nl/HuygensRemoteManagerHelpRegistration')">
-                        <img src="images/help.png" alt="?"/></a>
-                    Registration
-                </legend>
+                            <img src="images/help.png" alt="?"/></a>
+                        Registration
+                    </legend>
 
-                <div id="login_registration">
-                    <table>
-                        <tr>
-                            <td class="icon"
-                                onclick="document.location.href='registration.php'">
-                            </td>
-                            <td class="text">
-                                <b>No HRM account yet?</b><br/>
-                                Please register <a href="registration.php">here</a>.
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                    <div id="login_registration">
+                        <table>
+                            <tr>
+                                <td class="icon"
+                                    onclick="document.location.href='registration.php'">
+                                </td>
+                                <td class="text">
+                                    <b>No HRM account yet?</b><br/>
+                                    Please register <a href="registration.php">here</a>.
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
 
-            </fieldset>
+                </fieldset>
+                <?php
+            }
+            ?>
+
 
         </form>
     </div>
