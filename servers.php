@@ -38,6 +38,7 @@ if (isset($_GET["add"]["name"]) && !empty($_GET["add"]["name"])) {
             $message .= "Server could not be added.\n";
         } else {
             $message .= "Server '$serverName' added successfully.\n";
+            $message .= "Please restart the HRM daemon for the changes to take effect.\n";
         }
     }
 }
@@ -48,6 +49,7 @@ if (isset($_GET["remove"]) && !empty($_GET["remove"])) {
             $message .= "Server '$serverName' could not be removed.\n";
         } else {
             $message .= "Server '$serverName' successfully removed.\n";
+            $message .= "Please restart the HRM daemon for the changes to take effect.\n";
         }
     }
 }
