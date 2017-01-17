@@ -742,6 +742,18 @@ input.save {
     padding-bottom: 10px;
 }
 
+table#Servers th {
+    text-align: center;
+    padding-top: 6px;
+    padding-bottom: 20px;
+    font-weight: bold;
+}
+
+table#Servers td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
 #joblist {
     float: left;
     text-align: left;

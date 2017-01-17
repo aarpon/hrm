@@ -2245,6 +2245,68 @@ class DatabaseConnection
         }
     }
 
+    /**
+     * Get the state of GPU acceleration (as string).
+     * @return string One "true" or "false".
+     */
+    public function getGPUID($server)
+    {
+        $query = "SELECT gpuId FROM server WHERE name = '$server';";
+        
+        $result = $this->queryLastValue($query);
+
+        return intval($result);
+    }
+
+
+    /**
+     * Add a server (including GPU info) to the list of processing machines
+       for the queue manager.
+     * @return integer > 0 on failure; 0 on success.
+     */
+    public function addServer($serverName, $huPath, $gpuId)
+    {
+        if (!is_numeric($gpuId)) {
+            return "error: invalid GPU ID";
+        }
+
+        /* This allows for multiple entries for the same machine. */
+        /* The queue manager only looks at the machine name and rejecting
+           anything after the blank. */
+        $server = "$serverName $gpuId";
+
+        $query = "INSERT INTO server VALUES " .
+            "('$server','$huPath','free','NULL','$gpuId')";
+        $result = $this->queryLastValue($query);
+
+        return intval($result);
+    }
+
+
+    /**
+     * Remove a server from the list of processing machines for the queue
+       manager.
+     * @return integer > 0 on failure; 0 on success.
+     */
+    public function removeServer($serverName)
+    {
+        $query = "DELETE FROM server WHERE name='$serverName';";
+        $result = $this->queryLastValue($query);
+
+        return intval($result);
+    }
+    
+
+    public function getAllServers($server)
+    {
+        $query = "SELECT * FROM server;";
+
+        $result = $this->query($query);
+
+        return $result;
+    }
+
+
     /* ------------------------ PRIVATE FUNCTIONS --------------------------- */
 
     /**

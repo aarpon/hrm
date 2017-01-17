@@ -37,6 +37,12 @@ class JobDescription
      * @var string
      */
     private $id;
+    
+    /**
+     * The ID of the GPU card where to run the Job.
+     * @var string
+     */
+    public $gpuId;
 
     /**
      * The Job's ParameterSetting.
@@ -93,7 +99,6 @@ class JobDescription
      */
     private $group;
 
-    //public $rangeParameters;     // why not use a global variable from the beginning?!
 
     /**
      * JobDescription constructor.
@@ -130,6 +135,24 @@ class JobDescription
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * Returns the GPU ID of the card where to run the Job.
+     * @return string $gpuId.
+     */
+    public function gpu()
+    {
+        return $this->gpuId;
+    }
+
+    /**
+     * Sets the GPU ID of the card where the Job runs.
+     * @param  string $gpuId
+     */
+    public function setGpu($gpuId)
+    {
+        $this->gpuId = $gpuId;
     }
 
     /**

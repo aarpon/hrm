@@ -283,17 +283,16 @@ include("header.inc.php");
             <tr>
 
                 <td class="icon">
-                    <a href="./gpu.php">
-                        <img alt="GPU" src="./images/gpu.png"/>
+                    <a href="./servers.php">
+                        <img alt="SERVERS" src="./images/servers.png"/>
                     </a>
                 </td>
 
                 <td class="text">
                     <div class="cell">
-                        <a href="./gpu.php">GPU switch</a>
+                        <a href="./servers.php">Servers & GPU's</a>
                         <br/>
-                        <p>Enable/Disable GPU deconvolution on all processing
-                            machines.</p>
+                        <p>Add servers and GPU cards for faster processing.</p>
                     </div>
                 </td>
 

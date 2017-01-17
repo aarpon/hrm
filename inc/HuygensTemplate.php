@@ -284,6 +284,13 @@ class HuygensTemplate
      */
     private $thumbSubImg;
 
+    /**
+     * The ID of the GPU card where to run this job.
+     * @var string
+     */
+    private $gpuId;
+    
+
     /* -------------------------- Constructor ------------------------------- */
 
     /**
@@ -309,9 +316,10 @@ class HuygensTemplate
     private function initialize(JobDescription $jobDescription)
     {
         $this->jobDescription = $jobDescription;
-        $this->microSetting = $jobDescription->parameterSetting;
-        $this->deconSetting = $jobDescription->taskSetting;
-        $this->analysisSetting = $jobDescription->analysisSetting;
+        $this->microSetting = $jobDescription->parameterSetting();
+        $this->deconSetting = $jobDescription->taskSetting();
+        $this->analysisSetting = $jobDescription->analysisSetting();
+        $this->gpuId = $jobDescription->gpu();
 
         $this->initializeImg();
         $this->initializeThumbCounter();
@@ -345,11 +353,11 @@ class HuygensTemplate
     {
 
         $this->jobInfoArray =
-            array('title' => 'Batch Processing template',
-                'version' => '2.3',
-                'templateName' => '',
-                'date' => '',
-                'listID' => 'info');
+            array('title'        => 'Batch Processing template',
+                  'version'      => '2.3',
+                  'templateName' => '',
+                  'date'         => '',
+                  'listID'       => 'info');
     }
 
     /**
@@ -359,9 +367,9 @@ class HuygensTemplate
     {
 
         $this->jobTasksArray =
-            array('setEnv' => '',
-                'taskID:0' => '',
-                'listID' => 'taskList');
+            array('setEnv'   => '',
+                  'taskID:0' => '',
+                  'listID'   => 'taskList');
     }
 
     /**
@@ -370,19 +378,20 @@ class HuygensTemplate
     private function initializeEnvironment()
     {
         $this->envArray =
-            array('resultDir' => '',
-                'perJobThreadCnt' => 'auto',
-                'concurrentJobCnt' => '1',
-                'OMP_DYNAMIC' => '1',
-                'timeOut' => '10000',
-                'exportFormat' => '',
-                'attemptGpu' => '',
-                'listID' => 'setEnv');
+            array('resultDir'        => '',
+                  'perJobThreadCnt'  => 'auto',
+                  'concurrentJobCnt' => '1',
+                  'OMP_DYNAMIC'      => '1',
+                  'timeOut'          => '10000',
+                  'exportFormat'     => '',
+                  'attemptGpu'       => '',
+                  'gpuDevice'        => '0',
+                  'listID'           => 'setEnv');
 
         $this->expFormatArray =
-            array('type' => '',
-                'multidir' => '',
-                'cmode' => 'scale');
+            array('type'     => '',
+                  'multidir' => '',
+                  'cmode'    => 'scale');
     }
 
     /**
@@ -392,9 +401,9 @@ class HuygensTemplate
     {
 
         $this->imgProcessArray =
-            array('info' => '',
-                'taskList' => '',
-                'listID' => 'taskID:0');
+            array('info'     => '',
+                  'taskList' => '',
+                  'listID'   => 'taskID:0');
 
 
         /* As long as the Huygens Scheduler receives only one job at a time
@@ -407,195 +416,195 @@ class HuygensTemplate
         /* There are no specific names for the deconvolution and microscopy
          templates in the Tcl-lists, they will be set to general names. */
         $this->imgProcessInfoArray =
-            array('state' => 'readyToRun',
-                'tag' => '{setp Micr decon Decon}',
-                'timeStartAbs' => '',
-                'timeOut' => '10000',
-                'userDefConfidence' => 'default',
-                'listID' => 'info');
-
+            array('state'             => 'readyToRun',
+                  'tag'               => '{setp Micr decon Decon}',
+                  'timeStartAbs'      => '',
+                  'timeOut'           => '10000',
+                  'userDefConfidence' => 'default',
+                  'listID'            => 'info');
+        
         /* These are the operations carried out by HuCore/HRM. Operations for
            thumbnail generation are included. Notice that the names of the
            thumbnail operations contain the destination directory as well as
            the thumbnail type and the image type. The thumbnail operation
            names code the type of action executed on the image.*/
         $this->imgProcessTasksArray =
-            array('open' => 'imgOpen',
-                'setParameters' => 'setp',
-                'autocrop' => 'autocrop',
-                'adjustBaseline' => 'adjbl',
-                'ZStabilization' => 'stabilize',
-                'algorithms' => '',
-                'colocalization' => 'coloc',
-                'chromatic' => 'shift',
-                '2Dhistogram' => 'hist',
-                'XYXZRawAtSrcDir' => 'previewGen',
-                'XYXZRawSubImgAtSrcDir' => 'previewGen',
-                'XYXZRawAtDstDir' => 'previewGen',
-                'XYXZDecAtDstDir' => 'previewGen',
-                'orthoRawAtDstDir' => 'previewGen',
-                'orthoDecAtDstDir' => 'previewGen',
-                'ZMovieDecAtDstDir' => 'previewGen',
-                'TimeMovieDecAtDstDir' => 'previewGen',
+            array('open'                  => 'imgOpen',
+                'setParameters'           => 'setp',
+                'autocrop'                => 'autocrop',
+                'adjustBaseline'          => 'adjbl',
+                'ZStabilization'          => 'stabilize',
+                'algorithms'              => '',
+                'colocalization'          => 'coloc',
+                'chromatic'               => 'shift',
+                '2Dhistogram'             => 'hist',
+                'XYXZRawAtSrcDir'         => 'previewGen',
+                'XYXZRawSubImgAtSrcDir'   => 'previewGen',
+                'XYXZRawAtDstDir'         => 'previewGen',
+                'XYXZDecAtDstDir'         => 'previewGen',
+                'orthoRawAtDstDir'        => 'previewGen',
+                'orthoDecAtDstDir'        => 'previewGen',
+                'ZMovieDecAtDstDir'       => 'previewGen',
+                'TimeMovieDecAtDstDir'    => 'previewGen',
                 'TimeSFPMovieDecAtDstDir' => 'previewGen',
-                'SFPRawAtDstDir' => 'previewGen',
-                'SFPDecAtDstDir' => 'previewGen',
-                'ZComparisonAtDstDir' => 'previewGen',
-                'TComparisonAtDstDir' => 'previewGen',
-                'save' => 'imgSave',
-                'listID' => 'taskList');
+                'SFPRawAtDstDir'          => 'previewGen',
+                'SFPDecAtDstDir'          => 'previewGen',
+                'ZComparisonAtDstDir'     => 'previewGen',
+                'TComparisonAtDstDir'     => 'previewGen',
+                'save'                    => 'imgSave',
+                'listID'                  => 'taskList');
 
         /* Options for the 'open image' action */
         $this->imgOpenArray =
-            array('path' => '',
-                'subImg' => '',
-                'series' => '',
-                'index' => '0',
-                'listID' => 'imgOpen');
-
+            array('path'   => '',
+                  'subImg' => '',
+                  'series' => '',
+                  'index'  => '0',
+                  'listID' => 'imgOpen');
+        
         /* Options for the 'set image parameter' action */
         $this->setpArray =
-            array('completeChanCnt' => '',
-                'micr' => '',
-                's' => '',
-                'iFacePrim' => '0.0',
-                'iFaceScnd' => '0.0',
-                'pr' => '',
-                'imagingDir' => '',
-                'ps' => '',
-                'objQuality' => 'good',
-                'pcnt' => '',
-                'ex' => '',
-                'em' => '',
-                'exBeamFill' => '2.0',
-                'ri' => '',
-                'ril' => '',
-                'na' => '',
-                'stedMode' => '',
-                'stedLambda' => '',
-                'stedSatFact' => '',
-                'stedImmunity' => '',
-                'sted3D' => '',
-                'spimExcMode' => '',
-                'spimGaussWidth' => '',
-                'spimCenterOffset' => '',
-                'spimFocusOffset' => '',
-                'spimNA' => '',
-                'spimFill' => '',
-                'spimDir' => '',
-                'listID' => 'setp');
+            array('completeChanCnt'  => '',
+                  'micr'             => '',
+                  's'                => '',
+                  'iFacePrim'        => '0.0',
+                  'iFaceScnd'        => '0.0',
+                  'pr'               => '',
+                  'imagingDir'       => '',
+                  'ps'               => '',
+                  'objQuality'       => 'good',
+                  'pcnt'             => '',
+                  'ex'               => '',
+                  'em'               => '',
+                  'exBeamFill'       => '2.0',
+                  'ri'               => '',
+                  'ril'              => '',
+                  'na'               => '',
+                  'stedMode'         => '',
+                  'stedLambda'       => '',
+                  'stedSatFact'      => '',
+                  'stedImmunity'     => '',
+                  'sted3D'           => '',
+                  'spimExcMode'      => '',
+                  'spimGaussWidth'   => '',
+                  'spimCenterOffset' => '',
+                  'spimFocusOffset'  => '',
+                  'spimNA'           => '',
+                  'spimFill'         => '',
+                  'spimDir'          => '',
+                  'listID'           => 'setp');
 
         /* Options for the 'set image pararmeter' action */
         $this->setpConfArray =
-            array('completeChanCnt' => '',
-                'micr' => 'parState,micr',
-                's' => 'parState,s',
-                'iFacePrim' => 'parState,iFacePrim',
-                'iFaceScnd' => 'parState,iFaceScnd',
-                'pr' => 'parState,pr',
-                'imagingDir' => 'parState,imagingDir',
-                'ps' => 'parState,ps',
-                'objQuality' => 'parState,objQuality',
-                'pcnt' => 'parState,pcnt',
-                'ex' => 'parState,ex',
-                'em' => 'parState,em',
-                'exBeamFill' => 'parState,exBeamFill',
-                'ri' => 'parState,ri',
-                'ril' => 'parState,ril',
-                'na' => 'parState,na',
-                'stedMode' => 'parState,stedMode',
-                'stedLambda' => 'parState,stedLambda',
-                'stedSatFact' => 'parState,stedSatFact',
-                'stedImmunity' => 'parState,stedImmunity',
-                'sted3D' => 'parState,sted3D',
-                'spimExcMode' => 'parState,spimExcMode',
-                'spimGaussWidth' => 'parState,spimGaussWidth',
-                'spimCenterOffset' => 'parState,spimCenterOffset',
-                'spimFocusOffset' => 'parState,spimFocusOffset',
-                'spimNA' => 'parState,spimNA',
-                'spimFill' => 'parState,spimFill',
-                'spimDir' => 'parState,spimDir',
-                'listID' => 'setp');
+            array('completeChanCnt'  => '',
+                  'micr'             => 'parState,micr',
+                  's'                => 'parState,s',
+                  'iFacePrim'        => 'parState,iFacePrim',
+                  'iFaceScnd'        => 'parState,iFaceScnd',
+                  'pr'               => 'parState,pr',
+                  'imagingDir'       => 'parState,imagingDir',
+                  'ps'               => 'parState,ps',
+                  'objQuality'       => 'parState,objQuality',
+                  'pcnt'             => 'parState,pcnt',
+                  'ex'               => 'parState,ex',
+                  'em'               => 'parState,em',
+                  'exBeamFill'       => 'parState,exBeamFill',
+                  'ri'               => 'parState,ri',
+                  'ril'              => 'parState,ril',
+                  'na'               => 'parState,na',
+                  'stedMode'         => 'parState,stedMode',
+                  'stedLambda'       => 'parState,stedLambda',
+                  'stedSatFact'      => 'parState,stedSatFact',
+                  'stedImmunity'     => 'parState,stedImmunity',
+                  'sted3D'           => 'parState,sted3D',
+                  'spimExcMode'      => 'parState,spimExcMode',
+                  'spimGaussWidth'   => 'parState,spimGaussWidth',
+                  'spimCenterOffset' => 'parState,spimCenterOffset',
+                  'spimFocusOffset'  => 'parState,spimFocusOffset',
+                  'spimNA'           => 'parState,spimNA',
+                  'spimFill'         => 'parState,spimFill',
+                  'spimDir'          => 'parState,spimDir',
+                  'listID'           => 'setp');
 
         /* Options for the 'adjust baseline' action */
         $this->adjblArray =
             array('enabled' => '0',
-                'ni' => '0',
-                'listID' => 'adjbl');
+                  'ni'      => '0',
+                  'listID'  => 'adjbl');
 
         /* Options for the 'chromatic aberration correction' action */
         $this->chromaticArray =
-            array('q' => 'standard',
-                'vector' => '',
-                'reference' => '',
-                'channel' => '',
-                'lambdaEm' => '480',
-                'lambdaEx' => '480',
-                'lambdaSted' => '480',
-                'mType' => 'generic',
-                'estMethod' => '2',
-                'listID' => 'shift');
+            array('q'          => 'standard',
+                  'vector'     => '',
+                  'reference'  => '',
+                  'channel'    => '',
+                  'lambdaEm'   => '480',
+                  'lambdaEx'   => '480',
+                  'lambdaSted' => '480',
+                  'mType'      => 'generic',
+                  'estMethod'  => '2',
+                  'listID'     => 'shift');
 
         /* Options for the 'execute deconvolution' action */
         $this->algArray =
-            array('q' => '',
-                'brMode' => '',
-                'it' => '',
-                'bgMode' => '',
-                'bg' => '',
-                'sn' => '',
-                'blMode' => 'auto',
-                'pad' => 'auto',
-                'psfMode' => '',
-                'psfPath' => '',
-                'timeOut' => '36000',
-                'mode' => 'fast',
-                'itMode' => 'auto',
-                'listID' => '');
+            array('q'       => '',
+                  'brMode'  => '',
+                  'it'      => '',
+                  'bgMode'  => '',
+                  'bg'      => '',
+                  'sn'      => '',
+                  'blMode'  => 'auto',
+                  'pad'     => 'auto',
+                  'psfMode' => '',
+                  'psfPath' => '',
+                  'timeOut' => '36000',
+                  'mode'    => 'fast',
+                  'itMode'  => 'auto',
+                  'listID'  => '');
 
         /* Options for the 'autocrop' action. */
         $this->autocropArray =
             array('enabled' => '0',
-                'listID' => 'autocrop');
+                  'listID'  => 'autocrop');
 
         /* Options for the 'ZStabilization' action. */
         $this->ZStabilizeArray =
             array('enabled' => '0',
-                'listID' => 'stabilize');
+                  'listID'  => 'stabilize');
 
         /* Options for the 'colocalization analysis' action. */
         $this->colocArray =
-            array('chanR' => '',
-                'chanG' => '',
-                'threshMode' => '',
-                'threshPercR' => '',
-                'threshPercG' => '',
-                'coefficients' => '',
-                'map' => '',
-                'destDir' => '',
-                'destFile' => '',
-                'listID' => 'coloc');
+            array('chanR'        => '',
+                  'chanG'        => '',
+                  'threshMode'   => '',
+                  'threshPercR'  => '',
+                  'threshPercG'  => '',
+                  'coefficients' => '',
+                  'map'          => '',
+                  'destDir'      => '',
+                  'destFile'     => '',
+                  'listID'       => 'coloc');
 
         /* Options for the '2D histogram' action. */
         $this->histoArray =
-            array('chanR' => '',
-                'chanG' => '',
-                'destDir' => '',
-                'destFile' => '',
-                'listID' => 'hist');
+            array('chanR'    => '',
+                  'chanG'    => '',
+                  'destDir'  => '',
+                  'destFile' => '',
+                  'listID'   => 'hist');
 
         /* Options for the 'create thumbnail from image' action. */
         $this->thumbArray =
-            array('image' => '',
-                'destDir' => '',
-                'destFile' => '',
-                'type' => '',
-                'size' => '400');
+            array('image'    => '',
+                  'destDir'  => '',
+                  'destFile' => '',
+                  'type'     => '',
+                  'size'     => '400');
 
         /* Options for the 'save image' action. */
         $this->imgSaveArray =
             array('rootName' => '',
-                'listID' => 'imgSave');
+                  'listID'   => 'imgSave');
 
         /* Check whether the image is manageable to create slices from it. */
         $this->isEligibleForSlicers($this->srcImage);
@@ -686,7 +695,7 @@ class HuygensTemplate
     {
 
         $list = "";
-
+        
         foreach ($this->envArray as $key => $value) {
 
             if ($key != "listID") {
@@ -703,6 +712,9 @@ class HuygensTemplate
                 case 'attemptGpu':
                     $db = new DatabaseConnection();
                     $list .= $db->getGPUStateAsString();
+                    break;
+                case 'gpuDevice':
+                    $list .= $this->gpuId;
                     break;
                 case 'listID':
                     $list = $this->string2tcllist($list);
