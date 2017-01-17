@@ -15,10 +15,8 @@ if (isset($_GET['home'])) {
     exit();
 }
 
-// The admin must be logged on
-if ((!isset($_SESSION['user'])) ||
-    (!$_SESSION['user']->isAdmin())
-) {
+// The admin must be logged on.
+if (!isset($_SESSION['user']) || (!$_SESSION['user']->isAdmin())) {
     header("Location: " . "login.php");
     exit();
 }
@@ -85,7 +83,7 @@ include("header.inc.php");
     </h3>
 
                 
-    <form method="GET" action="" id="GPU">
+    <form method="GET" action="" id="ServersGPUs">
        <table id="Servers">
           <tr>
               <th>Server Name</th>
@@ -120,7 +118,7 @@ include("header.inc.php");
                  <td><input type="submit"
                        name="remove[<?php echo $serverName;?>]"
                        value="Remove"
-                       onclick="document.forms[\'GPU\'].submit()"/>
+                       onclick="document.forms[\'ServersGPUs\'].submit()"/>
                  </td> 
                  </tr>
           <?php 
@@ -131,7 +129,7 @@ include("header.inc.php");
           <td><input name="add[path]" type="text" size="6"></td>
           <td><input name="add[gpuId]" type="text" size="2"></td>
           <td><input type="submit" value="Add"
-               onclick="document.forms['GPU'].submit()"/></td>
+               onclick="document.forms['ServersGPUs'].submit()"/></td>
 
        </table>
     </form>
