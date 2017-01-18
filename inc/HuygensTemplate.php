@@ -384,7 +384,6 @@ class HuygensTemplate
                   'OMP_DYNAMIC'      => '1',
                   'timeOut'          => '10000',
                   'exportFormat'     => '',
-                  'attemptGpu'       => '',
                   'gpuDevice'        => '0',
                   'listID'           => 'setEnv');
 
@@ -708,10 +707,6 @@ class HuygensTemplate
                     break;
                 case 'exportFormat':
                     $list .= $this->getExportFormat();
-                    break;
-                case 'attemptGpu':
-                    $db = new DatabaseConnection();
-                    $list .= $db->getGPUStateAsString();
                     break;
                 case 'gpuDevice':
                     $list .= $this->gpuId;
