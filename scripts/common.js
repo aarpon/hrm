@@ -44,7 +44,7 @@ function openWindow(url) {
 function openPopup(target) {
     var url = target + "_popup.php";
     var name = "popup";
-    var options = "directories = no, menubar = no, status = no, width = 560, height = 350";
+    var options = "directories = no, menubar = no, status = no, width = 560, height = 380";
     popup = window.open(url, name, options);
     popup.focus();
 }
