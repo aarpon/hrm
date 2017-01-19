@@ -1775,11 +1775,8 @@ class HuygensTemplate
      */
     public function getSamplingSizeT()
     {
-        if ($this->microSetting->sampleSizeT() != 0) {
-            return $this->microSetting->sampleSizeT();
-        } else {
-            return "*";
-        }
+        /* The T sampling may be 0 when dealing with 3D data sets. */
+        return $this->microSetting->sampleSizeT();
     }
 
     /**

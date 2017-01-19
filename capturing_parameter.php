@@ -356,7 +356,7 @@ if ($saveToDB == true) {
                            size="5"
                            value="<?php echo $parameterZStepSize->value() ?>"/>
                         <span class="message_small">&nbsp;
-                            Set to <b>0</b> for 2D datasets.
+                            Set to <b>Nyquist rate in Z</b> for 2D datasets.
                         </span>
                 </li>
 
