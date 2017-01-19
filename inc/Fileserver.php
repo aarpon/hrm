@@ -260,6 +260,7 @@ class Fileserver
                 case 'zvi':
                 case 'czi':
                 case 'nd2':
+                case 'nd':
                 case 'tf2':
                 case 'tf8':
                 case 'btf':

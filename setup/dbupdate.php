@@ -5249,15 +5249,82 @@ if ($current_revision < $n) {
 
     }
 
+    // ------------------ Add  support for nd file format ----------------
+    
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "nd";
+    $record["extension"] = "nd";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "nd";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $record["hucoreName"] = "nd";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE name='" . $record['name'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "nd";
+    $record["translation"] = "Metamorph ND (*.nd)";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
     // Update revision
     if(!update_dbrevision($n))
         return;
-
+    
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
-
 }
 
 fclose($fh);
