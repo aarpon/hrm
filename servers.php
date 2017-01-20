@@ -37,7 +37,7 @@ if (isset($_GET["add"]["name"]) && !empty($_GET["add"]["name"])) {
         if ($db->addServer($serverName, $huPath, $gpuId)) {
             $message .= "Server could not be added.\n";
         } else {
-            $message .= "Server '$serverName' added successfully.\n";
+            $message .= "Server '$serverName' added successfully.\n\n";
             $message .= "Please restart the HRM daemon for the changes to take effect.\n";
         }
     }
@@ -48,7 +48,7 @@ if (isset($_GET["remove"]) && !empty($_GET["remove"])) {
         if ($db->removeServer($serverName)) {
             $message .= "Server '$serverName' could not be removed.\n";
         } else {
-            $message .= "Server '$serverName' successfully removed.\n";
+            $message .= "Server '$serverName' successfully removed.\n\n";
             $message .= "Please restart the HRM daemon for the changes to take effect.\n";
         }
     }
@@ -158,31 +158,33 @@ echo $message;
         <h3>Quick help</h3>
 
         <p>
-            This page allows you to manage processing machines and GPU cards.
-       </p>
-
-        <p>
-            To enable a <b>new processing machine</b> just add an
+            <b>To enable a </b>new processing machine just add an
             entry to the table on the left and restart the HRM daemon
             (Queue Manager).
        </p>
-                    
-        <p>
-            If a machine has no GPUs the GPU ID can take any numeric value.
-            Huygens will process the data on the CPU instead.
+
+       <p>
+            <b>To add</b> a processing machine <b>without GPU's</b> any number
+            in the GPU ID field will do.
+       </p>
+
+       <p>
+            <b>To disable</b> a GPU card simply remove the corresponding entry
+            from the table.
        </p>
 
         <p>
             If a machine has multiple GPUs each GPU can be registered
             independently. Each GPU will be used for the deconvolution of
             one image. Therefore, the HRM queue will run as many images in
-            parallel as the total number of GPUs.
+            parallel as the total number of GPUs: <b>number of entries in
+            this table.</b>
        </p>
                     
         <p>
             The list of GPU IDs can be retrieved by starting HuCore on
             each processing machine and executing 'huOpt gpu -query devices'.
-       </p>
+       </p>        
 
         <p>
             Please visit <a href="https://svi.nl/HuygensGPU">Huygens GPU</a>
