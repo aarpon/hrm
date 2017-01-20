@@ -2,11 +2,7 @@
 #
 # Package HRM for release in target folder, without touching current environment.
 #
-# Requirements:
-#
-#  - php-xdebug
-#  - php-xml
-#
+# A clean checkout from master is performed.
 
 #
 # Input arguments
@@ -35,11 +31,14 @@ ARCHIVE_NAME="$2"
 #
 PROJECT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../
 
+###############################################################################
 #
-# Copy the hrm project directory to the package directory
+# Checkout master into package directory
 #
+###############################################################################
+
 rm -rf ${PACKAGE_DIR}
-cp -R ${PROJECT_DIR} ${PACKAGE_DIR}
+git clone -b master --single-branch https://github.com/aarpon/hrm.git ${PACKAGE_DIR}
 
 ###############################################################################
 #
@@ -47,19 +46,11 @@ cp -R ${PROJECT_DIR} ${PACKAGE_DIR}
 #
 ###############################################################################
 
-echo "Set up HRM for release in ${PACKAGE_DIR}"
-
 # Update composer itself
 ${PACKAGE_DIR}/composer.phar self-update
 
-# Make sure all third-party dependencies exist and are up-to-date
-if [ ! -d "${PACKAGE_DIR}/vendor" ]; then
-    # Install
-    ${PACKAGE_DIR}/composer.phar install --no-dev --working-dir=${PACKAGE_DIR}
-else
-    # Update
-    ${PACKAGE_DIR}/composer.phar update --no-dev --working-dir=${PACKAGE_DIR}
-fi
+# Install all third-party dependencies
+${PACKAGE_DIR}/composer.phar install --no-dev --working-dir=${PACKAGE_DIR}
 
 # Make sure to add our source to the autoloader path
 ${PACKAGE_DIR}/composer.phar dump-autoload --optimize --working-dir=${PACKAGE_DIR}
@@ -70,9 +61,8 @@ ${PACKAGE_DIR}/composer.phar dump-autoload --optimize --working-dir=${PACKAGE_DI
 #
 ###############################################################################
 
-# Remove all git folders and files and idea
+# Remove all git folders and files
 find ${PACKAGE_DIR} -name ".git*" -print0 | xargs -0 rm -rf
-find ${PACKAGE_DIR} -name ".idea" -print0 | xargs -0 rm -rf
 
 # zip it
 rm -f ${ARCHIVE_NAME}
