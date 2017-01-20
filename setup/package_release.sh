@@ -14,7 +14,7 @@ if [ "$#" -ne 2 ]; then
     echo "        package_dir : directory where a release version of the code is prepared (e.g. /tmp/release)"
     echo "        archive_name: full file name of the ZIP file to publish (e.g. /tmp/hrm_3.4.0.zip)"
     echo ""
-    echo "    Example: "$0" /tmp/hrm /tmp/hrm_3.4.0.zip"
+    echo "    Example: "$0" /tmp/release /tmp/hrm_3.4.0.zip"
     echo ""
     exit
 fi
