@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# Set up environment for HRM development.
+#
 # Requirements:
 #
 #  - php-xdebug
@@ -31,5 +33,5 @@ else
     ${PROJECT_DIR}/composer.phar --working-dir=${PROJECT_DIR} update
 fi
 
-# # Make sure to add our source to the autoloader path
+# Make sure to add our source to the autoloader path
 ${PROJECT_DIR}/composer.phar dump-autoload --optimize --working-dir=${PROJECT_DIR}
