@@ -18,9 +18,6 @@ HRM_DEST="dst"
 # file mode to use for user directories
 FILE_MODE=0775
 
-# file mode to use for user directories
-FILE_MODE=0775
-
 # User to run the HRM daemon with rights to
 # execute /bin/mkdir, /bin/chown, /bin/chmod and
 # /bin/rm on HRM_DATA (see above) for user management.
