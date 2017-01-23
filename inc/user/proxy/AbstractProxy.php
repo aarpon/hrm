@@ -54,14 +54,6 @@ abstract class AbstractProxy {
     public function canModifyPassword() { return false; }
 
     /**
-     * Return whether the User must exist in the database before first
-     * authentication is allowed. If false, the User will be created on
-     * first successful authentication (to the external backend).
-     * @return bool True if the User must exist, false otherwise.
-     */
-    public function usersMustExistBeforeFirstAuthentication() { return false; }
-
-    /**
      * Authenticates the User with given username and password.
      * @param string $username Username for authentication.
      * @param string $password Password for authentication.

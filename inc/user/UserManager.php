@@ -64,27 +64,6 @@ class UserManager
     }
 
     /**
-     * Return true if the UserManager must add new Users to the database
-     * before the first authentication is possible.
-     *
-     * If this method returns false, new Users will be automatically added to
-     * the database whenever the (external) authentication system the
-     * successfully accepts their login credentials. If it returns true, the
-     * Users must exist in the database before they may attempt a login.
-     *
-     * Since different Users might be configured to authenticate against
-     * different authentication backends, the User of interest must be passed
-     * as argument.
-     *
-     * @param UserV2 $user User to be queried.
-     * @return bool True if the UserManager can add new Users to the database,
-     * false otherwise.
-     */
-    public static function userMustExistBeforeFirstAuthentication(UserV2 $user) {
-        return $user->proxy()->usersMustExistBeforeFirstAuthentication();
-    }
-
-    /**
      * Check whether the user exists in the User table already.
      * @param UserV2 $user User for which to check for existence.
      * @return bool True if the user exists; false otherwise.
