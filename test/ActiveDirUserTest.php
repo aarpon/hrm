@@ -63,53 +63,12 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($user->logIn($TEST_ACTIVE_DIR_SETTINGS["password"]));
 
         // Store the User
-        $this->assertTrue($user);
+        //$this->assertTrue($user);
 
         // Check that the User now exists
         $this->assertTrue(
             UserManager::findUserByName(
                 $TEST_ACTIVE_DIR_SETTINGS["username"]) != null);
-    }
-
-    /**
-     * Test adding a user to the database.
-     */
-    public function testAddUser()
-    {
-        global $TEST_ACTIVE_DIR_SETTINGS;
-
-        # Create a new user
-        $this->assertTrue(UserManager::createUser(
-            $TEST_ACTIVE_DIR_SETTINGS["username"],
-            UserManager::generateRandomPlainPassword(),
-            $TEST_ACTIVE_DIR_SETTINGS["email"],
-            $TEST_ACTIVE_DIR_SETTINGS["group"],
-            $TEST_ACTIVE_DIR_SETTINGS["institution"],
-            "active_dir",
-            UserConstants::ROLE_ADMIN,
-            UserConstants::STATUS_ACTIVE));
-    }
-
-    /**
-     * Test adding a user with duplicate name to the database.
-     *
-     * The name column is unique, therefore this must fail.
-     *
-     */
-    public function testDuplicateUser()
-    {
-        global $TEST_ACTIVE_DIR_SETTINGS;
-
-        # Create a new user with the same name as an existing one
-        $this->assertFalse(UserManager::createUser(
-            $TEST_ACTIVE_DIR_SETTINGS["username"],
-            UserManager::generateRandomPlainPassword(),
-            $TEST_ACTIVE_DIR_SETTINGS["email"],
-            $TEST_ACTIVE_DIR_SETTINGS["group"],
-            $TEST_ACTIVE_DIR_SETTINGS["institution"],
-            "active_dir",
-            UserConstants::ROLE_ADMIN,
-            UserConstants::STATUS_ACTIVE));
     }
 
     /**
@@ -154,8 +113,8 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($user->emailAddress() == $TEST_ACTIVE_DIR_SETTINGS["email_from_activedir"]);
         $this->assertTrue($user->group() == $TEST_ACTIVE_DIR_SETTINGS["group_from_activedir"]);
         $this->assertTrue($user->authenticationMode() == "active_dir");
-        $this->assertTrue($user->institution() == $TEST_ACTIVE_DIR_SETTINGS["institution"]);
-        $this->assertTrue($user->role() == UserConstants::ROLE_ADMIN);
+        $this->assertTrue($user->institution_id() == $TEST_ACTIVE_DIR_SETTINGS["institution"]);
+        $this->assertTrue($user->role() == $TEST_ACTIVE_DIR_SETTINGS["role"]);
     }
 
     /**
@@ -174,7 +133,7 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is an admin
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->role() == UserConstants::ROLE_ADMIN);
 
         # Make the User a manager
@@ -183,7 +142,7 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is a manager
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->role() == UserConstants::ROLE_MANAGER);
 
         # Make the User a superuser
@@ -192,7 +151,7 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is a superuser
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->role() == UserConstants::ROLE_SUPERUSER);
 
         # Make the User a user
@@ -201,7 +160,7 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is a user
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->role() == UserConstants::ROLE_USER);
     }
 
@@ -217,7 +176,6 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse(UserManager::canModifyEmailAddress($user));
         $this->assertFalse(UserManager::canModifyGroup($user));
-        $this->assertFalse(UserManager::userMustExistBeforeFirstAuthentication($user));
     }
 
     /**
@@ -236,7 +194,7 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is active
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->status() == UserConstants::STATUS_ACTIVE);
 
         # Enable the User
@@ -245,7 +203,7 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is active
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->status() == UserConstants::STATUS_ACTIVE);
 
         # Disable the User
@@ -254,21 +212,8 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is disabled
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->status() == UserConstants::STATUS_DISABLED);
     }
 
-    /**
-     * Delete the test user
-     */
-    public function testDeleteUser()
-    {
-        global $TEST_ACTIVE_DIR_SETTINGS;
-
-        # Delete the user
-        $this->assertTrue(UserManager::deleteUser($TEST_ACTIVE_DIR_SETTINGS["username"]));
-
-        # Search for it (should return null)
-        $this->assertTrue(UserManager::findUserByName($TEST_ACTIVE_DIR_SETTINGS["username"]) == null);
-    }
 }

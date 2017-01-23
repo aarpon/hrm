@@ -39,7 +39,7 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
     {
         # Create a new user
         $this->assertTrue(UserManager::createUser("TestUser", "TestPassword",
-            "test@email.com", "TestGroup", "TestInstitution", "integrated",
+            "test@email.com", "TestGroup", 1, "integrated",
             UserConstants::ROLE_MANAGER, UserConstants::STATUS_ACTIVE));
     }
 
@@ -53,7 +53,7 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
     {
         # Create a new user with the same name as an existing one
         $this->assertFalse(UserManager::createUser("TestUser", "TestPassword",
-            "test@email.com", "TestGroup", "TestInstitution", "integrated",
+            "test@email.com", "TestGroup", 1, "integrated",
             UserConstants::ROLE_MANAGER, UserConstants::STATUS_ACTIVE));
     }
 
@@ -93,7 +93,7 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($user->emailAddress() == "test@email.com");
         $this->assertTrue($user->group() == "TestGroup");
         $this->assertTrue($user->authenticationMode() == "integrated");
-        $this->assertTrue($user->institution() == "TestInstitution");
+        $this->assertTrue($user->institution_id() == 1);
         $this->assertTrue($user->role() == UserConstants::ROLE_MANAGER);
     }
 
@@ -105,13 +105,22 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
         # Find and load the User.
         $user = UserManager::findUserByName("TestUser");
 
+        # Make the User a super admin
+        $this->assertTrue(
+            UserManager::setRole($user->name(), UserConstants::ROLE_SUPERADMIN)
+        );
+
+        # Make sure the User is an admin
+        $user = UserManager::reload($user);
+        $this->assertTrue($user->role() == UserConstants::ROLE_SUPERADMIN);
+
         # Make the User an admin
         $this->assertTrue(
             UserManager::setRole($user->name(), UserConstants::ROLE_ADMIN)
         );
 
         # Make sure the User is an admin
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->role() == UserConstants::ROLE_ADMIN);
 
         # Make the User a manager
@@ -120,7 +129,7 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is a manager
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->role() == UserConstants::ROLE_MANAGER);
 
         # Make the User a superuser
@@ -129,7 +138,7 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is a superuser
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->role() == UserConstants::ROLE_SUPERUSER);
 
         # Make the User a user
@@ -138,7 +147,7 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is a user
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->role() == UserConstants::ROLE_USER);
     }
 
@@ -152,7 +161,6 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue(UserManager::canModifyEmailAddress($user));
         $this->assertTrue(UserManager::canModifyGroup($user));
-        $this->assertTrue(UserManager::userMustExistBeforeFirstAuthentication($user));
     }
 
     /**
@@ -169,7 +177,7 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is active
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->status() == UserConstants::STATUS_ACTIVE);
 
         # Enable the User
@@ -178,7 +186,7 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is active
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->status() == UserConstants::STATUS_ACTIVE);
 
         # Disable the User
@@ -187,7 +195,7 @@ class IntegratedUserTest extends PHPUnit_Framework_TestCase
         );
 
         # Make sure the User is disabled
-        $user->load();
+        $user = UserManager::reload($user);
         $this->assertTrue($user->status() == UserConstants::STATUS_DISABLED);
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+use hrm\user\UserConstants;
+
 /*
 Use these settings for the ActiveDirUserTest unit test.
 
@@ -23,6 +25,9 @@ $TEST_ACTIVE_DIR_SETTINGS["group"] = "";
 
 // Institution
 $TEST_ACTIVE_DIR_SETTINGS["institution"] = "";
+
+// Role
+$TEST_ACTIVE_DIR_SETTINGS["role"] = UserConstants::ROLE_USER;
 
 // These are the real values stored in Active Directory
 $TEST_ACTIVE_DIR_SETTINGS["password"] = "";
