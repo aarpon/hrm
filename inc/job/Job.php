@@ -43,6 +43,12 @@ class Job
     private $server;
 
     /**
+     * The GPU where the deconvolution job will be processed at server 'server'.
+     * @var string
+     */
+    private $gpu;
+
+    /**
      * Process identifier associated with the deconvolution job.
      * @var int
      */
@@ -111,56 +117,56 @@ class Job
         $this->huTemplate = '';
         $this->jobDescription = $jobDescription;
 
-        $this->pipeProducts = array('main' => 'scheduler_client0.log',
-            'history' => '_history.txt',
-            'tmp' => '.tmp.txt',
-            'parameters' => '.parameters.txt',
-            'coloc' => '.coloc.txt',
-            'out' => '_out.txt',
-            'error' => '_error.txt');
+        $this->pipeProducts = array('main'       => 'scheduler_client0.log',
+                                    'history'    => '_history.txt',
+                                    'tmp'        => '.tmp.txt',
+                                    'parameters' => '.parameters.txt',
+                                    'coloc'      => '.coloc.txt',
+                                    'out'        => '_out.txt',
+                                    'error'      => '_error.txt');
 
         $this->imgParam = array(
-            'dx' => 'X pixel size (&mu;m)',
-            'dy' => 'Y pixel size (&mu;m)',
-            'dz' => 'Z step size  (&mu;m)',
-            'dt' => 'Time interval (s)',
-            'iFacePrim' => '',
-            'iFaceScnd' => '',
-            'objQuality' => '',
-            'exBeamFill' => '',
-            'imagingDir' => '',
-            'pcnt' => '',
-            'na' => 'Numerical aperture',
-            'ri' => 'Sample refractive index',
-            'ril' => 'Lens refractive index',
-            'pr' => 'Pinhole size (nm)',
-            'ps' => 'Pinhole spacing (&mu;m)',
-            'ex' => 'Excitation wavelength (nm)',
-            'em' => 'Emission wavelength (nm)',
-            'micr' => 'Microscope type',
-            'stedMode' => 'STED depletion mode',
-            'stedLambda' => 'STED wavelength',
-            'stedSatFact' => 'STED saturation factor (%)',
-            'stedImmunity' => 'STED immunity (%)',
-            'sted3D' => 'STED 3D (%)',
-            'spimExcMode' => 'SPIM excitation mode',
-            'spimGaussWidth' => 'SPIM Gauss Width (&mu;m)',
+            'dx'               => 'X pixel size (&mu;m)',
+            'dy'               => 'Y pixel size (&mu;m)',
+            'dz'               => 'Z step size  (&mu;m)',
+            'dt'               => 'Time interval (s)',
+            'iFacePrim'        => '',
+            'iFaceScnd'        => '',
+            'objQuality'       => '',
+            'exBeamFill'       => '',
+            'imagingDir'       => '',
+            'pcnt'             => '',
+            'na'               => 'Numerical aperture',
+            'ri'               => 'Sample refractive index',
+            'ril'              => 'Lens refractive index',
+            'pr'               => 'Pinhole size (nm)',
+            'ps'               => 'Pinhole spacing (&mu;m)',
+            'ex'               => 'Excitation wavelength (nm)',
+            'em'               => 'Emission wavelength (nm)',
+            'micr'             => 'Microscope type',
+            'stedMode'         => 'STED depletion mode',
+            'stedLambda'       => 'STED wavelength',
+            'stedSatFact'      => 'STED saturation factor (%)',
+            'stedImmunity'     => 'STED immunity (%)',
+            'sted3D'           => 'STED 3D (%)',
+            'spimExcMode'      => 'SPIM excitation mode',
+            'spimGaussWidth'   => 'SPIM Gauss Width (&mu;m)',
             'spimCenterOffset' => 'SPIM Center Offset (&mu;m)',
-            'spimFocusOffset' => 'SPIM Focus Offset (&mu;m)',
-            'spimNA' => 'SPIM NA',
-            'spimFill' => 'SPIM Fill Factor',
-            'spimDir' => 'SPIM Direction (degrees)'
+            'spimFocusOffset'  => 'SPIM Focus Offset (&mu;m)',
+            'spimNA'           => 'SPIM NA',
+            'spimFill'         => 'SPIM Fill Factor',
+            'spimDir'          => 'SPIM Direction (degrees)'
         );
 
-        $this->restParam = array('algorithm' => 'Deconvolution algorithm',
-            'iterations' => 'Number of iterations',
-            'quality' => 'Quality stop criterion',
-            'format' => 'Output file format',
-            'absolute' => 'Background absolute value',
-            'estimation' => 'Background estimation',
-            'ratio' => 'Signal/Noise ratio',
-            'autocrop' => 'Autocrop',
-            'stabilization' => 'Z Stabilization');
+        $this->restParam = array('algorithm'     => 'Deconvolution algorithm',
+                                 'iterations'    => 'Number of iterations',
+                                 'quality'       => 'Quality stop criterion',
+                                 'format'        => 'Output file format',
+                                 'absolute'      => 'Background absolute value',
+                                 'estimation'    => 'Background estimation',
+                                 'ratio'         => 'Signal/Noise ratio',
+                                 'autocrop'      => 'Autocrop',
+                                 'stabilization' => 'Z Stabilization');
     }
 
     /**
@@ -198,6 +204,24 @@ class Job
     public function server()
     {
         return $this->server;
+    }
+
+    /**
+     * Sets the GPU card which will run the Job at server 'server'.
+     * @param string $gpu GPU identifier.
+     */
+    public function setGPU($gpu)
+    {
+        $this->gpu = $gpu;
+    }
+
+    /**
+     * Returns the name of the GPU card associated with the Job.
+     * @return string GPU identifier.
+     */
+    public function gpu()
+    {
+        return $this->gpu;
     }
 
     /**
@@ -260,7 +284,10 @@ class Job
      */
     public function createHuygensTemplate()
     {
+        $jobGpuId = $this->gpu();
         $jobDescription = $this->description();
+        $jobDescription->setGpu($jobGpuId);
+
         $huTemplate = new HuygensTemplate($jobDescription);
         $this->huTemplate = $huTemplate->template;
     }
@@ -369,7 +396,7 @@ class Job
 
         // If fileshare is not on the same host as Huygens
         if (!$imageProcessingIsOnQueueManager && $copy_images_to_huygens_server) {
-            $image = $huygens_server_image_folder . $user->name() .
+            $image = $huygens_server_image_folder . "/" . $user->name() .
                 "/" . $image_destination . "/" .
                 $desc->relativeSourcePath() . $destFileName . "*";
             $previews = $huygens_server_image_folder;
@@ -458,7 +485,7 @@ class Job
         if (!$imageProcessingIsOnQueueManager) {
 
             // Old code: to be removed.
-            // $marker = $huygens_server_image_folder . $user->name() .
+            // $marker = $huygens_server_image_folder . "/" . $user->name() .
             // "/" . $image_destination . "/" . $finishedMarker;
 
             // Copy the finished marker

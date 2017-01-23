@@ -83,9 +83,9 @@ proc reportImageDimensions { } {
 
 # Auxiliary procedure isMultiImgFile.
 # Return 1 if the image is of a type that supports sub-images. Currently, only
-# LIF and CZI.
+# LIF, LOF and CZI.
 proc isMultiImgFile { filename } {
-    set multiImgExtensions { ".lif" ".czi"}
+    set multiImgExtensions { ".lif" ".lof" ".czi"}
 
     set ext [file extension $filename]
     set isMulti 0
@@ -98,7 +98,7 @@ proc isMultiImgFile { filename } {
 }   
 
 # Script for Huygens Core to explore multi-image files and return their
-# subimages. Currently valid for Leica LIF and Zeiss CZI files.
+# subimages. Currently valid for Leica LIF, LOF and Zeiss CZI files.
 proc reportSubImages {} {
     
     set imgCount [Hu_getOpt -count]
@@ -161,7 +161,8 @@ proc reportSubImages {} {
         set extension [file extension $path]
         if { [string equal -nocase $extension ".czi"] } {
             set subImages [lindex $contents 1]
-        } elseif { [string equal -nocase $extension ".lif"] } {
+        } elseif { [string equal -nocase $extension ".lif"]
+               || [string equal -nocase $extension ".lof"]} {
             set resDict [dict create {*}[lindex $contents 1]]
             set subImages [dict keys $resDict]
             

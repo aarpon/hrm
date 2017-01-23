@@ -5,6 +5,8 @@
 use hrm\DatabaseConnection;
 use hrm\Mail;
 use hrm\Nav;
+use hrm\user\UserConstants;
+use hrm\user\UserManager;
 use hrm\Validator;
 use hrm\Util;
 
@@ -89,60 +91,69 @@ if (isset($_POST["OK"])) {
 
     // Check whether all fields have been correctly filled and whether the user
     // already exists
-    if ($clean["username"] != "") {
-        if ($clean["email"] != "") {
-            if ($clean["group"] != "") {
-                if ($clean["pass1"] != "" && $clean["pass2"] != "") {
-                    if ($clean["pass1"] == $clean["pass2"]) {
+    if ($clean["username"] == "") {
+        $message = "Please provide a valid user name.";
+    } else if ($clean["email"] == "") {
+        $message = "Please provide a valid e-mail address.";
+    } else if ($clean["group"] == "") {
+        $message = "Please provide a group.";
+    } else if ($clean["pass1"] == "" || $clean["pass2"] == "") {
+        $message = "Please provide your password (twice).";
+    } else if ($clean["pass1"] == $clean["pass2"]) {
 
-                        // Store the new user into the database
-                        $db = new DatabaseConnection();
-                        if ($db->isReachable()) {
-                            if ($db->emailAddress($clean["username"]) == "") {
-                                $id = Util::get_rand_id(10);
-                                $result = $db->addNewUser($clean["username"],
-                                    $clean["pass1"], $clean["email"], $clean["group"], $id);
+        // Make sure that there is no user with same name
+        if (UserManager::existsUserWithName($clean['username'])) {
 
-                                // TODO refactor
-                                if ($result) {
-                                    $text = "New user registration:\n\n";
-                                    $text .= "\t       Username: " . $clean["username"] . "\n";
-                                    $text .= "\t E-mail address: " . $clean["email"] . "\n";
-                                    $text .= "\t          Group: " . $clean["group"] . "\n";
-                                    $text .= "\tRequest message: " . $clean["note"] . "\n\n";
-                                    $text .= "Accept or reject this user here (login required)\n";
-                                    $text .= $hrm_url . "/user_management.php?seed=" . $id;
-                                    $mail = new Mail($email_sender);
-                                    $mail->setReceiver($email_admin);
-                                    $mail->setSubject("New HRM user registration");
-                                    $mail->setMessage($text);
-                                    if ($mail->send()) {
-                                        $notice = "Application successfully sent!\n" .
-                                            "Your application will be processed by the " .
-                                            "administrator and you will receive a confirmation " .
-                                            "by e-mail.";
-                                    } else {
-                                        $notice = "Your application was successfully stored, " .
-                                            "but there was an error e-mailing the administrator! " .
-                                            "Please <a href=\"mailto:" . str_replace("@", "[at]", $email_admin) . "\">" .
-                                            "inform the person in charge</a>";
-                                    }
-                                    $processed = True;
-                                } else {
-                                    $message = "Could not add user to database.<br />" .
-                                        "Please <a href=\"mailto:" . str_replace("@", "[at]", $email_admin) . "\">" .
-                                        "inform the person in charge</a>";
-                                }
-                            } else $message = "This user name is already in use. Please " .
-                                "enter another one";
-                        } else $message = "Database error.<br />" .
-                            "Please <a href=\"mailto:" . str_replace("@", "[at]", $email_admin) . "\">" .
-                            "inform the person in charge</a>";
-                    } else $message = "Passwords do not match";
-                } else $message = "Please fill in both password fields";
-            } else $message = "Research group empty";
-        } else $message = "Error in Email field. <br />Please fill in the email field with a valid address";
-    } else $message = "Error in Name field. <br />Names should be &lt; 30 characters<br />and contain no spaces";
+            $name = $clean['username'];
+            $message = "Sorry, a user with name $name exists already!";
+
+        } else {
+
+            // Create the new user
+            $institution_id = 1;
+            $uniqueId = UserManager::generateUniqueId();
+            $result = UserManager::createUser($clean["username"],
+                $clean["pass1"], $clean["email"], $clean["group"],
+                $institution_id, "integrated",
+                UserConstants::ROLE_USER,
+                UserConstants::STATUS_ACTIVE,
+                $uniqueId);
+
+            // TODO refactor
+            if ($result) {
+                $text = "New user registration:\n\n";
+                $text .= "\t       Username: " . $clean["username"] . "\n";
+                $text .= "\t E-mail address: " . $clean["email"] . "\n";
+                $text .= "\t          Group: " . $clean["group"] . "\n";
+                $text .= "\tRequest message: " . $clean["note"] . "\n\n";
+                $text .= "Accept or reject this user here (login required)\n";
+                $text .= $hrm_url . "/user_management.php?seed=" . $uniqueId;
+                $mail = new Mail($email_sender);
+                $mail->setReceiver($email_admin);
+                $mail->setSubject("New HRM user registration");
+                $mail->setMessage($text);
+                if ($mail->send()) {
+                    $notice = "Application successfully sent!\n" .
+                        "Your application will be processed by the " .
+                        "administrator and you will receive a confirmation " .
+                        "by e-mail.";
+                } else {
+                    $notice = "Your application was successfully stored, " .
+                        "but there was an error e-mailing the administrator! " .
+                        "Please contact him directly.";
+                }
+                $processed = True;
+            } else {
+                $message = "Could not create user! Please contact your administrator.";
+            }
+        }
+
+    } else {
+
+        $message = "Passwords do not match!";
+
+    }
+
 }
 
 include("header.inc.php");
@@ -160,7 +171,7 @@ include("header.inc.php");
     <div id="navright">
         <ul>
             <?php
-            echo(Nav::exit_to_login());
+            echo(Nav::exitToLogin());
             ?>
         </ul>
     </div>

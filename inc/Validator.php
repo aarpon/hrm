@@ -26,12 +26,12 @@ class Validator
 {
 
     /**
-     * Generic private function that checks whether the string is sanitized.
+     * Generic function that checks whether the string is sanitized.
      * @param string $string A string coming from a text field or the like that
      * is not meant to be input to the database.
      * @return bool True if the string is sanitized, false otherwise.
      */
-    private static function isStringSanitized($string)
+    public static function isStringSanitized($string)
     {
 
         // Clean the string

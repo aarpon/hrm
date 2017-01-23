@@ -18,7 +18,7 @@ use hrm\setting\AnalysisSetting;
 use hrm\setting\base\Setting;
 use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
-use hrm\user\User;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . "/bootstrap.php";
 
@@ -199,9 +199,25 @@ class DatabaseConnection
      */
     public function query($queryString)
     {
-        $connection = $this->connection();
-        $resultSet = $connection->Execute($queryString);
-        if (!$resultSet) {
+        $resultSet = $this->connection()->Execute($queryString);
+        if ($resultSet === false) {
+            return False;
+        }
+        /** @var \ADORecordSet $resultSet */
+        $rows = $resultSet->GetRows();
+        return $rows;
+    }
+
+    /**
+     * Executes an SQL query and returns the results.
+     * @param string $sql Prepared SQL query.
+     * @param array $values Array of values for the prepared query.
+     * @return array|false Result of the query (rows).
+     */
+    public function queryPrepared($sql, array $values)
+    {
+        $resultSet = $this->connection()->Execute($sql, $values);
+        if ($resultSet === false) {
             return False;
         }
         /** @var \ADORecordSet $resultSet */
@@ -238,184 +254,6 @@ class DatabaseConnection
             return False;
         }
         $result = end($rows);
-        return $result;
-    }
-
-    /**
-     * Adds a new user to the database (all parameters are expected to be
-     * already validated!
-     * @param string $username The name of the user.
-     * @param string $password Password (plain).
-     * @param string $email E-mail address.
-     * @param string $group Research group.
-     * @param string $status Status or ID.
-     * @return bool True if the user was added successfully; false otherwise.
-     */
-    public function addNewUser($username, $password, $email, $group, $status)
-    {
-        $cryptPass = md5($password);
-        $query = "INSERT INTO username (name, password, email, research_group, status) " .
-            "VALUES ('$username', '$cryptPass', '$email', '$group', '$status');";
-        $result = $this->execute($query);
-        if ($result) {
-            $query = "UPDATE username SET creation_date = CURRENT_TIMESTAMP WHERE name = '$username';";
-            $result = $this->execute($query);
-        }
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Updates an existing user in the database (all parameters are expected to
-     * be already validated!)
-     * @param bool $isadmin True if the user is the HRM admin.
-     * @param string $username The name of the user.
-     * @param string $password Password (plain).
-     * @param string $email E-mail address.
-     * @param string $group Research group.
-     * @return bool True if the user was updated successfully; false otherwise.
-     */
-    public function updateExistingUser($isadmin, $username, $password, $email = "", $group = "")
-    {
-        // The admin user does not have a group and stores his password in the
-        // configuration files. The only variable is the password.
-        if ($isadmin === True) {
-            $query = "UPDATE username SET password = '" . md5($password) . "' " .
-                "WHERE name = '$username';";
-        } else {
-            $query = "UPDATE username SET email ='$email', " .
-                "research_group ='$group', " .
-                "password = '" . md5($password) . "' " .
-                "WHERE name = '$username';";
-        }
-        $result = $this->execute($query);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Updates an existing user in the database but without changing the password
-     * (all parameters are expected to be already validated!)
-     *
-     * The last access time will be updated as well.
-     *
-     * @param string $username The name of the user (used to query).
-     * @param string $email E-mail address.
-     * @param string $group Research group.
-     * @return bool True if the user was updated successfully; false otherwise.
-     */
-    public function updateUserNoPassword($username, $email, $group)
-    {
-
-        if ($email == "" || $group == "") {
-            Log::warning("User data update: e-mail and group cannot be empty! " .
-                "No changes to the database!");
-            return false;
-        }
-
-        // Build query
-        $query = "UPDATE username SET email ='$email', " .
-            "research_group ='$group' WHERE name = '$username';";
-
-        $result = $this->execute($query);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Updates the status of an existing user in the database (username is
-     * expected to be already validated!)
-     * @param string $username The name of the user.
-     * @param string $status One of 'd', 'a', ...
-     * @return bool True if user status could be updated successfully; false
-     * otherwise.
-     */
-    public function updateUserStatus($username, $status)
-    {
-        $query = "UPDATE username SET status = '$status' WHERE name = '$username'";
-        $result = $this->execute($query);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Updates the status of all non-admin users in the database.
-     * @param string $status One of 'd', 'a', ...
-     * @return bool True if the status of all users could be updated successfully;
-     * false otherwise.
-     */
-    public function updateAllUsersStatus($status)
-    {
-        $query = "UPDATE username SET status = '$status' WHERE name NOT LIKE 'admin'";
-        $result = $this->execute($query);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Deletes an user and all data from the database (username is expected to
-     * be already validated!
-     * @param string $username The name of the user.
-     * @return bool True if deleting all user data was successful; false otherwise.
-     */
-    public function deleteUser($username)
-    {
-        if ($username == 'admin') {
-            return false;
-        }
-        $query = "DELETE FROM username WHERE name = '$username'";
-        $result = $this->execute($query);
-        if ($result) {
-            // delete user's settings
-            $query = "DELETE FROM parameter WHERE owner = '$username'";
-            $this->execute($query);
-            $query = "DELETE FROM parameter_setting WHERE owner = '$username'";
-            $this->execute($query);
-            $query = "DELETE FROM task_parameter WHERE owner = '$username'";
-            $this->execute($query);
-            $query = "DELETE FROM task_setting WHERE owner = '$username'";
-            $this->execute($query);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Returns the password of a given user name.
-     * @param string $name Name of the user.
-     * @return string Password for the requested user.
-     */
-    public function passwordQueryString($name)
-    {
-        $string = "select password from username where name='$name'";
-        return $string;
-    }
-
-    /**
-     * Returns the e-mail address of a given user name.
-     * @param string $username Name of the user.
-     * @return string E-mail address for the requested user.
-     */
-    public function emailAddress($username)
-    {
-        $query = "select email from username where name = '$username'";
-        $result = $this->queryLastValue($query);
         return $result;
     }
 
@@ -519,7 +357,7 @@ class DatabaseConnection
         $owner = $settings->owner();
         $original_user = $owner->name();
         $name = $settings->name();
-        $new_owner = new User();
+        $new_owner = new UserV2();
         $new_owner->setName($targetUserName);
         $settings->setOwner($new_owner);
         /** @var ParameterSetting|TaskSetting|AnalysisSetting $settings */
@@ -738,7 +576,7 @@ class DatabaseConnection
 
         // Fill the setting
         $settings->setName($response["name"]);
-        $user = new User();
+        $user = new UserV2();
         $user->setName($response["owner"]);
         $settings->setOwner($user);
 
@@ -1171,7 +1009,7 @@ class DatabaseConnection
     public function saveJobFiles($id, $owner, $files, $autoseries)
     {
         $result = True;
-        /** @var User $owner */
+        /** @var UserV2 $owner */
         $username = $owner->name();
         $sqlAutoSeries = "";
         foreach ($files as $file) {
@@ -1327,10 +1165,10 @@ class DatabaseConnection
 
         $stopTime = date("Y-m-d H:i:s");
         $id = $desc->id();
-        /** @var User $user */
+        /** @var UserV2 $user */
         $user = $desc->owner();
         $owner = $user->name();
-        $group = $user->userGroup();
+        $group = $user->group();
 
         $parameter = $parameterSetting->parameter('ImageFileFormat');
         $inFormat = $parameter->value();
@@ -1678,29 +1516,6 @@ class DatabaseConnection
     }
 
     /**
-     * Returns the number of jobs currently in the queue for a given username.
-     * @param string $username Name of the user
-     * @return int Number of jobs in queue.
-     */
-    public function getNumberOfQueuedJobsForUser($username)
-    {
-        $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $username . "';";
-        $row = $this->execute($query)->FetchRow();
-        return $row[0];
-    }
-
-    /**
-     * Returns the total number of jobs currently in the queue.
-     * @return int Total number of jobs in queue.
-     */
-    public function getTotalNumberOfQueuedJobs()
-    {
-        $query = "SELECT COUNT(id) FROM job_queue;";
-        $row = $this->execute($query)->FetchRow();
-        return $row[0];
-    }
-
-    /**
      * Returns the name of the user who created the job with given id.
      * @param string $id SId of the job.
      * @return string Name of the user.
@@ -2043,31 +1858,6 @@ class DatabaseConnection
     }
 
     /**
-     * Check whether a user exists.
-     * @param string $name Name of the user.
-     * @return bool True if the user exists, false otherwise.
-     */
-    public function checkUser($name)
-    {
-        $query = "select status from username where name = '$name'";
-        $result = $this->queryLastValue($query);
-        if ($result) $result = true;
-        return $result;
-    }
-
-    /**
-     * Get the status of a user.
-     * @param string $name Name of the user.
-     * @return string status ('a', 'd', ...).
-     */
-    public function getUserStatus($name)
-    {
-        $query = "select status from username where name = '$name'";
-        $result = $this->queryLastValue($query);
-        return $result;
-    }
-
-    /**
      * Return the list of known users (without the administrator).
      * @param string String User name to filter out from the list (optional).
      * @return array Filtered array of users.
@@ -2127,19 +1917,6 @@ class DatabaseConnection
         $result = $this->execute($cmd);
         return $result;
     }
-
-    /**
-     * Updates the last access date of a user.
-     * @param string $userName Name of the user.
-     * @return array Query result.
-     */
-    public function updateLastAccessDate($userName)
-    {
-        $query = "UPDATE username SET last_access_date = CURRENT_TIMESTAMP WHERE name = '$userName'";
-        $result = $this->execute($query);
-        return $result;
-    }
-
 
     /**
      * Gets the maximum number of channels from the database.
@@ -2425,68 +2202,66 @@ class DatabaseConnection
 
     }
 
-    /**
-     * Checks whether a user with a given seed exists in the database.
-     *
-     * If a user requests an account, his username is added to the database with
-     * a random seed as status.
-     *
-     * @param string $seed Seed associated to the User request.
-     * @return bool True if a user with given seed exists, false otherwise.
-     */
-    public function existsUserRequestWithSeed($seed)
-    {
-        $query = "SELECT status FROM username WHERE status = '$seed';";
-        $value = $this->queryLastValue($query);
-        if ($value == false) {
-            return false;
-        } else {
-            return ($value == $seed);
-        }
-
-    }
-
-    /**
-     * Changes the state of GPU acceleration
-     * @param string $newState One of 'on' or 'off'.
-     * @return string Status or error message.
-     */
-    public function switchGPUState($newState)
-    {
-        if ($newState == "On") {
-            $value = TRUE;
-        } else if ($newState == "Off") {
-            $value = FALSE;
-        } else {
-            return "Impossible to change the GPU configuration. Unknown value.";
-        }
-
-        $query = "UPDATE global_variables SET value = '$value' " .
-            "WHERE name = 'GPUenabled';";
-
-        $result = $this->execute($query);
-        if ($result) {
-            return "GPU processing has been turned " .
-            strtolower($newState) . ".";
-        } else {
-            return "Impossible to change the GPU configuration.";
-        }
-    }
 
     /**
      * Get the state of GPU acceleration (as string).
      * @return string One "true" or "false".
      */
-    public function getGPUStateAsString()
+    public function getGPUID($server)
     {
-        $query = "SELECT value FROM global_variables " .
-            "WHERE name = 'GPUenabled';";
+        $query = "SELECT gpuId FROM server WHERE name = '$server';";
+        
+        $result = $this->queryLastValue($query);
 
-        if ($this->queryLastValue($query)) {
-            return "true";
-        } else {
-            return "false";
+        return intval($result);
+    }
+
+
+    /**
+     * Add a server (including GPU info) to the list of processing machines
+       for the queue manager.
+     * @return integer > 0 on failure; 0 on success.
+     */
+    public function addServer($serverName, $huPath, $gpuId)
+    {
+        if (!is_numeric($gpuId)) {
+            return "error: invalid GPU ID";
         }
+
+        /* This allows for multiple entries for the same machine. */
+        /* The queue manager only looks at the machine name and rejecting
+           anything after the blank. */
+        $server = "$serverName $gpuId";
+
+        $query = "INSERT INTO server VALUES " .
+            "('$server','$huPath','free','NULL','$gpuId')";
+        $result = $this->queryLastValue($query);
+
+        return intval($result);
+    }
+
+
+    /**
+     * Remove a server from the list of processing machines for the queue
+       manager.
+     * @return integer > 0 on failure; 0 on success.
+     */
+    public function removeServer($serverName)
+    {
+        $query = "DELETE FROM server WHERE name='$serverName';";
+        $result = $this->queryLastValue($query);
+
+        return intval($result);
+    }
+    
+
+    public function getAllServers($server)
+    {
+        $query = "SELECT * FROM server;";
+
+        $result = $this->query($query);
+
+        return $result;
     }
 
 

@@ -118,7 +118,8 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3>Distilled PSF file selection</h3>
+    <h3><img alt="SelectPSF" src="./images/psf.png"
+             width="40"/>&nbsp;Distilled PSF file selection</h3>
 
     <form method="post" action="select_psf.php" id="select">
 

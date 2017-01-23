@@ -11,7 +11,7 @@ namespace hrm\setting\base;
 
 use hrm\DatabaseConnection;
 use hrm\HuygensTools;
-use hrm\user\User;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
@@ -26,7 +26,7 @@ abstract class SettingEditor
 
     /**
      * Current user.
-     * @var User
+     * @var UserV2
      */
     protected $user;
 
@@ -46,9 +46,9 @@ abstract class SettingEditor
      * SettingEditor constructor.
      *
      * Selects the default Setting if a default Setting exists.
-     * @param User $user Current User.
+     * @param UserV2 $user Current User.
      */
-    protected function __construct(User $user)
+    protected function __construct(UserV2 $user)
     {
         $this->user = $user;
         $this->message = '';
@@ -406,6 +406,26 @@ abstract class SettingEditor
             return False;
         }
         return True;
+    }
+
+    /**
+     * Check if a Setting with given name exists. If it does not, return the
+     * same name. Otherwise append numerical suffixes until a name that does not
+     * exist is found. Return this modified name.
+     *
+     * @param string $name Name of the Setting to try.
+     * @return string Setting name with optional numeric suffix that does not yet exist in the system.
+     */
+    public function getValidNewSettingName($name)
+    {
+        $numIndex = "";
+        $i = 0;
+        while (array_key_exists($name . $numIndex, $this->settings())) {
+            // A setting with this name exists already, try appending a numerical index
+            $i = $i + 1;
+            $numIndex = "$i";
+        }
+        return ($name . $numIndex);
     }
 
     /**

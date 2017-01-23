@@ -1,0 +1,16 @@
+<?php
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
+
+    // Domain
+    $AUTH0_DOMAIN = "";
+
+    // Client id
+    $AUTH0_CLIENT_ID = "";
+
+    // Client secret
+    $AUTH0_CLIENT_SECRET = "";
+
+    // Redirect URI
+    $AUTH0_REDIRECT_URI = "";
+

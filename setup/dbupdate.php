@@ -35,9 +35,9 @@
 //    it is simply updated to the last revision.
 
 // Include hrm_config.inc.php
-use ADODB2_mysql;
-use ADODB2_postgres;
 use hrm\System;
+use hrm\user\proxy\ProxyFactory;
+use hrm\user\UserConstants;
 
 require_once  dirname( __FILE__ ) . '/../inc/bootstrap.php';
 
@@ -3736,7 +3736,7 @@ if ($current_revision < $n) {
     //Update revision
     if(!update_dbrevision($n))
         return;
-    
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
@@ -3956,7 +3956,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return false;
-    }    
+    }
 
 //Update revision
     if(!update_dbrevision($n))
@@ -3977,10 +3977,6 @@ if ($current_revision < $n) {
 // -----------------------------------------------------------------------------
 $n = 14;
 if ($current_revision < $n) {
-
-    $msg = "Trying to update the DB to revision " . $n . ".";
-    write_message($msg);
-    write_to_error($msg);
 
     // Add GPUenabled = 0 into global_variables
     $tabname = "global_variables";
@@ -4082,7 +4078,7 @@ if ($current_revision < $n) {
        }
     }
 
-    
+
     $tabname = "file_extension";
     $record = array();
     $record["file_format"] = "tf8";
@@ -4101,7 +4097,7 @@ if ($current_revision < $n) {
            return;
        }
     }
-    
+
 
     $tabname = "possible_values";
     $record = array();
@@ -4126,7 +4122,7 @@ if ($current_revision < $n) {
         }
     }
 
-    
+
     $tabname = "file_format";
     $record = array();
     $record["name"] = "big-tiff";
@@ -4179,7 +4175,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $alterColumnSQL = $datadict->AlterColumnSQL('task_setting',
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4219,7 +4215,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $alterColumnSQL = $datadict->AlterColumnSQL('analysis_setting',
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4229,7 +4225,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter',
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4259,7 +4255,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter_setting',
                                                 'name VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4319,7 +4315,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
     $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_parameter',
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4418,7 +4414,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
                                                 'owner VARCHAR(255)');
@@ -4428,7 +4424,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
                                                 'setting VARCHAR(255)');
@@ -4438,8 +4434,8 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
-    
+    }
+
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4448,7 +4444,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
                                                 'previous_owner VARCHAR(255)');
@@ -4458,7 +4454,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
                                                 'name VARCHAR(255)');
@@ -4468,8 +4464,8 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
-    
+    }
+
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
                                                 'owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4478,8 +4474,8 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
-    
+    }
+
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
                                                 'setting VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
@@ -4488,7 +4484,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
                                                 'owner VARCHAR(255)');
@@ -4498,7 +4494,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
                                                 'previous_owner VARCHAR(255)');
@@ -4508,7 +4504,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
                                                 'name VARCHAR(255)');
@@ -4528,7 +4524,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('username',
                                                 'name VARCHAR(255)');
@@ -4538,7 +4534,7 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
-    }    
+    }
 
 
     // ------- Enable longer server names in the queue manager. ------
@@ -4564,9 +4560,9 @@ if ($current_revision < $n) {
     }
 
     // ------- Add SPIM microscopy. ------
-    
+
     $tabname = "possible_values";
-    
+
     $record = array();
     $record["parameter"] = "MicroscopeType";
     $record["value"] = "SPIM";
@@ -4903,7 +4899,7 @@ if ($current_revision < $n) {
         }
     }
 
-    
+
 // ------------------ Add columns to 'confidence_levels' ----------------------
     $tabname   = "confidence_levels";
     $newcolumns = array("stedMode",
@@ -4967,7 +4963,7 @@ if ($current_revision < $n) {
         }
     }
 
-    
+
     //Update revision
     if(!update_dbrevision($n))
         return;
@@ -4978,8 +4974,359 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
+// -----------------------------------------------------------------------------
+// Update to revision 15
+// Description: Rename 'username' to 'usernameold'
+//              Create new 'username' table
+//              Migrate users from 'usernameold' to new 'username' table
+//              Drop 'usernameold' table
+// -----------------------------------------------------------------------------
+$n = 15;
+if ($current_revision < $n) {
+
+    //
+    // Enhanced user management
+    //
+
+    // Refresh the table list
+    $tables = $db->MetaTables();
+
+    // Create new table: institution
+    $flds = "
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        name C(255) NOTNULL UNIQUE INDEX,
+        address C(255),
+        url C(255)
+    ";
+
+    $tabname = "institution";
+    if (!in_array($tabname, $tables)) {
+        if (!create_table($tabname, $flds)) {
+            $msg = "Could not create table $tabname!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+
+        // Prepared statement
+        $sql="INSERT INTO $tabname (name, address, url) VALUES (?, ?, ?);";
+
+        // Add default institution
+        $default_institution = array(
+            "name" => "Default",
+            "address" => "Default",
+            "url" => "http://www.example.com"
+        );
+
+        // Run prepared query
+        $rs = $db->Execute($sql, $default_institution);
+        if($rs === false) {
+            $err = $db->ErrorMsg();
+            trigger_error("Could not add default institution " .
+                ": $err", E_USER_ERROR);
+        }
+    }
+
+    // Get ID of the default institution
+    $institution_ids = $db->Execute("SELECT id FROM $tabname;");
+    $rows = $institution_ids->GetRows();
+    $row = $rows[0];
+    $default_institution_id = intval($row['id']);
+
+    // Get current tables
+    $tables = $db->MetaTables();
+
+    // Make sure not to update the username table a second time, or all password
+    // will not be recoverable!
+    $usernameColumns = $db->MetaColumnNames('username');
+    if (! (array_key_exists("ID", $usernameColumns) &&
+        array_key_exists("INSTITUTION_ID", $usernameColumns) &&
+        array_key_exists("ROLE", $usernameColumns)  &&
+        array_key_exists("AUTHENTICATION", $usernameColumns))) {
+
+        // All columns above are new in latest username table and
+        // MUST all exist!
+
+        // Start transaction
+        $db->StartTrans();
+
+        // Rename username table to usernameold
+        $tabname = "username";
+        $oldtabname = "usernameold";
+        if (!in_array($oldtabname, $tables)) {
+            $renameSQL = $datadict->RenameTableSQL($tabname, $oldtabname);
+            if (!$db->Execute($renameSQL[0])) {
+                $msg = "Cannot rename username table! " .
+                    "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+
+        // Drop current index on 'name' from old username table (if the
+        // index is no longer there because the database update was run
+        // more than once in developement, we silently continue).
+        $dropIndexSQL = $datadict->DropIndexSQL("idx_name", $tabname);
+        if (!$db->Execute($dropIndexSQL[0])) {
+            // The index could not be dropped. We continue.
+        }
+
+        // Refresh the table list
+        $tables = $db->MetaTables();
+
+        // Create new table: username
+        $flds = "
+        id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+        name C(255) NOTNULL UNIQUE INDEX,
+        password C(255) NOTNULL,
+        email C(255) NOTNULL,
+        research_group C(255) NOTNULL,
+        institution_id I(11) CONSTRAINTS 'FOREIGN KEY REFERENCES institution (id)',
+        role I(11) NOTNULL DEFAULT 3,
+        authentication C(30) NOTNULL DEFAULT integrated,
+        creation_date T DEFAULT NULL,
+        last_access_date T DEFAULT NULL,
+        status C(10) DEFAULT NULL,
+        seedid C(255) DEFAULT NULL
+    ";
+
+        if (!in_array($tabname, $tables)) {
+            if (!create_table($tabname, $flds)) {
+                $err = $db->ErrorMsg();
+                $msg = "Could not create table $tabname! Error was: " . $err;
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+
+        // Migrate users from 'usernameold' to 'userdata'
+        $allUsers = $db->Execute("SELECT * FROM $oldtabname;");
+        $rows = $allUsers->GetRows();
+
+        // Get the default authentication method
+        $defaultAuthMode = ProxyFactory::getDefaultAuthenticationMode();
+
+        // Prepared statement
+        $sql = "INSERT INTO $tabname " .
+            "(name, password, email, research_group, institution_id, role, authentication, " .
+            "creation_date, last_access_date, status, seedid) VALUES " .
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        foreach ($rows as $row) {
+
+            // Treat the original admin user differently
+            if ($row["name"] == "admin") {
+                $role = UserConstants::ROLE_SUPERADMIN;
+                $currentAuthMode = "integrated";
+                global $email_admin;
+                $currentEmail = $email_admin;
+            } else {
+                $role = UserConstants::ROLE_USER;
+                $currentAuthMode = $defaultAuthMode;
+                $currentEmail = $row["email"];
+            }
+
+            // Complete the user
+            $ext_user = array(
+                "name" => $row["name"],
+                "password" => $row["password"],
+                "email" => $currentEmail,
+                "research_group" => $row["research_group"],
+                "institution_id" => $default_institution_id,
+                "role" => $role,
+                "authentication" => $currentAuthMode,
+                "creation_date" => $row["creation_date"],
+                "last_access_date" => $row["last_access_date"],
+                "status" => "o", // Outdated, i.e. in need of a password rehash.
+                "seedid" => ""
+            );
+
+            // Run prepared query
+            $rs = $db->Execute($sql, $ext_user);
+            if ($rs === false) {
+                $err = $db->ErrorMsg();
+                trigger_error("Could not migrate user " . $row['name'] .
+                    "': $err", E_USER_ERROR);
+            }
+        }
+
+        // Drop the 'usernameold' table
+        $dropTableSQL = $datadict->DropTableSQL("usernameold");
+        if (!$db->Execute($dropTableSQL[0])) {
+            $msg = "Could not drop the old username table!";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+
+        // Complete the transaction
+        $db->CompleteTrans();
+
+    }
+
+    //
+    // Support for lof file format in HRM
+    //
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "lof";
+    $record["extension"] = "lof";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while adding support for the Leica LOF file format.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "lof";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE name='" . $record['name'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while adding support for the Leica LOF file format.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "lof";
+    $record["translation"] = "Leica (*.lof)";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE value='" . $record['value'] .
+        "' AND parameter='" . $record['parameter'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while adding support for the Leica LOF file format.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // ------------------ Add entries to 'server' -------------------------
+    $tabname   = "server";
+    $newcolumn = "gpuId";
+
+    // Does the column exist already?
+    $columns = $db->MetaColumnNames($tabname);
+    if (!array_key_exists(strtoupper($newcolumn), $columns)) {
+
+        $sqlarray = $datadict->ChangeTableSQL($tabname, "$newcolumn I", $dropOldFlds=false);
+        $rs = $datadict->ExecuteSQLArray($sqlarray);
+        if($rs != 2) {
+            $msg = "An error occurred while adding support for multi GPU deconvolution.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+
+    }
+
+    // ------------------ Add  support for nd file format ----------------
+    
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "nd";
+    $record["extension"] = "nd";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE file_format='" . $record['file_format'] .
+             "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "nd";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $record["hucoreName"] = "nd";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE name='" . $record['name'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "nd";
+    $record["translation"] = "Metamorph ND (*.nd)";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                   "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+    
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
 
 fclose($fh);
 
 return;
-

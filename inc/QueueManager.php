@@ -12,8 +12,9 @@ namespace hrm;
 use hrm\job\Job;
 use hrm\job\JobDescription;
 use hrm\job\JobQueue;
-use hrm\user\User;
 use hrm\shell\ExternalProcessFactory;
+use hrm\user\UserConstants;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/bootstrap.php';
 
@@ -36,6 +37,12 @@ class QueueManager
      * @var string
      */
     private $freeServer;
+
+    /**
+     * Name of a free GPU card at server 'freeServer'.
+     * @var string
+     */
+    private $freeGpu;
 
     /**
      * A Job object.
@@ -100,7 +107,8 @@ class QueueManager
             $result = exec($cmd);
         } else {
             $cmd = "'$cmd'";
-            $result = exec("ssh " . $huygens_user . "@" . $server_hostname . " " . $cmd);
+            $result = exec("ssh " . $huygens_user . "@" . $server_hostname .
+                           " " . $cmd);
         }
     }
 
@@ -131,9 +139,8 @@ class QueueManager
         Log::info(">>>>> Executing template: " .
             $imageProcessingIsOnQueueManager . " " .
             $copy_images_to_huygens_server);
-        if (!$imageProcessingIsOnQueueManager &&
-            $copy_images_to_huygens_server
-        ) {
+        if (!$imageProcessingIsOnQueueManager
+            &&  $copy_images_to_huygens_server) {
             $clientTemplatePath =
                 $this->copyImagesToServer($job, $server_hostname);
             Log::info("images copied to IP server");
@@ -315,7 +322,7 @@ class QueueManager
         foreach ($files as $file) {
             $counter++;
             $match = array();
-            if (preg_match("/^(.*\.(lif|czi))\s\((.*)\)/i", $file, $match)) {
+            if (preg_match("/^(.*\.(lif|lof|czi))\s\((.*)\)/i", $file, $match)) {
                 $filteredFiles[$counter] = $match[1];
             } else {
                 $filteredFiles[$counter] = $file;
@@ -388,7 +395,7 @@ class QueueManager
         exec("rm -f " . $batch_filename);
         // >>
 
-        return $huygens_server_image_folder . $user->name() . "/" .
+        return $huygens_server_image_folder . "/" . $user->name() . "/" .
         $image_source . "/";
     }
 
@@ -427,6 +434,7 @@ class QueueManager
         }
         $job = new Job($jobDescription);
         $job->setServer($this->freeServer);
+        $job->setGPU($this->freeGpu);
         return $job;
     }
 
@@ -546,7 +554,7 @@ class QueueManager
             /** @var JobDescription $desc */
             $user = $desc->owner();
 
-            /** @var User $user */
+            /** @var UserV2 $user */
             $fileserver = new Fileserver($user->name());
             if (!$fileserver->isReachable())
                 continue;
@@ -763,7 +771,7 @@ class QueueManager
         $id = $desc->id();
         $pid = $job->pid();
         $server = $job->server();
-        $job->createHuygensTemplate();
+        // $job->createHuygensTemplate();
 
         /* Email destination. */
         $user = $desc->owner();
@@ -864,6 +872,7 @@ class QueueManager
                 if ($this->isProcessingServerReachable($server)) {
                     $this->nping[$server] = 0;
                     $this->freeServer = $server;
+                    $this->freeGpu = $db->getGPUID($server);
                     return True;
                 } else {
                     $this->incNPing($server);
@@ -950,6 +959,11 @@ class QueueManager
         Log::info("Huygens Remote Manager started on "
             . date("Y-m-d H:i:s") . "\n");
 
+        // Fill admin user information in the database
+        if (!$this->fillInSuperAdminInfoInTheDatabase()) {
+            Log::error("Could not store the information for the admin user in the database!");
+            return;
+        }
 
         if (!FileserverV2::createUpDownloadFolderIfMissing()) {
             Log::error("The upload and download folders do not exist or are not writable!");
@@ -1343,7 +1357,7 @@ class QueueManager
                 $params['lambdaEx'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter lambdaEx\!";
+                    $fileFormat . " and parameter lambdaEx!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1356,7 +1370,7 @@ class QueueManager
                 $params['lambdaEm'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter lambdaEm\!";
+                    $fileFormat . " and parameter lambdaEm!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1369,7 +1383,7 @@ class QueueManager
                 $params['mType'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter mType\!";
+                    $fileFormat . " and parameter mType!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1382,7 +1396,7 @@ class QueueManager
                 $params['NA'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter NA\!";
+                    $fileFormat . " and parameter NA!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1395,7 +1409,7 @@ class QueueManager
                 $params['RIMedia'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter RIMedia\!";
+                    $fileFormat . " and parameter RIMedia!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1408,7 +1422,7 @@ class QueueManager
                 $params['RILens'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter RILens\!";
+                    $fileFormat . " and parameter RILens!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1421,7 +1435,7 @@ class QueueManager
                 $params['photonCnt'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter photonCnt\!";
+                    $fileFormat . " and parameter photonCnt!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1434,7 +1448,7 @@ class QueueManager
                 $params['exBeamFill'] = $match[1];
             } else {
                 $msg = "Could not find confidence level for file format " .
-                    $fileFormat . " and parameter exBeamFill\!";
+                    $fileFormat . " and parameter exBeamFill!";
                 Log::error($msg);
                 exit($msg);
             }
@@ -1448,7 +1462,7 @@ class QueueManager
                     $params[$stedParam] = $match[1];
                 } else {
                     $msg = "Could not find confidence level for file format " .
-                        $fileFormat . " and parameter $stedParam\!";
+                        $fileFormat . " and parameter $stedParam!";
                     Log::error($msg);
                     exit($msg);
                 }
@@ -1459,6 +1473,28 @@ class QueueManager
         }
 
         return $confidenceLevels;
+    }
+
+    /**
+     * Transfers info about the admin user from the configuration
+     * files to the database.
+     */
+    private function fillInSuperAdminInfoInTheDatabase()
+    {
+        global $email_admin;
+
+        $success = true;
+
+        $db = new DatabaseConnection();
+        $role = UserConstants::ROLE_SUPERADMIN;
+        $sql = "SELECT email FROM username WHERE name='admin' AND role='$role';";
+        $email = $db->queryLastValue($sql);
+        // If the e-mail is not in the database yet, we store it.
+        if ($email == "") {
+            $sqlUp = "UPDATE username SET email='$email_admin' WHERE name='admin' AND role='$role';";
+            $success &= $db->execute($sqlUp);
+        }
+        return $success;
     }
 
 }

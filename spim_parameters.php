@@ -378,17 +378,7 @@ include("header.inc.php");
                     <?php
                     $possibleValues = $parameterSpimExcMode->possibleValues();
 
-                    /* Make sure the High NA option is the last one. */
-                    for ($i = 0; $i < count($possibleValues); $i++) {
-                        $arrValue = array_shift($possibleValues);
-                        array_push($possibleValues, $arrValue);
-                        if (strstr($arrValue, "High NA")) {
-                            break;
-                        }
-                    }
-
                     /* Loop on rows. */
-
                     for ($chan = 0; $chan < $chanCnt; $chan++) {
                         ?>
                         <tr>
@@ -771,16 +761,7 @@ include("header.inc.php");
                     <?php
                     $possibleValues = $parameterSpimDir->possibleValues();
 
-                    /* Make sure the mix top-left option is the last one. */
-                    for ($i = 0; $i < count($possibleValues); $i++) {
-                        $arrValue = array_shift($possibleValues);
-                        array_push($possibleValues, $arrValue);
-                        if (strstr($arrValue, "top-left")) {
-                            break;
-                        }
-                    }
                     /* Loop on rows. */
-
                     for ($chan = 0; $chan < $chanCnt; $chan++) {
                         ?>
                         <tr>
@@ -795,18 +776,16 @@ include("header.inc.php");
                                     /* Loop for select options. */
 
                                     foreach ($possibleValues as $possibleValue) {
-                                        $translatedValue =
-                                            $parameterSpimDir->translatedValueFor($possibleValue);
 
-                                        if ($translatedValue == $spimDir[$chan]) {
+                                        if ($possibleValue == $spimDir[$chan]) {
                                             $selected = " selected=\"selected\"";
                                         } else {
                                             $selected = "";
                                         }
                                         ?>
                                         <option
-                                            value=<?php echo $translatedValue;
-                                        echo $selected; ?>>
+                                                value=<?php echo("\"$possibleValue\"");
+                                        echo($selected); ?>>
                                             <?php echo $possibleValue; ?>
                                         </option>
                                         <?php
@@ -914,7 +893,9 @@ include("header.inc.php");
 </div> <!-- rightpanel -->
 
 <script type="text/javascript">
-    setSpimEntryProperties();
+    $(document).ready(function () {
+        setSpimEntryProperties();
+    });
 </script>
 
 <?php

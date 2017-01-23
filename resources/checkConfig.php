@@ -5,7 +5,7 @@
     // To use: execute from bash
     // $ php checkConfig.php /path/to/config/file
     //
-    // Example: php checkConfig.php /var/www/hrm/config/hrm_server.config.inc
+    // Example: php checkConfig.php /var/www/html/hrm/config/hrm_server_config.inc
 
     switch ($argc) {
         case 1:
@@ -34,7 +34,7 @@
             return;
          }
 
-         echo "Check against HRM v3.3.x." . PHP_EOL;
+         echo "Check against HRM v3.4.x." . PHP_EOL;
 
          require_once($configFile);
 
@@ -51,7 +51,7 @@
 			"log_verbosity", "logdir", "logfile", "logfile_max_size",
 			"send_mail", "email_sender", "email_admin",
 			"email_list_separator", "authenticateAgainst",
-			"useDESEncryption", "imageProcessingIsOnQueueManager",
+            "imageProcessingIsOnQueueManager",
 			"copy_images_to_huygens_server", "useThumbnails",
 			"genThumbnails", "movieMaxSize", "saveSfpPreviews",
 			"maxComparisonSize", "ping_command", "ping_parameter",
@@ -62,7 +62,7 @@
 			"adodb", "enableUserAdmin", "allow_reservation_users",
 			"resultImagesOwnedByUser", "resultImagesRenamed",
 			"runningLocation", "convertBin", "enable_code_for_huygens",
-			"change_ownership");
+			"change_ownership", "useDESEncryption");
 
 		// Check for variables that must exist
 		$numMissingVariables = 0;
@@ -82,7 +82,24 @@
              }
         }
 
-		if ($numMissingVariables + $numVariablesToRemove == 0) {
+        // Check the values of the $authenticateAgainst variable
+        $numVariableToFix = 0;
+        global $authenticateAgainst;
+        if (!is_array($authenticateAgainst)) {
+            echo "* * * Error: variable 'authenticateAgainst' must be an array!" . PHP_EOL;
+            if ($authenticateAgainst == "MYSQL") {
+                echo "* * * Moreover, please change 'MYSQL' into 'integrated'." . PHP_EOL;
+            } elseif ($authenticateAgainst == "ACTIVE_DIR") {
+                echo "* * * Moreover, please change 'ACTIVE_DIR' into 'active_dir'." . PHP_EOL;
+            } elseif ($authenticateAgainst == "LDAP") {
+                echo "* * * Moreover,  please change 'LDAP' into 'ldap'." . PHP_EOL;
+            } else {
+                //
+            }
+            $numVariableToFix = 1;
+        }
+
+		if ($numMissingVariables + $numVariablesToRemove + $numVariableToFix == 0) {
 		    echo "Check completed successfully! Your configuration file is valid!" . PHP_EOL;
 		} else {
 			echo "Check completed with errors! Please fix your configuration!" . PHP_EOL;

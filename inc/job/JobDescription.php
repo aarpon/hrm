@@ -17,7 +17,7 @@ use hrm\setting\JobParameterSetting;
 use hrm\setting\JobTaskSetting;
 use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
-use hrm\user\User;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
@@ -37,6 +37,12 @@ class JobDescription
      * @var string
      */
     private $id;
+    
+    /**
+     * The ID of the GPU card where to run the Job.
+     * @var string
+     */
+    public $gpuId;
 
     /**
      * The Job's ParameterSetting.
@@ -70,7 +76,7 @@ class JobDescription
 
     /**
      * The user who created the Job.
-     * @var User
+     * @var UserV2
      */
     private $owner;
 
@@ -93,7 +99,6 @@ class JobDescription
      */
     private $group;
 
-    //public $rangeParameters;     // why not use a global variable from the beginning?!
 
     /**
      * JobDescription constructor.
@@ -133,8 +138,26 @@ class JobDescription
     }
 
     /**
+     * Returns the GPU ID of the card where to run the Job.
+     * @return string $gpuId.
+     */
+    public function gpu()
+    {
+        return $this->gpuId;
+    }
+
+    /**
+     * Sets the GPU ID of the card where the Job runs.
+     * @param  string $gpuId
+     */
+    public function setGpu($gpuId)
+    {
+        $this->gpuId = $gpuId;
+    }
+
+    /**
      * Returns the User owner of the job.
-     * @return User Owner of the job.
+     * @return UserV2 Owner of the job.
      */
     public function owner()
     {
@@ -143,9 +166,9 @@ class JobDescription
 
     /**
      * Sets the owner of the Job
-     * @param User $owner Owner of the Job
+     * @param UserV2 $owner Owner of the Job
      */
-    public function setOwner(User $owner)
+    public function setOwner(UserV2 $owner)
     {
         $this->owner = $owner;
     }
@@ -366,7 +389,7 @@ class JobDescription
         $db = new DatabaseConnection();
 
         $parameterSetting = new JobParameterSetting();
-        $owner = new User();
+        $owner = new UserV2();
         $name = $db->userWhoCreatedJob($this->id);
         $owner->setName($name);
         $parameterSetting->setOwner($owner);
@@ -479,7 +502,7 @@ class JobDescription
     }
 
     /**
-     * Returns the file base name. Special handling for LIF and CZI files.
+     * Returns the file base name. Special handling for LIF, LOF and CZI files.
      * @return string File base name.
      * @todo This must go into the Fileserver class!
      */
@@ -494,7 +517,8 @@ class JobDescription
         //$parameterSetting = $this->parameterSetting;
         //$parameter = $parameterSetting->parameter('ImageFileFormat');
         //$fileFormat = $parameter->value();
-        if (preg_match("/^(.*)\.(lif|czi)\s\((.*)\)/i", $inputFile[0], $match)) {
+        if (preg_match("/^(.*)\.(lif|lof|czi)\s\((.*)\)/i",
+                       $inputFile[0], $match)) {
             $inputFile = $match[1] . '_' . $match[2];
         } else {
             $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
@@ -513,7 +537,7 @@ class JobDescription
         global $huygens_server_image_folder;
         global $image_source;
         $user = $this->owner();
-        $result = $huygens_server_image_folder .
+        $result = $huygens_server_image_folder . "/" .
             $user->name() . "/" . $image_source . "/";
         return $result;
     }
@@ -603,7 +627,7 @@ class JobDescription
         $relSrcPath = str_replace(" ", "_", $relSrcPath);
 
         // avoid redundant slashes in path
-        $result = $huygens_server_image_folder . $user->name() . "/" . $image_destination . "/" . $relSrcPath;
+        $result = $huygens_server_image_folder . "/" . $user->name() . "/" . $image_destination . "/" . $relSrcPath;
 
         return $result;
     }

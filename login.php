@@ -5,16 +5,16 @@
 use hrm\Fileserver;
 use hrm\Log;
 use hrm\Nav;
-use hrm\user\mngm\UserManagerFactory;
+use hrm\System;
+use hrm\user\proxy\ProxyFactory;
+use hrm\user\UserManager;
+use hrm\user\UserV2;
 use hrm\Validator;
 use hrm\DatabaseConnection;
-use hrm\user\User;
-use hrm\System;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 global $email_admin;
-global $authenticateAgainst;
 
 /*
  *
@@ -75,57 +75,52 @@ session_start();
 if (isset($_POST['password']) && isset($_POST['username'])) {
     if ($clean['password'] != "" && $clean['username'] != "") {
 
-        // Get the UserManager
-        $userManager = UserManagerFactory::getUserManager(false);
-
         // Create a user
-        $tentativeUser = new User();
-        $tentativeUser->setName($clean['username']);
-        $tentativeUser->logOut(); // TODO
+        $tentativeUser = new UserV2($clean['username']);
 
-        if ($tentativeUser->logIn($clean['username'], $clean['password'])) {
+        if ($tentativeUser->logIn($clean['password'])) {
 
-            if ($tentativeUser->isLoggedIn()) {
+            // If the user does not exist yet in the system, we add it
+            if (!UserManager::existsUser($tentativeUser)) {
+                UserManager::addUser($tentativeUser, $clean['password']);
+            }
 
-                // Register the user in the session
-                $_SESSION['user'] = $tentativeUser;
+            // Register the user in the session
+            $_SESSION['user'] = $tentativeUser;
 
-                // Make sure that the user source and destination folders exist
-                $fileServer = new Fileserver($tentativeUser->name());
-                if (!$fileServer->isReachable()) {
-                    $userManager->createUserFolders($tentativeUser->name());
-                }
+            // Make sure that the user source and destination folders exist
+            $fileServer = new Fileserver($tentativeUser->name());
+            if (!$fileServer->isReachable()) {
+                UserManager::createUserFolders($tentativeUser->name());
+            }
 
-                // Update the user data and the access date in the database
-                $userManager->storeUser($_SESSION['user']);
+            // Log successful logon
+            Log::info("User " . $_SESSION['user']->name() . " (" .
+                $_SESSION['user']->emailAddress() . ") logged on.");
 
-                // Log successful logon
-                Log::info("User " . $_SESSION['user']->name() . " (" .
-                    $_SESSION['user']->emailAddress() . ") logged on.");
-
-                // If the database is not up-to-date go straight to the
-                // database update page
-                if (!System::isDBUpToDate()) {
-                    if ($_SESSION['user']->isAdmin()) {
-                        header("Location: update.php");
-                        exit();
-                    } else {
-                        $message = "Only the administrator is allowed to login " .
-                            "to perform maintenance";
-                    }
+            // If the database is not up-to-date go straight to the
+            // database update page
+            if (!System::isDBUpToDate()) {
+                if ($_SESSION['user']->isAdmin()) {
+                    header("Location: update.php");
+                    exit();
                 } else {
-                    // Is there a requested redirection?
-                    if ($req != "") {
-                        header("Location: " . $req);
-                        exit();
-                    } else {
-                        // Proceed to home
-                        header("Location: " . "home.php");
-                        exit();
-                    }
+                    $message = "Only the administrator is allowed to login " .
+                        "to perform maintenance";
+                }
+            } else {
+                // Is there a requested redirection?
+                if ($req != "") {
+                    header("Location: " . $req);
+                    exit();
+                } else {
+                    // Proceed to home
+                    header("Location: " . "home.php");
+                    exit();
                 }
             }
-        } else if ($userManager->isLoginRestrictedToAdmin()) {
+
+        } else if (UserManager::isLoginRestrictedToAdmin()) {
             if ($tentativeUser->isAdmin()) {
                 $message = "Wrong password";
             } else {
@@ -133,7 +128,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                     "to perform maintenance";
             }
         } else {
-            if ($userManager->isSuspended($tentativeUser)) {
+            if ($tentativeUser->isDisabled()) {
                 $message = "Your account has been suspended, please " .
                     "contact the administrator";
             } else {
@@ -227,7 +222,7 @@ include("header.inc.php");
     <h2>Welcome</h2>
 
     <p class="intro">The <a
-            href="javascript:openWindow('http://hrm.sourceforge.net')">Huygens
+                href="javascript:openWindow('http://hrm.sourceforge.net')">Huygens
             Remote Manager</a> is an easy to use interface to the Huygens
         Software
         by <a href="javascript:openWindow('http://www.svi.nl')">Scientific
@@ -241,6 +236,7 @@ include("header.inc.php");
      */
     if (file_exists("user/login_user.inc") == true) {
         echo "<div id=\"login_user\">\n";
+        /** @noinspection PhpIncludeInspection */
         include "user/login_user.inc";
         echo "</div>";
     }
@@ -382,13 +378,17 @@ include("header.inc.php");
                 <input id="password" name="password" type="password"
                        class="textfield"
                        tabindex="2"/> <br/>
+                <a href="reset_password.php"><img src="images/forgot_pwd.png"
+                                                  width="24"/>
+                    &nbsp;Forgot my password</a>
                 <input type="hidden" name="request" value="<?php echo $req ?>"/>
                 <input type="submit" class="button" value="login"/>
             </fieldset>
 
             <?php
-            if ($authenticateAgainst == "MYSQL") {
+            if (ProxyFactory::getDefaultAuthenticationMode() == "integrated") {
                 ?>
+
                 <fieldset>
                     <legend>
                         <a href="openWindow(
@@ -415,6 +415,7 @@ include("header.inc.php");
                 <?php
             }
             ?>
+
 
         </form>
     </div>

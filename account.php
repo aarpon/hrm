@@ -5,14 +5,14 @@
 use hrm\Nav;
 use hrm\Util;
 use hrm\Validator;
-use hrm\user\mngm\UserManagerFactory;
+use hrm\user\UserManager;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 
 global $email_sender;
 
-/*
+/* *****************************************************************************
  *
  * SANITIZE INPUT
  *   We check the relevant contents of $_POST for validity and store them in
@@ -21,7 +21,7 @@ global $email_sender;
  *   After this step, only the $clean array and no longer the $_POST array
  *   should be used!
  *
- */
+ **************************************************************************** */
 
 // Here we store the cleaned variables
 $clean = array(
@@ -55,12 +55,15 @@ if (isset($_POST["pass2"])) {
         $clean["pass2"] = $_POST["pass2"];
     }
 }
+if (isset($_POST["authMode"])) {
+    $clean["authMode"] = $_POST["authMode"];
+}
 
-/*
+/* *****************************************************************************
  *
- * END OF SANITIZE INPUT
+ * START SESSION, CHECK LOGIN STATE, INITIALIZE WHAT NEEDED
  *
- */
+ **************************************************************************** */
 
 session_start();
 
@@ -81,41 +84,61 @@ if (isset($_SERVER['HTTP_REFERER']) &&
 }
 
 if (isset($_SESSION['account_user'])) {
+
+    // Make sure the User is properly loaded
     $edit_user = $_SESSION['account_user'];
+
 } else {
     $edit_user = $_SESSION['user'];
 }
 
 $message = "";
 
+/* *****************************************************************************
+ *
+ * UPDATE USER SETTINGS
+ *
+ **************************************************************************** */
+
 if (isset($_POST['modify'])) {
 
-    // Set the result to True and then...
+    // Initialize the result to True
     $result = True;
 
-    // ... check that all required entries are indeed set
-    // Email
-    if ($edit_user->isAdmin()) {
-        $emailToUse = '';
-    } else {
+    // E-mail address
+    if (UserManager::canModifyEmailAddress($edit_user)) {
+
+        // Check that a valid e-mail address was provided
         if ($clean['email'] == "") {
             $result = False;
             $message = "Please fill in the email field with a valid address";
         } else {
             $emailToUse = $clean['email'];
         }
+
+    } else {
+
+        // Use current e-mail address
+        $emailToUse = $edit_user->emailAddress();
+
     }
 
-    // Group
-    if ($edit_user->isAdmin()) {
-        $groupToUse = '';
-    } else {
+    // User group
+    if (UserManager::canModifyGroup($edit_user)) {
+
+        // Check that a valid group was provided
         if ($clean['group'] == "") {
             $result = False;
             $message = "Please fill in the group field";
         } else {
             $groupToUse = $clean['group'];
         }
+
+    } else {
+
+        // Use current group
+        $groupToUse = $edit_user->userGroup();
+
     }
 
     // Passwords
@@ -132,31 +155,56 @@ if (isset($_POST['modify'])) {
     }
 
     // Update the information in the database
-    if ($result == True) {
+    if ($result == true) {
 
-        // Get the user manager
-        $userManager = UserManagerFactory::getUserManager($edit_user->isAdmin());
-        $success = $userManager->updateUser($edit_user->isAdmin(), $edit_user->name(),
-            $passToUse, $emailToUse, $groupToUse);
+        // Update the User information
+        if (UserManager::canModifyEmailAddress($edit_user)) {
+            $edit_user->SetEmailAddress($emailToUse);
+        }
+        if (UserManager::canModifyGroup($edit_user)) {
+            $edit_user->SetGroup($groupToUse);
+        }
+        $success = UserManager::storeUser($edit_user, true);
 
-        if ($success == True) {
+        if ($success == true) {
+
+            // Now we need to update the password (and update the success
+            // status).
+            $success &= UserManager::changeUserPassword($edit_user->name(),
+                $passToUse);
+
+        }
+
+        if (!$success) {
+
+            $message = "Sorry, an error occurred and the user data could " .
+                "not be updated!";
+
+        } else {
+
+            // If updating some other User setting, remove the modified
+            // User from the session and return to the user management page.
             if (isset($_SESSION['account_user'])) {
-                $_SESSION['account_user'] =
+                unset($_SESSION['account_user']);
+                $_SESSION['account_update_message'] =
                     "Account details successfully modified";
                 header("Location: " . "user_management.php");
                 exit();
             } else {
                 $message = "Account details successfully modified";
-                $edit_user->reload();
                 $_SESSION['user'] = $edit_user;
                 header("Location: " . $_SESSION['referer']);
                 exit();
             }
-        } else {
-            $message = "Database error, please inform the administrator";
         }
     }
 }
+
+/* *****************************************************************************
+ *
+ * DISPLAY PAGE
+ *
+ **************************************************************************** */
 
 include("header.inc.php");
 ?>
@@ -188,94 +236,117 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3><img alt="SelectImages" src="./images/account_title.png"
+    <h3><img alt="Account" src="./images/account_title.png"
              width="40"/>&nbsp;Your account</h3>
 
     <form method="post" action="" id="useraccount">
 
-        <div id="adduser">
+        <div id="account">
             <?php
-            if (isset($_SESSION['account_user']) ||
-                !$_SESSION['user']->isAdmin()
-            ) {
-                ?>
-                <label for="email">E-mail address: </label>
-                <?php
+
+            $somethingToChange = false;
+
+            if (UserManager::canModifyEmailAddress($edit_user)) {
+
+                $emailForForm = "";
                 if ($clean['email'] != "") {
-                    ?>
-                    <input name="email"
-                           id="email"
-                           type="text"
-                           value="<?php echo $clean['email'] ?>"/>
-                    <?php
+                    $emailForForm = $clean['email'];
                 } else {
-                    ?>
-                    <input name="email"
-                           id="email"
-                           type="text"
-                           value="<?php echo $edit_user->emailAddress() ?>"/>
-                    <?php
+                    $emailForForm = $edit_user->emailAddress();
                 }
+
+                $somethingToChange = true;
                 ?>
 
-                <br/>
-                <?php
-            }
+                <label for="email">E-mail address: </label>
+                <input name="email"
+                       id="email"
+                       type="text"
+                       value="<?php echo $emailForForm; ?>"/>
 
-            if (isset($_SESSION['account_user']) ||
-                !$_SESSION['user']->isAdmin()
-            ) {
-                ?>
-                <label for="group">Research group: </label>
-                <?php
-                if ($clean['group'] != "") {
-                    ?>
-                    <input name="group"
-                           id="group"
-                           type="text"
-                           value="<?php echo $clean['group'] ?>"/>
-                    <?php
-                } else {
-                    ?>
-                    <input name="group"
-                           id="group"
-                           type="text"
-                           value="<?php echo $edit_user->userGroup() ?>"/>
-                    <?php
-                }
-                ?>
-                <br/>
                 <?php
             }
             ?>
             <br/>
-            <label for="pass1">New password: </label>
-            <input name="pass1" id="pass1" type="password"/>
-            <br/>
-            <label for="pass2">(verify) New password: </label>
-            <input name="pass2" id="pass2" type="password"/>
-            <input name="modify" type="hidden" value="modify"/>
+            <?php
 
-            <p>&nbsp;</p>
+            if (UserManager::canModifyGroup($edit_user)) {
+
+                $emailForForm = "";
+                if ($clean['group'] != "") {
+                    $groupForForm = $clean['group'];
+                } else {
+                    $groupForForm = $edit_user->group();
+                }
+
+                $somethingToChange = true;
+
+                ?>
+
+                <label for="group">Research group: </label>
+                <input name="group"
+                       id="group"
+                       type="text"
+                       value="<?php echo $groupForForm; ?>"/>
+
+                <?php
+            }
+
+            ?>
+
+            <br/>
+            <?php
+            if (UserManager::canModifyPassword($edit_user)) {
+                ?>
+                <label for="pass1">New password: </label>
+                <input name="pass1" id="pass1" type="password"/>
+                <br/>
+                <label for="pass2">Verify password: </label>
+                <input name="pass2" id="pass2" type="password"/>
+                <input name="modify" type="hidden" value="modify"/>
+
+                <?php
+
+                $somethingToChange = true;
+            }
+            ?>
+            <p/>
 
             <?php
             $referer = $_SESSION['referer'];
             ?>
         </div>
 
-        <div id="controls">
-            <input type="button" name="cancel" value=""
-                   class="icon cancel"
-                   onmouseover="TagToTip('ttSpanCancel' )"
-                   onmouseout="UnTip()"
-                   onclick="document.location.href='<?php echo $referer ?>'"/>
-            <input type="button" name="save" value=""
-                   class="icon save"
-                   onmouseover="TagToTip('ttSpanSave' )"
-                   onmouseout="UnTip()"
-                   onclick="document.forms['useraccount'].submit()"/>
-        </div>
+        <?php
+        if ($somethingToChange == true) {
+            ?>
+            <div id="controls">
+                <input type="button" name="cancel" value=""
+                       class="icon cancel"
+                       onmouseover="TagToTip('ttSpanCancel' )"
+                       onmouseout="UnTip()"
+                       onclick="document.location.href='<?php echo $referer ?>'"/>
+                <input type="button" name="save" value=""
+                       class="icon save"
+                       onmouseover="TagToTip('ttSpanSave' )"
+                       onmouseout="UnTip()"
+                       onclick="document.forms['useraccount'].submit()"/>
+            </div>
+            <?php
+        } else {
+            ?>
+            <p>The authentication backend does not allow the HRM to make any change!</p>
+            <div id="controls">
+                <input type="button" name="cancel" value=""
+                       class="icon cancel"
+                       onmouseover="TagToTip('ttSpanCancel' )"
+                       onmouseout="UnTip()"
+                       onclick="document.location.href='<?php echo $referer ?>'"/>
+            </div>
 
+        <?php
+        }
+        ?>
     </form>
 
 </div> <!-- content -->

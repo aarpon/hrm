@@ -104,6 +104,13 @@ abstract class Parameter {
     }
 
     /**
+     * Sets the Parameter value(s) to empty.
+     */
+    public function reset( ) {
+        $this->value = null;
+    }
+
+    /**
      * Return true of the value is not set.
      * @return bool True if the value is *not set* (i.e. null), false otherwise.
      */

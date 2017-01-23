@@ -29,11 +29,10 @@
       "email": "olivier.burri@epfl.ch"
     }
   ],
-  "minimum-stability": "dev",
-  "prefer-stable": true,
+  "minimum-stability": "stable",
   "require": {
     "php": ">5.5.0",
-    "adodb/adodb-php": "v5.20.4",
+    "adodb/adodb-php": "v5.20.7",
     "adldap2/adldap2": "4.0.5",
     "fineuploader/php-traditional-server": "1.0.1",
     "monolog/monolog": "1.19.0"

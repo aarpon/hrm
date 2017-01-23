@@ -11,7 +11,7 @@ namespace hrm\setting\base;
 
 use hrm\DatabaseConnection;
 use hrm\param\base\Parameter;
-use hrm\user\User;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
@@ -36,7 +36,7 @@ abstract class Setting {
 
     /**
      * The User that owns the Setting.
-     * @var User
+     * @var UserV2
      */
     protected $owner;
 
@@ -127,7 +127,7 @@ abstract class Setting {
 
     /**
      * Returns the User owner of the Setting.
-     * @return User Owner of the Setting.
+     * @return UserV2 Owner of the Setting.
      */
     public function owner() {
         return $this->owner;
@@ -135,9 +135,9 @@ abstract class Setting {
 
     /**
      * Sets the User owner of the Setting.
-     * @param User $owner The owner of the Setting.
+     * @param UserV2 $owner The owner of the Setting.
      */
-    public function setOwner(User $owner) {
+    public function setOwner(UserV2 $owner) {
         $this->owner = $owner;
     }
 

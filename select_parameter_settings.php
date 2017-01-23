@@ -7,7 +7,7 @@ use hrm\Nav;
 use hrm\setting\ParameterSetting;
 use hrm\setting\ParameterSettingEditor;
 use hrm\System;
-use hrm\user\User;
+use hrm\user\UserV2;
 use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
@@ -45,7 +45,7 @@ if ($_SESSION['user']->isAdmin()) {
 
 // add public setting support
 if (!$_SESSION['user']->isAdmin()) {
-    $admin = new User();
+    $admin = new UserV2();
     $admin->setName("admin");
     $admin_editor = new ParameterSettingEditor($admin);
     $_SESSION['admin_editor'] = $admin_editor;
@@ -116,7 +116,7 @@ if (isset($_POST['copy_public'])) {
     if ($_POST['fileselection'] != 'Choose a file') {
         $filestring = $_POST['fileselection'];
         $path_parts = pathinfo($filestring);
-        $hrmtemplatename = 'Based on ' . $path_parts['filename'];
+        $hrmtemplatename = $_SESSION['editor']->getValidNewSettingName('Based on ' . $path_parts['filename']);
         $setting = $_SESSION['editor']->createNewSetting($hrmtemplatename);
         // @todo This should react appropriately to the return status of image2hrmTemplate()
         $result = $_SESSION['editor']->image2hrmTemplate($setting,
@@ -724,7 +724,7 @@ include("footer.inc.php");
     $(document).ready(function () {
 
         // Get the user name from the session
-        var username = "";
+        var username;
         username = <?php echo("'" . $_SESSION['user']->name() . "'");?>;
 
         // Check that we have a user name
@@ -733,7 +733,14 @@ include("footer.inc.php");
         }
 
         // No templates can be shared with the admin
-        if (username == "admin") {
+        <?php
+        if ($_SESSION['user']->isAdmin()) {
+            echo("var isAdmin = true;" . PHP_EOL);
+        } else {
+            echo("var isAdmin = false;" . PHP_EOL);
+        }
+        ?>
+        if (isAdmin == true) {
             return;
         }
 

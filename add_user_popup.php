@@ -2,9 +2,10 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-use hrm\DatabaseConnection;
 use hrm\Mail;
-use hrm\Util;
+use hrm\user\proxy\ProxyFactory;
+use hrm\user\UserConstants;
+use hrm\user\UserManager;
 use hrm\Validator;
 
 // Settings
@@ -39,9 +40,8 @@ $clean = array(
     "username" => "",
     "email" => '',
     "group" => "",
-    "pass1" => "",
-    "pass2" => "",
-    "note" => "");
+    "authMode" => "",
+    "informUserOnCreation" => false);
 
 // Username
 if (isset($_POST["username"])) {
@@ -64,52 +64,80 @@ if (isset($_POST["group"])) {
     }
 }
 
+// Authentication mode
+$clean["authMode"] = ProxyFactory::getDefaultAuthenticationMode();
+if (isset($_POST["authMode"])) {
+    $clean["authMode"] = $_POST["authMode"];
+}
+
+// Inform the user on creation?
+$clean["informUserOnCreation"] = false;
+if (isset($_POST["inform"]) && $_POST["inform"] == "Yes") {
+    $clean["informUserOnCreation"] = true;
+}
+
 /*
  *
  * END OF SANITIZE INPUT
  *
  */
 
-// TODO refactor from here
+// Add the user
 if (isset($_POST['add'])) {
-    //$user = new User();
-    //$user->setName( $clean['username'] );
 
-    if ($clean["username"] != "") {
-        if ($clean["email"] != "") {
-            if ($clean['group'] != "") {
-                $db = new DatabaseConnection();
-                // Is the user name already taken?
-                if ($db->emailAddress($clean['username']) == "") {
-                    $password = Util::get_rand_id(8);
-                    $result = $db->addNewUser($clean["username"],
-                        $password, $clean["email"],
-                        $clean["group"], 'a');
+    if ($clean["username"] == "") {
+        $message = "Please provide a user name!";
+    } else if ($clean["email"] == "") {
+        $message = "Please provide a valid email address!";
+    } else if ($clean['group'] == "") {
+        $message = "Please a group!";
+    } else {
 
-                    // TODO refactor
-                    if ($result) {
-                        $text = "Your account has been activated:\n\n";
-                        $text .= "\t      Username: " . $clean["username"] . "\n";
+        // Make sure that there is no user with same name
+        if (UserManager::existsUserWithName($clean['username'])) {
+            $name = $clean['username'];
+            $message = "Sorry, a user with name $name exists already!";
+        } else {
+
+            // Add the user
+            // TODO: add institution and authentication mode!
+            $institution_id = 1;
+            $password = UserManager::generateRandomPlainPassword();
+            $result = UserManager::createUser($clean["username"],
+                $password, $clean["email"], $clean["group"], $institution_id,
+                ProxyFactory::getDefaultAuthenticationMode(),
+                UserConstants::ROLE_USER, UserConstants::STATUS_ACTIVE);
+
+            // TODO refactor
+            if ($result) {
+                if ($clean["informUserOnCreation"]) {
+                    $text = "Your account has been activated:\n\n";
+                    $text .= "\t      Username: " . $clean["username"] . "\n";
+                    if ($clean["authMode"] == "integrated") {
                         $text .= "\t      Password: " . $password . "\n\n";
-                        $text .= "Login here\n";
-                        $text .= $hrm_url . "\n\n";
-                        $folder = $image_folder . "/" . $clean["username"];
-                        $text .= "Source and destination folders for your images are " .
-                            "located on server " . $image_host . " under " . $folder . ".";
-                        $mail = new Mail($email_sender);
-                        $mail->setReceiver($clean['email']);
-                        $mail->setSubject('Account activated');
-                        $mail->setMessage($text);
-                        $mail->send();
-                        //$user->setName( '' );
-                        $message = "New user successfully added to the system";
-                        shell_exec("$userManagerScript create \"" . $clean["username"] . "\"");
-                        $added = True;
-                    } else $message = "Database error, please inform the person in charge";
-                } else $message = "This user name is already in use";
-            } else $message = "Please fill in group field";
-        } else $message = "Please fill in email field with a valid address";
-    } else $message = "Please fill in name field";
+                    } else {
+                        $text .= "\t      Password: Use your " . ProxyFactory::getDefaultProxy()->friendlyName() .
+                            " password to login.\n\n";
+                    }
+                    $text .= "Login here\n";
+                    $text .= $hrm_url . "\n\n";
+                    $folder = $image_folder . "/" . $clean["username"];
+                    $text .= "Source and destination folders for your images are " .
+                        "located on server " . $image_host . " under " . $folder . ".";
+                    $mail = new Mail($email_sender);
+                    $mail->setReceiver($clean['email']);
+                    $mail->setSubject('Account activated');
+                    $mail->setMessage($text);
+                    $mail->send();
+                }
+                $message = "New user successfully added to the system.";
+                shell_exec("$userManagerScript create \"" . $clean["username"] . "\"");
+                $added = True;
+            } else {
+                $message = "Sorry, the user could not be registered. Please contact your administrator.";
+            }
+        }
+    }
 }
 
 ?>
@@ -141,20 +169,25 @@ if (isset($_POST['add'])) {
 
     <form method="post" action="">
 
-        <div id="box">
-
             <fieldset>
 
-                <legend>account details</legend>
+                <legend>New account details</legend>
 
                 <div id="adduser">
+
+                    <div id="notice">
+                        <?php echo "$message"; ?>
+                    </div>
+
+                    <p>Default authentication mechanism
+                        is <?php echo(ProxyFactory::getDefaultProxy()->friendlyName()); ?>.</p>
 
                     <label for="username">Username: </label>
                     <input type="text"
                            name="username"
                            id="username"
                            value=""
-                           class="texfield"/>
+                           class=""/>
 
                     <br/>
 
@@ -163,7 +196,7 @@ if (isset($_POST['add'])) {
                            name="email"
                            id="email"
                            value=""
-                           class="texfield"/>
+                           class=""/>
 
                     <br/>
 
@@ -172,34 +205,63 @@ if (isset($_POST['add'])) {
                            name="group"
                            id="group"
                            value=""
-                           class="texfield"/>
+                           class=""/>
 
                     <br/>
 
-                    <input name="add"
-                           type="submit"
-                           value="add"
-                           class="button"/>
+
+                    <br/>
+
+                    <select title="Authentication mode" name="authMode" id="authMode">
+
+                        <?php
+
+                        // Retrieve all configured authentication modes
+                        $allAuthMap = ProxyFactory::getAllConfiguredAuthenticationModes();
+
+                        // Get default authentication mode
+                        $defaultAuthMode = ProxyFactory::getDefaultAuthenticationMode();
+
+                        $auth_keys = array_keys($allAuthMap);
+                        for ($i = 0; $i < count($allAuthMap); $i++) {
+                            $value = $auth_keys[$i];
+                            $text = $allAuthMap[$value];
+                            if ($defaultAuthMode == $value) {
+                                $selected = "selected";
+                            } else {
+                                $selected = "";
+                            }
+                            echo("<option value='$value' $selected>$text</option>");
+                        }
+
+                        ?>
+                    </select>
 
                 </div>
 
+                <p>
+
+                    <input title="Send an e-mail to the user"
+                           type="checkbox"
+                           name="inform"
+                           id="inform"
+                           value='Yes'/>Send an e-mail to the user on creation?
+                </p>
+
+                <input name="add"
+                       type="submit"
+                       value="add"
+                       class="button"/>
+
             </fieldset>
+
+            <br/>
 
             <div>
                 <input type="button"
                        value="close"
                        onclick="window.close();"/>
             </div>
-
-        </div> <!-- box -->
-
-        <div id="notice">
-            <?php
-
-            echo "<p>$message</p>";
-
-            ?>
-        </div>
 
     </form>
 

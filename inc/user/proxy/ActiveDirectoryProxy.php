@@ -1,6 +1,6 @@
 <?php
 /**
- * ActiveDirectoryAuthenticator
+ * ActiveDirectoryProxy
  *
  * @package hrm
  *
@@ -8,7 +8,7 @@
  * Copyright and license notice: see license.txt
  */
 
-namespace hrm\user\auth;
+namespace hrm\user\proxy;
 
 use adLDAP\adLDAP;
 use adLDAP\adLDAPException;
@@ -27,7 +27,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  *
  * @package hrm
  */
-class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
+class ActiveDirectoryProxy extends AbstractProxy {
 
     /**
      * The adLDAP object.
@@ -94,8 +94,8 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
     private $m_UsernameSuffixReplaceString;
 
     /**
-     * ActiveDirectoryAuthenticator constructor: instantiates an
-     * ActiveDirectoryAuthenticator object with the settings specified in
+     * ActiveDirectoryProxy constructor: instantiates an
+     * ActiveDirectoryProxy object with the settings specified in
      * the configuration file.
      *
      * No parameters are passed to the constructor.
@@ -109,8 +109,16 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
                $AD_USERNAME_SUFFIX_REPLACE;
 
 
-        // Include configuration file
-        include(dirname(__FILE__) . "/../../../config/active_directory_config.inc");
+        // Include the configuration file
+        $conf = dirname(__FILE__) . "/../../../config/active_directory_config.inc";
+        if (! is_file($conf)) {
+            $msg = "The Active Directory configuration file " .
+                "'active_directory_config.inc' is missing!";
+            Log::error($msg);
+            throw new \Exception($msg);
+        }
+        /** @noinspection PhpIncludeInspection */
+        include($conf);
 
         // Set up the adLDAP object
         $options = array(
@@ -175,6 +183,15 @@ class ActiveDirectoryAuthenticator extends AbstractAuthenticator {
         if ($this->m_AdLDAP !== null) {
             $this->m_AdLDAP->close();
         }
+    }
+
+    /**
+     * Return a friendly name for the proxy to be displayed in the ui.
+     * @return string 'active directory'.
+     */
+    public function friendlyName()
+    {
+        return 'Active Directory';
     }
 
     /**
