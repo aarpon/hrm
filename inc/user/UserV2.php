@@ -170,7 +170,7 @@ class UserV2 {
         // institution (id).
         $this->name = "";
         $this->emailAddress = "";
-        $this->institution_id = null;
+        $this->institution_id = 1;
         $this->group = "";
 
         // A User is by default a user.
@@ -278,7 +278,7 @@ class UserV2 {
      */
     public function institution_name() {
         $db = new DatabaseConnection();
-        $name = $db->queryLastValue("SELECT name FROM institution WHERE id=$this->id;");
+        $name = $db->queryLastValue("SELECT name FROM institution WHERE id=" . $this->id . ";");
         return $name;
     }
 
