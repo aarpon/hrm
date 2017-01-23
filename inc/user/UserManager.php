@@ -427,6 +427,27 @@ class UserManager
     }
 
     /**
+     * Force a reload from the database for given user.
+     *
+     * @param UserV2 $user User to update with the database content. The User must exist
+     * in the database; if it does not, an Exception is thrown!
+     * @return UserV2 Reloaded user.
+     * @throws \Exception If the user does not exist in the database.
+     */
+    public static function reload(UserV2 $user) {
+
+        if (! self::findUserByName($user->name())) {
+            throw new \Exception("User $user does not exist!");
+        }
+
+        // Force a reload
+        $user->setName($user->name());
+
+        // We explicitly return the updated user
+        return $user;
+    }
+
+    /**
      * Change the user password.
      *
      * @param string $username User name.
