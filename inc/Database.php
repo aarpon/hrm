@@ -2110,7 +2110,7 @@ class DatabaseConnection
         $features = explode(" ", $licDetails);
         foreach ($features as $feature) {
 
-            echo("Storing license feature: " . $feature . PHP_EOL);
+            Log::info("Storing license feature: " . $feature . PHP_EOL);
 
             switch ($feature) {
                 case 'desktop':
