@@ -840,14 +840,18 @@ class UserManager
      * Set the status of a User.
      * @param string $name Name of the user.
      * @param string $status ('a', 'd', ...).
-     * @return \ADORecordSet_empty|\ADORecordSet_mysql|False
+     * @return boolean True if the user status could be set successfully, false otherwise.
      */
     public static function setUserStatus($name, $status)
     {
         $db = new DatabaseConnection();
         $query = "update username set status='$status' where name='$name'";
         $result = $db->execute($query);
-        return $result;
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //
@@ -865,8 +869,7 @@ class UserManager
      *
      * @param string $username The name of the user.
      * @param string $status One of UserConstants::STATUS_ACTIVE, UserConstants::STATUS_DISABLE.
-     * @return bool True if user status could be updated successfully; false
-     * otherwise.
+     * @return bool True if user status could be updated successfully; false otherwise.
      */
     private static function updateUserStatus($username, $status)
     {
