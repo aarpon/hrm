@@ -5316,7 +5316,26 @@ if ($current_revision < $n) {
             return;
         }
     }
-    
+
+
+    // ------------------ Remove deprecated GPU values ----------------
+
+
+    $query = "SELECT * FROM global_variables WHERE name = 'GPUenabled';";
+    $rs = $db->Execute($query);
+    $rows = $rs->getRows();
+    if (count($rows) > 0) {
+        $query = "DELETE FROM global_variables WHERE name='GPUenabled';";
+        $rs = $db->Execute($query);
+        if(!$rs) {
+            $msg = "Could not delete obsolete GPUenabled entry from global_variables table.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+  
     // Update revision
     if(!update_dbrevision($n))
         return;
