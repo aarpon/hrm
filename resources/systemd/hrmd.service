@@ -3,7 +3,8 @@ Description=HRM (Huygens Remote Manager) Queue Manager Service
 # For both 'Requires=' and 'After=', please set one of mysql.service,
 # mariadb.service (fork of mysql), postgresql.service.
 Requires=mysql.service
-After=mysql.service
+Wants=network-online.target
+After=mysql.service network.target network-online.target
 
 [Service]
 # If needed, change 'User=' and 'Group=' to point to the correct values.
