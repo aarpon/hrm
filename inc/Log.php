@@ -102,6 +102,9 @@ class Log
      */
     public static function info($message)
     {
+        if (is_array($message)) {
+            $message = implode(", ", $message);
+        }
         self::getMonoLogger()->addInfo($message);
     }
 
@@ -111,6 +114,9 @@ class Log
      */
     public static function warning($message)
     {
+        if (is_array($message)) {
+            $message = implode(", ", $message);
+        }
         self::getMonoLogger()->addWarning($message);
     }
 
@@ -120,6 +126,9 @@ class Log
      */
     public static function error($message)
     {
+        if (is_array($message)) {
+            $message = implode(", ", $message);
+        }
         self::getMonoLogger()->addError($message);
     }
 }

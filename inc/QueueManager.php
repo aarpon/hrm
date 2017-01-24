@@ -1107,6 +1107,8 @@ class QueueManager
     {
         $licDetails = HuygensTools::askHuCore("reportHuCoreLicense");
 
+        Log::info($licDetails);
+
         // Store the license details in the database.
         $db = new DatabaseConnection();
         if (!$db->storeLicenseDetails($licDetails['license'])) {
