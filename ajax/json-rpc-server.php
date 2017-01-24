@@ -315,7 +315,7 @@ function jsonGetUserAndTotalNumberOfJobsInQueue() {
     if ($user->isAdmin()) {
         $numUserJobsInQueue = 0;
     } else {
-        $numUserJobsInQueue = $user->numberOfJobsInQueue();
+        $numUserJobsInQueue = UserManager::numberOfJobsInQueue($user->name());
     }
     $json["numUserJobsInQueue"] = $numUserJobsInQueue;
 
