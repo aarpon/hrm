@@ -290,7 +290,7 @@ include("header.inc.php");
 
                 <td class="text">
                     <div class="cell">
-                        <a href="./servers.php">Servers & GPU's</a>
+                        <a href="./servers.php">Servers & GPUs</a>
                         <br/>
                         <p>Add servers and GPU cards for faster processing.</p>
                     </div>
