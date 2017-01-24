@@ -170,7 +170,7 @@ $email_list_separator = ",";    // Valid options are ',' and ';'.
 // You can use more than one authentication mechanism by listing them all in the
 // $authenticateAgainst array below.
 //
-// e.g. $authenticateAgainst = array("active_dir", integrated");
+// e.g. $authenticateAgainst = array("active_dir", "integrated");
 //
 // The first entry in the array is the default authentication mode that will be used
 // for new users. Administrators can then change the authentication mode for individual
