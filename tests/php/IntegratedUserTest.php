@@ -11,7 +11,7 @@ use hrm\user\UserConstants;
 use hrm\user\UserManager;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . '/../inc/bootstrap.php';
+require_once dirname(__FILE__) . '/../../inc/bootstrap.php';
 
 class IntegratedUserTest extends PHPUnit_Framework_TestCase
 {

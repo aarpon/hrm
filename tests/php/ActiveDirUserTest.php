@@ -11,7 +11,7 @@ use hrm\user\UserConstants;
 use hrm\user\UserManager;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . '/../inc/bootstrap.php';
+require_once dirname(__FILE__) . '/../../inc/bootstrap.php';
 
 /*
     Configuration file for the test. Copy:
@@ -214,6 +214,11 @@ class ActiveDirUserTest extends PHPUnit_Framework_TestCase
         # Make sure the User is disabled
         $user = UserManager::reload($user);
         $this->assertTrue($user->status() == UserConstants::STATUS_DISABLED);
+
+        # Now re-enable the User
+        $this->assertTrue(
+            UserManager::enableUser($user->name())
+        );
     }
 
 }
