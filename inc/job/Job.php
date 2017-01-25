@@ -805,6 +805,11 @@ class Job
             }
 
             $paramName = $matches[1];
+
+            /* Check if the parameter has a counterpart in HRM. */
+            if (!isset($this->imgParam[$paramName])) {
+                continue;
+            }
             $paramText = $this->imgParam[$paramName];
             $channel = $matches[3];
             $source = $matches[5];
