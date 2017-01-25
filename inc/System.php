@@ -607,7 +607,7 @@ class System
      */
     public static function getUploadMaxFileSize($unit = 'M')
     {
-        return System::formatMemoryStringByUnit(UtilV2::getMaxFileSize(), $unit);
+        return System::formatMemoryStringByUnit(UtilV2::getMaxUploadFileSize(), $unit);
     }
 
     /**

@@ -144,7 +144,7 @@ class UtilV2
      * @todo Does the php.ini value play a role in the chunk uploader
      * (i.e., does it apply to the file **chunk** size)?
      */
-    public static function getMaxFileSize()
+    public static function getMaxUploadFileSize()
     {
         global $max_upload_limit;
 

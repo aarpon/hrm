@@ -954,7 +954,7 @@ class Fileserver
             $uploadDir = $this->destinationFolder();
         }
 
-        $max = UtilV2::getMaxFileSize() / 1024 / 1024;
+        $max = UtilV2::getMaxUploadFileSize() / 1024 / 1024;
         $maxFile = "$max MB";
 
         $ok = "";

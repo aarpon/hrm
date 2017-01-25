@@ -48,7 +48,7 @@ function fileButton($type) {
       break;
 
     case "upload":
-      $max = UtilV2::getMaxFileSize() / 1024 / 1024;
+      $max = UtilV2::getMaxUploadFileSize() / 1024 / 1024;
       $maxFile = "$max MB";
       $max = UtilV2::getMaxPostSize() / 1024 / 1024;
       $maxPost = "$max MB";
@@ -540,8 +540,7 @@ include("header_fb.inc.php");
                 validation: {
                     sizeLimit: <?php
                         // FineUploader uses 1MB = 1e6 bytes
-                        global $max_upload_limit;
-                        echo ((isset($max_upload_limit)) ? $max_upload_limit * 1e6 : 0);
+                        echo (UtilV2::getMaxUploadFileSize());
                         ?>,
                     acceptFiles: ".dv,.ims,.lif,.lof,.lsm,.oif,.pic,.3rd,.stk,.zvi,.czi,.nd2,.nd,.tf2,.tf8,.btf,.h5," +
                         ".tif,.tiff,.ome.tif,.ome.tiff,.ics,.ids,.zip,.tgz,.tar,.tar.gz",

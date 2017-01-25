@@ -37,11 +37,12 @@
  */
 
 use hrm\FileserverV2;
+use hrm\UtilV2;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 require_once dirname(__FILE__) . '/../vendor/fineuploader/php-traditional-server/handler.php';
 
-global $httpUploadTempChunksDir, $httpUploadTempFilesDir, $max_upload_limit;
+global $httpUploadTempChunksDir, $httpUploadTempFilesDir;
 
 // Required folders. Make sure they exist and have proper permissions.
 // The check is done by the Queue Manager on startup.
@@ -54,8 +55,9 @@ $uploader = new UploadHandler();
 $uploader->allowedExtensions = FileserverV2::getAllValidExtensions();
 
 // Specify max file size in bytes (FineUploader uses 1MB = 1e6 bytes).
-if (isset($max_upload_limit) && $max_upload_limit > 0) {
-    $uploader->sizeLimit = $max_upload_limit * 1e6;
+$maxUploadFileSize = UtilV2::getMaxUploadFileSize();
+if ($maxUploadFileSize > 0) {
+    $uploader->sizeLimit = $maxUploadFileSize;
 } else {
     $uploader->sizeLimit = null;
 }
