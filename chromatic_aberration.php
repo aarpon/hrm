@@ -170,7 +170,7 @@ include("header.inc.php");
                                         name="ChromaticAberrationCh<?php echo $chan . '_' . $component; ?>"
                                         title="Channel <?php echo $chan; ?>, component <?php echo $component; ?>"
                                         type="text"
-                                        size="6"
+                                        size="1"
                                         value="<?php echo $chromaticArray[$offset]; ?>"
                                         class="multichannelinput"/></td>
                                 <?php
