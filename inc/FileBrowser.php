@@ -514,6 +514,7 @@ include("header_fb.inc.php");
             var totalAllowedSizeOfSelectedFiles = <?php echo(UtilV2::getMaxPostSize()); ?>;
             var totalAllowedSizeOfSingleFile = <?php echo(UtilV2::getMaxUploadFileSize()); ?>;
 
+            $("#upMsgError").empty();
             $("#upMsg").empty().text("Selected " + totalSizeOfSelectedFiles + " of " +
                 totalAllowedSizeOfSelectedFiles + " bytes.");
 
@@ -548,7 +549,7 @@ include("header_fb.inc.php");
                     }
                 },
                 validation: {
-                    stopOnFirstInvalidFile: true,
+                    stopOnFirstInvalidFile: false,
                     sizeLimit: totalAllowedSizeOfSingleFile,
                     acceptFiles: ".dv,.ims,.lif,.lof,.lsm,.oif,.pic,.3rd,.stk,.zvi,.czi,.nd2,.nd,.tf2,.tf8,.btf,.h5," +
                         ".tif,.tiff,.ome.tif,.ome.tiff,.ics,.ids,.zip,.tgz,.tar,.tar.gz",
@@ -590,20 +591,18 @@ include("header_fb.inc.php");
 
                         // Check the file of the individual file
                         if (data.size > totalAllowedSizeOfSingleFile) {
-                            $("#upMsgError").empty().text("File " + data.name + " is too large!");
+                            $("#upMsgError").append("<br />File " + data.name +
+                                " was rejected: too large.");
                             return false;
                         }
 
                         // Check the total size of added files
                         if(totalSizeOfSelectedFiles + data.size > totalAllowedSizeOfSelectedFiles) {
-                            $("#upMsgError")
-                                .empty()
-                                .text("The total size of the selected files is too large!")
-                                .append("<br />File " + data.name + " was rejected.");
+                            $("#upMsgError").append("<br />File " + data.name +
+                                " was rejected: total allowed size exceeded.");
                             return false;
                         } else {
                             totalSizeOfSelectedFiles = totalSizeOfSelectedFiles + data.size;
-                            $("#upMsgError").empty()
                             $("#upMsg").empty().text("Selected " + totalSizeOfSelectedFiles +
                                 " of " + totalAllowedSizeOfSelectedFiles + " bytes.");
                             return true;
