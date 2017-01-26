@@ -137,7 +137,8 @@ class UtilV2
      *
      * The value is defined by 'upload_max_filesize' from php.ini and (optionally)
      * from the variable $max_upload_limit from the configuration files, if it
-     * is > 0. If both are set, the smallest will be returned.
+     * is > 0. If both are set, 'upload_max_filesize' from the configuration files
+     * will be returned.
 
      * @return int Maximum file size that can be uploaded in bytes.
      *
@@ -157,12 +158,9 @@ class UtilV2
         $ini_value = self::let_to_num(ini_get('upload_max_filesize'));
         if ($local_max_upload_limit == 0) {
             return $ini_value;
-        }
-        $local_max_upload_limit = 1024 * 1024 * $local_max_upload_limit;
-        if ($local_max_upload_limit < $ini_value) {
-            return $local_max_upload_limit;
         } else {
-            return $ini_value;
+            $local_max_upload_limit = 1024 * 1024 * $local_max_upload_limit;
+            return $local_max_upload_limit;
         }
     }
 
@@ -190,11 +188,7 @@ class UtilV2
             return $ini_value;
         }
         $local_max_post_limit = 1024 * 1024 * $local_max_post_limit;
-        if ($local_max_post_limit < $ini_value) {
-            return $local_max_post_limit;
-        } else {
-            return $ini_value;
-        }
+        return $local_max_post_limit;
     }
 
     /**

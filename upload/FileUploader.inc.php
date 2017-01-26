@@ -54,13 +54,8 @@ $uploader = new UploadHandler();
 // Specify the list (array) of valid extensions (all files types allowed by default)
 $uploader->allowedExtensions = FileserverV2::getAllValidExtensions();
 
-// Specify max file size in bytes (FineUploader uses 1MB = 1e6 bytes).
-$maxUploadFileSize = UtilV2::getMaxUploadFileSize();
-if ($maxUploadFileSize > 0) {
-    $uploader->sizeLimit = $maxUploadFileSize;
-} else {
-    $uploader->sizeLimit = null;
-}
+// We do not specify a max file size here since we do it in the client
+$uploader->sizeLimit = null;
 
 // Specify the input name set in the javascript.
 $uploader->inputName = "qqfile"; // matches Fine Uploader's default inputName value by default
