@@ -504,6 +504,14 @@ table {
     padding: 5px 0 0 0;
 }
 
+#upMsgError {
+    text-align: center;
+    color: red;
+    font-size: 80%;
+    font-weight: bold;
+    margin: 5px;
+}
+
 input.copy {
     background: url("../images/copy.png") no-repeat center;
 }

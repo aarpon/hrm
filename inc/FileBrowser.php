@@ -501,12 +501,22 @@ include("header_fb.inc.php");
         <div id="upMsg">
             <!-- Do not remove -->
         </div>
+        <div id="upMsgError">
+            <!-- Do not remove -->
+        </div>
 
       <div id="up_form" onmouseover="showInstructions()">
         <div id="fine-uploader-manual-trigger"></div>
 	  </div>
 
         <script type="text/javascript">
+            var totalSizeOfSelectedFiles = 0;
+            var totalAllowedSizeOfSelectedFiles = <?php echo(UtilV2::getMaxPostSize()); ?>;
+            var totalAllowedSizeOfSingleFile = <?php echo(UtilV2::getMaxUploadFileSize()); ?>;
+
+            $("#upMsg").empty().text("Selected " + totalSizeOfSelectedFiles + " of " +
+                totalAllowedSizeOfSelectedFiles + " bytes.");
+
             $('#fine-uploader-manual-trigger').fineUploader({
                 template: 'qq-template-manual-trigger',
                 cors: {
@@ -538,10 +548,8 @@ include("header_fb.inc.php");
                     }
                 },
                 validation: {
-                    sizeLimit: <?php
-                        // FineUploader uses 1MB = 1e6 bytes
-                        echo (UtilV2::getMaxUploadFileSize());
-                        ?>,
+                    stopOnFirstInvalidFile: true,
+                    sizeLimit: totalAllowedSizeOfSingleFile,
                     acceptFiles: ".dv,.ims,.lif,.lof,.lsm,.oif,.pic,.3rd,.stk,.zvi,.czi,.nd2,.nd,.tf2,.tf8,.btf,.h5," +
                         ".tif,.tiff,.ome.tif,.ome.tiff,.ics,.ids,.zip,.tgz,.tar,.tar.gz",
                     allowedExtensions: ['dv', 'ims', 'lif', 'lof', 'lsm', 'oif', 'pic', 'r3d', 'stk',
@@ -564,8 +572,41 @@ include("header_fb.inc.php");
                         // Rescan the source folder only if everything was uploaded successfully.
                         // If not the user can still interact with the files.
                         if (failed.length == 0) {
+                            $("#upMsgError").empty();
+                            $("#upMsg").empty();
                             setActionToUpdate();
                             $("form#file_browser").submit();
+                        }
+                    },
+                    onStatusChange: function(id, oldStatus, newStatus) {
+                        // Here, we only care to subtract the size of removed files
+                        if (newStatus == "canceled") {
+                            totalSizeOfSelectedFiles -= this.getSize(id);
+                        }
+                        $("#upMsg").empty().text("Selected " + totalSizeOfSelectedFiles +
+                            " of " + totalAllowedSizeOfSelectedFiles + " bytes.");
+                    },
+                    onValidate: function(data, button) {
+
+                        // Check the file of the individual file
+                        if (data.size > totalAllowedSizeOfSingleFile) {
+                            $("#upMsgError").empty().text("File " + data.name + " is too large!");
+                            return false;
+                        }
+
+                        // Check the total size of added files
+                        if(totalSizeOfSelectedFiles + data.size > totalAllowedSizeOfSelectedFiles) {
+                            $("#upMsgError")
+                                .empty()
+                                .text("The total size of the selected files is too large!")
+                                .append("<br />File " + data.name + " was rejected.");
+                            return false;
+                        } else {
+                            totalSizeOfSelectedFiles = totalSizeOfSelectedFiles + data.size;
+                            $("#upMsgError").empty()
+                            $("#upMsg").empty().text("Selected " + totalSizeOfSelectedFiles +
+                                " of " + totalAllowedSizeOfSelectedFiles + " bytes.");
+                            return true;
                         }
                     }
                 }
