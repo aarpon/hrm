@@ -2,13 +2,11 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-use hrm\DatabaseConnection;
 use hrm\Mail;
 use hrm\Nav;
 use hrm\user\UserConstants;
 use hrm\user\UserManager;
 use hrm\Validator;
-use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -239,11 +237,11 @@ include("header.inc.php");
                 </div>
 
                 <div>
-                    <label for="note">Request message:</label>
                 <textarea name="note"
+                          placeholder="Request message (optional)..."
                           id="note"
                           rows="3"
-                          cols="30"><?php echo $clean["note"] ?>
+                          cols="30"><?php if ($clean["note"] != "") { echo($clean["note"]); } ?>
                 </textarea>
                 </div>
 

@@ -213,7 +213,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3><img alt="Account" src="./images/forgot_pwd.png"
+    <h3><img alt="Reset your password" src="./images/forgot_pwd.png"
              width="40"/>&nbspReset your password</h3>
 
     <?php
@@ -230,7 +230,7 @@ include("header.inc.php");
 
         <form method="post" action="" id="askforusername">
 
-            <div id="adduser">
+            <div id="password_reset">
                 <label for="username">Enter your user name:</label>
                 <input name="username" id="username" type="text" value=""/>
                 <input name="requestusername" type="hidden" value="requestusername"/>
@@ -329,6 +329,12 @@ include("header.inc.php");
         <h3>Quick help</h3>
 
         <p>Here you can change your password.</p>
+        <p>Please notice that this is possible only if the
+            authentication method assigned to you allows the
+            HRM to change the password.</p>
+        <p>If it is not possible, you will be informed.
+            In that case, please contact your institution's
+            IT or Human Resources department.</p>
 
     </div>
 

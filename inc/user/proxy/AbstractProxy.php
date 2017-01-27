@@ -83,8 +83,10 @@ abstract class AbstractProxy {
      * @override
      */
     public function isActive($username) {
-        return (UserManager::getUserStatus($username) == UserConstants::STATUS_ACTIVE ||
-            UserManager::getUserStatus($username) == UserConstants::STATUS_OUTDATED);
+        return (
+            UserManager::getUserStatus($username) == UserConstants::STATUS_ACTIVE ||
+            UserManager::getUserStatus($username) == UserConstants::STATUS_OUTDATED ||
+            UserManager::getUserStatus($username) == UserConstants::STATUS_PASSWORD_RESET);
     }
 
     /**
