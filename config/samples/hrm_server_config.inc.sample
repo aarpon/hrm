@@ -40,7 +40,7 @@ $huygens_group = "hrm";
 // unless this is also the computation server. For image information and
 // thumbnails mostly freeware functions will be used, but support for certain
 // proprietary file formats requires a B flag in the license string. (See
-// http://support.svi.nl/wiki/FileFormats).
+// https://svi.nl/FileFormats).
 //
 // In combination with Huygens 3.5.1 or higher, HRM can also provide an
 // estimate of the Signal-To-Noise ratio (SNR) of an image, interactively. At
@@ -226,7 +226,7 @@ $movieMaxSize = 300;
 
 // If true, (and $useThumbnails is also true), it generates not only the MIP
 // previews but also Simulated Fluorescence Process top-view renderings of the
-// original and the restored images (http://support.svi.nl/wiki/SFP).
+// original and the restored images (https://svi.nl/SFP).
 $saveSfpPreviews = true;
 
 // If non-zero, save stack and time series previews of the original and restored

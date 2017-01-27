@@ -48,8 +48,7 @@ $message = "";
 if (!(strpos($_SERVER['HTTP_REFERER'],
             'estimate_snr_from_image.php') === false) ||
     !(strpos($_SERVER['HTTP_REFERER'],
-            'estimate_snr_from_image_beta.php') === false)
-) {
+            'estimate_snr_from_image_beta.php') === false)) {
     $algorithmParameter = $_SESSION['task_setting']->parameter(
         "DeconvolutionAlgorithm");
     $algorithmParameter->setValue('cmle');
@@ -169,7 +168,7 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
 
             <legend>
                 <a href="openWindow(
-                       'http://support.svi.nl/wiki/RestorationMethod')">
+                       'https://svi.nl/RestorationMethod')">
                     <img src="images/help.png" alt="?"/></a>
                 deconvolution algorithm
             </legend>
