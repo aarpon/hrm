@@ -213,7 +213,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3><img alt="Account" src="./images/forgot_pwd.png"
+    <h3><img alt="Reset your password" src="./images/forgot_pwd.png"
              width="40"/>&nbspReset your password</h3>
 
     <?php
@@ -230,7 +230,7 @@ include("header.inc.php");
 
         <form method="post" action="" id="askforusername">
 
-            <div id="adduser">
+            <div id="password_reset">
                 <label for="username">Enter your user name:</label>
                 <input name="username" id="username" type="text" value=""/>
                 <input name="requestusername" type="hidden" value="requestusername"/>
