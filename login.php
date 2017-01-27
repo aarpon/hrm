@@ -363,7 +363,7 @@ include("header.inc.php");
         <form method="post" action="">
             <fieldset>
                 <legend>
-                    <a href="openWindow(
+                    <a href="javascript:openWindow(
                'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
                         <img src="images/help.png" alt="?"/></a> Login
                 </legend>
@@ -391,8 +391,8 @@ include("header.inc.php");
 
                 <fieldset>
                     <legend>
-                        <a href="openWindow(
-               'http://www.svi.nl/HuygensRemoteManagerHelpRegistration')">
+                        <a href="javascript:openWindow(
+               'http://www.svi.nl/HuygensRemoteManagerHelpRegistrationPage')">
                             <img src="images/help.png" alt="?"/></a>
                         Registration
                     </legend>
