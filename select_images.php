@@ -370,7 +370,7 @@ $info = "<h3>Quick help</h3>" .
         <fieldset class="setting">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/FileFormats')">
                     <img src="images/help.png" alt="?"/>
                 </a>

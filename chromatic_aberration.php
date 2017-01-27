@@ -111,7 +111,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'chromatic' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/ChromaticAberrationCorrector')">
                     <img src="images/help.png" alt="?"/>
                 </a>

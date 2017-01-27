@@ -158,7 +158,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'enable' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                    'http://www.svi.nl/HuygensRemoteManagerHelpDepthDependentPsf')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -247,7 +247,7 @@ include("header.inc.php");
                       onmouseover="changeQuickHelp( 'orientation' );">
 
                 <legend>
-                    <a href="openWindow(
+                    <a href="javascript:openWindow(
                    'http://www.svi.nl/HuygensRemoteManagerHelpSpecifySampleOrientation')">
                         <img src="images/help.png" alt="?"/>
                     </a>
@@ -334,7 +334,7 @@ include("header.inc.php");
                       onmouseover="changeQuickHelp( 'mode' );">
 
                 <legend>
-                    <a href="openWindow(
+                    <a href="javascript:openWindow(
                'http://www.svi.nl/HuygensRemoteManagerHelpSaCorrectionMode')">
                         <img src="images/help.png" alt="?"/>
                     </a>
@@ -418,7 +418,7 @@ include("header.inc.php");
                       onmouseover="changeQuickHelp( 'advanced' );">
 
                 <legend>
-                    <a href="openWindow(
+                    <a href="javascript:openWindow(
            'http://www.svi.nl/HuygensRemoteManagerHelpAdvancedSaCorrection')">
                         <img src="images/help.png" alt="?"/>
                     </a>

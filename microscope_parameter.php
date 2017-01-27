@@ -181,7 +181,7 @@ $nParamRequiringReset = 0;
                   onmouseover="changeQuickHelp( 'type' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/MicroscopeType')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -255,7 +255,7 @@ $nParamRequiringReset = 0;
                   onmouseover="changeQuickHelp( 'NA' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                     'http://www.svi.nl/NumericalAperture')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -296,7 +296,7 @@ $nParamRequiringReset = 0;
                   onmouseover="changeQuickHelp( 'wavelengths' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/WaveLength')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -408,7 +408,7 @@ $nParamRequiringReset = 0;
                   onmouseover="changeQuickHelp( 'objective' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/LensImmersionMedium')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -508,7 +508,7 @@ $nParamRequiringReset = 0;
                   onmouseover="changeQuickHelp( 'sample' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/SpecimenEmbeddingMedium')">
                     <img src="images/help.png" alt="?"/>
                 </a>

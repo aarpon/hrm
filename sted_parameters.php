@@ -411,7 +411,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'satFact' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -477,7 +477,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'lambda' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -544,7 +544,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'immunity' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -612,7 +612,7 @@ include("header.inc.php");
                       onmouseover="changeQuickHelp( '3d' );">
 
                 <legend>
-                    <a href="openWindow(
+                    <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSTED')">
                         <img src="images/help.png" alt="?"/>
                     </a>
