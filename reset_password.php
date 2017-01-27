@@ -329,6 +329,12 @@ include("header.inc.php");
         <h3>Quick help</h3>
 
         <p>Here you can change your password.</p>
+        <p>Please notice that this is possible only if the
+            authentication method assigned to you allows the
+            HRM to change the password.</p>
+        <p>If it is not possible, you will be informed.
+            In that case, please contact your institution's
+            IT or Human Resources department.</p>
 
     </div>
 
