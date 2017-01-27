@@ -2,25 +2,27 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-require_once("./inc/Util.inc.php");
-require_once("./inc/User.inc.php");
-require_once("./inc/Fileserver.inc.php");
-require_once("./inc/wiki_help.inc.php");
+use hrm\HuygensTools;
+use hrm\Nav;
+use hrm\Util;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 // Two private functions, for the two tasks of this script:
 
-// This configures and shows the file browser module inc/FileBrowser.inc.php.
+// This configures and shows the file browser module inc/FileBrowser.php.
 // The Signal-to-noise estimator works only on raw images, so the listed
 // directory is the source ('src') one.
-function showFileBrowser() {
+function showFileBrowser()
+{
 
     //$browse_folder can be 'src' or 'dest'.
     $browse_folder = "src";
     $page_title = "Estimate SNR from a raw image";
     $explanation_text = "Please choose an image and click on the calculator " .
-    "button to estimate the SNR.";
+        "button to estimate the SNR.";
     $form_title = "Available images";
-    $top_nav_left = get_wiki_link('HuygensRemoteManagerHelpSnrEstimator');
+    $top_nav_left = Nav::linkWikiPage('HuygensRemoteManagerHelpSnrEstimator');
     $top_nav_right = "";
     $multiple_files = false;
     // Number of displayed files.
@@ -127,10 +129,8 @@ function showFileBrowser() {
             <p>Click <b>Help</b> on the top menu for more details.</p>
                ';
 
-    include("./inc/FileBrowser.inc.php");
+    include("./inc/FileBrowser.php");
 }
-
-
 
 
 // This function does the main job.
@@ -139,30 +139,31 @@ function showFileBrowser() {
 // SNR estimations. The best value is shown, but other more pessimistic and
 // optimistic values are also included for the user to visually verify the
 // validity of the estimate.
-function estimateSnrFromFile($file) {
+function estimateSnrFromFile($file)
+{
 
     include("header.inc.php");
 
-    $top_nav_left = get_wiki_link('HuygensRemoteManagerHelpSnrEstimator');
+    $top_nav_left = Nav::linkWikiPage('HuygensRemoteManagerHelpSnrEstimator');
     $top_nav_right = "";
 
     // Noise estimations can be done only in raw images.
 
-    $psrc =  $_SESSION['fileserver']->sourceFolder();
-    $basename = basename($psrc."/".$file);
-    $psrc = dirname($psrc."/".$file);
+    $psrc = $_SESSION['fileserver']->sourceFolder();
+    $basename = basename($psrc . "/" . $file);
+    $psrc = dirname($psrc . "/" . $file);
     $subDir = dirname($file);
-    if ( $subDir != "." ) {
+    if ($subDir != ".") {
         $subDir .= "/";
     } else {
         $subDir = "";
     }
-    $pdest = $psrc."/hrm_previews";
+    $pdest = $psrc . "/hrm_previews";
 
     $series = "auto";
     $extra = "";
 
-    if ( !$_SESSION['user']->isAdmin() ) {
+    if (!$_SESSION['user']->isAdmin()) {
 
         // This is only for when template parameters are available, in a
         // 'add task' workflow. Admin can't see specific colors, just whatever
@@ -172,8 +173,8 @@ function estimateSnrFromFile($file) {
         $lmbV = "\"";
         $lambda = $_SESSION['setting']->parameter("EmissionWavelength");
         $l = $lambda->value();
-        for ( $i = 0; $i < $nchan; $i++ ) {
-            $lmbV .= " ".$l[$i];
+        for ($i = 0; $i < $nchan; $i++) {
+            $lmbV .= " " . $l[$i];
         }
         $lmbV .= "\"";
 
@@ -189,6 +190,7 @@ function estimateSnrFromFile($file) {
             $series = "auto";
         }
 
+        /** @var \hrm\param\ImageFileFormat $formatParam */
         $formatParam = $_SESSION['setting']->parameter('ImageFileFormat');
         $format = $formatParam->value();
         if ($format == "tiff" || $format == "tiff-single") {
@@ -206,8 +208,8 @@ function estimateSnrFromFile($file) {
         $algorithm = "old";
     }
 
-    $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" ".
-        "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"$algorithm\" ".
+    $opt = "-basename \"$basename\" -src \"$psrc\" -dest \"$pdest\" " .
+        "-returnImages \"0.5 0.71 1 1.71 \" -snrVersion \"$algorithm\" " .
         "-series $series $extra";
 
     // Build a label to be shown at the SNR results page .
@@ -220,195 +222,195 @@ function estimateSnrFromFile($file) {
     // When no particular SNR estimation image is shown (in a small portion of
     // the image), the image preview goes back to the whole image.
     $defaultView = $_SESSION['fileserver']->imgPreview($file, "src",
-            "preview_xy", false);
+        "preview_xy", false);
 
 
     ?>
 
 
     <div id="content">
-      <div id="output" >
-        <h3><img alt="SNR" src="./images/results_title.png"
-                 width="40" />&nbsp;&nbsp;Estimating SNR
-        </h3>
-        <fieldset>
-        <center>
-        Processing file<br /><?php echo $file; ?>...<br />
-        <b>Please wait</b>
-        <img src="images/spin.gif">
-        </center>
-        </fieldset>
-      </div>
-      <div id="controls"
-           class=""
-           onmouseover="smoothChangeDivCond('general', 'thumb',
-            '<?php echo escapeJavaScript($defaultView);?>', 200);">
-      </div>
-      </div> <!-- content -->
+        <div id="output">
+            <h3><img alt="SNR" src="./images/results_title.png"
+                     width="40"/>&nbsp;&nbsp;Estimating SNR
+            </h3>
+            <fieldset>
+                <center>
+                    Processing file<br/><?php echo $file; ?>...<br/>
+                    <b>Please wait</b>
+                    <img src="images/spin.gif">
+                </center>
+            </fieldset>
+        </div>
+        <div id="controls"
+             class=""
+             onmouseover="smoothChangeDivCond('general', 'thumb',
+                 '<?php echo Util::escapeJavaScript($defaultView); ?>', 200);">
+        </div>
+    </div> <!-- content -->
 
-      <div id="rightpanel"
-           onmouseover="smoothChangeDivCond('general','thumb',
-           '<?php echo escapeJavaScript($defaultView);?>', 200);">
-      <div id="info">
-      <?php // echo $defaultView;  ?>
-      </div>
+    <div id="rightpanel"
+         onmouseover="smoothChangeDivCond('general','thumb',
+             '<?php echo Util::escapeJavaScript($defaultView); ?>', 200);">
+        <div id="info">
+            <?php // echo $defaultView;  ?>
+        </div>
 
-      <div id="message">
-      </div> <!-- message -->
+        <div id="message">
+        </div> <!-- message -->
 
     </div> <!-- rightpanel -->
 
     <!-- Post-processing output: -->
     <div id="tmp">
-    <?php
+        <?php
 
-    ob_flush();
-    flush();
+        ob_flush();
+        flush();
 
-    // Launch Huygens Core in the background to do the calculations. It will
-    // write the JPEG images in a predefined location for this script to
-    // display them.
+        // Launch Huygens Core in the background to do the calculations. It will
+        // write the JPEG images in a predefined location for this script to
+        // display them.
 
-    $estimation = askHuCore("estimateSnrFromImage", $opt);
-    // No line-breaks in the output, it is going to be escaped for JavaScript.
-    $output =
-        "<h3><img alt=\"SNR\" src=\"./images/results_title.png\" " .
-        "width=\"40\"/>&nbsp;&nbsp;SNR estimation (" . $algLabel . ")</h3>" .
-        "<fieldset>" .
-        "<table>";
+        $estimation = HuygensTools::askHuCore("estimateSnrFromImage", $opt);
+        // No line-breaks in the output, it is going to be escaped for JavaScript.
+        $output =
+            "<h3><img alt=\"SNR\" src=\"./images/results_title.png\" " .
+            "width=\"40\"/>&nbsp;&nbsp;SNR estimation (" . $algLabel . ")</h3>" .
+            "<fieldset>" .
+            "<table>";
 
-    $chanCnt = $estimation['channelCnt'];
+        $chanCnt = $estimation['channelCnt'];
 
 
-    $msgSNR = "<p>Suggested SNR values per channel:</p><p>";
-    $msgBG = "<p>Estimated background per channel:</p><p>";
-    $msgClip = "";
+        $msgSNR = "<p>Suggested SNR values per channel:</p><p>";
+        $msgBG = "<p>Estimated background per channel:</p><p>";
+        $msgClip = "";
 
-    // Keep the results in an easy place to access them later
-    $calculatedSNRValues = array();
+        // Keep the results in an easy place to access them later
+        $calculatedSNRValues = array();
 
-    for ($ch = 0; $ch < $chanCnt; $ch++ ) {
-        $output .= "<tr><td>".
-            "<table>".
-            "<tr><td colspan=\"1\">".
-            "<b><hr>Channel $ch</b></td></tr><tr>";
+        for ($ch = 0; $ch < $chanCnt; $ch++) {
+            $output .= "<tr><td>" .
+                "<table>" .
+                "<tr><td colspan=\"1\">" .
+                "<b><hr>Channel $ch</b></td></tr><tr>";
 
-        $chKey = "Ch_$ch,";
-        $estSNR = $estimation[$chKey.'estSNR'];
-        $calculatedSNRValues[$ch] = $estSNR;
-        $msgSNR .= "Ch $ch: <strong>$estSNR</strong><br />";
-        $estBG = $estimation[$chKey.'estBG'];
-        $msgBG .= "Ch $ch: $estBG<br />";
-        $estClipFactor = $estimation[$chKey.'estClipFactor'];
+            $chKey = "Ch_$ch,";
+            $estSNR = $estimation[$chKey . 'estSNR'];
+            $calculatedSNRValues[$ch] = $estSNR;
+            $msgSNR .= "Ch $ch: <strong>$estSNR</strong><br />";
+            $estBG = $estimation[$chKey . 'estBG'];
+            $msgBG .= "Ch $ch: $estBG<br />";
+            $estClipFactor = $estimation[$chKey . 'estClipFactor'];
 
-        if ($estClipFactor > 0.0005) {
-            if ($chanCnt > 1) {
-                if ($msgClip == "") {
-                    $msgClip = "<p>The following channels contain <b>clipped".
-                    " voxels</b>. This affects the SNR estimations and the ".
-                    "quality of the deconvolution.</p><p>";
-                }
-                $msgClip .= "Ch $ch: ~". ($estClipFactor * 100) .
-                    "% clipped voxels<br>";
-            } else {
-                    $msgClip = "<p>The image contains about ".
-                    ($estClipFactor * 100). "% of <b>clipped".
-                    " voxels</b>. This affects the SNR estimation and the ".
-                    "quality of the deconvolution.";
-            }
-        }
-
-        $simVals = explode(" ", $estimation[$chKey.'simulationList']);
-        $simImg = explode(" ", $estimation[$chKey.'simulationImages']);
-        $simZoom = explode(" ", $estimation[$chKey.'simulationZoom']);
-        $bestColumn = array_search($estSNR, $simVals);
-        $preload = "if (document.images) {\n";
-
-        $i = 0;
-        foreach ($simVals as $snr) {
-            $output .= "<td>";
-
-            $tmbFile = urlencode($subDir.$simImg[$i]);
-            $zoomFile = urlencode($subDir.$simZoom[$i]);
-            if ($snr == 0) {
-                $tag = "Original reference data";
-            } else {
-                $tag = "SNR $snr";
-                if ($snr == $estSNR) {
-                    $tag = "<b>$tag</b> (Suggested value)";
-                } else if ($snr < $estSNR) {
-                    $tag = "$tag (Pessimistic estimate)";
+            if ($estClipFactor > 0.0005) {
+                if ($chanCnt > 1) {
+                    if ($msgClip == "") {
+                        $msgClip = "<p>The following channels contain <b>clipped" .
+                            " voxels</b>. This affects the SNR estimations and the " .
+                            "quality of the deconvolution.</p><p>";
+                    }
+                    $msgClip .= "Ch $ch: ~" . ($estClipFactor * 100) .
+                        "% clipped voxels<br>";
                 } else {
-                    $tag = "$tag (Optimistic estimate)";
+                    $msgClip = "<p>The image contains about " .
+                        ($estClipFactor * 100) . "% of <b>clipped" .
+                        " voxels</b>. This affects the SNR estimation and the " .
+                        "quality of the deconvolution.";
                 }
             }
-            $zoomImg =  escapeJavaScript(
-                    "<p><b>Portion of channel $ch:</b></p>".
-                    "<p>$tag</p><img src=\"file_management.php?getThumbnail=".
-                    $zoomFile."&amp;dir=src\" alt=\"SNR $snr\" id=\"ithumb\"".
+
+            $simVals = explode(" ", $estimation[$chKey . 'simulationList']);
+            $simImg = explode(" ", $estimation[$chKey . 'simulationImages']);
+            $simZoom = explode(" ", $estimation[$chKey . 'simulationZoom']);
+            $bestColumn = array_search($estSNR, $simVals);
+            $preload = "if (document.images) {\n";
+
+            $i = 0;
+            foreach ($simVals as $snr) {
+                $output .= "<td>";
+
+                $tmbFile = urlencode($subDir . $simImg[$i]);
+                $zoomFile = urlencode($subDir . $simZoom[$i]);
+                if ($snr == 0) {
+                    $tag = "Original reference data";
+                } else {
+                    $tag = "SNR $snr";
+                    if ($snr == $estSNR) {
+                        $tag = "<b>$tag</b> (Suggested value)";
+                    } else if ($snr < $estSNR) {
+                        $tag = "$tag (Pessimistic estimate)";
+                    } else {
+                        $tag = "$tag (Optimistic estimate)";
+                    }
+                }
+                $zoomImg = Util::escapeJavaScript(
+                    "<p><b>Portion of channel $ch:</b></p>" .
+                    "<p>$tag</p><img src=\"file_management.php?getThumbnail=" .
+                    $zoomFile . "&amp;dir=src\" alt=\"SNR $snr\" id=\"ithumb\"" .
                     " />");
 
-            $preload .= ' pic'.$i.'= new Image(200,200); '."\n".
-                'pic'.$i.'.src="file_management.php?getThumbnail='.
-                $tmbFile.'&dir=src"; '."\n";
+                $preload .= ' pic' . $i . '= new Image(200,200); ' . "\n" .
+                    'pic' . $i . '.src="file_management.php?getThumbnail=' .
+                    $tmbFile . '&dir=src"; ' . "\n";
 
-            if ($snr == 0) {
-                for ($j = 1; $j < $bestColumn; $j++) {
-                    // Align the original with the best SNR result
-                    $output .= "</td><td>";
-                }
-                $output .=  "<img src=\"file_management.php?getThumbnail=".
-                          $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('$tag'); ".
-                          "changeDiv('thumb','$zoomImg', 300); ".
-                          "window.divCondition = 'zoom';\"  ".
-                          "onmouseout=\"UnTip()\"/>";
-                $output .= "<br /><small>Original</small>";
-            } else {
-                $output .=  "<img src=\"file_management.php?getThumbnail=".
-                          $tmbFile."&amp;dir=src\" alt=\"SNR $snr\" ".
-                          "onmouseover=\"Tip('Simulation for $tag'); ".
-                          "changeDiv('thumb','$zoomImg', 300); ".
-                          "window.divCondition = 'zoom';\" ".
-                          "onmouseout=\"UnTip()\"/>";
-                if ( $snr == $estSNR ) {
-                    $output .= "<br /><small><b>SNR ~ $snr</b></small>";
+                if ($snr == 0) {
+                    for ($j = 1; $j < $bestColumn; $j++) {
+                        // Align the original with the best SNR result
+                        $output .= "</td><td>";
+                    }
+                    $output .= "<img src=\"file_management.php?getThumbnail=" .
+                        $tmbFile . "&amp;dir=src\" alt=\"SNR $snr\" " .
+                        "onmouseover=\"Tip('$tag'); " .
+                        "changeDiv('thumb','$zoomImg', 300); " .
+                        "window.divCondition = 'zoom';\"  " .
+                        "onmouseout=\"UnTip()\"/>";
+                    $output .= "<br /><small>Original</small>";
                 } else {
-                    $output .= "<br /><small>$snr</small>";
+                    $output .= "<img src=\"file_management.php?getThumbnail=" .
+                        $tmbFile . "&amp;dir=src\" alt=\"SNR $snr\" " .
+                        "onmouseover=\"Tip('Simulation for $tag'); " .
+                        "changeDiv('thumb','$zoomImg', 300); " .
+                        "window.divCondition = 'zoom';\" " .
+                        "onmouseout=\"UnTip()\"/>";
+                    if ($snr == $estSNR) {
+                        $output .= "<br /><small><b>SNR ~ $snr</b></small>";
+                    } else {
+                        $output .= "<br /><small>$snr</small>";
+                    }
                 }
+
+                if ($snr == 0) {
+                    $output .= "</td></tr><tr>";
+                } else {
+                    $output .= "</td>";
+                }
+                $i++;
             }
+            $output .= "</tr></table></td></tr>";
+        }
 
-            if ($snr == 0) {
-                $output .= "</td></tr><tr>";
-            } else {
-                $output .= "</td>";
+        $msgSNR .= "</p>";
+        $msgBG .= "</p>";
+        $msgClip .= "</p>";
+
+        # Do not report the $msgBG, not to confuse the users.
+
+        $message = "<h3>Estimation results</h3>" . $msgClip . $msgSNR;
+
+        if (isset($estimation['error'])) {
+            foreach ($estimation['error'] as $line) {
+                $message .= $line;
             }
-            $i++;
         }
-        $output .= "</tr></table></td></tr>";
-    }
-
-    $msgSNR .= "</p>";
-    $msgBG .= "</p>";
-    $msgClip .= "</p>";
-
-    # Do not report the $msgBG, not to confuse the users.
-
-    $message = "<h3>Estimation results</h3>" . $msgClip.$msgSNR;
-
-    if ( isset($estimation['error']) ) {
-        foreach ($estimation['error'] as $line) {
-            $message .= $line;
-        }
-    }
-    $message .= "<div id=\"thumb\">".$defaultView."</div>";
-    $output .= "</table></fieldset>";
-    $preload .= "} ";
+        $message .= "<div id=\"thumb\">" . $defaultView . "</div>";
+        $output .= "</table></fieldset>";
+        $preload .= "} ";
 
 
-    ?>
+        ?>
 
-    <?php
+        <?php
         // Now create the buttons
 
         // Navigations buttons are shown after the image is processed. No
@@ -423,84 +425,84 @@ function estimateSnrFromFile($file) {
 
         // We store the calculated values in hidden controls
         $buttons .= "<input type=\"hidden\" name=\"store\" value=\"store\" />";
-        for ( $i = 0; $i < count( $calculatedSNRValues ); $i++ ) {
-            $buttons .= "<input type=\"hidden\" ".
-            "name=\"Channel$i\" id=\"btn-channel'.($i+1).'\" value=\"$calculatedSNRValues[$i]\" />";
+        for ($i = 0; $i < count($calculatedSNRValues); $i++) {
+            $buttons .= "<input type=\"hidden\" " .
+                "name=\"Channel$i\" id=\"btn-channel'.($i+1).'\" value=\"$calculatedSNRValues[$i]\" />";
         }
 
-        $buttons .= "<input type=\"button\" value=\"\" class=\"icon previous\" ".
-                    "onmouseover=\"Tip('Try again on another image.' )\" ".
-                    "onmouseout=\"UnTip()\" ".
-                    "onclick=\"document.location.href='estimate_snr_from_image.php'\" />";
+        $buttons .= "<input type=\"button\" value=\"\" class=\"icon previous\" " .
+            "onmouseover=\"Tip('Try again on another image.' )\" " .
+            "onmouseout=\"UnTip()\" " .
+            "onclick=\"document.location.href='estimate_snr_from_image.php'\" />";
 
-        $buttons .= "<input type=\"button\" value=\"\" class=\"icon up\" ".
-                    "onmouseover=\"Tip('Discard the calculated values and " .
-                    "return to the restoration parameters page.' )\" ".
-                    "onmouseout=\"UnTip()\" ".
-                    "onclick=\"document.location.href='task_parameter.php'\" />";
+        $buttons .= "<input type=\"button\" value=\"\" class=\"icon up\" " .
+            "onmouseover=\"Tip('Discard the calculated values and " .
+            "return to the restoration parameters page.' )\" " .
+            "onmouseout=\"UnTip()\" " .
+            "onclick=\"document.location.href='task_parameter.php'\" />";
 
-        $buttons .= "<input type=\"submit\" name=\"store\" class=\"icon next\" ".
-                    "onmouseover=\"Tip('Accept the calculated values and " .
-                    "return to the restoration parameters page.' )\" ".
-                    "onmouseout=\"UnTip()\" value=\"\" /></div>";
+        $buttons .= "<input type=\"submit\" name=\"store\" class=\"icon next\" " .
+            "onmouseover=\"Tip('Accept the calculated values and " .
+            "return to the restoration parameters page.' )\" " .
+            "onmouseout=\"UnTip()\" value=\"\" /></div>";
 
         $buttons .= "</div>";
 
         $buttons .= "</form>";
 
-    ?>
+        ?>
     </div>
     <script type="text/javascript">
-         window.divCondition = 'general';
-         <?php
-         // Preloading code doesn't seem to help (at least if it doesn't go in
-         // the head of the document;
-         // echo $preload;
-         ?>
+        window.divCondition = 'general';
+        <?php
+        // Preloading code doesn't seem to help (at least if it doesn't go in
+        // the head of the document;
+        // echo $preload;
+        ?>
 
-         // Show the results with a nice JavaScript smooth transition.
-         smoothChangeDiv('info',
-             '<?php echo escapeJavaScript($message); ?>',1300);
-         smoothChangeDiv('output',
-             '<?php echo escapeJavaScript($output); ?>',1000);
-         smoothChangeDiv('controls',
-             '<?php echo escapeJavaScript($buttons); ?>',1500);
-         changeDiv('tmp','');
+        // Show the results with a nice JavaScript smooth transition.
+        smoothChangeDiv('info',
+            '<?php echo Util::escapeJavaScript($message); ?>', 1300);
+        smoothChangeDiv('output',
+            '<?php echo Util::escapeJavaScript($output); ?>', 1000);
+        smoothChangeDiv('controls',
+            '<?php echo Util::escapeJavaScript($buttons); ?>', 1500);
+        changeDiv('tmp', '');
 
-    function getScrollTop() {
-        if (typeof window.pageYOffset !== 'undefined' ) {
-            // Most browsers
-            return window.pageYOffset;
+        function getScrollTop() {
+            if (typeof window.pageYOffset !== 'undefined') {
+                // Most browsers
+                return window.pageYOffset;
+            }
+
+            var d = document.documentElement;
+            if (d.clientHeight) {
+                // IE in standards mode
+                return d.scrollTop;
+            }
+
+            // IE in quirks mode
+            return document.body.scrollTop;
         }
+        window.onscroll = function () {
+            var box = document.getElementById('thumb'),
+                scroll = getScrollTop();
 
-        var d = document.documentElement;
-        if (d.clientHeight) {
-            // IE in standards mode
-            return d.scrollTop;
-        }
+            var basketEl = document.getElementById('basket');
+            console.log(basketEl.clientHeight);
+            if (scroll <= 200) {
+                box.style.top = "0px";
+            }
+            else if (scroll > basketEl.clientHeight) {
 
-        // IE in quirks mode
-        return document.body.scrollTop;
-    }
-    window.onscroll = function() {
-        var box = document.getElementById('thumb'),
-        scroll = getScrollTop();
-
-        var basketEl = document.getElementById('basket');
-        console.log(basketEl.clientHeight);
-        if (scroll <= 200) {
-        box.style.top = "0px";
-        }
-        else if (scroll > basketEl.clientHeight) {
-
-        } else {
-            box.style.top = (scroll - 200) + "px";
-        }
-    };
+            } else {
+                box.style.top = (scroll - 200) + "px";
+            }
+        };
 
     </script>
 
-<?php
+    <?php
 }
 
 
@@ -510,43 +512,45 @@ function estimateSnrFromFile($file) {
 session_start();
 
 if (isset($_GET['home'])) {
-  header("Location: " . "home.php"); exit();
+    header("Location: " . "home.php");
+    exit();
 }
 
 // Ask the user to login if necessary.
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
-  header("Location: " . "login.php"); exit();
+    header("Location: " . "login.php");
+    exit();
 }
 
 // If the $_SESSION['SNR_Calculated'] flag is set we unset it, to make sure
 // that it is there only when 'storing' and going back to
 // 'parameter_'task_parameter.php'
-if ( isset( $_SESSION['SNR_Calculated'] ) ) {
-    unset( $_SESSION['SNR_Calculated'] );
+if (isset($_SESSION['SNR_Calculated'])) {
+    unset($_SESSION['SNR_Calculated']);
 }
 
 // Depending on the user actions (or lack thereof) we either display or refresh
 // the file browser, or we estimate the SNR from the selected image
-if ( isset($_POST['estimate'] ) && isset($_POST['userfiles'] ) ) {
+if (isset($_POST['estimate']) && isset($_POST['userfiles'])) {
 
-  // Estimate the SNR from the selected file
-  $task = "calculate";
-  $file = $_POST['userfiles'][0];
-  estimateSnrFromFile($file);
+    // Estimate the SNR from the selected file
+    $task = "calculate";
+    $file = $_POST['userfiles'][0];
+    estimateSnrFromFile($file);
 
-} elseif ( isset( $_POST['store'] ) )  {
+} elseif (isset($_POST['store'])) {
 
     // Collect the calculated SNR values
     $found = true;
     $ch = 0;
     $estSNR = array();
-    if ( isset( $_POST['Channel0'] ) ) {
-        $estSNR[ 0 ] = $_POST['Channel0'];
-        while ( 1 ) {
+    if (isset($_POST['Channel0'])) {
+        $estSNR[0] = $_POST['Channel0'];
+        while (1) {
             $ch++;
             $chName = "Channel$ch";
-            if ( isset( $_POST[$chName]) ) {
-                $estSNR[ $ch ] = $_POST[$chName];
+            if (isset($_POST[$chName])) {
+                $estSNR[$ch] = $_POST[$chName];
             } else {
                 break;
             }
@@ -554,21 +558,23 @@ if ( isset($_POST['estimate'] ) && isset($_POST['userfiles'] ) ) {
     }
 
     // Now store the calculated values in the Parameter and back into the session
+    /** @var \hrm\param\SignalNoiseRatio $snrParam */
     $snrParam = $_SESSION['task_setting']->parameter('SignalNoiseRatio');
-    $snrParam->setValue( $estSNR );
-    $_SESSION['task_setting']->set( $snrParam );
+    $snrParam->setValue($estSNR);
+    $_SESSION['task_setting']->set($snrParam);
 
     // Inform task_parameter.php that we do not want the values to be
     // recovered from SessionStorage
     $_SESSION['SNR_Calculated'] = 'true';
 
     // And now go back to task_parameter.php
-    header("Location: " . "task_parameter.php"); exit();
+    header("Location: " . "task_parameter.php");
+    exit();
 
 } else {
 
-  // Just show (or refresh) the file browser with the file list
-  showFileBrowser();
+    // Just show (or refresh) the file browser with the file list
+    showFileBrowser();
 
 }
 

@@ -518,6 +518,14 @@ table {
     padding: 5px 0 0 0;
 }
 
+#upMsgError {
+    text-align: center;
+    color: red;
+    font-size: 80%;
+    font-weight: bold;
+    margin: 5px;
+}
+
 input.copy {
     background: url("../images/copy.png") no-repeat center;
 }
@@ -745,6 +753,18 @@ input.save {
     height: 32px;
     padding-top: 10px;
     padding-bottom: 10px;
+}
+
+table#Servers th {
+    text-align: center;
+    padding-top: 6px;
+    padding-bottom: 20px;
+    font-weight: bold;
+}
+
+table#Servers td {
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 #joblist {
@@ -1218,16 +1238,22 @@ td {
 }
 
 td.name {
+    font-weight: bold;
+    font-size: 1.2em;
     text-align: left;
 }
 
 td.group {
-    text-align: center;
+    text-align: left;
 }
 
 td.email {
     width: 50%;
     text-align: right;
+}
+
+td.auth {
+    text-align: left;
 }
 
 td.date {
@@ -1266,13 +1292,30 @@ a.filled {
     font-size: 9px;
 }
 
-#box #adduser {
-    padding-right: 5em;
+#account {
+    text-align: right;
 }
 
+#account label {
+    vertical-align: top;
+    display: inline-block;
+}
+
+#account input {
+    display: inline-block;
+    vertical-align: top;
+    width: 300px;
+    margin-left: 10px;
+    margin-bottom: 3px;
+}
 
 #adduser {
     text-align: right;
+}
+
+#adduser #notice {
+    text-align: center;
+    color: red;
 }
 
 #adduser label {
@@ -1283,7 +1326,7 @@ a.filled {
 #adduser input {
     display: inline-block;
     vertical-align: top;
-    width: 300px;
+    width: 400px;
     margin-left: 10px;
     margin-bottom: 3px;
 }
@@ -1581,6 +1624,13 @@ option.default {
 
 .info {
     color: red;
+}
+
+.highlightedPSF {
+    color: red;
+    font-style: italic;
+    font-weight: bold;
+    text-decoration: line-through;
 }
 
 .dbOutDated {

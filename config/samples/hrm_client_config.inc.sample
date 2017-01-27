@@ -8,8 +8,11 @@
 // Database settings
 //==============================================================================
 
-// The database type (mysql or postgres)
-$db_type = "mysql";
+// The database type ('mysqli' or 'postgres'; mysql is deprecated).
+// Please notice that it is highly recommended to use the mysqli driver for
+// PHP 5.5 and above. In PHP >= 5.6, the mysql driver is deprecated and will
+// overflow your log files when used!
+$db_type = "mysqli";
 
 // The name of the database host machine (this may be localhost if it is the
 // machine on which the web server runs)
@@ -55,7 +58,7 @@ $image_host = "localhost";
 $image_user = "hrm";
 $image_group = "hrm";
 
-// File server base folder (without trailing /)
+// File server base folder
 $image_folder = "/scratch/hrm_data";
 
 // File server image source folder
@@ -64,8 +67,8 @@ $image_source = "src";
 // File server image destination folder
 $image_destination = "dst";
 
-// File server base folder as seen from the Huygens server machines (with trailing /)
-$huygens_server_image_folder = "/scratch/hrm_data/";
+// File server base folder as seen from the Huygens server machines
+$huygens_server_image_folder = "/scratch/hrm_data";
 
 // Allow HTTP transfer of the restored (download) images
 $allowHttpTransfer = true;
@@ -75,8 +78,8 @@ $allowHttpTransfer = true;
 // $max_upload_limit AND $max_post_limit. If these are set to 0, they are
 // instead read from the PHP settings. If set to higher values, make sure
 // that the PHP settings allow for such transfer limits. These PHP settings
-// are normally located in php.ini, with the options upload_max filesize AND
-// post_max size.
+// are normally located in php.ini, with the options upload_max_filesize AND
+// post_max_size.
 // Unzipping large archives may also require high max_execution_time and
 // memory_limit variables.
 $allowHttpUpload = true;
@@ -159,11 +162,23 @@ $email_admin = "hrm@localhost";
 // instead of the standard ',' for distribution lists.
 $email_list_separator = ",";    // Valid options are ',' and ';'.
 
-// Authentication type: MYSQL, ACTIVE_DIR or LDAP
-$authenticateAgainst = "MYSQL";
-
-// If true, use DES password encryption; if false, use MD5
-$useDESEncryption = false;
+// Supported authentication types. Possible values are 'integrated', 'active_dir', 'ldap'.
+// These values replace the previous ones (but the old ones are still recognized):
+// 'integrated' replaces 'MYSQL';
+// 'active_dir' replaces 'ACTIVE_DIR';
+// 'ldap' replaces 'LDAP'.
+// You can use more than one authentication mechanism by listing them all in the
+// $authenticateAgainst array below.
+//
+// e.g. $authenticateAgainst = array("active_dir", "integrated");
+//
+// The first entry in the array is the default authentication mode that will be used
+// for new users. Administrators can then change the authentication mode for individual
+// users in the user management pages.
+//
+// Make sure to properly configure all authentication modes
+//(see sample files in config/samples).
+$authenticateAgainst = array("integrated");
 
 // If true, the queue manager and the image processing server run on the same
 // machine
@@ -235,4 +250,3 @@ $ping_parameter = '';	        // use this on linux systems
 
 // Switch on/off (true/false) data transfers between HRM and Omero.
 $omero_transfers = false;
-?>

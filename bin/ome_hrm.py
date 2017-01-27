@@ -27,8 +27,8 @@ try:
     import os
     import json
     import re
-except ImportError:
-    print "ERROR importing required Python packages!"
+except ImportError as err:
+    print "ERROR importing required Python packages:", err
     print "Current PYTHONPATH: ", sys.path
     sys.exit(1)
 
@@ -40,8 +40,8 @@ else:
     print "Could not find configuration value 'OMERO_PKG', omitting."
 try:
     from omero.gateway import BlitzGateway
-except ImportError:
-    print "ERROR importing Python bindings for OMERO!"
+except ImportError as err:
+    print "ERROR importing the OMERO Python bindings:", err
     print "Current PYTHONPATH: ", sys.path
     sys.exit(2)
 
@@ -352,6 +352,12 @@ def hrm_to_omero(conn, id_str, image_file):
     In case we know from the suffix that a given file format is not supported
     by OMERO, the upload will not be initiated at all (e.g. for SVI-HDF5,
     having the suffix '.h5').
+
+    The import itself is done by instantiating the CLI class, assembling the
+    required arguments, and finally running cli.invoke(). This eventually
+    triggers the importer() method defined in OMERO's Python bindings in
+    <OMERO.server/lib/python/omero/plugins/import.py>, respectively (source)
+    <openmicroscopy.git/components/tools/OmeroPy/src/omero/plugins/import.py>.
 
     Parameters
     ==========

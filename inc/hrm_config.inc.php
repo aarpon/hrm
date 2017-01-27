@@ -1,6 +1,13 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
+/**
+ * hrm_config.inc.php
+ *
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
+namespace hrm;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -13,18 +20,35 @@ if (!isset($isServer)) {
 }
 
 if ($isServer == true) {
-    require_once(dirname(__FILE__) . "/../config/hrm_server_config.inc");
+    require_once dirname(__FILE__) . '/../config/hrm_server_config.inc';
 } else {
-    require_once(dirname( __FILE__ ) . "/../config/hrm_client_config.inc");
+    require_once dirname(__FILE__) . '/../config/hrm_client_config.inc';
 }
 
 // This is a hidden parameter for advanced users
 if (!isset($userManagerScript)) {
-    
+
     // This default user manager script can be replaced in the configuration.
     // A demo server, for example, may use links to a demo directory instead of
     // creating an empty directory for each new user.
-    $userManagerScript = dirname(__FILE__) . "/../bin/hrm_user_manager";
+    $userManagerScript = dirname(__FILE__) . '/../bin/hrm_user_manager';
 }
 
-?>
+// Additional parameters for advanced users
+// Upload and download operations require a temporary folder. Using standard folders
+// as defined in PHP.ini when dealing with large files can cause the file system to
+// fill and the server to malfunction. We create three hidden folders in the HRM data
+// folder (with the same permissions as the data folder itself). Advanced users could
+// still change them -- provided they satisfy the restrictions on folder ownership
+// and permissions.
+// Moreover, we define the maximum number of parallel chunk uploads (per file and user).
+// The number of concurrent uploads multiplied by the chunk size  should not exceed the
+// max post size.
+// HRM internally calculated the chunk size as:
+//     max_post_size / ($httpNumberOfConcurrentUploads + 1).
+// but sets an upper bound of a few MB per chunk.
+global $image_folder;
+$httpUploadTempChunksDir = "$image_folder/.hrm_chunks";
+$httpUploadTempFilesDir = "$image_folder/.hrm_files";
+$httpDownloadTempFilesDir = "$image_folder/.hrm_downloads";
+$httpNumberOfConcurrentUploads = 4;

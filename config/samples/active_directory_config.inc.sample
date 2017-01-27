@@ -18,12 +18,51 @@
     // Domain controller port
     $AD_PORT = 389;
 
-    // Special settings to postprocess domain suffixes in an Active Directory
-    // multidomain / forest environment. Leave empty in a regular AD setup.
-    // See the documentation in case you're in an AD forest.
+
+    //////// ActiveDirectory Multi-Domain User Name Processing ////////
+
+    // SPECIAL SETTINGS to rewrite the username in case of an ActiveDirectory
+    // FOREST, where users from all different LEVELS of the forest's hierarchy
+    // should be allowed to log on using the "short" domain name variant (i.e.
+    // "foo123@saturn", "bar456@titan", ...).
+    // Setting the $ACCOUNT_SUFFIX above will not work in such a case due to
+    // the fact how the DNS names in an ActiveDirectory forest are structured,
+    // and therefore retrieving the user's email address would fail, even
+    // though authentication might succeed.
+
+    // Assuming this AD-forest structure (NetBIOS names in captial letters, DNS
+    // names in brackets)
+    //
+    // SATURN                       (ads.saturn.local)
+    // |__ TITAN              (titan.ads.saturn.local)
+    // |__ DIONE              (dione.ads.saturn.local)
+    // \__ MIMAS              (mimas.ads.saturn.local)
+    //
+    // and the following user names
+    //
+    //          foo123@ads.saturn.local
+    //    bar456@titan.ads.saturn.local
+    //    zap789@dione.ads.saturn.local
+    //    cat963@mimas.ads.saturn.local
+    //
+    // the configuration settings below will allow all users from any domain to
+    // use the short versions "foo123@saturn", "bar456@titan", "zap789@dione"
+    // and "cat963@mimas" for logging in, instead of having to type their full
+    // DNS user names as shown above:
+    //
+    // $AD_USERNAME_SUFFIX = ".ads.saturn.local";
+    // $AD_USERNAME_SUFFIX_PATTERN = "@saturn.ads.saturn.local";
+    // $AD_USERNAME_SUFFIX_REPLACE = "@ads.saturn.local";
+
+    // LEAVE EMPTY in a REGULAR ActiveDirectory setup (i.e. no AD-forest)!!
     $AD_USERNAME_SUFFIX = "";
     $AD_USERNAME_SUFFIX_PATTERN = "";
     $AD_USERNAME_SUFFIX_REPLACE = "";
+    // NOTE: if the AD_USERNAME_... settings are used, the ACCOUNT_SUFFIX above
+    // should generally be empty!!!
+
+    //////// ActiveDirectory Multi-Domain User Name Processing ////////
+
 
     // Optional account with higher privileges for searching (otherwise
     // leave it to NULL). This should be set to a domain admin account (only
@@ -134,5 +173,3 @@
 
     // Groups authorized to log in to HRM.
     $AUTHORIZED_GROUPS = array();
-
-?>

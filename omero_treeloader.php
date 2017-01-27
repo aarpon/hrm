@@ -7,14 +7,15 @@
 // gets expanded by the user. It ensures the user is logged in, has a valid
 // OMERO connection and finally asks the connector for the JSON data.
 
-require_once("inc/OmeroConnection.inc.php");
+require_once("inc/OmeroConnection.php");
 
 session_start();
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
-  $req = $_SERVER['REQUEST_URI'];
-  $_SESSION['request'] = $req;
-  header("Location: " . "login.php"); exit();
+    $req = $_SERVER['REQUEST_URI'];
+    $_SESSION['request'] = $req;
+    header("Location: " . "login.php");
+    exit();
 }
 
 $omeroConnection = $_SESSION['omeroConnection'];
@@ -28,5 +29,3 @@ if (isset($_GET['node'])) {
 
 // fetch the child nodes and return the JSON:
 print($omeroConnection->getChildren($node_id));
-
-?>

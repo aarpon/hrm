@@ -4,11 +4,11 @@
 // Copyright and license notice: see license.txt
 
 var popup;
-var generated = new Array();
+var generated = [];
 var debug = '';
 var control = '';
 var filemenu = '<div class="inputFile" name="inputFile"><input type="file" name="upfile" size="30" accept=" .HGSM,.hgsm" ></div>';
-;
+
 function clean() {
     if (popup != null) {
         popup.close();
@@ -44,7 +44,7 @@ function openWindow(url) {
 function openPopup(target) {
     var url = target + "_popup.php";
     var name = "popup";
-    var options = "directories = no, menubar = no, status = no, width = 560, height = 280";
+    var options = "directories = no, menubar = no, status = no, width = 560, height = 380";
     popup = window.open(url, name, options);
     popup.focus();
 }
@@ -318,73 +318,84 @@ function setStedEntryProperties( ) {
 // Grey out the SPIM input fields of a specific channel if the
 // corresponding excitation mode is set to 'Gaussian'.
 function changeSpimEntryProperties(selectObj, channel) {
-    var gaussBanTagArray = ["SpimNA", "SpimFill"];
 
-    for (var i = 0; i < gaussBanTagArray.length; i++) {
-        var tag = gaussBanTagArray[i];
-        var id = tag.concat(channel);
-
-        var inputElement = document.getElementById(id);
-        
-        if ( selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
-            inputElement.readOnly = true;
-            inputElement.style.color="#000";
-            inputElement.style.backgroundColor="#888";
-        } else {
-            inputElement.readOnly = false;
-            inputElement.style.color="#000";
-            inputElement.style.backgroundColor="";
-        }
+    if (selectObj === undefined) {
+        return;
     }
 
-    var excFillBanTagArray = ["SpimGaussWidth"];
+    // Declare element
+    var element;
 
-    for (var i = 0; i < excFillBanTagArray.length; i++) {
-        var tag = excFillBanTagArray[i];
-        var id = tag.concat(channel);
-
-        var inputElement = document.getElementById(id);
-        
-        if ( selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
-            inputElement.readOnly = false;
-            inputElement.style.color="#000";
-            inputElement.style.backgroundColor="";
-        } else {
-            inputElement.readOnly = true;
-            inputElement.style.color="#000";
-            inputElement.style.backgroundColor="#888";
-        }
+    // SpimNA
+    element = $("#SpimNA" + channel);
+    if (selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
+        element.attr('readonly', true);
+        element.css('background-color', "#888");
+    } else {
+        element.attr('readonly', false);
+        element.css('background-color', "");
     }
 
-    var dirBanTagArray = ["SpimDir"];
+    // SpimFill
+    element = $("#SpimFill" + channel);
+    if (selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
+        element.attr('readonly', true);
+        element.css('background-color', "#888");
+    } else {
+        element.attr('readonly', false);
+        element.css('background-color', "");
+    }
 
-    for (var i = 0; i < dirBanTagArray.length; i++) {
-        var tag = dirBanTagArray[i];
-        var id = tag.concat(channel);
+    // SpimGaussWidth
+    element = $("#SpimGaussWidth" + channel);
+    if (selectObj.value == 'gauss' || selectObj.value == 'gaussMuVi') {
+        element.attr('readonly', false);
+        element.css('background-color', "");
+    } else {
+        element.attr('readonly', true);
+        element.css('background-color', "#888");
+    }
 
-        var inputElement = document.getElementById(id);
-        var length = inputElement.options.length;
-        
-        if ( selectObj.value == 'gaussMuVi') {
-            var option = new Option("Left + right", "left+right");
-            inputElement.add(option);
-            var option = new Option("Top + bottom", "top+bottom");
-            inputElement.add(option);            
-        } else {
-            var option = new Option("From left", "left");
-            inputElement.add(option);
-            var option = new Option("From right", "right");
-            inputElement.add(option);
-            var option = new Option("From top", "top");
-            inputElement.add(option);
-            var option = new Option("From bottom", "bottom");
-            inputElement.add(option);            
+    // SpimDir
+    var options = $("#SpimDir" + channel + " option");
+    $.each(options, function() {
+
+        var val = $(this).text().trim();
+        switch (val) {
+
+            case "From left":
+            case "From right":
+            case "From top":
+            case "From bottom":
+                if (selectObj.value == 'gaussMuVi') {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+                break;
+            case "Right + left":
+            case "Top + bottom":
+                if (selectObj.value == 'gaussMuVi') {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
         }
-        for (var j = length - 1; j >= 0; j--) {
-            inputElement.remove(j);
-        }
+    });
+
+    // If the previous value is still visible, we keep it; otherwise, we reset
+    // the SpimDir selection to the first visible entry
+    if ($("#SpimDir" + channel).find(":selected").css('display') == 'none') {
+        $.each(options, function() {
+            if ($(this).css('display') != 'none') {
+                $(this).prop("selected", true);
+                return false;
+            }
+        });
     }
 }
+
+
 
 function setSpimEntryProperties( ) {
     var tag = "SpimExcMode";
@@ -431,6 +442,7 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'dv':
             case 'ims':
             case 'lif':
+            case 'lof':
             case 'lsm':
             case 'oif':
             case 'pic':
@@ -439,6 +451,7 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'zvi':
             case 'czi':
             case 'nd2':
+            case 'nd':
             case 'tf2':
             case 'tf8':
             case 'btf':
@@ -584,7 +597,7 @@ function confirmUpload() {
     form = document.getElementById("uploadForm");
 
     if ( form.elements[0].value == '' ) {
-        alert("Please choose a file to upload, or cancel.")
+        alert("Please choose a file to upload, or cancel.");
         return false;
     }
 
@@ -592,7 +605,7 @@ function confirmUpload() {
     changeDiv('upMsg', 'Please wait until your browser finishes the file transfer: do not reload or go away from this page.');
 
     spin =  '<center><img src="images/spin.gif" '
-        +     'alt="busy"><br />Please wait...</center>'
+        +     'alt="busy"><br />Please wait...</center>';
     changeDiv('info', spin);
     changeDiv('actions', '');
     changeDiv('buttonUpload',
@@ -720,6 +733,22 @@ function uploadImages(maxFile, maxPost, archiveExt) {
     fileInputs = 0;
 
     addFileEntry();
+
+}
+
+/**
+ * Display the new uploader based on FineUploader (http://fineuploader.com/).
+ */
+function uploadImagesAlt() {
+
+    // Cancel the OMERO selection
+    cancelOmeroSelection();
+
+    // Show the uploader
+    var upFormID = $("#up_form");
+
+    // Clear the div
+    upFormID.show();
 
 }
 

@@ -10,9 +10,10 @@
  * @param $name String Developer name to be added to the mouseover tip.
  * @return String <span> Element to be echoed to the page.
  */
-function addTip($name) {
+function addTip($name)
+{
     return ("<span onmouseover=\"Tip('Login to see contact information.' )\" " .
-    "onmouseout=\"UnTip()\">$name</span>");
+        "onmouseout=\"UnTip()\">$name</span>");
 }
 
 /**
@@ -26,7 +27,8 @@ function addTip($name) {
  * @param array $email_list Array of developer email addresses (can contain "")
  * @return string To be echoed on the page
  */
-function addDevelopers(array $name_list, array $email_list) {
+function addDevelopers(array $name_list, array $email_list)
+{
 
     // Total number of developers to add
     $numDev = count($name_list);
@@ -53,8 +55,7 @@ function addDevelopers(array $name_list, array $email_list) {
 
         if ($i == ($numDev - 1)) {
             // Nothing to add. The string is finished
-        }
-        elseif ($i == ($numDev - 2)) {
+        } elseif ($i == ($numDev - 2)) {
             $str .= " & ";
         } else {
             $str .= ", ";
@@ -70,51 +71,51 @@ function addDevelopers(array $name_list, array $email_list) {
 <?php
 
 // Check whether a user is currently logged in
-$loggedIn = ( isset($_SESSION['user'] ) && $_SESSION['user']->isLoggedIn( ) );
+$loggedIn = (isset($_SESSION['user']) && $_SESSION['user']->isLoggedIn());
 
 ?>
 
-    <div id="footer">
-        
-        created 2004 by
-        <?php
-            $name_list = array("Volker B&auml;cker");
-            if ($loggedIn == true) {
-                $email_list = array("volker.baecker@mri.cnrs.fr");
-            } else {
-                $email_list = array("");
-            }
-            echo addDevelopers($name_list, $email_list);
-        ?>
+<div id="footer">
 
-        and released under the terms of the
-        <a href="http://www.huygens-rm.org/wp/?page_id=81">CeCILL license</a>
-		<br />extended 2006-2016 by
-		<?php
-            $name_list = array("Asheesh Gulati", "Alessandra Griffa",
-                "Jos&eacute; Vi&ntilde;a", "Daniel Sevilla",
-                "Niko Ehrenfeuchter", "Torsten St&ouml;ter",
-                "Olivier Burri", "Aaron Ponti");
-            if ($loggedIn == true) {
-                // Previous developers have their email address hidden for privacy
-                $email_list = array("", "", "", "daniel@svi.nl",
-                "nikolaus.ehrenfeuchter@unibas.ch",
-                "torsten.stoeter@ifn-magdeburg.de",
-                "olivier.burri@epfl.ch",
-                "aaron.ponti@bsse.ethz.ch");
-            } else {
-                $email_list = array_pad(array(""), count($name_list), "");
-            }
-            echo addDevelopers($name_list, $email_list);
-        ?>
+    created 2004 by
+    <?php
+    $name_list = array("Volker B&auml;cker");
+    if ($loggedIn == true) {
+        $email_list = array("volker.baecker@mri.cnrs.fr");
+    } else {
+        $email_list = array("");
+    }
+    echo addDevelopers($name_list, $email_list);
+    ?>
 
-	</div>
+    and released under the terms of the
+    <a href="http://www.huygens-rm.org/wp/?page_id=81">CeCILL license</a>
+    <br/>extended 2006-2016 by
+    <?php
+    $name_list = array("Asheesh Gulati", "Alessandra Griffa",
+        "Jos&eacute; Vi&ntilde;a", "Daniel Sevilla",
+        "Niko Ehrenfeuchter", "Torsten St&ouml;ter",
+        "Olivier Burri", "Aaron Ponti");
+    if ($loggedIn == true) {
+        // Previous developers have their email address hidden for privacy
+        $email_list = array("", "", "", "daniel@svi.nl",
+            "nikolaus.ehrenfeuchter@unibas.ch",
+            "torsten.stoeter@ifn-magdeburg.de",
+            "olivier.burri@epfl.ch",
+            "aaron.ponti@bsse.ethz.ch");
+    } else {
+        $email_list = array_pad(array(""), count($name_list), "");
+    }
+    echo addDevelopers($name_list, $email_list);
+    ?>
 
-    <div id="bottom">
-    </div>
+</div>
+
+<div id="bottom">
+</div>
 
 
-    </div> <!-- basket -->
+</div> <!-- basket -->
 
 </body>
 
