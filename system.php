@@ -68,7 +68,8 @@ include("header.inc.php");
             System::getHRMVersionAsInteger() < $latestVersion
         ) {
             ?>
-            <p class="updateNotification"><a href="javascript:openWindow(
+            <p class="updateNotification">
+                <a href="javascript:openWindow(
                 'http://huygens-rm.org/home/?q=node/4')">
                     <img src="images/check_for_update.png" alt="Version check"/>
                     &nbsp;&nbsp

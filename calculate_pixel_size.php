@@ -145,7 +145,8 @@ include("header.inc.php");
 
             <br/>
 
-            <a href="javascript:openWindow('http://www.svi.nl/PixelBinning')">
+            <a href="javascript:openWindow(
+                'http://www.svi.nl/PixelBinning')">
                 <img src="images/help.png" alt="?"/>
             </a>
             binning:
@@ -171,8 +172,8 @@ include("header.inc.php");
 
             </select>
             <br/>
-            <a href="javascript:openWindow('
-       http://www.svi.nl/HuygensRemoteManagerHelpCMount')">
+            <a href="javascript:openWindow(
+                'http://www.svi.nl/HuygensRemoteManagerHelpCMount')">
                 <img src="images/help.png" alt="?"/>
             </a>
             <?php

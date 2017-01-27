@@ -106,7 +106,8 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'perform' );">
 
             <legend>
-                <a href="openWindow('http://www.svi.nl/ColocalizationBasics')">
+                <a href="javascript:openWindow(
+                    'http://www.svi.nl/ColocalizationBasics')">
                     <img src="images/help.png" alt="?"/>
                 </a>
                 Would you like to perform Colocalization Analysis?
@@ -165,7 +166,8 @@ include("header.inc.php");
                       onmouseover="changeQuickHelp( 'channels' );">
 
                 <legend>
-                    <a href="openWindow('http://www.svi.nl/ColocalizationBasics')">
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/ColocalizationBasics')">
                         <img src="images/help.png" alt="?"/>
                     </a>
                     Channels
@@ -211,7 +213,7 @@ include("header.inc.php");
                       onmouseover="changeQuickHelp( 'coeff' );">
 
                 <legend>
-                    <a href="openWindow(
+                    <a href="javascript:openWindow(
                        'http://www.svi.nl/ColocalizationCoefficientsInBrief')">
                         <img src="images/help.png" alt="?"/>
                     </a>
@@ -279,7 +281,7 @@ include("header.inc.php");
             <fieldset class="setting"
                       onmouseover="changeQuickHelp( 'threshold' );">
                 <legend>
-                    <a href="openWindow(
+                    <a href="javascript:openWindow(
                        'http://www.svi.nl/ColocalizationBasics')">
                         <img src="images/help.png" alt="?"/>
                     </a>
@@ -376,7 +378,7 @@ include("header.inc.php");
                       onmouseover="changeQuickHelp( 'maps' );">
 
                 <legend>
-                    <a href="openWindow(
+                    <a href="javascript:openWindow(
                        'http://www.svi.nl/ColocalizationMap')">
                         <img src="images/help.png" alt="?"/>
                     </a>

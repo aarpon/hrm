@@ -120,7 +120,8 @@ include("header.inc.php");
         <fieldset class="setting">
 
             <legend>
-                <a href="openWindow('http://www.svi.nl/FileFormats')">
+                <a href="javascript:openWindow(
+                    'http://www.svi.nl/FileFormats')">
                     <img src="images/help.png" alt="?"/>
                 </a>
                 Output file format
@@ -251,7 +252,8 @@ include("header.inc.php");
 
     <fieldset class="report">
         <legend>
-            <a href="openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+            <a href="javascript:openWindow(
+                'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                 <img src="images/help.png" alt="?"/>
             </a>
             <a href="select_parameter_settings.php">
@@ -273,8 +275,8 @@ echo $_SESSION['setting']->displayString();
 
     <fieldset class="report">
         <legend>
-            <a href="openWindow('
-                   http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+            <a href="javascript:openWindow(
+                'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                 <img src="images/help.png" alt="?"/>
             </a>
             <a href="select_task_settings.php">
@@ -299,7 +301,8 @@ echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType);
 
     <fieldset class="report">
         <legend>
-            <a href="openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+            <a href="javascript:openWindow(
+                'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                 <img src="images/help.png" alt="?"/>
             </a>
 
@@ -328,7 +331,8 @@ echo $_SESSION['analysis_setting']->displayString();
 
     <fieldset class="report">
         <legend>
-            <a href="openWindow('http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
+            <a href="javascript:openWindow(
+                'http://www.svi.nl/HuygensRemoteManagerHelpCreateJob')">
                 <img src="images/help.png" alt="?"/>
             </a>
             <a href="select_images.php">

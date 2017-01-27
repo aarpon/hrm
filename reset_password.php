@@ -195,7 +195,7 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpResetPassword'));
+            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpLogin'));
             ?>
         </ul>
     </div>

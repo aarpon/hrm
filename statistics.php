@@ -123,8 +123,8 @@ include("header.inc.php");
         <fieldset>
 
             <legend>
-                <a href="openWindow('
-               http://www.svi.nl/HuygensRemoteManagerHelpStatistics')">
+                <a href="javascript:openWindow(
+                    'http://www.svi.nl/HuygensRemoteManagerHelpStatistics')">
                     <img src="images/help.png" alt="?"/>
                 </a>
                 Statistics

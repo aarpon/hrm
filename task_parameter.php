@@ -167,7 +167,7 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
                   onmouseover="changeQuickHelp( 'method' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'https://svi.nl/RestorationMethod')">
                     <img src="images/help.png" alt="?"/></a>
                 deconvolution algorithm
@@ -211,7 +211,8 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
                   onmouseover="changeQuickHelp( 'snr' );">
 
             <legend>
-                <a href="openWindow('http://www.svi.nl/SignalToNoiseRatio')">
+                <a href="javascript:openWindow(
+                    'http://www.svi.nl/SignalToNoiseRatio')">
                     <img src="images/help.png" alt="?"/></a>
                 signal/noise ratio
             </legend>
@@ -367,10 +368,11 @@ for ($j = 1; $j <= 4; $j++) {
 
         <div id="Autocrop">
             <fieldset class="setting provided"
-                      onmouseover="changeQuickHelp( 'autocrop' );">
+                      onmouseover="changeQuickHelp('autocrop');">
 
                 <legend>
-                    <a href="openWindow('http://www.svi.nl/HelpCropper')">
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpCropper')">
                         <img src="images/help.png" alt="?"/>
                     </a>
                     crop surrounding background areas?
@@ -410,10 +412,11 @@ for ($j = 1; $j <= 4; $j++) {
         </div> <!-- Autocrop -->
         <!-- background mode -->
         <fieldset class="setting provided"
-                  onmouseover="changeQuickHelp( 'background' );">
+                  onmouseover="changeQuickHelp('background');">
 
             <legend>
-                <a href="openWindow('http://www.svi.nl/BackgroundMode')">
+                <a href="javascript:openWindow(
+                    'http://www.svi.nl/BackgroundMode')">
                     <img src="images/help.png" alt="?"/></a>
                 background mode
             </legend>
@@ -544,7 +547,7 @@ for ($j = 1; $j <= 4; $j++) {
 
             <!-- stopping criteria -->
             <fieldset class="setting provided"
-                      onmouseover="changeQuickHelp( 'stopcrit' );">
+                      onmouseover="changeQuickHelp('stopcrit');">
 
                 <legend>
                     stopping criteria
@@ -553,7 +556,8 @@ for ($j = 1; $j <= 4; $j++) {
                 <div id="criteria">
 
                     <p>
-                        <a href="openWindow('http://www.svi.nl/MaxNumOfIterations')">
+                        <a href="javascript:openWindow(
+                            'http://www.svi.nl/MaxNumOfIterations')">
                             <img src="images/help.png" alt="?"/></a>
                         number of iterations:
 
@@ -607,10 +611,11 @@ for ($j = 1; $j <= 4; $j++) {
             ?>
 
             <fieldset class="setting provided"
-                      onmouseover="changeQuickHelp( 'zstabilization' );">
+                      onmouseover="changeQuickHelp('zstabilization');">
 
                 <legend>
-                    <a href="openWindow('http://www.svi.nl/ObjectStabilizer')">
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/ObjectStabilizer')">
                         <img src="images/help.png" alt="?"/>
                     </a>
                     stabilize data sets in the Z direction?

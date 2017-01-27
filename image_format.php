@@ -149,7 +149,7 @@ $nParamRequiringReset = 0;
                   onmouseover="changeQuickHelp( 'channels' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/NumberOfChannels')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -234,7 +234,7 @@ $nParamRequiringReset = 0;
                   onmouseover="changeQuickHelp( 'PSF' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/PointSpreadFunction')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -269,7 +269,7 @@ $nParamRequiringReset = 0;
                         "theoretical"
                     )
                         echo "checked=\"checked\"" ?> />
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/TheoreticalPsf')">
                     <img src="images/help.png" alt="?"/>
                 </a>

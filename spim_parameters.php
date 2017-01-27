@@ -365,7 +365,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'excMode' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -446,7 +446,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'gaussWidth' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -506,7 +506,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'focusOffset' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -568,7 +568,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'centerOffset' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -629,7 +629,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'NA' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -688,7 +688,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'fillFactor' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                     <img src="images/help.png" alt="?"/>
                 </a>
@@ -747,7 +747,7 @@ include("header.inc.php");
                   onmouseover="changeQuickHelp( 'direction' );">
 
             <legend>
-                <a href="openWindow(
+                <a href="javascript:openWindow(
                        'http://www.svi.nl/HuygensRemoteManagerHelpSPIM')">
                     <img src="images/help.png" alt="?"/>
                 </a>

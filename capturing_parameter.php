@@ -396,7 +396,8 @@ if ($saveToDB == true) {
                 <?php echo $parameterTimeInterval->confidenceLevel(); ?>"
                   onmouseover="changeQuickHelp( 'time' );">
             <legend>
-                <a href="openWindow('http://www.svi.nl/TimeSeries')">
+                <a href="javascript:openWindow(
+                    'http://www.svi.nl/TimeSeries')">
                     <img src="images/help.png" alt="?"/>
                 </a>
                 time interval
@@ -443,7 +444,8 @@ if ($saveToDB == true) {
                       onmouseover="changeQuickHelp( 'pinhole_radius' );">
 
                 <legend>
-                    <a href="openWindow('http://www.svi.nl/PinholeRadius')">
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/PinholeRadius')">
                         <img src="images/help.png" alt="?"/>
                     </a>
                     pinhole radius
@@ -539,7 +541,8 @@ if ($saveToDB == true) {
               <?php echo $parameterPinholeSpacing->confidenceLevel(); ?>"
                       onmouseover="changeQuickHelp( 'pinhole_spacing' );">
                 <legend>
-                    <a href="openWindow('http://www.svi.nl/PinholeSpacing')">
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/PinholeSpacing')">
                         <img src="images/help.png" alt="?"/>
                     </a>
                     backprojected pinhole spacing

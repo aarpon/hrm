@@ -221,13 +221,12 @@ include("header.inc.php");
     ?>
     <h2>Welcome</h2>
 
-    <p class="intro">The <a
-                href="javascript:openWindow('http://hrm.sourceforge.net')">Huygens
-            Remote Manager</a> is an easy to use interface to the Huygens
-        Software
-        by <a href="javascript:openWindow('http://www.svi.nl')">Scientific
-            Volume Imaging B.V.</a> that allows for multi-user, large-scale
-        deconvolution and analysis.</p>
+    <p class="intro">
+        The <a href="javascript:openWindow('http://hrm.sourceforge.net')">
+        Huygens Remote Manager</a> is an easy to use interface to the Huygens
+        Software by <a href="javascript:openWindow('http://www.svi.nl')">
+        Scientific Volume Imaging B.V.</a> that allows for multi-user,
+        large-scale deconvolution and analysis.</p>
 
     <?php
     /*
@@ -252,16 +251,16 @@ include("header.inc.php");
             <!-- Logos -->
             <tr>
                 <td class="epfl"
-                    onclick="openWindow('http://biop.epfl.ch')">
+                    onclick="javascript:openWindow('http://biop.epfl.ch')">
                 </td>
                 <td class="fmi"
-                    onclick="openWindow('http://www.fmi.ch')">
+                    onclick="javascript:openWindow('http://www.fmi.ch')">
                 </td>
                 <td class="mri"
-                    onclick="openWindow('http://www.mri.cnrs.fr')">
+                    onclick="javascript:openWindow('http://www.mri.cnrs.fr')">
                 </td>
                 <td class="bsse"
-                    onclick="openWindow('http://www.bsse.ethz.ch')">
+                    onclick="javascript:openWindow('http://www.bsse.ethz.ch')">
                 </td>
             </tr>
 
@@ -305,16 +304,16 @@ include("header.inc.php");
             <!-- Logos -->
             <tr>
                 <td class="svi"
-                    onclick="openWindow('http://www.svi.nl')">
+                    onclick="javascript:openWindow('http://www.svi.nl')">
                 </td>
                 <td class="lin"
-                    onclick="openWindow('http://www.lin-magdeburg.de')">
+                    onclick="javascript:openWindow('http://www.lin-magdeburg.de')">
                 </td>
                 <td class="bio-basel"
-                    onclick="openWindow('http://www.biozentrum.unibas.ch')">
+                    onclick="javascript:openWindow('http://www.biozentrum.unibas.ch')">
                 </td>
                 <td class="cni"
-                    onclick="openWindow('http://cni.ifn-magdeburg.de')">
+                    onclick="javascript:openWindow('http://cni.ifn-magdeburg.de')">
                 </td>
             </tr>
 
@@ -363,7 +362,7 @@ include("header.inc.php");
         <form method="post" action="">
             <fieldset>
                 <legend>
-                    <a href="openWindow(
+                    <a href="javascript:openWindow(
                'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
                         <img src="images/help.png" alt="?"/></a> Login
                 </legend>
@@ -391,8 +390,8 @@ include("header.inc.php");
 
                 <fieldset>
                     <legend>
-                        <a href="openWindow(
-               'http://www.svi.nl/HuygensRemoteManagerHelpRegistration')">
+                        <a href="javascript:openWindow(
+               'http://www.svi.nl/HuygensRemoteManagerHelpRegistrationPage')">
                             <img src="images/help.png" alt="?"/></a>
                         Registration
                     </legend>
