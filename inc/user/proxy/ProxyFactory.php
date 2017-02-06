@@ -13,6 +13,7 @@ namespace hrm\user\proxy;
 // Include the HRM configuration files.
 use hrm\DatabaseConnection;
 use hrm\Log;
+use hrm\System;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
 
@@ -80,7 +81,17 @@ class ProxyFactory {
         $sql = "SELECT authentication FROM username WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($username));
         if ($result === false) {
-            return self::getDefaultAuthenticationMode();
+
+            // This is a corner case: if the admin is logging in before the
+            // database update to version 15, there will be no authentication
+            // mode set for him and the default authentication mode could be
+            // different from integrated.
+            // @TODO Remove this at next database revision 16.
+            if (System::getDBCurrentRevision() < 15 && $username == "admin") {
+                return "integrated";
+            } else {
+                return self::getDefaultAuthenticationMode();
+            }
         }
         $rows = $result->GetRows();
         $authMode = null;
