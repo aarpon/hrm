@@ -20,12 +20,26 @@ Copyright and license notice: see license.txt
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'Roboto';
+    font-weight: 300;
+    font-style: normal;
+    src: url('Roboto-300.eot');
+    src: url('Roboto-300.eot?#iefix') format('embedded-opentype'),
+    local('Roboto Light'),
+    local('Roboto-300'),
+    url('Roboto-300.woff2') format('woff2'),
+    url('Roboto-300.woff') format('woff'),
+    url('Roboto-300.ttf') format('truetype'),
+    url('Roboto-300.svg#Roboto') format('svg');
+}
+
 /* basic elements */
 
 body {
     background: #fff;
     color: #000;
-    font-family: ubuntu_font;
+    font-family: 'Roboto', sans-serif;
     font-size: 14px;
     text-align: center;
     margin: 0px;
@@ -151,7 +165,7 @@ table {
 
 #statstable h3 {
     color: rgb(62,87,111);
-    font-family: ubuntu_font;
+    font-family: 'Roboto', sans-serif;
     font-weight: normal;
     font-size: 16px;
 }

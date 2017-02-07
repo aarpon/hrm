@@ -35,7 +35,10 @@
     "adodb/adodb-php": "v5.20.7",
     "adldap2/adldap2": "4.0.5",
     "fineuploader/php-traditional-server": "1.0.1",
-    "monolog/monolog": "1.19.0"
+    "monolog/monolog": "1.19.0",
+    "jsonrpc/jsonrpc": "1.0.*",
+    "twbs/bootstrap": "v3.3.7",
+    "twig/twig": "~1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "4.8.24",

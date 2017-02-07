@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Huygens Remote Manager</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <!-- HRM css -->
+    <link rel="stylesheet"
+          type="text/css"
+          href="css/hrm.css">
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="css/hrm_login.css">
+
+    {% block js_libs %}
+    {% endblock %}
+
+</head>
+<body>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div id="message" class="col-md-12">
+            {% block message %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div id="content" class="col-md-8">
+            {% block main %}
+            {% endblock %}
+
+            {% block actions %}
+            {% endblock %}
+
+            <h1>Welcome</h1>
+
+            <p>The <a href="http://hrm.sourceforge.net">Huygens Remote Manager</a>
+                is an easy to use interface to the
+                <a href="http://www.svi.nl">Huygens Software by Scientific</a>
+                Volume Imaging B.V. that allows for multi-user, large-scale
+                deconvolution and analysis.</p>
+
+        </div>
+
+        <div id="right_panel" class="col-md-4">
+            {% block right_panel %}
+            {% endblock %}
+
+            <h1>Login</h1>
+
+            <div class="login-dialog">
+                <p class="login-info">Please enter your credentials:</p>
+                <form class="form-signin">
+                    <input type="text" class="form-control" placeholder="Username" required autofocus>
+                    <input type="password" class="form-control" placeholder="Password" required>
+                    <button class="btn btn btn-primary btn-block" type="submit">
+                        Log in
+                    </button>
+                </form>
+                <a href="#" class="text-center new-account">No account yet?</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div id="footer" class="col-md-12">
+            {% block footer %}
+            {% endblock %}
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
