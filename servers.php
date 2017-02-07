@@ -27,9 +27,11 @@ $db = new DatabaseConnection();
 
 if (isset($_GET["add"]["name"]) && !empty($_GET["add"]["name"])) {
     if (!isset($_GET["add"]["path"]) || empty($_GET["add"]["path"])) {
-        $message .= "One or more invalid fields: no servers to add.\n";
-    } elseif (!isset($_GET["add"]["gpuId"]) || !is_numeric($_GET["add"]["gpuId"])) {
-        $message .= "One or more invalid fields: no servers to add.\n";
+        $message .= "Invalid HuCore path: no servers to add.\n";
+    } elseif (isset($_GET["add"]["gpuId"])
+              && $_GET["add"]["gpuId"] != ""
+              && !is_numeric($_GET["add"]["gpuId"])) {
+        $message .= "Invalid GPU ID: no servers to add.\n";
     } else {
         $serverName = $_GET["add"]["name"];
         $huPath     = $_GET["add"]["path"];

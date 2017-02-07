@@ -2226,20 +2226,28 @@ class DatabaseConnection
      */
     public function addServer($serverName, $huPath, $gpuId)
     {
-        if (!is_numeric($gpuId)) {
+        if ($gpuId != "" && !is_numeric($gpuId)) {
             return "error: invalid GPU ID";
         }
 
+        $tableName = "server";
+
         /* This allows for multiple entries for the same machine. */
-        /* The queue manager only looks at the machine name and rejecting
-           anything after the blank. */
-        $server = "$serverName $gpuId";
-
-        $query = "INSERT INTO server VALUES " .
-            "('$server','$huPath','free','NULL','$gpuId')";
-        $result = $this->queryLastValue($query);
-
-        return intval($result);
+        /* The queue manager only looks at the machine name, rejecting
+           anything after the blank. */        
+        if ($gpuId != "") {
+            $serverName = "$serverName $gpuId";
+            $record['gpuId'] = $gpuId;
+        }
+        
+        $record['name'] = $serverName;
+        $record['huscript_path'] = $huPath;
+        $record['status'] = 'free';
+        
+        $insertSQL = $this->connection->GetInsertSQL($tableName, $record);
+        $status = $this->connection->Execute($insertSQL);
+        
+        return $status;
     }
 
 
