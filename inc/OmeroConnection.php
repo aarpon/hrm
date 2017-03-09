@@ -9,6 +9,8 @@
  */
 namespace hrm;
 
+require_once dirname(__FILE__) . '/bootstrap.php';
+
 /**
  * Handles communication to an Omero server.
  *
