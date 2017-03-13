@@ -23,8 +23,8 @@
     // END
 
     function displayUsage() {
-        echo PHP_EOL . "Usage: php check.php /path/to/config/file" . PHP_EOL . PHP_EOL .
-    		"Example: php check.php /var/www/html/hrm/config/hrm_server_config.inc" .
+        echo PHP_EOL . "Usage: php checkConfig.php /path/to/config/file" . PHP_EOL . PHP_EOL .
+    		"Example: php checkConfig.php /var/www/html/hrm/config/hrm_server_config.inc" .
         PHP_EOL . PHP_EOL;
     }
 
@@ -34,9 +34,9 @@
             return;
          }
 
-         echo "Check against HRM v3.4.x." . PHP_EOL;
+         echo "Checking against HRM v3.4.x." . PHP_EOL;
 
-         require_once($configFile);
+         include($configFile);
 
         // Variables that must exist
         $variables = array(
@@ -84,7 +84,6 @@
 
         // Check the values of the $authenticateAgainst variable
         $numVariableToFix = 0;
-        global $authenticateAgainst;
         if (!is_array($authenticateAgainst)) {
             echo "* * * Error: variable 'authenticateAgainst' must be an array!" . PHP_EOL;
             if ($authenticateAgainst == "MYSQL") {

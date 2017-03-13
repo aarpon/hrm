@@ -1488,13 +1488,28 @@ class QueueManager
         $success = true;
 
         $db = new DatabaseConnection();
-        $role = UserConstants::ROLE_SUPERADMIN;
-        $sql = "SELECT email FROM username WHERE name='admin' AND role='$role';";
-        $email = $db->queryLastValue($sql);
-        // If the e-mail is not in the database yet, we store it.
-        if ($email == "") {
-            $sqlUp = "UPDATE username SET email='$email_admin' WHERE name='admin' AND role='$role';";
-            $success &= $db->execute($sqlUp);
+
+        // This is a corner case: if the QM is started before the
+        // database update to version 15, the sql query that relies on the
+        // role to be set will fail and the QM will fail.
+        // @TODO Remove this at next database revision 16.
+        if (System::getDBCurrentRevision() < 15) {
+            $sql = "SELECT email FROM username WHERE name='admin';";
+            $email = $db->queryLastValue($sql);
+            // If the e-mail is not in the database yet, we store it.
+            if ($email == "") {
+                $sqlUp = "UPDATE username SET email='$email_admin' WHERE name='admin';";
+                $success &= $db->execute($sqlUp);
+            }
+        } else {
+            $role = UserConstants::ROLE_SUPERADMIN;
+            $sql = "SELECT email FROM username WHERE name='admin' AND role='$role';";
+            $email = $db->queryLastValue($sql);
+            // If the e-mail is not in the database yet, we store it.
+            if ($email == "") {
+                $sqlUp = "UPDATE username SET email='$email_admin' WHERE name='admin' AND role='$role';";
+                $success &= $db->execute($sqlUp);
+            }
         }
         return $success;
     }

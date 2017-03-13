@@ -12,6 +12,7 @@ namespace hrm\user\proxy;
 
 use hrm\DatabaseConnection;
 use hrm\Log;
+use hrm\System;
 use hrm\user\UserManager;
 use hrm\user\UserConstants;
 
@@ -83,10 +84,15 @@ class DatabaseProxy extends AbstractProxy {
             }
 
             // Authentication worked. So now we upgrade the password.
-            $newHashedPassword = password_hash($password,
-                UserConstants::HASH_ALGORITHM,
-                array('cost' => UserConstants::HASH_ALGORITHM_COST));
-            $this->setPassword($username, $newHashedPassword);
+            // The database check is for the corner case where the admin
+            // logs in to upgrade the database from revision 14 to 15!
+            // @TODO Remove this at next database revision 16.
+            if (System::getDBCurrentRevision() >= 15) {
+                $newHashedPassword = password_hash($password,
+                    UserConstants::HASH_ALGORITHM,
+                    array('cost' => UserConstants::HASH_ALGORITHM_COST));
+                $this->setPassword($username, $newHashedPassword);
+            }
 
             // Change the status to active
             $this->setActive($username);
@@ -174,6 +180,15 @@ class DatabaseProxy extends AbstractProxy {
      * @return bool True if the user is outdated, false otherwise.
      */
     public function isOutdated($username) {
+
+        // Workaround for a corner case: when the admin tries to
+        // log in to upgrade the database between revision 14
+        // and 15, his information is OUTDATED, but this cannot
+        // yet be obtained from UserManager;;getUserStatus method!
+        // @TODO Remove this in the future.
+        if (System::getDBCurrentRevision() < 15) {
+            return true;
+        }
         return (UserManager::getUserStatus($username) == UserConstants::STATUS_OUTDATED);
     }
 
