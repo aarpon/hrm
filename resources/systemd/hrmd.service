@@ -1,7 +1,8 @@
 [Unit]
 Description=HRM (Huygens Remote Manager) Queue Manager Service
-# For both 'Requires=' and 'After=', please set one of mysql.service,
-# mariadb.service (fork of mysql), postgresql.service.
+# For both 'Requires=' and 'After=', please set one of mysql.service
+# (or mysqld.service), mariadb.service (fork of mysql), postgresql.service.
+# Please check the correct name of the service for your distribution!
 Requires=mysql.service
 Wants=network-online.target
 After=mysql.service network.target network-online.target
@@ -16,4 +17,3 @@ PIDFile=/var/log/hrm/hrmd.pid
 
 [Install]
 WantedBy=multi-user.target
-
