@@ -1,7 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: aaron
- * Date: 24.07.17
- * Time: 12:25
- */
+
+require_once dirname(__FILE__) . '/./inc/bootstrap.php';
+
+$loader = new Twig_Loader_Filesystem('templates');
+$twig = new Twig_Environment($loader);
+
+echo $twig->render('base.html', array());
