@@ -196,7 +196,7 @@ function fieldEntry($p)
 {
 
     global $Details, $Default;
-    global $$p;
+    global ${$p};
 
     if (isset($$p)) $val = $$p;
     else $val = $Default[$p];

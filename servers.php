@@ -103,7 +103,7 @@ include("header.inc.php");
                    foreach ($server as $key => $value) {
                       if (strpos($key, 'name') !== false) {
                           $serverName = $value;
-                          $name = split(" ", $serverName);
+                          $name = preg_split(" ", $serverName);
                           $name = $name[0];
                       }
                       if (strpos($key, 'huscript_path') !== false) {
