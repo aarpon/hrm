@@ -169,7 +169,7 @@ class tc_calendar{
 	var $tc_onchanged = "";
 	
 	//calendar constructor
-	function tc_calendar($objname, $date_picker = false, $show_input = true){
+	function __construct($objname, $date_picker = false, $show_input = true){
 		$this->objname = $objname;
 		//$this->year_display_from_current = 50;
 		$this->date_picker = $date_picker;
