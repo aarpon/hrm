@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 {% block head %}
@@ -18,12 +18,13 @@
 {% include 'default_nav.html' %}
 {% endblock %}
 
-<footer>
-{% block footer %}
+<div class="container-fluid">
+{% block main %}
 {% endblock %}
-</footer>
+</div>
 
-{% block content %}
+{% block footer %}
+{% include 'footer.html' %}
 {% endblock %}
 
 </body>
