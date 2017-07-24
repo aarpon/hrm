@@ -497,6 +497,7 @@ class DatabaseConnection
                     case "ColocChannel":
                     case "ColocThreshold":
                     case "ColocCoefficient":
+                    case "PSF":
                         /* Extract and continue to explode. */
                         $newValue = substr($newValue, 1);
                     default:

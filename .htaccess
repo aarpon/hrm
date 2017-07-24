@@ -3,3 +3,21 @@ DirectoryIndex login.php
 
 # prevent serving git stuff:
 RedirectMatch 404 /\.git
+
+
+
+# Uncomment the block below and adjust the "ErrorDocument" and "Allow from"
+# lines to match your setup to enable maintenance mode. See the documentation
+# for more details.
+
+########### <------ MAINTENANCE MODE ------> ###########
+# Order Deny,Allow
+# Deny from all
+#
+# ## ErrorDocument *must* be an absolute path, so please adjust it to match
+# ## your local installation:
+# ErrorDocument 403 /hrm/maintenance.html
+#
+# ## Adjust with the IP of the machine you are using to test:
+# Allow from 1.2.3.4
+########### <------ MAINTENANCE MODE ------> ###########

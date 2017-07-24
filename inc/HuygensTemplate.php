@@ -2696,7 +2696,7 @@ class HuygensTemplate
                 $parameterValue = "";
         }
 
-        if ($parameterValue != 0
+        if ($parameterValue !== 0
             && ($parameterValue == "" || $parameterValue == "{}")
         ) {
             $parameterValue = "*";

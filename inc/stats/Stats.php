@@ -355,7 +355,7 @@ class Stats
     {
         $user = new UserV2();
         $user->setName($this->m_Username);
-        $user->isAdmin();
+        return $user->isAdmin();
     }
 
     /**

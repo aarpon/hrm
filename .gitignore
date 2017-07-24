@@ -25,3 +25,6 @@ css/custom.css
 
 # Composer's vendor folder 
 /vendor/
+
+# macOS finder files 
+*.DS_Store
