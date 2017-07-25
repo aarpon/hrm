@@ -1,9 +1,10 @@
+{# templates/base.twig #}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-{% block head %}
-{% include 'head.html' %}
+{% include 'head.twig' %}
+    {% block head %}
 {% endblock %}
 </head>
 
@@ -15,7 +16,7 @@
 </header>
 
 {% block navigation %}
-{% include 'default_nav.html' %}
+    {% include 'landing_nav.twig' %}
 {% endblock %}
 
 <div class="container-fluid">
@@ -24,7 +25,7 @@
 </div>
 
 {% block footer %}
-{% include 'footer.html' %}
+    {% include 'footer.twig' %}
 {% endblock %}
 
 </body>

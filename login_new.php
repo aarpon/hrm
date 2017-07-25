@@ -5,4 +5,4 @@ require_once dirname(__FILE__) . '/./inc/bootstrap.php';
 $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader);
 
-echo $twig->render('landing.twig', array('version' => '4.0'));
+echo $twig->render('login.twig', array('version' => '4.0'));

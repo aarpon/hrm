@@ -1,0 +1,55 @@
+{# templates/landing.twig #}
+{% extends "base.twig" %}
+
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="css/logos.css">
+{% endblock %}
+
+{% block main %}
+    <div class="features-boxed">
+        <div class="container">
+            <div class="intro">
+                <h2 class="text-center">Welcome</h2>
+                <p class="text-center">The <a href="http://www.huygens-rm.org/">Huygens Remote Manager</a> is an easy
+                    to use interface to the Huygens Software by <a href="http://www.svi.nl">
+                        Scientific Volume Imaging B.V.</a> that allows for multi-user, large-scale
+                    deconvolution and analysis.</p>
+            </div>
+            <div class="row features">
+                <div class="col-md-4 col-sm-6 item">
+                    <div class="box"><i class="glyphicon glyphicon-map-marker icon"></i>
+                        <h3 class="name"><a href="http://biop.epfl.ch/">BIOP</a></h3>
+                        <p class="description">EPF Lausanne</p></div>
+                </div>
+                <div class="col-md-4 col-sm-6 item">
+                    <div class="box"><i class="glyphicon glyphicon-time icon"></i>
+                        <h3 class="name"><a href="http://www.fmi.ch/faim">FAIM</a></h3>
+                        <p class="description">Friedrich Miescher Institute</p></div>
+                </div>
+                <div class="col-md-4 col-sm-6 item">
+                    <div class="box"><i class="glyphicon glyphicon-list-alt icon"></i>
+                        <h3 class="name"><a href="http://www.mri.cnrs.fr/">
+                                RIO Imaging</a></h3>
+                        <p class="description">Centre national de la recherche scientifique</p></div>
+                </div>
+                <div class="col-md-4 col-sm-6 item">
+                    <div class="box"><i class="glyphicon glyphicon-leaf icon"></i>
+                        <h3 class="name">BSSE</h3>
+                        <p class="description">ETH Zurich</p></div>
+                </div>
+                <div class="col-md-4 col-sm-6 item">
+                    <div class="box"><i class="glyphicon glyphicon-plane icon"></i>
+                        <h3 class="name">LIN</h3>
+                        <p class="description">Short</p></div>
+                </div>
+                <div class="col-md-4 col-sm-6 item">
+                    <div class="box"><i class="glyphicon glyphicon-phone icon"></i>
+                        <h3 class="name">Mobile-first</h3>
+                        <p class="description">Short</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
