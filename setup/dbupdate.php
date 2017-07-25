@@ -4147,7 +4147,7 @@ if ($current_revision < $n) {
 
 
     $alterColumnSQL = $datadict->AlterColumnSQL('parameter',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4157,7 +4157,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('parameter_setting',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4167,7 +4167,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('task_parameter',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4177,7 +4177,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('task_setting',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4187,7 +4187,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('analysis_parameter',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4197,7 +4197,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('analysis_parameter',
-                                                'setting VARCHAR(255)');
+                                                'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4207,7 +4207,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('analysis_setting',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4217,7 +4217,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('analysis_setting',
-                                                'name VARCHAR(255)');
+                                                'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4227,7 +4227,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4237,7 +4237,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter',
-                                                'setting VARCHAR(255)');
+                                                'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4247,7 +4247,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter_setting',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4257,7 +4257,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter_setting',
-                                                'name VARCHAR(255)');
+                                                'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4267,7 +4267,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_task_parameter',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4277,7 +4277,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_task_parameter',
-                                                'setting VARCHAR(255)');
+                                                'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4287,7 +4287,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_task_setting',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4297,7 +4297,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_task_setting',
-                                                'name VARCHAR(255)');
+                                                'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4307,7 +4307,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_parameter',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4317,7 +4317,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_parameter',
-                                                'setting VARCHAR(255)');
+                                                'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4327,7 +4327,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_setting',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4337,7 +4337,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_setting',
-                                                'name VARCHAR(255)');
+                                                'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4347,7 +4347,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_files',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4367,7 +4367,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4377,7 +4377,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter',
-                                                'setting VARCHAR(255)');
+                                                'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4387,7 +4387,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
-                                                'name VARCHAR(255)');
+                                                'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4397,7 +4397,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4417,7 +4417,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4427,7 +4427,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
-                                                'setting VARCHAR(255)');
+                                                'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4437,7 +4437,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4457,7 +4457,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
-                                                'name VARCHAR(255)');
+                                                'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4467,7 +4467,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4477,7 +4477,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
-                                                'setting VARCHAR(255)');
+                                                'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4487,7 +4487,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4507,7 +4507,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
-                                                'name VARCHAR(255)');
+                                                'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4517,7 +4517,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('statistics',
-                                                'owner VARCHAR(255)');
+                                                'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4527,7 +4527,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('username',
-                                                'name VARCHAR(255)');
+                                                'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4540,7 +4540,7 @@ if ($current_revision < $n) {
     // ------- Enable longer server names in the queue manager. ------
 
     $alterColumnSQL = $datadict->AlterColumnSQL('server',
-                                                'name VARCHAR(255)');
+                                                'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4994,7 +4994,7 @@ if ($current_revision < $n) {
     // Create new table: institution
     $flds = "
         id I(11) NOTNULL AUTOINCREMENT PRIMARY,
-        name C(255) NOTNULL UNIQUE INDEX,
+        name C(191) NOTNULL UNIQUE INDEX,
         address C(255),
         url C(255)
     ";
@@ -5078,7 +5078,7 @@ if ($current_revision < $n) {
         // Create new table: username
         $flds = "
         id I(11) NOTNULL AUTOINCREMENT PRIMARY,
-        name C(255) NOTNULL UNIQUE INDEX,
+        name C(191) NOTNULL UNIQUE INDEX,
         password C(255) NOTNULL,
         email C(255) NOTNULL,
         research_group C(255) NOTNULL,
