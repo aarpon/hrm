@@ -20,6 +20,9 @@
 {% endblock %}
 
 <div class="container-fluid">
+{% block message %}
+    <div class="alert alert-{{ status }}" role="alert">{{ message }}</div>
+{% endblock %}
 {% block main %}
 {% endblock %}
 </div>
