@@ -3,116 +3,93 @@
 
 {% block head %}
     {{ parent() }}
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="https://pingendo.github.io/templates/blank/theme.css" type="text/css">
+    <link rel="stylesheet" href="css/login.css">
 {% endblock %}
 
-{% block navigation %}
-<nav class="navbar navbar-expand-md navbar-light bg-faded text-center">
-    <div class="container">
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar2SupportedContent" aria-controls="navbar2SupportedContent" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
-        <div class="collapse navbar-collapse text-center justify-content-center" id="navbar2SupportedContent">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Log in</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Tutorials
-                        <br>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Support</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Register
-                        <br>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-{% endblock %}
 
 {% block main %}
-    <div class="py-5 section text-center">
+    <div class="section">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h1 class="text-primary">HRM Development Team {{ year }}</h1>
+                    <h1 class="text-center text-primary">HRM Development Team 2017</h1>
                 </div>
             </div>
         </div>
     </div>
-    <div class="py-5 text-center">
+    <div class="section">
         <div class="container">
             <div class="row">
+                <div class="col-md-12">
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-4">
-                    <img src="https://pingendo.com/assets/photos/user_placeholder.png" class="d-block mx-auto rounded-circle img-fluid my-3">
-                    <h3>Aaron Ponti</h3>
-                    <p>ETH Zurich, D-BSSE</p>
+                    <img src="http://pingendo.github.io/pingendo-bootstrap/assets/user_placeholder.png" class="center-block img-circle img-responsive">
+                    <h3 class="text-center">
+                        Aaron Ponti
+                    </h3>
+                    <p class="text-center">
+                        ETH Zurich D-BSSE
+                    </p>
                 </div>
                 <div class="col-md-4">
-                    <img src="https://pingendo.com/assets/photos/user_placeholder.png" class="d-block mx-auto rounded-circle img-fluid my-3">
-                    <h3>Niko Ehrenfeuchter</h3>
-                    <p>Uni Basel</p>
+                    <img src="http://pingendo.github.io/pingendo-bootstrap/assets/user_placeholder.png" class="center-block img-circle img-responsive">
+                    <h3 class="text-center">
+                        Niko Ehrenfeuchter
+                    </h3>
+                    <p class="text-center">
+                        Uni Basel
+                    </p>
                 </div>
                 <div class="col-md-4">
-                    <img src="https://pingendo.com/assets/photos/user_placeholder.png" class="d-block mx-auto rounded-circle img-fluid my-3">
-                    <h3>Daniel Sevilla</h3>
-                    <p>SVI</p>
+                    <img src="http://pingendo.github.io/pingendo-bootstrap/assets/user_placeholder.png" class="center-block img-circle img-responsive">
+                    <h3 class="text-center">
+                        Daniel Sevilla
+                    </h3>
+                    <p class="text-center">
+                        SVI
+                    </p>
                 </div>
             </div>
         </div>
     </div>
-    <div class="py-5 text-center">
+    <div class="section">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <img src="https://pingendo.com/assets/photos/user_placeholder.png" class="d-block mx-auto rounded-circle img-fluid my-3">
-                    <h3>Torsten Stoeter</h3>
-                    <p>LIN / CNI Magdeburg</p>
+                    <img src="http://pingendo.github.io/pingendo-bootstrap/assets/user_placeholder.png" class="center-block img-circle img-responsive">
+                    <h3 class="text-center">
+                        Torsten Stoeter
+                    </h3>
+                    <p class="text-center">
+                        LIN / CNI Magdeburg
+                    </p>
                 </div>
                 <div class="col-md-4">
-                    <img src="https://pingendo.com/assets/photos/user_placeholder.png" class="d-block mx-auto rounded-circle img-fluid my-3">
-                    <h3>Felix Meyenhofer</h3>
-                    <p>Uni Fribourg</p>
+                    <img src="http://pingendo.github.io/pingendo-bootstrap/assets/user_placeholder.png" class="center-block img-circle img-responsive">
+                    <h3 class="text-center">
+                        Felix Meyenhofer
+                    </h3>
+                    <p class="text-center">
+                        Uni Fribourg
+                    </p>
                 </div>
                 <div class="col-md-4">
-                    <img src="https://pingendo.com/assets/photos/user_placeholder.png" class="d-block mx-auto rounded-circle img-fluid my-3">
-                    <h3>Laurent Guerard</h3>
-                    <p>Uni Basel</p>
+                    <img src="http://pingendo.github.io/pingendo-bootstrap/assets/user_placeholder.png" class="center-block img-circle img-responsive">
+                    <h3 class="text-center">
+                        Laurent Gerard
+                    </h3>
+                    <p class="text-center">
+                        Uni Basel
+                    </p>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="cover" style="opacity: 0.5;">
+        <div class="cover-image">
         </div>
     </div>
 {% endblock %}
 
-{% block footer %}
-    <nav class="navbar navbar-expand-md navbar-light bg-faded text-center">
-        <div class="container">
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbar2SupportedContent" aria-controls="navbar2SupportedContent" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
-            <div class="collapse navbar-collapse text-center justify-content-center" id="navbar2SupportedContent">
-                <ul class="navbar-nav">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">
-                            <br>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Community</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-{% endblock %}
