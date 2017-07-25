@@ -1,0 +1,90 @@
+/**
+
+        registration
+
+        features-boxed
+ */
+
+.register {
+    background:#f1f7fc;
+    padding:80px 0;
+}
+
+.register .image-holder {
+    display:table-cell;
+    width:auto;
+    background-size:cover;
+}
+
+.register .form-container {
+    display:table;
+    max-width:800px;
+    width:90%;
+    margin:0 auto;
+    box-shadow:1px 1px 5px rgba(0,0,0,0.1);
+}
+
+.register form {
+    display:table-cell;
+    width:400px;
+    background-color:#ffffff;
+    padding:40px 60px;
+    color:#505e6c;
+}
+
+@media (max-width:991px) {
+    .register form {
+        padding:40px;
+    }
+}
+
+.register form h2 {
+    font-size:24px;
+    line-height:1.5;
+    margin-bottom:30px;
+}
+
+.register form .form-control {
+    background:#f7f9fc;
+    border:none;
+    border-bottom:1px solid #dfe7f1;
+    border-radius:0;
+    box-shadow:none;
+    outline:none;
+    color:inherit;
+    text-indent:6px;
+    height:40px;
+}
+
+.register form .checkbox {
+    font-size:13px;
+    line-height:20px;
+}
+
+.register form .btn-primary {
+    background:#1485ee;
+    border:none;
+    border-radius:4px;
+    padding:11px;
+    box-shadow:none;
+    margin-top:35px;
+    text-shadow:none;
+    outline:none !important;
+}
+
+.register form .btn-primary:hover, .register form .btn-primary:active {
+    /*background:#eb3b60;*/
+}
+
+.register form .btn-primary:active {
+    transform:translateY(1px);
+}
+
+.register form .already {
+    display:block;
+    text-align:center;
+    font-size:12px;
+    color:#6f7a85;
+    opacity:0.9;
+    text-decoration:none;
+}

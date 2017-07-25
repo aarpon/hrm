@@ -1,0 +1,41 @@
+{# templates/login.twig #}
+{% extends "base.twig" %}
+
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="css/registration.css">
+{% endblock %}
+
+{% block main %}
+    <div class="register">
+        <div class="form-group"></div>
+        <div class="form-container">
+            <form method="post">
+                <h2 class="text-center"><strong>Create</strong> an account.</h2>
+                <div class="form-group">
+                    <input type="text" name="username" placeholder="User name" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <input type="text" name="group" placeholder="Group" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password-repeat" placeholder="Password (repeat)" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label class="control-label">
+                            <input type="checkbox" />I agree to the license terms.</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary btn-block" type="submit">Sign Up</button>
+                </div><a href="login_new.php#" class="already">You already have an account? Login here.</a></form>
+        </div>
+    </div>
+{% endblock %}
