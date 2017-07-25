@@ -482,7 +482,7 @@ if ($current_revision == 0) {
     }
     // Create table
     $flds = ("
-        parameter C(255) DEFAULT 0 PRIMARY,
+        parameter C(191) DEFAULT 0 PRIMARY,
         min C(30),
         max C(30),
         min_included C(1) DEFAULT t,
@@ -516,7 +516,7 @@ if ($current_revision == 0) {
     // Create table
     $flds = "
         parameter C(30) NOTNULL DEFAULT 0 PRIMARY,
-        value C(255) NOTNULL DEFAULT 0 PRIMARY,
+        value C(191) NOTNULL DEFAULT 0 PRIMARY,
         translation C(50) DEFAULT NULL,
         isDefault C(1) DEFAULT f
     ";
@@ -1104,7 +1104,7 @@ if ($current_revision == 0) {
     $flds = "
         job C(30) DEFAULT 0 PRIMARY,
         owner C(30) DEFAULT 0,
-        file C(255) DEFAULT 0 PRIMARY
+        file C(191) DEFAULT 0 PRIMARY
     ";
     if (!create_table($tabname, $flds))
         return;
@@ -1751,7 +1751,7 @@ if ($current_revision < $n) {
     $tabname = "parameter";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(255) NOTNULL DEFAULT 0 PRIMARY,
+        setting C(191) NOTNULL DEFAULT 0 PRIMARY,
         name C(30) NOTNULL DEFAULT 0 PRIMARY,
         value C(255) DEFAULT NULL
     ";
@@ -1769,7 +1769,7 @@ if ($current_revision < $n) {
     $tabname = "parameter_setting";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(255) NOTNULL PRIMARY,
+        name C(191) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
     $colnames = array("owner","name","standard");
@@ -1786,7 +1786,7 @@ if ($current_revision < $n) {
     $tabname = "task_parameter";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        setting C(255) NOTNULL PRIMARY,
+        setting C(191) NOTNULL PRIMARY,
         name C(30) NOTNULL PRIMARY,
         value C(255) DEFAULT NULL
     ";
@@ -1804,7 +1804,7 @@ if ($current_revision < $n) {
     $tabname = "task_setting";
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
-        name C(255) NOTNULL PRIMARY,
+        name C(191) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
     $colnames = array("owner","name","standard");
@@ -1821,7 +1821,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $flds = "
         parameter C(30) NOTNULL DEFAULT 0 PRIMARY,
-        value C(255) NOTNULL DEFAULT 0 PRIMARY,
+        value C(191) NOTNULL DEFAULT 0 PRIMARY,
         translation C(255) DEFAULT NULL,
         isDefault C(1) DEFAULT f
     ";
