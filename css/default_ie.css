@@ -364,7 +364,7 @@ table {
   height: 60px;
   width: 160px;
   cursor: pointer;
-  background: url("../images/logo_epfl.png") no-repeat center;
+  background: url("../images/logo_epfl_old.png") no-repeat center;
   background-size: 90px;
 }
 
@@ -390,7 +390,7 @@ table {
   margin-top: 50px;
   padding-bottom: 5px;
   cursor: pointer;
-  background: url("../images/logo_bsse.png") no-repeat center;
+  background: url("../images/logo_bsse_old.png") no-repeat center;
   background-size: 100px;
 }
 
