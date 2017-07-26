@@ -31,7 +31,19 @@
     font-size: 100px;
     color: #bfcbca;
 }
-.col-md-4 .empty-container {
+.col-md-4 .glyphicon-book {
+    font-size: 100px;
+    color: #bfcbca;
+}
+.col-md-4 .glyphicon-cog {
+    font-size: 100px;
+    color: #bfcbca;
+}
+.col-md-4 .glyphicon-open {
+    font-size: 100px;
+    color: #bfcbca;
+}
+.col-md-4 .glyphicon-th {
     font-size: 100px;
     color: #bfcbca;
 }
