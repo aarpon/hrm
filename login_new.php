@@ -12,6 +12,10 @@ require_once dirname(__FILE__) . '/./inc/bootstrap.php';
 
 global $email_admin;
 
+// The Twig handler.
+$loader = new Twig_Loader_Filesystem('templates');
+$twig = new Twig_Environment($loader);
+
 /*
  *
  * SANITIZE INPUT
@@ -70,46 +74,60 @@ session_start();
 
 $db = new DatabaseConnection();
 if (!$db->isReachable()) {
-    $warning = "the database is not reachable!\n" .
-        "Please contact your administrator.</p>" .
-        "<p>You will not be allowed to login " .
-        "until this issue has been fixed.</p>";
+    $message = "the database is not reachable!\n" .
+               "Please contact your administrator.</p>" .
+               "<p>You will not be allowed to login " .
+               "until this issue has been fixed.</p>";
+    echo $twig->render('base.twig', array('status'  => 'danger',
+                                                'message' => $message));
     return;
 }
 
 // Check that the hucore version is known.
 if (System::getHuCoreVersionAsInteger() == 0) {
-    $warning = "Warning: unknown HuCore version!\n" .
-        "<p>Please ask the administrator to start the queue manager.</p>" .
-        "<p>You are now allowed to login until this issue has been " .
-        "fixed.</p>";
+    $message = "unknown HuCore version!\n" .
+               "<p>Please ask the administrator to start the queue manager.</p>" .
+               "<p>You are now allowed to login until this issue has been " .
+               "fixed.</p>";
+    echo $twig->render('base.twig', array('status'  => 'danger',
+                                                'message' => $message));
     return;
 }
 
 // Check that hucore is recent enough to run this version of the HRM.
 if (System::isMinHuCoreVersion() == false) {
-    $warning = "your HuCore version is " .
-        System::getHucoreVersionAsString() . ", you need at least HuCore " .
-        "version " . System::getMinHuCoreVersionAsString() . " for HRM " .
-        System::getHRMVersionAsString() . "!\n" .
-        "<p>Please contact the administrator.</p>";
+    $message = "your HuCore version is " .
+               System::getHucoreVersionAsString() .
+               ", you need at least HuCore version " .
+               System::getMinHuCoreVersionAsString() .
+               " for HRM " .
+               System::getHRMVersionAsString() .
+               "!\n" .
+               "<p>Please contact the administrator.</p>";
+    echo $twig->render('base.twig', array('status'  => 'danger',
+                                                'message' => $message));
     return;
 }
 
 // Check that the database is up-to-date.
 if (System::isDBUpToDate() == false) {
-    $warning = "the database is not up-to-date!\n";
-        "<p>This happens if HRM was recently updated but the " .
-        "database was not. You are not allowed to login " .
-        "until this issue has been fixed.</p>" .
-        "<p>Only the administrator can login.</p>";
+    $message = "the database is not up-to-date!\n";
+               "<p>This happens if HRM was recently updated but the " .
+               "database was not. You are not allowed to login " .
+               "until this issue has been fixed.</p>" .
+               "<p>Only the administrator can login.</p>";
+    echo $twig->render('base.twig', array('status'  => 'danger',
+                                                'message' => $message));
+    return;
 }
 
 // Check that HuCore has a valid license, unless this is a development setup.
 if (file_exists('.hrm_devel_version') == false) {
     if (System::hucoreHasValidLicense() == false) {
-        $warning = "no valid HuCore license found!\n" .
-            "<p>Please contact the administrator.</p>";
+        $message = "no valid HuCore license found!\n" .
+                   "<p>Please contact the administrator.</p>";
+        echo $twig->render('base.twig', array('status'  => 'danger',
+                                                    'message' => $message));
         return;
     }
 }
@@ -183,8 +201,5 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
 }
 
 /* Render the HTML code. */
-$loader = new Twig_Loader_Filesystem('templates');
-$twig = new Twig_Environment($loader);
-
 echo $twig->render('login.twig', array('version' => '4.0',
                                              'error' => $message));
