@@ -1,0 +1,83 @@
+{# templates/home.twig #}
+{% extends "base.twig" %}
+
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="css/login.css">
+{% endblock %}
+
+{% block main %}
+
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+
+        // Function checkForUpdates
+        function checkForUpdates() {
+            JSONRPCRequest({
+                    method: 'jsonCheckForUpdates',
+                    params: []
+                }, function (response) {
+
+                    var updateDiv = $("#update");
+                    if (!response || response.success === "false") {
+                        updateDiv.html("<p class='updateError'>" +
+                            "<img src=\"images/check_for_update.png\" alt=\"Error\" />" +
+                            "&nbsp;&nbspError: could not retrieve version " +
+                            "information!</p>");
+                        updateDiv.show();
+                        return;
+                    }
+                    if (response.newerVersionExist === "false") {
+                        updateDiv.html("<p class='noUpdateNotification'>" +
+                            "<img src=\"images/check_for_update.png\" alt=\"Latest version\" />" +
+                            "&nbsp;&nbspCongratulations! You are running the " +
+                            "latest version of the HRM!</p>");
+                        updateDiv.show();
+                        return;
+                    }
+                    updateDiv.html(
+                        "<p class='updateNotification'>" +
+                        "<a href='#'>" +
+                        "<img src=\"images/check_for_update.png\" alt=\"New version\" />" +
+                        "&nbsp;&nbspA newer version of the HRM (" +
+                        response.newVersion +
+                        ") is available!</a></p>");
+                    updateDiv.on("click", function () {
+                        openWindow("http://huygens-rm.org/home/?q=node/4");
+                    });
+                    updateDiv.show();
+
+                }
+            )
+        }
+
+        // Hide the "update" div in the beginning
+        $(document).ready(function () {
+            $("#update").hide();
+        });
+
+        {% if {{ isAdmin }} %}
+            $(document).ready(function () {
+
+                // Fill in the information about jobs in the queue as soon as the
+                // page is ready
+                update();
+
+                // Set up timer for the repeated update
+                window.setInterval(function () {
+                    update();
+                }, 5000);
+
+                // Function that queries the server via an Ajax call
+                function update() {
+                    ajaxGetNumberOfUserJobsInQueue(
+                        'jobsInQueue',
+                        '<p>See all jobs.<br />You have <strong>',
+                        '</strong> in the queue.</p>');
+                }
+
+            });
+        {% endif %}
+{% endblock %}
