@@ -360,6 +360,27 @@ class Fileserver
     }
 
     /**
+     * Searches the source folder recursively, stores and returns all
+     * found files. Currently stored files are replaced.
+     *
+     * @param bool $expand If true, names of subimages (as in the case of
+     * lif files) are expanded and returned in the list of file names.
+     *
+     * @return array Sorted array of file names.
+     */
+    public function scanAndStoreFiles($expand)
+    {
+        // Process
+        $this->setDefaultImageExtensions();
+        $this->expandSubImages($expand);
+        $this->getFiles();
+        $files = $this->files();
+
+        // Return the processed list of files
+        return $files;
+    }
+
+    /**
      * Searches the destination folder recursively and returns all found files.
      * @param string $extension Extension to be considered to scan the folder. Omit to get all files.
      * @return array|bool Sorted array of file names or false if the destination folder does not exist.
