@@ -3,11 +3,78 @@
 
 {% block head %}
     {{ parent() }}
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/home.css">
 {% endblock %}
 
 {% block main %}
-
+    <div class="section">
+        <div class="container">
+            <div class="row with-margin">
+                <div class="col-md-4 text-center">
+                    <a href="select_images.php">
+                        <span class="glyphicon glyphicon-play-circle"
+                              aria-hidden="true"
+                              data-toggle="tooltip"
+                              title="Start restoration and/or analysis jobs.">
+                        </span>
+                        <h3 class="text-center">Submit a Job</h3>
+                    </a>
+                </div>
+                <div class="col-md-4 text-center">
+                    <a href="file_management.php?folder=src">
+                        <span class="glyphicon glyphicon-folder-open"
+                              aria-hidden="true"
+                              data-toggle="tooltip"
+                              title="Manage raw data and deconvolved files.">
+                        </span>
+                        <h3 class="text-center">My Files</h3>
+                    </a>
+                </div>
+                <div class="col-md-4 text-center">
+                    <a href="job_queue.php">
+                        <span class="glyphicon glyphicon-tasks"
+                              aria-hidden="true"
+                              data-toggle="tooltip"
+                              title="See all your jobs.">
+                        </span>
+                        <h3 class="text-center">My Job Queue</h3>
+                    </a>
+                </div>
+            </div>
+            <div class="row with-margin">
+                <div class="col-md-4 text-center">
+                    <a href="select_parameter_settings.php">
+                        <span class="glyphicon glyphicon-list-alt"
+                              aria-hidden="true"
+                              data-toggle="tooltip"
+                              title="Manage microscopy, restoration and analysis templates.">
+                        </span>
+                        <h3 class="text-center">My Templates</h3>
+                    </a>
+                </div>
+                <div class="col-md-4 text-center">
+                    <a href="statistics.php">
+                        <span class="glyphicon glyphicon-stats"
+                              aria-hidden="true"
+                              data-toggle="tooltip"
+                              title="Generate statistics on the tasks submitted to the server.">
+                        </span>
+                        <h3 class="text-center">My Statistics</h3>
+                    </a>
+                </div>
+                <div class="col-md-4 text-center">
+                    <a href="account.php">
+                        <span class="glyphicon glyphicon-user"
+                              aria-hidden="true"
+                              data-toggle="tooltip"
+                              title="View and change your personal data.">
+                        </span>
+                        <h3 class="text-center">My Account</h3>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -52,13 +119,12 @@
                 }
             )
         }
-
         // Hide the "update" div in the beginning
         $(document).ready(function () {
             $("#update").hide();
         });
 
-        {% if {{ isAdmin }} %}
+        {% if isAdmin %}
             $(document).ready(function () {
 
                 // Fill in the information about jobs in the queue as soon as the
