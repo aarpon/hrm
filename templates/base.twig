@@ -3,16 +3,16 @@
 <html lang="en">
 
 <head>
-{% include 'head.twig' %}
-{% block head %}
-{% endblock %}
+    {% include 'head.twig' %}
+    {% block head %}
+    {% endblock %}
 </head>
 
 <body>
 
 <header>
-{% block header %}
-{% endblock %}
+    {% block header %}
+    {% endblock %}
 </header>
 
 {% block navigation %}
@@ -20,16 +20,25 @@
 {% endblock %}
 
 <div class="container-fluid">
-{% block message %}
-    <div class="alert alert-{{ status }}" role="alert">{{ message }}</div>
-{% endblock %}
-{% block main %}
-{% endblock %}
+    {% block message %}
+        <div class="alert alert-{{ status }}" role="alert">{{ message }}</div>
+    {% endblock %}
+    {% block main %}
+    {% endblock %}
 </div>
 
 {% block footer %}
     {% include 'footer.twig' %}
 {% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+{% endblock %}
+
 
 </body>
 
