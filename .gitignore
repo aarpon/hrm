@@ -12,7 +12,8 @@ css/custom.css
 
 # IDE project settings
 /nbproject/
-/.idea/
+.idea/
+*.iml
 
 # Python bytecode
 *.py[cod]
