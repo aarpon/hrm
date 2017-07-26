@@ -111,7 +111,7 @@ $_SESSION['fileserver']->resetFiles();
 $_SESSION['fileserver']->imageExtensions();
 
 // All the user's files in the server.
-$allFiles = $_SESSION['fileserver']->listFiles(TRUE);
+$allFiles = $_SESSION['fileserver']->scanAndStoreFiles(TRUE);
 
 // All the user's series in the server.
 $condensedSeries = $_SESSION['fileserver']->condenseSeries();
