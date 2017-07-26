@@ -3328,6 +3328,39 @@ class Fileserver
         $dir->close();
     }
 
+    private function getFilesFrom2($iniDir, $prefix)
+    {
+        foreach ($this->scanRecursive($iniDir, $prefix) as $entry) {
+            if ($this->isValidImage($entry) and $this->isImage($entry)) {
+                $this->files[] = $entry;
+            }
+        }
+    }
+
+    private function scanRecursive($input_dir, $prefix = "", $nonos = [".", "..", "hrm_previews"])
+    {
+        if ($prefix != "") {
+            $prefix = $prefix . DIRECTORY_SEPARATOR;
+        }
+
+        $files = array();
+        $items = array_slice(scandir($input_dir), 2);
+        foreach ($items as $item) {
+            $subdir = $input_dir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($subdir)) {
+                if (in_array($item, $nonos)) {
+                    continue;
+                } else {
+                    $prepend = $prefix . $item;
+                    $files = array_merge($files, $this->scanRecursive($subdir, $prepend, $nonos));
+                }
+            } else {
+                $files[] = $prefix . $item;
+            }
+        }
+        return $files;
+    }
+
     /**
      * The recursive function that collects the  image files from the
      * user's destination folder and its subfolders.
