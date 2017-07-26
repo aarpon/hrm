@@ -1,5 +1,8 @@
 <?php
-// This file is part of the Huygens Remote Manager
-// Copyright and license notice: see license.txt
 
-include("login.php");
+require_once dirname(__FILE__) . '/./inc/bootstrap.php';
+
+$loader = new Twig_Loader_Filesystem('templates');
+$twig = new Twig_Environment($loader);
+
+echo $twig->render('landing.twig', array('version' => '4.0'));
