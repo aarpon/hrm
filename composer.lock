@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "1b779ce724fa9ede22d63b79bf678dc7",
+    "content-hash": "5f9b659d9aa60349a2416ada521b3790",
     "packages": [
         {
             "name": "adldap2/adldap2",
@@ -59,16 +59,16 @@
         },
         {
             "name": "adodb/adodb-php",
-            "version": "v5.20.7",
+            "version": "v5.20.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "5022ed61cdda0950b404bedb01c52020f736526f"
+                "reference": "f601748cca1ccb86dfd427620a1692a70e681075"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/5022ed61cdda0950b404bedb01c52020f736526f",
-                "reference": "5022ed61cdda0950b404bedb01c52020f736526f",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/f601748cca1ccb86dfd427620a1692a70e681075",
+                "reference": "f601748cca1ccb86dfd427620a1692a70e681075",
                 "shasum": ""
             },
             "require": {
@@ -109,7 +109,7 @@
                 "library",
                 "php"
             ],
-            "time": "2016-09-20T06:29:42+00:00"
+            "time": "2016-12-21T17:19:42+00:00"
         },
         {
             "name": "components/jquery",
