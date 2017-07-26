@@ -166,7 +166,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                     exit();
                 } else {
                     $message = "Only the administrator is allowed to login " .
-                        "to perform maintenance";
+                               "to perform maintenance";
                 }
             } else {
                 // Is there a requested redirection?
@@ -185,12 +185,12 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                 $message = "Wrong password";
             } else {
                 $message = "Only the administrator is allowed to login " .
-                    "to perform maintenance";
+                           "to perform maintenance";
             }
         } else {
             if ($tentativeUser->isDisabled()) {
                 $message = "Your account has been suspended, please " .
-                    "contact the administrator";
+                           "contact the administrator";
             } else {
                 $message = "Sorry, wrong user name or password, or not authorized.";
             }
