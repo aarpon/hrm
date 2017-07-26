@@ -1,0 +1,37 @@
+/**
+        Home
+
+        home-clean
+ */
+.with-margin {
+    margin-bottom: 50px;
+}
+
+.col-md-4 .glyphicon-list-alt {
+    font-size: 100px;
+    color: #bfcbca;
+}
+.col-md-4 .glyphicon-folder-open {
+    font-size: 100px;
+    color: #bfcbca;
+}
+.col-md-4 .glyphicon-play-circle {
+    font-size: 100px;
+    color: #bfcbca;
+}
+.col-md-4 .glyphicon-stats {
+    font-size: 100px;
+    color: #bfcbca;
+}
+.col-md-4 .glyphicon-tasks {
+    font-size: 100px;
+    color: #bfcbca;
+}
+.col-md-4 .glyphicon-user {
+    font-size: 100px;
+    color: #bfcbca;
+}
+.col-md-4 .empty-container {
+    font-size: 100px;
+    color: #bfcbca;
+}
