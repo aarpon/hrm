@@ -374,10 +374,6 @@ class Fileserver
         $this->setDefaultImageExtensions();
         $this->expandSubImages($expand);
         $this->getFiles();
-        $files = $this->files();
-
-        // Return the processed list of files
-        return $files;
     }
 
     /**
@@ -2948,7 +2944,7 @@ class Fileserver
     {
         $this->files = array();
         if (!file_exists($this->sourceFolder())) return False;
-        $this->getFilesFrom($this->sourceFolder(), "");
+        $this->getFilesFrom2($this->sourceFolder(), "");
         if (count($this->files) == 0) return False;
         $extArr = $this->imageExtensions();
 
