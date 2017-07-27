@@ -15,6 +15,7 @@ session_start();
 
 if (isset($_GET['home'])) {
     header("Location: " . "home.php");
+    $_SESSION['fileserver'] = null;
     exit();
 }
 
@@ -32,16 +33,12 @@ if (System::hasLicense("coloc")) {
 } else {
     $numberSteps = 4;
 }
+
 $currentStep = 1;
 $nextStep = $currentStep + 1;
 $goNextMessage = "Continue to step $nextStep/$numberSteps - ";
 $goNextMessage .= "Select image template.";
-
-if (!isset($_SESSION['fileserver'])) {
-    # session_register("fileserver");
-    $name = $_SESSION['user']->name();
-    $_SESSION['fileserver'] = new Fileserver($name);
-}
+$name = $_SESSION['user']->name();
 
 if (!isset($_SESSION['parametersetting'])) {
     $_SESSION['parametersetting'] = new ParameterSetting();
@@ -101,17 +98,16 @@ if (isset($_POST['down'])) {
         header("Location: " . "select_parameter_settings.php");
         exit();
     }
+} else {
+    // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
+    $_SESSION['fileserver'] = new Fileserver($name);
+    $_SESSION['fileserver']->scanAndStoreFiles(TRUE);
 }
 
 $script = array("settings.js", "ajax_utils.js");
 
-$_SESSION['fileserver']->resetFiles();
-
-/* Set the default extensions. */
-$_SESSION['fileserver']->imageExtensions();
-
 // All the user's files in the server.
-$allFiles = $_SESSION['fileserver']->listFiles(TRUE);
+$allFiles = $_SESSION['fileserver']->files();
 
 // All the user's series in the server.
 $condensedSeries = $_SESSION['fileserver']->condenseSeries();
