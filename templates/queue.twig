@@ -1,33 +1,235 @@
 {# templates/login.twig #}
 {% extends "base.twig" %}
 
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="css/queue.css">
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            // Fill in the information about jobs and draw the job queue table as
+            // soon as the page is ready
+            updateAll();
+
+            // Set up timer for the repeated update
+            window.setInterval(function () {
+                updateAll();
+            }, 10000);
+
+            // Function that queries the server via Ajax calls
+            function updateAll() {
+                JSONRPCRequest({
+                    method: 'jsonGetUserAndTotalNumberOfJobsInQueue',
+                    params: []
+                }, function (response) {
+                    var jobNumberDiv = $("#jobNumber");
+                    if (!response) {
+                        jobNumberDiv.html("<b>Error: could not query job status!</b>");
+                        return;
+                    }
+                    if (response.success === "false") {
+                        jobNumberDiv.html("<b>" + response.message + "</b>");
+                        return;
+                    }
+                    // Make sure to work with integers
+                    var numAllJobsInQueue = parseInt(response.numAllJobsInQueue);
+                    var numUserJobsInQueue = parseInt(response.numUserJobsInQueue);
+
+                    // Update the page
+                    var message = "";
+                    outer:
+                        switch (numAllJobsInQueue) {
+
+                            case 0:
+                                message = "There are <b>no jobs</b> in the queue.";
+                                break;
+
+                            case 1:
+                                switch (numUserJobsInQueue) {
+
+                                    case 0:
+                                        message = "There is <b>1 job</b> owned by " +
+                                            "another user in the queue.";
+                                        break outer;
+
+                                    case 1:
+                                        message = "<b>Yours is the only job</b> " +
+                                            "in the queue.";
+                                        break outer;
+
+                                    default:
+                                        message = "<b>Error: inconsistent job count!</b>";
+                                        break outer;
+                                }
+                                break;
+
+                            default:
+                                switch (numUserJobsInQueue) {
+
+                                    case 0:
+                                        message = "There are <b>" + numAllJobsInQueue +
+                                            " jobs</b> in the queue, <b>none</b> " +
+                                            "of which is yours.";
+                                        break outer;
+
+                                    case 1:
+                                        message = "There are <b>" + numAllJobsInQueue +
+                                            " jobs</b> in the queue, <b>1</b> " +
+                                            "of which is yours.";
+                                        break outer;
+
+                                    default:
+                                        var insert = "";
+                                        if (numAllJobsInQueue > 100) {
+                                            insert = " (showing first 100) ";
+                                        }
+                                        if (numAllJobsInQueue === numUserJobsInQueue) {
+                                            message = "There are <b>" + numAllJobsInQueue +
+                                                " jobs</b> in the queue" + insert +
+                                                ", <b>all</b> yours.";
+
+                                        } else if (numAllJobsInQueue > numUserJobsInQueue) {
+                                            message = "There are <b>" + numAllJobsInQueue +
+                                                " jobs</b> in the queue " + insert +
+                                                ", <b>" + numUserJobsInQueue + "</b>" +
+                                                " of which are yours.";
+                                        } else {
+                                            message = "<b>Error: inconsistent job count!</b>";
+                                        }
+                                        break outer;
+                                }
+
+                                break;
+                        }
+                    jobNumberDiv.html(message);
+
+                    // Update the time as well
+                    $("#lastUpdateTime").text("Last update: " +
+                        response.lastUpdateTime);
+                });
+
+                // Redraw the table
+                JSONRPCRequest({
+                    method: 'jsonGetQueue',
+                    params: []
+                }, function (response) {
+
+                    // Clear current table
+                    var tableBodyId = $("#queue_table tbody");
+                    tableBodyId.empty();
+                    var nJobs = response.queue.length;
+                    
+                    if (nJobs === 0)
+                    {
+                        tableBodyId.append(
+                            $("<tr>")
+                                .append(
+                                    $("<td>")
+                                        .attr("id", "info")
+                                        .attr("colspan", 9)
+                                        .text("The job queue is empty.")));
+                    }
+
+                    // Process the queue
+                    for (var i=0; i < nJobs; i++) {
+
+                        // Get current job (row)
+                        var job = response.queue[i];
+
+                        // Fill the table with the new content
+                        var trId = $("<tr>");
+                        trId.append($("<td>").text(""));
+                        trId.append($("<td>").text((i + 1).toString()));
+                        trId.append($("<td>").text(job["username"]));
+                        trId.append($("<td>").text(job["file"]));
+                        trId.append($("<td>").text(job["queued"]));
+                        trId.append($("<td>").text(job["status"]));
+                        trId.append($("<td>").text(job['start']));
+                        trId.append($("<td>").text(job['process_info']));
+                        trId.append($("<td>").text(job['server']));
+                        tableBodyId.append(trId);
+                    }
+                });
+            }
+        });
+    </script>
+{%  endblock %}
+
 {% block main %}
-    <table class="table table-striped table-hover table-users">
-        <thead>
-        <tr>
-            <th>#</th>
-            <th>File</th>
-            <th>Created</th>
-            <th>Status</th>
-            <th>Started</th>
-            <th>Pid</th>
-            <th>Server</th>
-        </tr>
-        </thead>
 
-        <tbody>
+    <div id="joblist">
 
-        <tr>
-            <td><a href="#"></a></td>
-            <td><a href="#"></a></td>
-            <td><a href="#"></a></td>
-            <td><a href="#"></a></td>
-            <td><a href="#"></a></td>
-            <td><a href="#"></a></td>
-            <td><a href="#"></a></td>
-        </tr>
+        <h2>Job queue</h2>
 
-        </tbody>
+        <div id="lastUpdateTime">&nbsp;</div>
 
-    </table>
+        <form method="post" action="" id="jobqueue">
+
+            <!-- Display total number and number of jobs owned by current user.
+            This will be filled in by Ajax calls. -->
+            <div id="summary">
+                <a href="job_queue_new.php">
+                    <span class="glyphicon glyphicon-refresh"
+                          aria-hidden="true"
+                          data-toggle="tooltip"
+                          title="Refresh queue">
+                    </span>
+                </a>&nbsp;
+                <span id="jobNumber" style="vertical-align: middle;">&nbsp;</span>
+            </div>
+
+            <!-- Display full queue table. -->
+            <div id="queue">
+                <table id="queue_table" class="table table-striped table-hover table-users">
+                    <thead>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>#</th>
+                        <th>Owner</th>
+                        <th>File</th>
+                        <th>Created</th>
+                        <th>Status</th>
+                        <th>Started</th>
+                        <th>Pid</th>
+                        <th>Server</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- Do not remove the table body! -->
+                    </tbody>
+
+                </table>
+            </div> <!-- queue -->
+
+            <div id="delete_id">
+                <label>
+                    <span class="glyphicon glyphicon-check"
+                          aria-hidden="true"
+                          data-toggle="tooltip"
+                          title="Select all jobs">
+                    </span>&nbsp;
+                    <span class="glyphicon glyphicon-unchecked"
+                          aria-hidden="true"
+                          data-toggle="tooltip"
+                          title="Unselect all jobs">
+                    </span>&nbsp;
+                    <span class="glyphicon glyphicon-menu-right"
+                          aria-hidden="true">
+                    </span>&nbsp;
+                    With selected:&nbsp;
+                    <span class="glyphicon glyphicon-trash"
+                          aria-hidden="true"
+                          data-toggle="tooltip"
+                          title="Delete selected job(s)">
+                    </span>
+                </label>
+            </div>
+        </form>
+
+    </div> <!-- joblist -->
+
 {% endblock %}

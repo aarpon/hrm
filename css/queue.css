@@ -1,0 +1,34 @@
+/**
+        Login
+
+        login-clean
+ */
+
+#joblist h2 {
+    text-align: center;
+}
+
+#joblist #delete_id {
+    padding-left: 20px;
+}
+
+#joblist #summary {
+    margin-left: 20px;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+#joblist #summary a {
+    text-decoration: none;
+}
+
+#joblist #lastUpdateTime {
+    text-align: center;
+    padding-bottom: 15px;
+    font-size: 0.8em;
+    margin-top: -5px;
+}
+
+#info {
+    text-align: center;
+}

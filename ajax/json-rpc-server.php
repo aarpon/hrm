@@ -65,6 +65,7 @@
  * $params[1] := "EmissionWavelength"
  */
 
+use hrm\job\JobQueue;
 use hrm\param\base\Parameter;
 use hrm\setting\AnalysisSetting;
 use hrm\DatabaseConnection;
@@ -220,6 +221,10 @@ switch ($method) {
     case 'jsonGetAllImageParametersFromSession':
 
         $json = jsonGetAllImageParametersFromSession();
+        break;
+
+    case 'jsonGetQueue':
+        $json = jsonGetQueue();
         break;
 
     case 'jsonGetUserList':
@@ -842,6 +847,28 @@ function jsonPreviewSharedTemplate($template, $type) {
         $json['preview'] = $paramStr;
 
     }
+
+    // Return as a JSON string
+    return (json_encode($json));
+
+}
+
+/**
+ * Get complete job queue table for rendering
+ * @return String
+ */
+function jsonGetQueue()
+{
+
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Get queue information
+    $queue = new JobQueue();
+    $rows = $queue->getContents();
+
+    // Add to the JSON object
+    $json['queue'] = $rows;
 
     // Return as a JSON string
     return (json_encode($json));
