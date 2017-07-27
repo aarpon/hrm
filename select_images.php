@@ -15,7 +15,6 @@ session_start();
 
 if (isset($_GET['home'])) {
     header("Location: " . "home.php");
-    $_SESSION['fileserver'] = null;
     exit();
 }
 
@@ -33,12 +32,16 @@ if (System::hasLicense("coloc")) {
 } else {
     $numberSteps = 4;
 }
-
 $currentStep = 1;
 $nextStep = $currentStep + 1;
 $goNextMessage = "Continue to step $nextStep/$numberSteps - ";
 $goNextMessage .= "Select image template.";
-$name = $_SESSION['user']->name();
+
+if (!isset($_SESSION['fileserver'])) {
+    # session_register("fileserver");
+    $name = $_SESSION['user']->name();
+    $_SESSION['fileserver'] = new Fileserver($name);
+}
 
 if (!isset($_SESSION['parametersetting'])) {
     $_SESSION['parametersetting'] = new ParameterSetting();
@@ -98,16 +101,17 @@ if (isset($_POST['down'])) {
         header("Location: " . "select_parameter_settings.php");
         exit();
     }
-} else {
-    // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
-    $_SESSION['fileserver'] = new Fileserver($name);
-    $_SESSION['fileserver']->scanAndStoreFiles(TRUE);
 }
 
 $script = array("settings.js", "ajax_utils.js");
 
+$_SESSION['fileserver']->resetFiles();
+
+/* Set the default extensions. */
+$_SESSION['fileserver']->imageExtensions();
+
 // All the user's files in the server.
-$allFiles = $_SESSION['fileserver']->files();
+$allFiles = $_SESSION['fileserver']->listFiles(TRUE);
 
 // All the user's series in the server.
 $condensedSeries = $_SESSION['fileserver']->condenseSeries();
@@ -129,8 +133,17 @@ function storeFileFormatSelection(sel,series) {
 };
 ";
 
-    $generatedScript .= "
-function filterImages (format,series) {
+    $filenames = array_values($allFiles);
+    $indices = array_keys($allFiles);
+
+    foreach ($filenames as $name)
+        $isFileSeries[] = $_SESSION['fileserver']->isPartOfFileSeries($name) ? 1 : 0;
+
+    $generatedScript .= "var filenames = " . json_encode($filenames) . ";\n";
+    $generatedScript .= "var indices = " . json_encode($indices) . ";\n";
+    $generatedScript .= "var isFileSeries = " . json_encode($isFileSeries) . ";\n";
+
+    $generatedScript .= "function filterImages (format,series) {
 
     var selectObject = document.getElementById(\"selectedimages\");
     if (selectObject.length >= 0) {
@@ -281,22 +294,7 @@ function imageAction (list) {
     }
     window.lastShownIndex = n;
 
-    switch ( val )
-    {
-";
-
-    foreach ($allFiles as $key => $file) {
-        $generatedScript .= "
-        case \"$file\" :
-            " . $_SESSION['fileserver']->getImageAction($file,
-                $key, "src", "preview", 0, 1) . "
-            break;
-            ";
-    }
-
-
-    $generatedScript .= "
-    }
+    imgPrev(val, 0, 1, 0, indices[filenames.indexOf(val)], 'src', '', 1);
 }
 ";
 }
