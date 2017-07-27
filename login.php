@@ -74,10 +74,10 @@ session_start();
 
 $db = new DatabaseConnection();
 if (!$db->isReachable()) {
-    $message = "the database is not reachable!\n" .
-               "Please contact your administrator.</p>" .
-               "<p>You will not be allowed to login " .
-               "until this issue has been fixed.</p>";
+    $message = "The database is not reachable! " .
+               "Please contact your administrator. " .
+               "You will not be allowed to login " .
+               "until this issue has been fixed.";
     echo $twig->render('base.twig', array('status'  => 'danger',
                                                 'message' => $message));
     return;
@@ -85,10 +85,9 @@ if (!$db->isReachable()) {
 
 // Check that the hucore version is known.
 if (System::getHuCoreVersionAsInteger() == 0) {
-    $message = "unknown HuCore version!\n" .
-               "<p>Please ask the administrator to start the queue manager.</p>" .
-               "<p>You are now allowed to login until this issue has been " .
-               "fixed.</p>";
+    $message = "Unknown HuCore version! " .
+               "Please ask the administrator to start the queue manager. " .
+               "You are now allowed to login until this issue has been fixed.";
     echo $twig->render('base.twig', array('status'  => 'danger',
                                                 'message' => $message));
     return;
@@ -96,14 +95,13 @@ if (System::getHuCoreVersionAsInteger() == 0) {
 
 // Check that hucore is recent enough to run this version of the HRM.
 if (System::isMinHuCoreVersion() == false) {
-    $message = "your HuCore version is " .
+    $message = "Your HuCore version is " .
                System::getHucoreVersionAsString() .
                ", you need at least HuCore version " .
                System::getMinHuCoreVersionAsString() .
                " for HRM " .
                System::getHRMVersionAsString() .
-               "!\n" .
-               "<p>Please contact the administrator.</p>";
+               "! Please contact the administrator.";
     echo $twig->render('base.twig', array('status'  => 'danger',
                                                 'message' => $message));
     return;
@@ -111,11 +109,11 @@ if (System::isMinHuCoreVersion() == false) {
 
 // Check that the database is up-to-date.
 if (System::isDBUpToDate() == false) {
-    $message = "the database is not up-to-date!\n";
-               "<p>This happens if HRM was recently updated but the " .
+    $message = "The database is not up-to-date! ";
+               "This happens if HRM was recently updated but the " .
                "database was not. You are not allowed to login " .
-               "until this issue has been fixed.</p>" .
-               "<p>Only the administrator can login.</p>";
+               "until this issue has been fixed. " .
+               "Only the administrator can login.";
     echo $twig->render('base.twig', array('status'  => 'danger',
                                                 'message' => $message));
     return;
@@ -124,8 +122,8 @@ if (System::isDBUpToDate() == false) {
 // Check that HuCore has a valid license, unless this is a development setup.
 if (file_exists('.hrm_devel_version') == false) {
     if (System::hucoreHasValidLicense() == false) {
-        $message = "no valid HuCore license found!\n" .
-                   "<p>Please contact the administrator.</p>";
+        $message = "No valid HuCore license found! " .
+                   "Please contact the administrator.";
         echo $twig->render('base.twig', array('status'  => 'danger',
                                                     'message' => $message));
         return;
