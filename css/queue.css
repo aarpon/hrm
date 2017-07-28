@@ -12,6 +12,10 @@
     padding-left: 8px;
 }
 
+#joblist #delete_id a {
+    text-decoration: none;
+}
+
 #joblist #summary {
     margin-left: 20px;
     margin-bottom: 5px;
