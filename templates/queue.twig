@@ -140,7 +140,27 @@
                         var job = response.queue[i];
 
                         // Fill the table with the new content
-                        var trId = $("<tr>");
+
+                        // Color code the row based on status
+                        var bkg_color = "";
+                        switch (job["status"])
+                        {
+                            case "started":
+                                bkg_color = "success";
+                                break;
+
+                            case "kill":
+                                bkg_color = "warning";
+                                break;
+
+                            case "broken":
+                                bkg_color = "danger";
+                                break;
+
+                            default:
+                                bkg_color = "";
+                        }
+                        var trId = $("<tr>").addClass(bkg_color);
                         trId.append($("<td>").text(""));
                         trId.append($("<td>").text((i + 1).toString()));
                         trId.append($("<td>").text(job["username"]));
