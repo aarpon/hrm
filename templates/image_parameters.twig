@@ -1,0 +1,27 @@
+{# templates/image_parameters.twig #}
+{% extends "base.twig" %}
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="css/chan_num_parameter.css">
+{% endblock %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-sm-4">
+            {% set vars = {'title'   : 'Excitation Wavelength',
+            'name'    : 'lambdaEx',
+            'chanCnt' : '5'} %}
+            {% include 'chan_num_parameter.twig' with vars %}
+        </div>
+        <div class="col-sm-4">
+            {% set vars = {'title'   : 'Emission Wavelength',
+            'name'    : 'lambdaEm',
+            'chanCnt' : '5'} %}
+            {% include 'chan_num_parameter.twig' with vars %}
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
+{% endblock %}
+
+
