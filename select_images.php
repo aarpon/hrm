@@ -45,194 +45,72 @@ if (!isset($_SESSION['parametersetting'])) {
 }
 $fileFormat = $_SESSION['parametersetting']->parameter("ImageFileFormat");
 
+if (isset($_POST['autoseries'])) {
+    $_SESSION['autoseries'] = $_POST['autoseries'];
+} else {
+    $_SESSION['autoseries'] = "";
+}
+
 $message = "";
 if (isset($_POST['down'])) {
-    if (isset($_POST['autoseries'])) {
-        $_SESSION['autoseries'] = $_POST['autoseries'];
-    } else {
-        $_SESSION['autoseries'] = "";
-    }
-
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-
-        // Remove spaces added by the HRM file selector. See '&#32;' below.
-        $fileNames = array();
-        foreach ($_POST['userfiles'] as $file) {
-            $name = htmlentities($file, null, 'utf-8');
-            $name = str_replace("&#32;", " ", $name);
-            $name = html_entity_decode($name);
-            $fileNames[] = $name;
+        $indicies = array_values($_POST['userfiles']);
+        $files = $_SESSION['fileserver']->justGimmeTheFilesAndDoNothingElse();
+        $selection = array();
+        foreach ($indicies as $i) {
+            $selection[] = $files[$i];
         }
-        $_SESSION['fileserver']->addFilesToSelection($fileNames);
+        $_SESSION['fileserver']->addFilesToSelection($selection);
     }
 } else if (isset($_POST['up'])) {
-    if (isset($_POST['autoseries'])) {
-        $_SESSION['autoseries'] = $_POST['autoseries'];
-    } else {
-        $_SESSION['autoseries'] = "";
-    }
     if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
-
-        // Remove spaces added by the HRM file selector. See '&#32;' below.
-        $fileNames = array();
-        foreach ($_POST['selectedfiles'] as $file) {
-            $name = htmlentities($file, null, 'utf-8');
-            $name = str_replace("&#32;", " ", $name);
-            $name = html_entity_decode($name);
-            $fileNames[] = $name;
+        $indicies = array_values($_POST['selectedfiles']);
+        $files = $_SESSION['fileserver']->justGimmeTheFilesAndDoNothingElse();
+        $selection = array();
+        foreach ($indicies as $i) {
+            $selection[] = $files[$i];
         }
-        $_SESSION['fileserver']->removeFilesFromSelection($fileNames);
+        $_SESSION['fileserver']->removeFilesFromSelection($selection);
     }
 } else if (isset($_POST['update'])) {
-    if (isset($_POST['autoseries'])) {
-        $_SESSION['autoseries'] = $_POST['autoseries'];
-    } else {
-        $_SESSION['autoseries'] = "";
-    }
     $_SESSION['fileserver']->resetFiles();
 } else if (isset($_POST['OK'])) {
-
+    print_r("ok<br/>");
     if (!$_SESSION['fileserver']->hasSelection()) {
         $message = "Please add at least one image to your selection";
     } else {
         header("Location: " . "select_parameter_settings.php");
         exit();
     }
-} else {
+} else if ($_SESSION['fileserver'] == null) {
+    print_r("init<br/>");
     // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
     $_SESSION['fileserver'] = new Fileserver($name);
-    $_SESSION['fileserver']->scanAndStoreFiles(TRUE);
 }
 
 $script = array("settings.js", "ajax_utils.js");
 
 // All the user's files in the server.
-$allFiles = $_SESSION['fileserver']->files();
+if ($_SESSION['fileserver']->hasFiles()) {
+    $allFiles = $_SESSION['fileserver']->justGimmeTheFilesAndDoNothingElse();
+} else {
+    $allFiles = $_SESSION['fileserver']->scanAndStoreFiles(TRUE);
+}
 
-// All the user's series in the server.
-$condensedSeries = $_SESSION['fileserver']->condenseSeries();
-
-// display only relevant files.
-if ($allFiles != null) {
-
-    $generatedScript = "
+$generatedScript = "
 function storeFileFormatSelection(sel,series) {
-
    // Get current selection
    var format = $('#' + sel.id + ' :selected').attr(\"name\");
 
    // Store it
    ajaxSetFileFormat(format);
-
-   // Now filter by type
-   filterImages(sel,series);
 };
 ";
 
-    $filenames = array_values($allFiles);
-    $indices = array_keys($allFiles);
-
-    foreach ($filenames as $name)
-        $isFileSeries[] = $_SESSION['fileserver']->isPartOfFileSeries($name) ? 1 : 0;
-
-    $generatedScript .= "var filenames = " . json_encode($filenames) . ";\n";
-    $generatedScript .= "var indices = " . json_encode($indices) . ";\n";
-    $generatedScript .= "var isFileSeries = " . json_encode($isFileSeries) . ";\n";
-
-    $generatedScript .= "function filterImages (format,series) {
-
-    var selectObject = document.getElementById(\"selectedimages\");
-    if (selectObject.length >= 0) {
-        for (var i = selectObject.length - 1; i>=0; i--) {
-            selectObject.remove(selectObject.length - 1);
-        }
-    }
-
-    var selectObject = document.getElementById(\"filesPerFormat\");
-    if (selectObject.length > 0) {
-        for (var i = selectObject.length - 1; i>=0; i--) {
-            selectObject.remove(selectObject.length - 1);
-        }
-    }
-
-    var selectedFormat = format.options[format.selectedIndex].value;
-
-    var autoseries = document.getElementById(\"autoseries\");
-";
-
-    /* For each file, create javascript code for when the file
-    belongs to a series and for when it doesn't. */
-    foreach ($allFiles as $key => $file) {
-
-        /* Escape here the string that will be passed to JavaScript only. */
-        $file = str_replace("'", "\'", $file);
-        if ($_SESSION['fileserver']->isPartOfFileSeries($file)) {
-
-            $generatedScript .= "
-
-              // Automatically load file series.
-              if(autoseries.checked) {
-              ";
-
-            if (in_array($file, $condensedSeries)) {
-                $generatedScript .= "
-                  if(checkAgainstFormat('$file', selectedFormat)) {
-                    var f = \"$file\";
-                    f = f.replace(/ /g, '&#32;');
-                    var selectItem = document.createElement('option');
-                    $(selectItem).html(f);
-                    $(selectItem).attr('title', '$file');
-                    selectObject.add(selectItem,null);
-                  }
-                  ";
-            }
-            $generatedScript .= "
-
-              } else {
-
-                  // Do not load file series automatically.
-                  if(checkAgainstFormat('$file', selectedFormat)) {
-                    var f = \"$file\";
-                    f = f.replace(/ /g, '&#32;');
-                    var selectItem = document.createElement('option');
-                    $(selectItem).html(f);
-                    $(selectItem).attr('title', '$file');
-                    selectObject.add(selectItem,null);
-                  }
-              }
-              ";
-
-        } else {
-            $generatedScript .= "
-            if(checkAgainstFormat('$file', selectedFormat)) {
-                    var f = \"$file\";
-                    f = f.replace(/ /g, '&#32;');
-                    var selectItem = document.createElement('option');
-                    $(selectItem).html(f);
-                    $(selectItem).attr('title', '$file');
-                    selectObject.add(selectItem,null);
-                  }
-            ";
-        }
-
-    }
+// display only relevant files.
+if ($allFiles != null) {
 
     $generatedScript .= "
-
-               // Since we have changed the file format, we reset
-               // the last selected image index. Otherwise, if the
-               // user chose the first file of format A and then switches
-               // to the first file of format B, the thumbnail won't
-               // be refreshed.
-               window.lastSelectedImgs = [];
-               window.lastSelectedImgsKey = [];
-               window.lastShownIndex = -1;
-               ";
-
-    $generatedScript .= "
-
-}
-
 function imageAction (list) {
 
     var n = list.selectedIndex;     // Which item is the first selected one
@@ -283,15 +161,15 @@ function imageAction (list) {
         window.previewSelected = -1;
     }
 
-    var val = list[n].value;
-
     if ( n == window.lastShownIndex ) {
         return
     }
     window.lastShownIndex = n;
 
-    imgPrev(val, 0, 1, 0, indices[filenames.indexOf(val)], 'src', '', 1);
-}
+    index = parseInt(list[n].value)
+    filename = list[n].text
+    imgPrev(filename, 0, 1, 0, index, 'src', '', 1);
+};
 ";
 }
 
@@ -371,7 +249,7 @@ $info = "<h3>Quick help</h3>" .
                     title="Supported image file formats"
                     size="1"
                     onclick="storeFileFormatSelection(this,autoseries)"
-                    onchange="storeFileFormatSelection(this,autoseries)"
+                    onchange="storeFileFormatSelection(this,autoseries);this.form.submit();"
                     onkeyup="this.blur();this.focus();">
 
 
@@ -434,13 +312,10 @@ $info = "<h3>Quick help</h3>" .
                         if ($fileFormat->value() != "") {
                             $format = $fileFormat->value();
 
-                            if (isset($_SESSION['autoseries']) &&
-                                $_SESSION['autoseries'] == "TRUE"
-                            ) {
-                                $files = $condensedSeries;
+                            if (isset($_SESSION['autoseries']) && $_SESSION['autoseries'] == "TRUE") {
+                                $files = $_SESSION['fileserver']->condenseSeries();
                             } else {
                                 $files = $allFiles;
-
                             }
                             $selectedFiles = $_SESSION['fileserver']->selectedFiles();
 
@@ -456,7 +331,7 @@ $info = "<h3>Quick help</h3>" .
                                         }
                                     }
                                     if (!$exists) {
-                                        echo "<option>" . $filteredFile . "</option>\n";
+                                        echo "<option value=\"" . $key . "\">" . $filteredFile . "</option>\n";
                                         $keyArr[$file] = $key;
                                     }
                                     $keyArr[$file] = $key;
@@ -464,7 +339,6 @@ $info = "<h3>Quick help</h3>" .
                             }
                         }
                     }
-
 
                     ?>
                 </select>
@@ -485,7 +359,7 @@ $info = "<h3>Quick help</h3>" .
                     }
                     ?>
                        onclick="storeFileFormatSelection(ImageFileFormat,this)"
-                       onchange="storeFileFormatSelection(ImageFileFormat,this)"
+                       onchange="storeFileFormatSelection(ImageFileFormat,this);this.form.submit();"
                 />
 
                 Automatically load file series if supported
@@ -555,15 +429,14 @@ $info = "<h3>Quick help</h3>" .
                    onmouseover="TagToTip('ttSpanRefresh')"
                    onmouseout="UnTip()"
             />
-            <input name="OK" type="hidden"/>
         </div>
 
         <div id="controls"
              onmouseover="showInstructions()">
             <input type="submit"
+                   name="OK"
                    value=""
                    class="icon next"
-                   onclick="process()"
                    onmouseover="TagToTip('ttSpanForward')"
                    onmouseout="UnTip()"/>
         </div>
@@ -573,11 +446,9 @@ $info = "<h3>Quick help</h3>" .
 </div> <!-- content -->
 
 <script type="text/javascript">
-    <!--
     window.pageInstructions = '<?php echo Util::escapeJavaScript($info); ?>';
     window.infoShown = true;
     window.previewSelected = -1;
-    //-->
 </script>
 
 

@@ -374,6 +374,8 @@ class Fileserver
         $this->setDefaultImageExtensions();
         $this->expandSubImages($expand);
         $this->getFiles();
+
+        return $this->files();
     }
 
     /**
@@ -2939,6 +2941,8 @@ class Fileserver
      * represented by their first image file.
      *
      * The list is stored!
+     *
+     * TODO: That is a confusing function name; sounds like a getter, but it it's not!!!
      */
     private function getFiles()
     {
@@ -3324,6 +3328,12 @@ class Fileserver
         $dir->close();
     }
 
+    /**
+     * Another way to scan the file system and retrieve a file list
+     *
+     * @param $iniDir
+     * @param $prefix
+     */
     private function getFilesFrom2($iniDir, $prefix)
     {
         foreach ($this->scanRecursive($iniDir, $prefix) as $entry) {
@@ -3333,6 +3343,15 @@ class Fileserver
         }
     }
 
+    /**
+     * Recursive scan
+     * (optimized)
+     *
+     * @param $input_dir
+     * @param string $prefix
+     * @param array $nonos
+     * @return array
+     */
     private function scanRecursive($input_dir, $prefix = "", $nonos = [".", "..", "hrm_previews"])
     {
         if ($prefix != "") {
@@ -3355,6 +3374,26 @@ class Fileserver
             }
         }
         return $files;
+    }
+
+    /**
+     * Check if there are files in the file list
+     *
+     * @return bool
+     */
+    public function hasFiles()
+    {
+        return !($this->files == NULL);
+    }
+
+    /**
+     * a getter :)
+     *
+     * @return array|null
+     */
+    public function justGimmeTheFilesAndDoNothingElse()
+    {
+        return $this->files;
     }
 
     /**
