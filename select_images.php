@@ -86,6 +86,7 @@ if (isset($_POST['down'])) {
     print_r("init<br/>");
     // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
     $_SESSION['fileserver'] = new Fileserver($name);
+    $_SESSION['autoseries'] = "TRUE";
 }
 
 $script = array("settings.js", "ajax_utils.js");
