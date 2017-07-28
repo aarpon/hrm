@@ -1,36 +1,28 @@
 {# templates/chan_num_parameter.twig #}
-{% extends "base.twig" %}
-{% block head %}
-    {{ parent() }}
-    <link rel="stylesheet" href="css/chan_num_parameter.css">
-{% endblock %}
 
 
-{% block main %}
-    <div class="chan-num-param">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{{ title }}</h3>
-            </div>
-            <div class="panel-body">
-                <div class="panel-body">
-                    <table class="chan-num-param-table">
-                        {% for ch in 0..chanCnt-1 %}
-                            <tr>
-                                <td class="label">
-                                    <label for="inputCh-{{ ch }}" class="control-label">Ch {{ ch }}</label>
-                                </td>
-                                <td class="value">
-                                    <input type="text" class="form-control"
-                                           id="{{ name }}-ch-{{ ch }}"
-                                           placeholder="valueCh-{{ ch }}">
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
+<div class="chan-num-param">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ title }}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="container">
+                {% for ch in 0..chanCnt-1 %}
+                    <div class="row">
+                        <div class="col-sm-1">
+                            <label for="inputCh-{{ ch }}" class="control-label">Ch {{ ch }}</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control"
+                                   id="{{ name }}-ch-{{ ch }}"
+                                   placeholder="valueCh-{{ ch }}">
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>
-{% endblock %}
+</div>
+
 
