@@ -14,7 +14,7 @@
 
 #joblist #summary {
     margin-left: 20px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     font-size: 1.2em;
 }
 
@@ -31,4 +31,9 @@
 
 #info {
     text-align: center;
+}
+
+#deleteInfo {
+    margin-top: 20px;
+    font-size: 0.7em;
 }
