@@ -65,14 +65,15 @@
 
 .features-boxed .item .name {
     font-weight: bold;
-    font-size: 18px;
+    font-size: 15px;
     margin-bottom: 8px;
     margin-top: 0;
     color: inherit;
+    height: 30px;
 }
 
 .features-boxed .item .description {
-    font-size: 15px;
+    font-size: 13px;
     margin-top: 15px;
     margin-bottom: 20px;
 }
