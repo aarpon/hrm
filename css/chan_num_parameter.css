@@ -1,0 +1,24 @@
+.chan-num-param {
+    height: 100%;
+    width: 20%;
+    text-align: center;
+}
+
+.param .label {
+    text-align: left;
+    vertical-align: middle;
+}
+
+.param .value {
+    vertical-align: middle;
+}
+
+td.label {
+    font-size: 14px;
+    color: #a9b5b4;
+    padding: 10px;
+}
+
+td.value {
+    padding: 4px;
+}
