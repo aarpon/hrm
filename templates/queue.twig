@@ -27,6 +27,13 @@
                     </span>
                 </a>&nbsp;
                 <span id="jobNumber" style="vertical-align: middle;">&nbsp;</span>
+                <div id="deleteInfo">
+                    {% if isAdmin %}
+                        You can delete any job.
+                    {% else %}
+                        You can delete jobs owned by yourself.
+                    {% endif %}
+                </div>
             </div>
 
             <!-- Display full queue table. -->
