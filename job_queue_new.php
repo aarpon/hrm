@@ -42,5 +42,10 @@ $rows = $queue->getContents();
 $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader);
 
-echo $twig->render('queue.twig', array('version' => '4.0',
-    'queue' => $rows));
+echo $twig->render('queue.twig',
+    array(
+        'version' => '4.0',
+        'queue' => $rows,
+        'username' =>  $_SESSION['user']->name(),
+        'isAdmin' => $_SESSION['user']->isAdmin()
+    ));
