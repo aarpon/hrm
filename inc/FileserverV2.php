@@ -16,6 +16,8 @@ require_once dirname(__FILE__) . '/bootstrap.php';
  * Takes care of all file handling to and from the image area (version 2).
  *
  * @package hrm
+ * @deprecated version 3.5 use stuff in ./file
+ * @todo refactor and delete once all the dependencies are dropped
  */
 class FileserverV2
 {

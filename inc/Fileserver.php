@@ -18,6 +18,7 @@ require_once dirname(__FILE__) . '/bootstrap.php';
  * Takes care of all file handling to and from the image area and
  * provides commodity functions for creating and displaying previews.
  *
+ * @deprecated since version 3.5 use the stuff in ./file
  * @package hrm
  */
 class Fileserver
