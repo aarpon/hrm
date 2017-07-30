@@ -13,6 +13,8 @@ require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
  * Static class with some commodity functionality.
+ * @deprecated version 3.5 use stuff in ./file
+ * @todo refactor and delete once all the dependencies are dropped
  */
 class Util
 {
