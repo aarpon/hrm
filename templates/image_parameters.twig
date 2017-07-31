@@ -11,8 +11,7 @@
             {% set vars = {'title'   : 'Microscope Type',
             'name'    : 'micrType',
             'chanCnt' : '5',
-            'options' : ''
-            } %}
+            'options' : ['Confocal','Widefield','Spinning Disk','STED','SPIM']} %}
             {% include 'chan_dropdown_parameter.twig' with vars %}
         </div>
         <div class="col-sm-3">
