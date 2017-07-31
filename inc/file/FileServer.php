@@ -69,7 +69,7 @@ class FileServer
      * Flag to know if time-series are collapsed or not (to save execution time)
      * @var bool
      */
-    private $collapsed;
+    private $imploded;
 
     /**
      * Unix time-stamp of the time the root was scanned.
@@ -90,7 +90,7 @@ class FileServer
         $this->dict = null;
         $this->ndirs = null;
         $this->nfiles = null;
-        $this->collapsed = false;
+        $this->imploded = false;
         $this->scantime = null;
     }
 
@@ -103,7 +103,7 @@ class FileServer
         $this->dict = null;
         $this->ndirs = null;
         $this->nfiles = null;
-        $this->collapsed = false;
+        $this->imploded = false;
         $this->scantime = null;
     }
 
@@ -137,7 +137,7 @@ class FileServer
         }
 
         if ($collapse_time_series) {
-            $this->collapseImageTimeSeries();
+            $this->implodeImageTimeSeries();
         }
 
         return $this->dict;
@@ -268,7 +268,7 @@ class FileServer
      */
     public function explodeImageTimeSeries()
     {
-        if (!$this->collapsed) {
+        if (!$this->imploded) {
             return;
         }
 
@@ -285,16 +285,16 @@ class FileServer
             $this->dict[$dir] = $exploded;
         }
 
-        $this->collapsed = false;
+        $this->imploded = false;
     }
 
     /**
      * Collapse time-series; encapsulate a list of image files
      * containing all member files in the file lists.
      */
-    public function collapseImageTimeSeries()
+    public function implodeImageTimeSeries()
     {
-        if ($this->collapsed) {
+        if ($this->imploded) {
             return;
         }
 
@@ -304,7 +304,7 @@ class FileServer
             }
         }
 
-        $this->collapsed = true;
+        $this->imploded = true;
     }
 
     /**

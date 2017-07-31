@@ -29,13 +29,11 @@ session_start();
 // If the user is not logged on, we return without doing anything
 if (!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
     if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
-        print_r("not authenticated");
         return;
     }
 }
 
 if (!isset($_SESSION['fileserver'])) {
-    print_r("no fileserver");
     return;
 }
 
@@ -50,7 +48,7 @@ $dir = rtrim($_REQUEST['dir'], '/');
 $collapse = isset($_REQUEST['collapse']) && strtolower($_REQUEST['collapse']) == "true";
 
 if ($collapse) {
-    $fs->collapseImageTimeSeries();
+    $fs->implodeImageTimeSeries();
 } else {
     $fs->explodeImageTimeSeries();
 }
