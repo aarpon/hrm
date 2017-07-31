@@ -191,6 +191,8 @@ class FileserverV2
     /**
      * Return all valid image extensions.
      * @return array of image extensions.
+     * @deprecated moved to file/ImageFile
+     * @todo refcator
      */
     public static function getImageExtensions() {
 
@@ -230,6 +232,8 @@ class FileserverV2
      * @param string $filename File name to be checked.
      * @param bool $alsoExtras If true consider also "ids" and "ids.gx" as supported formats.
      * @return bool True if the file name is supported, false otherwise.
+     * @deprecated moved to file/ImageFiles
+     * @todo refactor
      */
     public static function isValidImage($filename, $alsoExtras = false) {
 

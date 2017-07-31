@@ -4,6 +4,13 @@
  *
  * asynchronous queries on the file system.
  *
+ * The URL of type 'ajax/FileServer.php?dir=/some/dir/on/filesystem'
+ *      returns the directory tree of that root folder
+ * The URL of the following types
+ *      'ajax/FileServer.php?dir=/some/dir/on/fs/&ext=tif
+ *      'ajax/FileServer.php?dir=/some/dir/on/fs/&ext=tif&collapse=true
+ *      return the file list of the given directory
+ *
  *
  * @package hrm
  *
@@ -33,21 +40,26 @@ if (!isset($_SESSION['fileserver'])) {
 }
 
 $fs = $_SESSION['fileserver'];
+assert($fs instanceof FileServer);
 
 if (!isset($_REQUEST['dir'])) {
     return;
 }
 
 $dir = rtrim($_REQUEST['dir'], '/');
-$format = $_REQUEST['ext'];
+$collapse = isset($_REQUEST['collapse']) && strtolower($_REQUEST['collapse']) == "true";
 
-
-if ($fs->isRootDirectory($dir)) {
-    if ($format == null) {
-        echo json_encode($fs->getDirectories(), JSON_FORCE_OBJECT);
-    } else {
-        echo json_encode($fs->getFiles($dir, $format));
-    }
+if ($collapse) {
+    $fs->collapseImageTimeSeries();
 } else {
-    echo json_encode($fs->getFiles($dir, $format), JSON_FORCE_OBJECT);
+    $fs->explodeImageTimeSeries();
 }
+
+if (isset($_REQUEST['ext'])) {
+    $ext = $_REQUEST['ext'];
+    echo json_encode($fs->getFileList($dir, $ext), JSON_FORCE_OBJECT);
+} else if ($fs->isRootDirectory($dir)) {
+    echo json_encode($fs->getDirectoryTree(), JSON_FORCE_OBJECT);
+}
+
+$_SESSION['fileserver'] = $fs;
