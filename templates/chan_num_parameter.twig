@@ -1,28 +1,31 @@
 {# templates/chan_num_parameter.twig #}
+{# Extend base at the caller for correct rendering. #}
 
-
-<div class="chan-num-param">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">{{ title }}</h3>
-        </div>
-        <div class="panel-body">
-            <div class="container">
+{# Add a panel with a title and a heading. #}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            {{ title }}
+        </h3>
+    </div>
+    <div class="panel-body">
+        {# Use 'container' so that bootstrap knows how to render on different screen sizes. #}
+        <div class="container">
+            {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
+            <form class="form-horizontal">
                 {% for ch in 0..chanCnt-1 %}
-                    <div class="row">
-                        <div class="col-sm-1">
-                            <label for="inputCh-{{ ch }}" class="control-label">Ch {{ ch }}</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control"
-                                   id="{{ name }}-ch-{{ ch }}"
+                    <div class="form-group">
+                        <label for="inputCh-{{ ch }}"
+                               class="col-md-1 col-sm-1 control-label">
+                            Ch {{ ch }}
+                        </label>
+                        <div class="col-md-2 col-sm-2">
+                            <input type="number" class="form-control" id="{{ name }}-ch-{{ ch }}"
                                    placeholder="valueCh-{{ ch }}">
                         </div>
                     </div>
                 {% endfor %}
-            </div>
+            </form>
         </div>
     </div>
 </div>
-
-
