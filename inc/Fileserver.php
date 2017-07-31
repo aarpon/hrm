@@ -1237,6 +1237,8 @@ class Fileserver
      * show all the available sub-images. This is done by querying HuCore.
      * @param array $files Array of file names that have to be inspected for sub-images.
      * @return array Updated array of file names with sub-images.
+     * @deprecated moved to file/ImageFiles
+     * @todo refactor
      */
     public function getSubImages(array $files)
     {
@@ -3190,6 +3192,8 @@ class Fileserver
      * Gets the basename of Leica TIFF series.
      * @param string $filename File name.
      * @return string Basename of Leica TIFF series.
+     * @deprecated moved to file/ImageFiles
+     * @todo refactor
      */
     private function leicaStyleNumberingBasename($filename)
     {
@@ -3201,6 +3205,8 @@ class Fileserver
      * Condensed Leica TIFF series to the first file in the series.
      *
      * The condensed list of files is stored.
+     * @deprecated moved to files/ImageFiles
+     * @todo refactor
      */
     private function condenseTiffLeica()
     {
@@ -3226,6 +3232,8 @@ class Fileserver
      * Gets the basename of STK time series.
      * @param string $filename File name.
      * @return string Basename of STK time series.
+     * @deprecated moved to files/ImageFiles
+     * @todo refactor
      */
     private function stkSeriesBasename($filename)
     {
@@ -3237,6 +3245,8 @@ class Fileserver
      * Condensed STK time series series to the first file in the series.
      *
      * The stored file list is updated.
+     * @deprecated moved to file/ImageFiles
+     * @todo: refactor
      */
     private function condenseStkSeries()
     {
