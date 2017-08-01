@@ -31,11 +31,15 @@
             'type'    : 'success'} %}
             {% include 'num_parameter.twig' with vars %}
         </div>
+    </div>
+    <div class="row">
         <div class="col-sm-3">
             {% set vars = {
             'title'   : 'Microscope Type',
             'name'    : 'micrType',
-            'chanCnt' : '5',
+            'chanCnt' : '6',
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success',
             'options' : ['Confocal','Widefield','Spinning Disk','STED','SPIM']} %}
             {% include 'chan_dropdown_parameter.twig' with vars %}
         </div>
@@ -43,21 +47,36 @@
             {% set vars = {
             'title'   : 'Excitation Wavelength',
             'name'    : 'lambdaEx',
-            'chanCnt' : '5'} %}
+            'min'     : 400,
+            'max'     : 700,
+            'step'    : 1,
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success',
+            'chanCnt' : '6'} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
         <div class="col-sm-3">
             {% set vars = {
             'title'   : 'Emission Wavelength',
             'name'    : 'lambdaEm',
-            'chanCnt' : '5'} %}
+            'min'     : 400,
+            'max'     : 700,
+            'step'    : 1,
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success',
+            'chanCnt' : '6'} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
         <div class="col-sm-3">
             {% set vars = {
             'title'   : 'Backprojected Pinhole Radius',
             'name'    : 'bppRadius',
-            'chanCnt' : '5'} %}
+            'min'     : 20,
+            'max'     : 2000,
+            'step'    : 1,
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success',
+            'chanCnt' : '6'} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
     </div>

@@ -1,8 +1,22 @@
 {# templates/chan_num_parameter.twig #}
 {# Extend base at the caller for correct rendering. #}
 
+{# Default values. #}
+{% if type != "danger" and type != "warning" and type != "info" and type != "success" %}
+    {% set type = "default" %}
+{% endif %}
+{% if min is not defined %}
+    {% set min = 0 %}
+{% endif %}
+{% if max is not defined %}
+    {% set max = 1000 %}
+{% endif %}
+{% if step is not defined %}
+    {% set step = 0.1 %}
+{% endif %}
+
 {# Add a panel with a title and a heading. #}
-<div class="panel panel-default">
+<div class="panel panel-{{ type }}">
     <div class="panel-heading">
         <h3 class="panel-title">
             {{ title }}
@@ -17,15 +31,21 @@
                     <div class="form-group">
                         <label for="inputCh-{{ ch }}"
                                class="col-md-1 col-sm-1 control-label">
-                            Ch {{ ch }}
+                            Ch {{ ch }}:
                         </label>
                         <div class="col-md-1 col-sm-1">
                             <input type="number" class="form-control" id="{{ name }}-ch-{{ ch }}"
-                                   placeholder="valueCh-{{ ch }}">
+                                   min="{{ min }}" max="{{ max }}" stetp="{{ step }}"
+                                   placeholder="{{ min }}">
                         </div>
                     </div>
                 {% endfor %}
             </form>
         </div>
     </div>
+    {% if footer is defined %}
+        <div class="panel-footer panel-custom">
+            <p>{{ footer }}</p>
+        </div>
+    {% endif %}
 </div>

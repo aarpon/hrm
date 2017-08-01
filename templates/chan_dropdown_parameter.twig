@@ -4,8 +4,13 @@
     <link rel="stylesheet" href="css/chan_dropdown_parameter.css">
 {% endblock %}
 
+{# Default values. #}
+{% if type != "danger" and type != "warning" and type != "info" and type != "success" %}
+    {% set type = "default" %}
+{% endif %}
+
 {# Add a panel with a title and a heading. #}
-<div class="panel panel-default">
+<div class="panel panel-{{ type }}">
     <div class="panel-heading">
         <h3 class="panel-title">
             {{ title }}
@@ -39,4 +44,9 @@
             </form>
         </div>
     </div>
+    {% if footer is defined %}
+        <div class="panel-footer panel-custom">
+            <p>{{ footer }}</p>
+        </div>
+    {% endif %}
 </div>
