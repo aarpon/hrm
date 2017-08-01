@@ -8,26 +8,54 @@
 {% block main %}
     <div class="row">
         <div class="col-sm-3">
-            {% set vars = {'title'   : 'Microscope Type',
+            {% set vars = {
+            'title'   : 'Number of Channels',
+            'label'   : 'Channels: ',
+            'varName' : 'chanCnt',
+            'min'     : 1,
+            'max'     : 6,
+            'step'    : 1,
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success'} %}
+            {% include 'num_parameter.twig' with vars %}
+        </div>
+        <div class="col-sm-3">
+            {% set vars = {
+            'title'   : 'Numerical Aperture',
+            'label'   : 'NA: ',
+            'varName' : 'na',
+            'min'     : 0.2,
+            'max'     : 1.5,
+            'step'    : 0.1,
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success'} %}
+            {% include 'num_parameter.twig' with vars %}
+        </div>
+        <div class="col-sm-3">
+            {% set vars = {
+            'title'   : 'Microscope Type',
             'name'    : 'micrType',
             'chanCnt' : '5',
             'options' : ['Confocal','Widefield','Spinning Disk','STED','SPIM']} %}
             {% include 'chan_dropdown_parameter.twig' with vars %}
         </div>
         <div class="col-sm-3">
-            {% set vars = {'title'   : 'Excitation Wavelength',
+            {% set vars = {
+            'title'   : 'Excitation Wavelength',
             'name'    : 'lambdaEx',
             'chanCnt' : '5'} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
         <div class="col-sm-3">
-            {% set vars = {'title'   : 'Emission Wavelength',
+            {% set vars = {
+            'title'   : 'Emission Wavelength',
             'name'    : 'lambdaEm',
             'chanCnt' : '5'} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
         <div class="col-sm-3">
-            {% set vars = {'title'   : 'Backprojected Pinhole Radius',
+            {% set vars = {
+            'title'   : 'Backprojected Pinhole Radius',
             'name'    : 'bppRadius',
             'chanCnt' : '5'} %}
             {% include 'chan_num_parameter.twig' with vars %}

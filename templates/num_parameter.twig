@@ -1,0 +1,55 @@
+{# templates/num_parameter.twig #}
+{# Extend base at the caller for correct rendering. #}
+
+{% block head %}
+    <link rel="stylesheet" href="css/num_parameter.css">
+{% endblock %}
+
+{# Default values. #}
+{% if type != "danger" and type != "warning" and type != "info" and type != "success" %}
+    {% set type = "default" %}
+{% endif %}
+{% if min is not defined %}
+    {% set min = 0 %}
+{% endif %}
+{% if max is not defined %}
+    {% set max = 1000 %}
+{% endif %}
+{% if step is not defined %}
+    {% set step = 0.1 %}
+{% endif %}
+
+
+{# Add a panel with a title and a heading. #}
+<div class="panel panel-{{ type }}">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            {{ title }}
+        </h3>
+    </div>
+    <div class="panel-body">
+        {# Use 'container' so that bootstrap knows how to render on different screen sizes. #}
+        <div class="container">
+            {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
+            <form class="form-horizontal">
+                {% if label is defined %}
+                    <label for="input"
+                           class="col-md-1 col-sm-1 control-label">
+                        {{ label }}
+                    </label>
+                {% endif %}
+                <div class="col-md-1 col-sm-1">
+                    <input type="number" class="form-control" id="{{ varName }}"
+                           placeholder="{{ min }}" min="{{ min }}" max="{{ max }}"
+                           step="{{ step }}">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if footer is defined %}
+        <div class="panel-footer panel-custom">
+            <p>{{ footer }}</p>
+        </div>
+    {% endif %}
+</div>
