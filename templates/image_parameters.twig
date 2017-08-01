@@ -23,6 +23,45 @@
         </div>
         <div class="col-sm-3">
             {% set vars = {
+            'title'   : 'XY Voxel Size',
+            'label'   : 'xy (nm): ',
+            'varName' : 'samplXY',
+            'min'     : 20,
+            'max'     : 2000,
+            'step'    : 1,
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success'} %}
+            {% include 'num_parameter.twig' with vars %}
+        </div>
+        <div class="col-sm-3">
+            {% set vars = {
+            'title'   : 'Z Voxel Size',
+            'label'   : 'z (nm): ',
+            'varName' : 'samplZ',
+            'min'     : 20,
+            'max'     : 2000,
+            'step'    : 1,
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success'} %}
+            {% include 'num_parameter.twig' with vars %}
+        </div>
+        <div class="col-sm-3">
+            {% set vars = {
+            'title'   : 'Time Interval',
+            'label'   : 't (s): ',
+            'varName' : 'samplT',
+            'min'     : 0,
+            'max'     : 3600,
+            'step'    : 1,
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success'} %}
+            {% include 'num_parameter.twig' with vars %}
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-sm-3">
+            {% set vars = {
             'title'   : 'Numerical Aperture',
             'label'   : 'NA: ',
             'varName' : 'na',
@@ -33,7 +72,24 @@
             'type'    : 'success'} %}
             {% include 'num_parameter.twig' with vars %}
         </div>
+        <div class="col-sm-3">
+            {% set vars = {
+            'title'   : 'Objective Type',
+            'varName' : 'objType',
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success'} %}
+            {% include 'objective_type.twig' with vars %}
+        </div>
+        <div class="col-sm-3">
+            {% set vars = {
+            'title'   : 'Sample Medium',
+            'varName' : 'sampleMedium',
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success'} %}
+            {% include 'sample_medium.twig' with vars %}
+        </div>
     </div>
+    <hr />
     <div class="row">
         <div class="col-sm-3">
             {% set vars = {
@@ -42,7 +98,7 @@
             'chanCnt' : chanCnt,
             'footer'  : 'HRM internal parameter.',
             'type'    : 'success',
-            'options' : ['Confocal','Widefield','Spinning Disk','STED','SPIM']} %}
+            'options' : ['Confocal','Widefield','Spinning Disk','Two Photon','STED','STED 3D','SPIM']} %}
             {% include 'chan_dropdown_parameter.twig' with vars %}
         </div>
         <div class="col-sm-3">
@@ -69,6 +125,9 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
+    </div>
+    <hr />
+    <div class="row">
         <div class="col-sm-3">
             {% set vars = {
             'title'   : 'Backprojected Pinhole Radius',
@@ -81,7 +140,20 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
+        <div class="col-sm-3">
+            {% set vars = {
+            'title'   : 'Backprojected Pinhole Spacing',
+            'name'    : 'bppRadius',
+            'min'     : 200,
+            'max'     : 20000,
+            'step'    : 1,
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success',
+            'chanCnt' : chanCnt} %}
+            {% include 'chan_num_parameter.twig' with vars %}
+        </div>
     </div>
+    <hr />
     <div class="row">
         <div class="col-sm-3">
             {% set vars = {
@@ -141,6 +213,9 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
+    </div>
+    <hr />
+    <div class="row">
         <div class="col-sm-3">
             {% set vars = {
             'title'   : 'SPIM Excitation Mode',

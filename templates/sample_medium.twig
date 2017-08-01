@@ -1,0 +1,54 @@
+{# templates/num_parameter.twig #}
+{# Extend base at the caller for correct rendering. #}
+
+{% block head %}
+    <link rel="stylesheet" href="css/num_parameter.css">
+{% endblock %}
+
+{# Default values. #}
+{% if type != "danger" and type != "warning" and type != "info" and type != "success" %}
+    {% set type = "default" %}
+{% endif %}
+
+{# Add a panel with a title and a heading. #}
+<div class="panel panel-{{ type }}">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            {{ title }}
+        </h3>
+    </div>
+    <div class="panel-body">
+        {# Use 'container' so that bootstrap knows how to render on different screen sizes. #}
+        <div class="container">
+            {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
+            <form class="form-horizontal">
+                <div class="col-md-1 col-sm-1">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="{{ varName }}">liquid&nbspvectashield 90/10&nbsp(v:v)&nbspglycerol PBS&nbspph&nbsp7.4&nbsp[1.47]
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="{{ varName }}">water&nbsp/&nbspbuffer&nbsp[1.339]
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="{{ varName }}">Other
+                        </label>
+                        <input type="number" class="form-control" id="{{ varName }}"
+                               placeholder="1" min="1" max="1.5"
+                               step="0.01">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if footer is defined %}
+        <div class="panel-footer panel-custom">
+            <p>{{ footer }}</p>
+        </div>
+    {% endif %}
+</div>
