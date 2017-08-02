@@ -14,11 +14,7 @@ session_start();
 
 $dir = "/data/images/felix/src";
 
-$server = new FileServer($dir);
-$file = $server->getDirectories();
-$tree = $server->scan($dir);
-
-$_SESSION['fileserver'] = $server;
+$_SESSION[FileServer::$SESSION_KEY] = new FileServer($dir);
 
 echo "
 <html>

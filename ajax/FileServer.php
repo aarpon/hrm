@@ -20,7 +20,6 @@
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 
-use hrm\user\UserV2;
 use hrm\file\FileServer;
 
 
@@ -33,11 +32,11 @@ if (!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
     }
 }
 
-if (!isset($_SESSION['fileserver'])) {
+if (!isset($_SESSION[FileServer::$SESSION_KEY])) {
     return;
 }
 
-$fs = $_SESSION['fileserver'];
+$fs = $_SESSION[FileServer::$SESSION_KEY];
 assert($fs instanceof FileServer);
 
 if (!isset($_REQUEST['dir'])) {
@@ -48,9 +47,13 @@ $dir = rtrim($_REQUEST['dir'], '/');
 $collapse = isset($_REQUEST['collapse']) && strtolower($_REQUEST['collapse']) == "true";
 
 if ($collapse) {
-    $fs->implodeImageTimeSeries();
+    if (!$fs->hasImplodedTimeSeries()) {
+        $fs->implodeImageTimeSeries();
+    }
 } else {
-    $fs->explodeImageTimeSeries();
+    if ($fs->hasImplodedTimeSeries()) {
+        $fs->explodeImageTimeSeries();
+    }
 }
 
 if (isset($_REQUEST['ext'])) {
@@ -60,4 +63,4 @@ if (isset($_REQUEST['ext'])) {
     echo json_encode($fs->getDirectoryTree(), JSON_FORCE_OBJECT);
 }
 
-$_SESSION['fileserver'] = $fs;
+$_SESSION[FileServer::$SESSION_KEY] = $fs;
