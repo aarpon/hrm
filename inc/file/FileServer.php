@@ -36,10 +36,35 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
 class FileServer
 {
     /**
+     * Key to store the FileServer instance in the session. (This is to render references more transparent).
+     * @var string
+     */
+    static $SESSION_KEY = "file-server";
+
+    /**
      * Root from which the file system is scanned recursively
      * @var string
      */
     private $root;
+
+    /**
+     * List of directories to ignore during the file system scan.
+     * @var array
+     */
+    private $ignored_dirs;
+
+    /**
+     * Imploding time-series results in an additional nested array containing the
+     * image files of the time-series, having the image file name trunk ans key.
+     * @var bool
+     */
+    private $imploded_time_series;
+
+    /**
+     * Get the number of images series contained in an image file from the file metadata.
+     * @var bool
+     */
+    private $image_series;
 
     /**
      * Encapsulated array containing the directory tree
@@ -57,77 +82,63 @@ class FileServer
      * Number of directories in @link FileServer::$tree. It's value is null if no scan has been performed yet.
      * @var integer
      */
-    private $ndirs;
+    private $n_dirs;
 
     /**
      * Number of files in @link FileServer::$tree. It's value is null if no scan has been performed yet.
      * @var integer
      */
-    private $nfiles;
-
-    /**
-     * Flag to know if time-series are collapsed or not (to save execution time)
-     * @var bool
-     */
-    private $imploded;
+    private $n_files;
 
     /**
      * Unix time-stamp of the time the root was scanned.
      * @var null|int
      */
-    private $scantime;
-
+    private $scan_time;
 
 
     /**
      * FileServer constructor.
-     * @param $root string root directory
+     * @param string $root directory
+     * @param bool $get_image_series if true, the metadata of the image file is accessed to retrieve image series
+     * @param bool $implode_time_series if true, an additional level in the @link FileServer::dict is created
+     *                                  members of the time-series are encapsulated in an sub-array.
+     *                                  This is can be changed after scanning with $link FileServer::implodeImageTimeSeries
+     *                                  and @link FileServer::explodeImageTimeSeries
+     * @param array $ignored_directories list of directories excluded from the @link FileServer::scan
      */
-    function __construct($root)
+    function __construct($root,
+                         $implode_time_series = true,
+                         $get_image_series = true,
+                         $ignored_directories = [".", "..", "hrm_previews"])
     {
         $this->root = $root;
+        $this->ignored_dirs = $ignored_directories;
+        $this->image_series = $get_image_series;
+        $this->imploded_time_series = $implode_time_series;
+
         $this->tree = null;
         $this->dict = null;
-        $this->ndirs = null;
-        $this->nfiles = null;
-        $this->imploded = false;
-        $this->scantime = null;
+        $this->n_dirs = null;
+        $this->n_files = null;
+        $this->scan_time = null;
+
+        $this->scan();
     }
 
     /**
-     * Clear data
-     */
-    function reset()
-    {
-        $this->tree = null;
-        $this->dict = null;
-        $this->ndirs = null;
-        $this->nfiles = null;
-        $this->imploded = false;
-        $this->scantime = null;
-    }
-
-    /**
-     * Scan the recursively the file tree bellow the given @link FileServer::$root
+     * Scan the recursively the file tree bellow the given @link FileServer::$root.
+     * This method is called once upon instantiation.
+     * To re-scan a new @link FileServer has to be instantiated.
      *
-     * @param string $root
-     * @param bool $get_image_series
-     * @param bool $collapse_time_series
-     * @return array|mixed|null file dictionary. USE GETTERS FOR PRODUCTION USAGE
-     * @todo things can be sped up a lot if not all image series were queried here, but only upon asking the files on a particular directory @link FileServer::getFiles.
+     * @todo things can be sped up a lot if not all image series were queried here, but only upon asking the files on a particular directory @link FileServer::getFileList.
      */
-    public function scan($root = null, $get_image_series = false, $collapse_time_series = false)
+    private function scan()
     {
-        if ($this->dict === null) {
-            if ($root === null) {
-                $root = $this->root;
-            }
+        list($this->tree, $this->dict, $this->n_dirs, $this->n_files) =
+            FileServer::scan_recursive($this->root, "/", $this->ignored_dirs);
 
-            list($this->tree, $this->dict, $this->ndirs, $this->nfiles) = $this->scan_recursive($root);
-            $this->scantime = time();
-        }
-
-        if ($get_image_series) {
+        if ($this->image_series) {
             foreach ($this->dict as $dir => $files) {
                 if ($files != null) {
                     $new = ImageFiles::getImageFileSeries($dir, $files);
@@ -136,11 +147,11 @@ class FileServer
             }
         }
 
-        if ($collapse_time_series) {
+        if ($this->imploded_time_series) {
             $this->implodeImageTimeSeries();
         }
 
-        return $this->dict;
+        $this->scan_time = time();
     }
 
     /**
@@ -155,15 +166,25 @@ class FileServer
     }
 
     /**
+     * Get the file dictionary mapping directories to file lists
+     *
+     * @return array|mixed|null file dictionary
+     */
+    public function getFileDictionary()
+    {
+        return $this->dict;
+    }
+
+    /**
      * Get the list of files of a directory
      *
      * @param string $dir directory to list files from
-     * @param null $extension filter by file extention
+     * @param null $extension filter by file extension
      * @return array|mixed
      */
     public function getFileList($dir, $extension = null)
     {
-        $files = $this->scan()[$dir];
+        $files = $this->tree[$dir];
 
         foreach  ($files as $index => $name) {
             if (is_array($name)) {
@@ -188,6 +209,8 @@ class FileServer
      *                         [dir1=>[], dir2=>[ind1, time-series-name, ind2, ...]]
      * @param string $file_extension allowed file extension (needed for directory selection)
      * @return array
+     *
+     * @todo it would probably good if this method would require a scan time, to make sure the selection from the client corresponds with the server side.
      */
     public function getFilePaths(array $selection, $file_extension)
     {
@@ -215,7 +238,7 @@ class FileServer
      */
     public function getDirectories()
     {
-        return array_keys($this->scan());
+        return array_keys($this->dict);
     }
 
     /**
@@ -225,7 +248,7 @@ class FileServer
      */
     public function getNumberOfFiles()
     {
-        return $this->nfiles;
+        return $this->n_files;
     }
 
     /**
@@ -235,7 +258,7 @@ class FileServer
      */
     public function getNumberOfDirectories()
     {
-        return $this->ndirs;
+        return $this->n_dirs;
     }
 
     /**
@@ -259,7 +282,27 @@ class FileServer
     public function isSynchronised()
     {
         $stat = stat($this->root);
-        return $stat['mtime'] < $this->scantime;
+        return $stat['mtime'] < $this->scan_time;
+    }
+
+    /**
+     * Check if time-series are imploded
+     *
+     * @return bool
+     */
+    public function hasImplodedTimeSeries()
+    {
+        return $this->imploded_time_series;
+    }
+
+    /**
+     * Check if image file (sub-) series were scanned.
+     *
+     * @return bool
+     */
+    public function hasImageSeries()
+    {
+        return $this->image_series;
     }
 
     /**
@@ -268,10 +311,6 @@ class FileServer
      */
     public function explodeImageTimeSeries()
     {
-        if (!$this->imploded) {
-            return;
-        }
-
         foreach ($this->dict as $dir => $files) {
             $exploded = array();
             foreach ($files as $file) {
@@ -285,7 +324,7 @@ class FileServer
             $this->dict[$dir] = $exploded;
         }
 
-        $this->imploded = false;
+        $this->imploded_time_series = false;
     }
 
     /**
@@ -294,28 +333,24 @@ class FileServer
      */
     public function implodeImageTimeSeries()
     {
-        if ($this->imploded) {
-            return;
-        }
-
         foreach ($this->dict as $dir => $files) {
             if ($files != null) {
                 $this->dict[$dir] = ImageFiles::collapseTimeSeries($files);
             }
         }
 
-        $this->imploded = true;
+        $this->imploded_time_series = true;
     }
 
     /**
      * Recursively scan the content of an input directory
      *
      * @param string $dir input directory
-     * @param string $dirname
+     * @param string $dirname name used in the root directory
      * @param array $ignore list subdirectories to ignore
      * @return array ($tree, $ndirs, $nfiles)
      */
-    private static function scan_recursive($dir, $dirname = "/", array $ignore = [".", "..", "hrm_previews"])
+    private static function scan_recursive($dir, $dirname = "/", array $ignore)
     {
         $tree = [$dir => [$dirname => []] ];
         $dict = array();
@@ -370,7 +405,7 @@ class FileServer
      * @param $obj
      * @return mixed
      */
-    static function json2html($obj)
+    static function array2html($obj)
     {
         return str_replace("\n", "<br/>",
                            str_replace(" ", "&nbsp;",
