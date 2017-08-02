@@ -29,22 +29,21 @@
     </div>
     <div class="panel-body">
         {# Use 'container' so that bootstrap knows how to render on different screen sizes. #}
-        <div class="container">
+
             {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
             <form class="form-horizontal">
                 {% if label is defined %}
-                    <label for="input"
-                           class="col-md-1 col-sm-1 control-label">
+                    <label for="input" class="control-label col-xs-6 col-sm-5 col-md-3 col-lg-4">
                         {{ label }}
                     </label>
                 {% endif %}
-                <div class="col-md-1 col-sm-1">
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
                     <input type="number" class="form-control" id="{{ varName }}"
                            placeholder="{{ min }}" min="{{ min }}" max="{{ max }}"
                            step="{{ step }}">
                 </div>
             </form>
-        </div>
+
     </div>
 
     {% if footer is defined %}

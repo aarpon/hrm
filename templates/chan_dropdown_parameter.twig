@@ -17,17 +17,15 @@
         </h3>
     </div>
     <div class="panel-body">
-        {# Use 'container' so that bootstrap knows how to render on different screen sizes. #}
-        <div class="container">
             {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
             <form class="form-horizontal">
                 {% for ch in 0..chanCnt-1 %}
                     <div class="form-group">
                         <label for="inputCh-{{ ch }}"
-                               class="col-md-1 col-sm-1 control-label">
+                               class="control-label col-xs-6 col-sm-4 col-md-3 col-lg-3">
                             Ch {{ ch }}
                         </label>
-                        <div class="dropdown">
+                        <div class="dropdown col-xs-6 col-sm-6 col-md-6 col-lg-6">
                             <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
                                 {{ title }}
                                 <span class="caret">
@@ -42,7 +40,6 @@
                     </div>
                 {% endfor %}
             </form>
-        </div>
     </div>
     {% if footer is defined %}
         <div class="panel-footer panel-custom">
