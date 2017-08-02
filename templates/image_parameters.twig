@@ -9,6 +9,12 @@
 
 {% block main %}
     <div class="row">
+        <div class="col-md-12">
+            <h3 class="text-center">Channels & Microscopes</h3>
+            <p class="text-center">How many channels (wavelengths) in your datasets?</p>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-sm-3">
             {% set vars = {
             'title'   : 'Number of Channels',
@@ -21,6 +27,25 @@
             'type'    : 'success'} %}
             {% include 'num_parameter.twig' with vars %}
         </div>
+        <div class="col-sm-3">
+            {% set vars = {
+            'title'   : 'Microscope Type',
+            'name'    : 'micrType',
+            'chanCnt' : chanCnt,
+            'footer'  : 'HRM internal parameter.',
+            'type'    : 'success',
+            'options' : ['Confocal','Widefield','Spinning Disk','Two Photon','STED','STED 3D','SPIM']} %}
+            {% include 'chan_dropdown_parameter.twig' with vars %}
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="text-center">Sampling Sizes</h3>
+            <p class="text-center">How were these images captured?</p>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-sm-3">
             {% set vars = {
             'title'   : 'XY Voxel Size',
@@ -60,6 +85,12 @@
     </div>
     <hr />
     <div class="row">
+        <div class="col-md-12">
+            <h3 class="text-center">Refractive Indices</h3>
+            <p class="text-center">How did you set up your microscope?</p>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-sm-3">
             {% set vars = {
             'title'   : 'Numerical Aperture',
@@ -91,16 +122,12 @@
     </div>
     <hr />
     <div class="row">
-        <div class="col-sm-3">
-            {% set vars = {
-            'title'   : 'Microscope Type',
-            'name'    : 'micrType',
-            'chanCnt' : chanCnt,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'options' : ['Confocal','Widefield','Spinning Disk','Two Photon','STED','STED 3D','SPIM']} %}
-            {% include 'chan_dropdown_parameter.twig' with vars %}
+        <div class="col-md-12">
+            <h3 class="text-center">Wavelengths</h3>
+            <p class="text-center">Which colors?</p>
         </div>
+    </div>
+    <div class="row">
         <div class="col-sm-3">
             {% set vars = {
             'title'   : 'Excitation Wavelength',
@@ -128,9 +155,15 @@
     </div>
     <hr />
     <div class="row">
+        <div class="col-md-12">
+            <h3 class="text-center">Backprojected Pinholes</h3>
+            <p class="text-center">Filtering Out-Of-Focus Light</p>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-sm-3">
             {% set vars = {
-            'title'   : 'Backprojected Pinhole Radius',
+            'title'   : 'Pinhole Radius',
             'name'    : 'bppRadius',
             'min'     : 20,
             'max'     : 2000,
@@ -142,7 +175,7 @@
         </div>
         <div class="col-sm-3">
             {% set vars = {
-            'title'   : 'Backprojected Pinhole Spacing',
+            'title'   : 'Pinhole Spacing',
             'name'    : 'bppRadius',
             'min'     : 200,
             'max'     : 20000,
@@ -154,6 +187,12 @@
         </div>
     </div>
     <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="text-center">STED</h3>
+            <p class="text-center">Stimulated Emission Depletion Microscopy</p>
+        </div>
+    </div>
     <div class="row">
         <div class="col-sm-3">
             {% set vars = {
@@ -215,6 +254,12 @@
         </div>
     </div>
     <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="text-center">SPIM</h3>
+            <p class="text-center">Light Sheet Fluorescence Microscopy</p>
+        </div>
+    </div>
     <div class="row">
         <div class="col-sm-3">
             {% set vars = {
