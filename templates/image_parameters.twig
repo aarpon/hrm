@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'Number of Channels',
             'label'   : 'Channels: ',
@@ -27,7 +27,7 @@
             'type'    : 'success'} %}
             {% include 'num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-5 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'Microscope Type',
             'name'    : 'micrType',
@@ -46,7 +46,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-2">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
             {% set vars = {
             'title'   : 'XY Voxel Size',
             'label'   : 'xy (nm): ',
@@ -58,7 +58,7 @@
             'type'    : 'success'} %}
             {% include 'num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-2">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
             {% set vars = {
             'title'   : 'Z Voxel Size',
             'label'   : 'z (nm): ',
@@ -70,7 +70,7 @@
             'type'    : 'success'} %}
             {% include 'num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-2">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
             {% set vars = {
             'title'   : 'Time Interval',
             'label'   : 't (s): ',
@@ -91,7 +91,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-2">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
             {% set vars = {
             'title'   : 'Numerical Aperture',
             'label'   : 'NA: ',
@@ -103,7 +103,7 @@
             'type'    : 'success'} %}
             {% include 'num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-2">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
             {% set vars = {
             'title'   : 'Objective Type',
             'varName' : 'objType',
@@ -111,7 +111,7 @@
             'type'    : 'success'} %}
             {% include 'objective_type.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-2">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
             {% set vars = {
             'title'   : 'Sample Medium',
             'varName' : 'sampleMedium',
@@ -128,7 +128,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'Excitation Wavelength',
             'name'    : 'lambdaEx',
@@ -140,7 +140,7 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'Emission Wavelength',
             'name'    : 'lambdaEm',
@@ -161,7 +161,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'Pinhole Radius',
             'name'    : 'bppRadius',
@@ -173,7 +173,7 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-4 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'Pinhole Spacing',
             'name'    : 'bppRadius',
@@ -194,7 +194,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'STED Depletion',
             'name'    : 'stedType',
@@ -204,7 +204,7 @@
             'options' : ['Pulsed','CW Gated Detection','CW Non Gated Detection']} %}
             {% include 'chan_dropdown_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'STED Saturation Factor',
             'name'    : 'satFact',
@@ -216,7 +216,7 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'STED Wavelength (nm)',
             'name'    : 'lambdaSted',
@@ -228,7 +228,7 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'STED Immunity Fraction (%)',
             'name'    : 'stedImmunity',
@@ -240,7 +240,7 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-3">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'STED 3D (%)',
             'name'    : 'sted3D',
@@ -261,7 +261,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-4">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
             {% set vars = {
             'title'   : 'SPIM Excitation Mode',
             'name'    : 'spimType',
@@ -271,7 +271,7 @@
             'options' : ['Gaussian Light Sheet','Gaussian MultiView Light Sheet','High fill factor, Cylinder', 'High fill factor, Scanning Beam']} %}
             {% include 'chan_dropdown_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-4">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
             {% set vars = {
             'title'   : 'SPIM Gauss Width (microns)',
             'name'    : 'spimGaussWidth',
@@ -283,7 +283,7 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-4">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
             {% set vars = {
             'title'   : 'SPIM Focus Offset (microns)',
             'name'    : 'spimFocusOffset',
@@ -295,7 +295,7 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-4">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
             {% set vars = {
             'title'   : 'SPIM Center Offset (microns)',
             'name'    : 'spimCenterOffset',
@@ -307,7 +307,7 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-4">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
             {% set vars = {
             'title'   : 'SPIM NA',
             'name'    : 'spimNA',
@@ -319,7 +319,7 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-4">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
             {% set vars = {
             'title'   : 'SPIM Fill Factor',
             'name'    : 'spimFillFactor',
@@ -331,7 +331,7 @@
             'chanCnt' : chanCnt} %}
             {% include 'chan_num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-8 col-sm-6 col-md-3 col-lg-4">
+        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
             {% set vars = {
             'title'   : 'SPIM Illumination Direction',
             'name'    : 'spimDir',
