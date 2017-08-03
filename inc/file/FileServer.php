@@ -184,11 +184,11 @@ class FileServer
      */
     public function getFileList($dir, $extension = null)
     {
-        $files = $this->tree[$dir];
+        $files = $this->dict[$dir];
 
         foreach  ($files as $index => $name) {
             if (is_array($name)) {
-                $files[$index] = "(" . count($name) . " files) " . $index;
+                $files[$index] = $index . " (" . count($name) . " files)";
             }
         }
 
@@ -390,7 +390,7 @@ class FileServer
      */
     private static function filter_file_extension($files, $extension) {
         if ($extension != null) {
-            $reg = "/.*" . strtolower($extension) . "$/";
+            $reg = "/.*(" . strtolower($extension) . "$|" . strtolower($extension) . " \(.+\)$)/";
             $files = array_filter($files, function ($str) use($reg) {
                 return (preg_match($reg, strtolower($str)) == 1);
             });
