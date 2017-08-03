@@ -23,9 +23,9 @@ require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 use hrm\file\FileServer;
 
 
+// Handle session
 session_start();
 
-// If the user is not logged on, we return without doing anything
 if (!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
     if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
         return;
@@ -39,13 +39,18 @@ if (!isset($_SESSION[FileServer::$SESSION_KEY])) {
 $fs = $_SESSION[FileServer::$SESSION_KEY];
 assert($fs instanceof FileServer);
 
+
+// Parse request
 if (!isset($_REQUEST['dir'])) {
     return;
 }
 
 $dir = rtrim($_REQUEST['dir'], '/');
 $collapse = isset($_REQUEST['collapse']) && strtolower($_REQUEST['collapse']) == "true";
+$ext = $_REQUEST['ext'];
 
+
+// Process request
 if ($collapse) {
     if (!$fs->hasImplodedTimeSeries()) {
         $fs->implodeImageTimeSeries();
@@ -56,8 +61,7 @@ if ($collapse) {
     }
 }
 
-if (isset($_REQUEST['ext'])) {
-    $ext = $_REQUEST['ext'];
+if (isset($ext)) {
     echo json_encode($fs->getFileList($dir, $ext), JSON_FORCE_OBJECT);
 } else if ($fs->isRootDirectory($dir)) {
     echo json_encode($fs->getDirectoryTree(), JSON_FORCE_OBJECT);

@@ -24,7 +24,7 @@ $dict2 = $server->getFileDictionary();
 
 echo "<html><body>";
 echo "<h1>Directory tree</h1>" . FileServer::array2html($server->getDirectoryTree());
-echo "<h1>Entire file dictionary</h1>" . FileServer::array2html($dict1);
-echo "<h1>File dictionary with collapsed time series</h1>" . FileServer::array2html($dict2);
-echo "<h1>File list</h1>" . FileServer::array2html($server->getFileList($dir));
+echo "<h1>File dictionary</h1>" . FileServer::array2html($dict1);
+echo "<h1>File dictionary including image file series and with imploded time series </h1>" . FileServer::array2html($dict2);
+echo "<h1>File list of the root directory</h1>" . FileServer::array2html($server->getFileList($dir));
 echo "</body></html>";
