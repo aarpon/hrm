@@ -5,13 +5,12 @@
     <link rel="stylesheet" href="css/chan_num_parameter.css">
 {% endblock %}
 
-{% set chanCnt = 3 %}
+{% set NumberOfChannels = 3 %}
 
 {% block main %}
     <div class="row">
         <div class= "col-xs-12 col-sm-8 col-md-6 col-lg-6">
-            <h3 class="text-center">Channels & Microscopes</h3>
-            <p class="text-center">How many channels (wavelengths) in your datasets?</p>
+            <h3 class="text-center">Edit Microscopic Parameters</h3>
         </div>
     </div>
     <div class="row">
@@ -19,7 +18,7 @@
             {% set vars = {
             'title'   : 'Number of Channels',
             'label'   : 'Channels: ',
-            'varName' : 'chanCnt',
+            'varName' : 'NumberOfChannels',
             'min'     : 1,
             'max'     : 6,
             'step'    : 1,
@@ -27,321 +26,23 @@
             'type'    : 'success'} %}
             {% include 'num_parameter.twig' with vars %}
         </div>
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'   : 'Microscope Type',
-            'name'    : 'micrType',
-            'chanCnt' : chanCnt,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'options' : ['Confocal','Widefield','Spinning Disk','Two Photon','STED','STED 3D','SPIM']} %}
-            {% include 'chan_dropdown_parameter.twig' with vars %}
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-6">
-            <h3 class="text-center">Sampling Sizes</h3>
-            <p class="text-center">How were these images captured?</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-            {% set vars = {
-            'title'   : 'XY Voxel Size',
-            'label'   : 'xy (nm): ',
-            'varName' : 'samplXY',
-            'min'     : 20,
-            'max'     : 2000,
-            'step'    : 1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success'} %}
-            {% include 'num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-            {% set vars = {
-            'title'   : 'Z Voxel Size',
-            'label'   : 'z (nm): ',
-            'varName' : 'samplZ',
-            'min'     : 20,
-            'max'     : 2000,
-            'step'    : 1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success'} %}
-            {% include 'num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-            {% set vars = {
-            'title'   : 'Time Interval',
-            'label'   : 't (s): ',
-            'varName' : 'samplT',
-            'min'     : 0,
-            'max'     : 3600,
-            'step'    : 1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success'} %}
-            {% include 'num_parameter.twig' with vars %}
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-6">
-            <h3 class="text-center">Refractive Indices</h3>
-            <p class="text-center">How did you set up your microscope?</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-            {% set vars = {
-            'title'   : 'Numerical Aperture',
-            'label'   : 'NA: ',
-            'varName' : 'na',
-            'min'     : 0.2,
-            'max'     : 1.5,
-            'step'    : 0.1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success'} %}
-            {% include 'num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-            {% set vars = {
-            'title'   : 'Objective Type',
-            'varName' : 'objType',
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success'} %}
-            {% include 'objective_type.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-            {% set vars = {
-            'title'   : 'Sample Medium',
-            'varName' : 'sampleMedium',
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success'} %}
-            {% include 'sample_medium.twig' with vars %}
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-            <h3 class="text-center">Wavelengths</h3>
-            <p class="text-center">Which colors?</p>
-        </div>
     </div>
     <div class="row">
         <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
             {% set vars = {
-            'title'   : 'Excitation Wavelength',
-            'name'    : 'lambdaEx',
-            'min'     : 400,
-            'max'     : 700,
-            'step'    : 1,
+            'title'   : 'Point Spread Function',
+            'label'   : 'PSF',
+            'name'    : 'psfType',
             'footer'  : 'HRM internal parameter.',
             'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'   : 'Emission Wavelength',
-            'name'    : 'lambdaEm',
-            'min'     : 400,
-            'max'     : 700,
-            'step'    : 1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
+            'options' : ['Theoretical','Measured']} %}
+            {% include 'dropdown_parameter.twig' with vars %}
         </div>
     </div>
-    <hr />
-    <div class="row">
-        <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-            <h3 class="text-center">Backprojected Pinholes</h3>
-            <p class="text-center">Filtering Out-Of-Focus Light</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'   : 'Pinhole Radius',
-            'name'    : 'bppRadius',
-            'min'     : 20,
-            'max'     : 2000,
-            'step'    : 1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'   : 'Pinhole Spacing',
-            'name'    : 'bppRadius',
-            'min'     : 200,
-            'max'     : 20000,
-            'step'    : 1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <h3 class="text-center">STED</h3>
-            <p class="text-center">Stimulated Emission Depletion Microscopy</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'   : 'STED Depletion',
-            'name'    : 'stedType',
-            'chanCnt' : chanCnt,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'options' : ['Pulsed','CW Gated Detection','CW Non Gated Detection']} %}
-            {% include 'chan_dropdown_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'   : 'STED Saturation Factor',
-            'name'    : 'satFact',
-            'min'     : 1,
-            'max'     : 50,
-            'step'    : 1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'   : 'STED Wavelength (nm)',
-            'name'    : 'lambdaSted',
-            'min'     : 400,
-            'max'     : 700,
-            'step'    : 1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'   : 'STED Immunity Fraction (%)',
-            'name'    : 'stedImmunity',
-            'min'     : 0,
-            'max'     : 10,
-            'step'    : 1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'   : 'STED 3D (%)',
-            'name'    : 'sted3D',
-            'min'     : 0,
-            'max'     : 100,
-            'step'    : 1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <h3 class="text-center">SPIM</h3>
-            <p class="text-center">Light Sheet Fluorescence Microscopy</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
-            {% set vars = {
-            'title'   : 'SPIM Excitation Mode',
-            'name'    : 'spimType',
-            'chanCnt' : chanCnt,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'options' : ['Gaussian Light Sheet','Gaussian MultiView Light Sheet','High fill factor, Cylinder', 'High fill factor, Scanning Beam']} %}
-            {% include 'chan_dropdown_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
-            {% set vars = {
-            'title'   : 'SPIM Gauss Width (microns)',
-            'name'    : 'spimGaussWidth',
-            'min'     : 1,
-            'max'     : 10,
-            'step'    : 0.1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
-            {% set vars = {
-            'title'   : 'SPIM Focus Offset (microns)',
-            'name'    : 'spimFocusOffset',
-            'min'     : 0,
-            'max'     : 5,
-            'step'    : 0.1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
-            {% set vars = {
-            'title'   : 'SPIM Center Offset (microns)',
-            'name'    : 'spimCenterOffset',
-            'min'     : 0,
-            'max'     : 5,
-            'step'    : 0.1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
-            {% set vars = {
-            'title'   : 'SPIM NA',
-            'name'    : 'spimNA',
-            'min'     : 0.2,
-            'max'     : 1.2,
-            'step'    : 0.1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
-            {% set vars = {
-            'title'   : 'SPIM Fill Factor',
-            'name'    : 'spimFillFactor',
-            'min'     : 0.2,
-            'max'     : 1,
-            'step'    : 0.1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'chanCnt' : chanCnt} %}
-            {% include 'chan_num_parameter.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-6 col-md-3 col-lg-4">
-            {% set vars = {
-            'title'   : 'SPIM Illumination Direction',
-            'name'    : 'spimDir',
-            'chanCnt' : chanCnt,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
-            'options' : ['From Bottom','From Top','From Right','From Left','Right+Left','Top+Bottom']} %}
-            {% include 'chan_dropdown_parameter.twig' with vars %}
-        </div>
-    </div>
+    <ul class="pager">
+        <li><a href="#">Previous</a></li>
+        <li><a href="microscope_parameter_new.php">Next</a></li>
+    </ul>
 {% endblock %}
 
 
