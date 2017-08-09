@@ -29,17 +29,27 @@ if (isset($_GET['home'])) {
     exit();
 }
 
-if (!isset($_SESSION['setting'])) {
-    $_SESSION['setting'] = new ParameterSetting();
+$message = "";
+
+/* *****************************************************************************
+ *
+ * PROCESS THE POSTED PARAMETERS
+ *
+ **************************************************************************** */
+if ($_SESSION['setting']->checkPostedMicroscopyParameters($_POST)) {
+    exit();
+} else {
+    $message = $_SESSION['setting']->message();
 }
 
-$message = "";
+$_SESSION['setting']->setNumberOfChannels(4);
+
+
+echo "\n\nTEST: " . $_SESSION['setting']->name() . " | " . print_r($_POST,true) ."\n\n";
 
 // The Twig handler.
 $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader);
 
-/* Render the HTML code. */
-//echo $twig->render('home.twig', array('isAdmin' => $_SESSION['user']->isAdmin()));
-
-echo $twig->render('microscope_parameter.twig');
+echo $twig->render('microscope_parameter.twig',
+                   array('chanCnt' => $_SESSION['setting']->numberOfChannels()));

@@ -28,22 +28,19 @@
         </h3>
     </div>
     <div class="panel-body">
-        {# Use 'container' so that bootstrap knows how to render on different screen sizes. #}
-
-            {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
-            <form class="form-horizontal">
-                {% if label is defined %}
-                    <label for="input" class="control-label col-xs-6 col-sm-5 col-md-3 col-lg-4">
-                        {{ label }}
-                    </label>
-                {% endif %}
-                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                    <input type="number" class="form-control" id="{{ varName }}"
-                           placeholder="{{ min }}" min="{{ min }}" max="{{ max }}"
-                           step="{{ step }}">
-                </div>
-            </form>
-
+        {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
+        <div class="form-horizontal">
+            {% if label is defined %}
+                <label for="input" class="control-label col-xs-6 col-sm-5 col-md-3 col-lg-4">
+                    {{ label }}
+                </label>
+            {% endif %}
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <input type="number" class="form-control" id="{{ varName }}"
+                       placeholder="{{ min }}" min="{{ min }}" max="{{ max }}"
+                       step="{{ step }}">
+            </div>
+        </div>
     </div>
 
     {% if footer is defined %}

@@ -18,7 +18,7 @@
     </div>
     <div class="panel-body">
             {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
-            <form class="form-horizontal">
+            <div class="form-horizontal">
                 {% for ch in 0..chanCnt-1 %}
                     <div class="form-group">
                         <label for="inputCh-{{ ch }}"
@@ -39,7 +39,7 @@
                         </div>
                     </div>
                 {% endfor %}
-            </form>
+            </div>
     </div>
     {% if footer is defined %}
         <div class="panel-footer panel-custom">
