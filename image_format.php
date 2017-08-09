@@ -70,9 +70,6 @@ if ($_SESSION['setting']->checkPostedImageParameters($_POST)) {
     header("Location: " . "microscope_parameter.php");
     exit();
 } else {
-    $fp = fopen("/tmp/debug.txt","w");
-    fwrite($fp, "TEST 3: " . print_r($_POST,true));
-    fclose($fp);
     $message = $_SESSION['setting']->message();
 }
 
