@@ -15,37 +15,39 @@
     {% set step = 0.1 %}
 {% endif %}
 
-{# Add a panel with a title and a heading. #}
-<div class="panel panel-{{ type }}">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            {{ title }}
-        </h3>
-    </div>
-    <div class="panel-body">
-        {# Use 'container' so that bootstrap knows how to render on different screen sizes. #}
-        <div class="container">
-            {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
-            <div class="form-horizontal">
-                {% for ch in 0..chanCnt-1 %}
-                    <div class="form-group">
-                        <label for="inputCh-{{ ch }}"
-                               class="col-xs-3 col-sm-2 col-md-1 col-lg-1 control-label">
-                            Ch {{ ch }}:
-                        </label>
-                        <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2">
-                            <input type="number" class="form-control" id="{{ name }}-ch-{{ ch }}"
-                                   min="{{ min }}" max="{{ max }}" stetp="{{ step }}"
-                                   placeholder="{{ min }}">
+{% block main %}
+    {# Add a panel with a title and a heading. #}
+    <div class="panel panel-{{ type }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                {{ title }}
+            </h3>
+        </div>
+        <div class="panel-body">
+            {# Use 'container' so that bootstrap knows how to render on different screen sizes. #}
+            <div class="container">
+                {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
+                <div class="form-horizontal">
+                    {% for ch in 0..chanCnt-1 %}
+                        <div class="form-group">
+                            <label for="inputCh-{{ ch }}"
+                                   class="col-xs-3 col-sm-2 col-md-1 col-lg-1 control-label">
+                                Ch {{ ch }}:
+                            </label>
+                            <div class="col-xs-4 col-sm-2 col-md-2 col-lg-2">
+                                <input type="number" class="form-control" id="{{ name }}-ch-{{ ch }}"
+                                       min="{{ min }}" max="{{ max }}" stetp="{{ step }}"
+                                       placeholder="{{ min }}">
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
+        {% if footer is defined %}
+            <div class="panel-footer panel-custom">
+                <p>{{ footer }}</p>
+            </div>
+        {% endif %}
     </div>
-    {% if footer is defined %}
-        <div class="panel-footer panel-custom">
-            <p>{{ footer }}</p>
-        </div>
-    {% endif %}
-</div>
+{% endblock %}

@@ -10,20 +10,22 @@
     {% set type = "default" %}
 {% endif %}
 
-{# Add a panel with a title and a heading. #}
-<div class="panel panel-{{ type }}">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            {{ title }}
-        </h3>
-    </div>
-    <div class="panel-body">
+{% block main %}
+    {# Add a panel with a title and a heading. #}
+    <div class="panel panel-{{ type }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                {{ title }}
+            </h3>
+        </div>
+        <div class="panel-body">
             {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
             <div class="form-horizontal">
                 <div class="col-md-1 col-sm-1">
                     <div class="radio">
                         <label>
-                            <input type="radio" name="{{ varName }}">liquid&nbspvectashield 90/10&nbsp(v:v)&nbspglycerol PBS&nbspph&nbsp7.4&nbsp[1.47]
+                            <input type="radio" name="{{ varName }}">liquid&nbspvectashield 90/10&nbsp(v:v)&nbspglycerol
+                            PBS&nbspph&nbsp7.4&nbsp[1.47]
                         </label>
                     </div>
                     <div class="radio">
@@ -41,11 +43,12 @@
                     </div>
                 </div>
             </div>
-    </div>
-
-    {% if footer is defined %}
-        <div class="panel-footer panel-custom">
-            <p>{{ footer }}</p>
         </div>
-    {% endif %}
-</div>
+
+        {% if footer is defined %}
+            <div class="panel-footer panel-custom">
+                <p>{{ footer }}</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

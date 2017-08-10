@@ -9,39 +9,58 @@
     {% set type = "default" %}
 {% endif %}
 
-{# Add a panel with a title and a heading. #}
-<div class="panel panel-{{ type }}">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            {{ title }}
-        </h3>
-    </div>
-    <div class="panel-body">
-        {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
-        <div class="form-horizontal">
-            <div class="form-group">
-                <label for="input"
-                       class="control-label col-xs-3 col-sm-4 col-md-3 col-lg-3">
-                    {{ label }}
-                </label>
-                <div class="dropdown col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                        {{ title }}
-                        <span class="caret">
-                                </span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        {% for option in options %}
-                            <li>{{ option }}</li>
-                        {% endfor %}
-                    </ul>
+{% block main %}
+    {# Add a panel with a title and a heading. #}
+    <div class="panel panel-{{ type }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                {{ title }}
+            </h3>
+        </div>
+        <div class="panel-body">
+            {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label for="input"
+                           class="control-label col-xs-3 col-sm-4 col-md-3 col-lg-3">
+                        {{ label }}
+                    </label>
+                    <div class="dropdown col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                        <button class="btn btn-primary dropdown-toggle" type="button"
+                                data-toggle="dropdown">
+                            {{ title }}
+                            <span class="caret">
+                        </span>
+                        </button>
+                        <ul class="dropdown-menu {{ varName }}" name={{ varName }}">
+                            {% for option in options %}
+                                <li value="{{ option }}">{{ option }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <input type="hidden" name="{{ varName }}">
                 </div>
             </div>
         </div>
+        {% if footer is defined %}
+            <div class="panel-footer panel-custom">
+                <p>{{ footer }}</p>
+            </div>
+        {% endif %}
     </div>
-    {% if footer is defined %}
-        <div class="panel-footer panel-custom">
-            <p>{{ footer }}</p>
-        </div>
-    {% endif %}
-</div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(function(){
+            //Listen for a click on any of the dropdown items
+            $(".{{ varName }} li").click(function(){
+                //Get the value
+                var value = $(this).attr("value");
+                //Put the retrieved value into the hidden input
+                $("input[name='{{ varName }}']").val(value);
+            });
+        });
+    </script>
+{% endblock %}

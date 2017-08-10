@@ -9,14 +9,15 @@
     {% set type = "default" %}
 {% endif %}
 
-{# Add a panel with a title and a heading. #}
-<div class="panel panel-{{ type }}">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            {{ title }}
-        </h3>
-    </div>
-    <div class="panel-body">
+{% block main %}
+    {# Add a panel with a title and a heading. #}
+    <div class="panel panel-{{ type }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                {{ title }}
+            </h3>
+        </div>
+        <div class="panel-body">
             {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
             <div class="form-horizontal">
                 {% for ch in 0..chanCnt-1 %}
@@ -40,10 +41,11 @@
                     </div>
                 {% endfor %}
             </div>
-    </div>
-    {% if footer is defined %}
-        <div class="panel-footer panel-custom">
-            <p>{{ footer }}</p>
         </div>
-    {% endif %}
-</div>
+        {% if footer is defined %}
+            <div class="panel-footer panel-custom">
+                <p>{{ footer }}</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

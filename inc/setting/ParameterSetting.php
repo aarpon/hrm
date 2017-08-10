@@ -270,7 +270,7 @@ class ParameterSetting extends Setting {
                 return False;
             }
         }
-        
+
         // The number of channels must be defined for all file formats
         if (!isset($postedParameters["NumberOfChannels"]) ||
                 $postedParameters["NumberOfChannels"] == "") {

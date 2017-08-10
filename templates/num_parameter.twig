@@ -20,32 +20,34 @@
 {% endif %}
 
 
-{# Add a panel with a title and a heading. #}
-<div class="panel panel-{{ type }}">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            {{ title }}
-        </h3>
-    </div>
-    <div class="panel-body">
-        {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
-        <div class="form-horizontal">
-            {% if label is defined %}
-                <label for="input" class="control-label col-xs-6 col-sm-5 col-md-3 col-lg-4">
-                    {{ label }}
-                </label>
-            {% endif %}
-            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                <input type="number" class="form-control" name="{{ varName }}"
-                       placeholder="{{ min }}" min="{{ min }}" max="{{ max }}"
-                       step="{{ step }}">
+{% block main %}
+    {# Add a panel with a title and a heading. #}
+    <div class="panel panel-{{ type }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                {{ title }}
+            </h3>
+        </div>
+        <div class="panel-body">
+            {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
+            <div class="form-horizontal">
+                {% if label is defined %}
+                    <label for="input" class="control-label col-xs-6 col-sm-5 col-md-3 col-lg-4">
+                        {{ label }}
+                    </label>
+                {% endif %}
+                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <input type="number" class="form-control" name="{{ varName }}"
+                           placeholder="{{ min }}" min="{{ min }}" max="{{ max }}"
+                           step="{{ step }}">
+                </div>
             </div>
         </div>
-    </div>
 
-    {% if footer is defined %}
-        <div class="panel-footer panel-custom">
-            <p>{{ footer }}</p>
-        </div>
-    {% endif %}
-</div>
+        {% if footer is defined %}
+            <div class="panel-footer panel-custom">
+                <p>{{ footer }}</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
