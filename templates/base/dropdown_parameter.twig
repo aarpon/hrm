@@ -1,0 +1,41 @@
+{# templates/base/dropdown_parameter.twig #}
+{# Extend base at the caller for correct rendering. #}
+{% block head %}
+    <link rel="stylesheet" href="css/dropdown_parameter.css">
+{% endblock %}
+
+{% block main %}
+    <div class="form-group">
+        <h5>
+            {{ label }}
+        </h5>
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button"
+                    data-toggle="dropdown">
+                {{ title }}
+                <span class="caret">
+                </span>
+            </button>
+            <ul class="dropdown-menu {{ varName }}">
+                {% for option in options %}
+                    <li value="{{ option }}">{{ option }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <input type="hidden" name="{{ varName }}">
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(function(){
+            //Listen for a click on any of the dropdown items
+            $(".{{ varName }} li").click(function(){
+                //Get the value
+                var value = $(this).attr("value");
+                //Put the retrieved value into the hidden input
+                $("input[name='{{ varName }}']").val(value);
+            });
+        });
+    </script>
+{% endblock %}

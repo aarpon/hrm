@@ -5,8 +5,6 @@
     <link rel="stylesheet" href="css/chan_num_parameter.css">
 {% endblock %}
 
-{% set NumberOfChannels = 3 %}
-
 {% block main %}
 <form action="" method="post" id="image_format">
     <div class="row">
@@ -24,8 +22,8 @@
             'max'     : 6,
             'step'    : 1,
             'footer'  : 'HRM internal parameter.',
-            'type'    : 'success'} %}
-            {% include 'base/num_parameter.twig' with vars %}
+            'type'    : 'warning'} %}
+            {% include 'base/num_parameter_panel.twig' with vars %}
         </div>
     </div>
     <div class="row">
@@ -35,9 +33,9 @@
             'label'   : 'PSF',
             'varName' : 'PointSpreadFunction',
             'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
+            'type'    : 'warning',
             'options' : ['theoretical','measured']} %}
-            {% include 'dropdown_parameter.twig' with vars %}
+            {% include 'base/dropdown_parameter_panel.twig' with vars %}
         </div>
     </div>
     <div class="form-group">

@@ -14,11 +14,10 @@
 
 
 {% block main %}
-    {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
-    <div class="form-horizontal input-group">
-        <h4>
+    <div class="input-group">
+        <h5>
             {{ label }}
-        </h4>
+        </h5>
         <div class="input-group">
             <span class="input-group-btn">
                 <button class="btn btn-default btn-number" type="button"
@@ -27,7 +26,7 @@
                     </span>
                 </button>
             </span>
-            <input type="text" name="{{ varName }}" class="form-control input-number"
+            <input class="form-control input-number" type="text" name="{{ varName }}"
                    value="{{ min }}" min="{{ min }}" max="{{ max }}">
             <span class="input-group-btn">
                 <button class="btn btn-default btn-number" type="button"
