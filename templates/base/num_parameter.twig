@@ -1,9 +1,5 @@
-{# templates/num_parameter.twig #}
+{# templates/base/num_parameter.twig #}
 {# Extend base at the caller for correct rendering. #}
-
-{% block head %}
-    <link rel="stylesheet" href="css/num_parameter.css">
-{% endblock %}
 
 {# Default values. #}
 {% if min is not defined %}
@@ -20,8 +16,9 @@
 {% block main %}
     {# From the bootstrap docs: use 'form-horizontal' for aligned labels and entry fields. #}
     <div class="form-horizontal input-group">
-        <label for="basic-addon1"">{{ label }}
-        </label>
+        <h4>
+            {{ label }}
+        </h4>
         <div class="input-group">
             <span class="input-group-btn">
                 <button class="btn btn-default btn-number" type="button"
