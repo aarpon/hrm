@@ -27,7 +27,7 @@
                 </button>
             </span>
             <input class="form-control input-number" type="text" name="{{ varName }}"
-                   value="{{ min }}" min="{{ min }}" max="{{ max }}">
+                   value="{{ min }}" min="{{ min }}" max="{{ max }}" step="{{ step }}">
             <span class="input-group-btn">
                 <button class="btn btn-default btn-number" type="button"
                         data-type="plus" data-field="{{ varName }}">
@@ -48,15 +48,20 @@
             fieldName = $(this).attr('data-field');
             type = $(this).attr('data-type');
             var input = $("input[name='" + fieldName + "']");
-            var currentVal = parseInt(input.val());
+            var currentVal = parseFloat(input.val());
+
             if (!isNaN(currentVal)) {
                 if (type == 'minus') {
-                    if (currentVal > input.attr('min')) {
-                        input.val(currentVal - 1).change();
+                    if (currentVal - {{ step }}> input.attr('min')) {
+                        input.val(currentVal - {{ step }}).change();
+                    } else {
+                        input.val({{ min }}).change();
                     }
                 } else if (type == 'plus') {
-                    if (currentVal < input.attr('max')) {
-                        input.val(currentVal + 1).change();
+                    if (currentVal + {{ step }} < input.attr('max')) {
+                        input.val(currentVal + {{ step }}).change();
+                    } else {
+                        input.val({{ max }}).change();
                     }
                 }
             } else {
@@ -68,9 +73,9 @@
         });
         $('.input-number').change(function () {
 
-            minValue = parseInt($(this).attr('min'));
-            maxValue = parseInt($(this).attr('max'));
-            valueCurrent = parseInt($(this).val());
+            minValue = parseFloat($(this).attr('min'));
+            maxValue = parseFloat($(this).attr('max'));
+            valueCurrent = parseFloat($(this).val());
 
             name = $(this).attr('name');
             if (valueCurrent >= minValue) {

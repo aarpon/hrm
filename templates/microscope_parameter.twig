@@ -18,7 +18,7 @@
             'name'    : 'micrType',
             'chanCnt' : chanCnt,
             'footer'  : 'HRM internal parameter.',
-            'type'    : 'success',
+            'type'    : 'warning',
             'options' : ['Confocal','Widefield','Spinning Disk','Two Photon','STED','STED 3D','SPIM']} %}
             {% include 'chan_dropdown_parameter.twig' with vars %}
         </div>
@@ -41,7 +41,7 @@
             'step'    : 0.1,
             'footer'  : 'HRM internal parameter.',
             'type'    : 'success'} %}
-            {% include 'base/num_parameter.twig' with vars %}
+            {% include 'base/num_parameter_panel.twig' with vars %}
         </div>
         <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
             {% set vars = {
