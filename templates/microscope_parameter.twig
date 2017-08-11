@@ -15,12 +15,13 @@
         <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
             {% set vars = {
             'title'   : 'Microscope Type',
+            'label'   : 'Microscope Type: ',
             'name'    : 'micrType',
             'chanCnt' : chanCnt,
             'footer'  : 'HRM internal parameter.',
             'type'    : 'warning',
             'options' : ['Confocal','Widefield','Spinning Disk','Two Photon','STED','STED 3D','SPIM']} %}
-            {% include 'chan_dropdown_parameter.twig' with vars %}
+            {% include 'base/choice_parameter_panel.twig' with vars %}
         </div>
     </div>
     <hr />
