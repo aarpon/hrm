@@ -16,9 +16,13 @@
                 <span class="caret">
                 </span>
             </button>
-            <ul class="dropdown-menu {{ varName }}">
+            <ul class="dropdown-menu" id="{{ varName }}">
                 {% for option in options %}
-                    <li value="{{ option }}">{{ option }}</li>
+                    <li>
+                        <a data-value="{{ option }}">
+                            {{ option }}
+                        </a>
+                    </li>
                 {% endfor %}
             </ul>
         </div>
@@ -30,11 +34,12 @@
     <script type="text/javascript">
         $(function(){
             //Listen for a click on any of the dropdown items
-            $(".{{ varName }} li").click(function(){
+            $("{{ varName }}").click(function(){
                 //Get the value
-                var value = $(this).attr("value");
+                var value = $(this).attr("data-value");
                 //Put the retrieved value into the hidden input
                 $("input[name='{{ varName }}']").val(value);
+                alert(value);
             });
         });
     </script>

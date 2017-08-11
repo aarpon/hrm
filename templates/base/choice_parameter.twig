@@ -1,0 +1,31 @@
+{# templates/base/dropdown_parameter.twig #}
+{# Extend base at the caller for correct rendering. #}
+{% block head %}
+    <link rel="stylesheet" href="css/dropdown_parameter.css">
+{% endblock %}
+
+{% block main %}
+    <div class="form-group">
+        <h5>
+            {{ label }}
+        </h5>
+
+        <div class="btn-group btn-group-vertical" data-toggle="buttons">
+            {% for option in options %}
+                <label class="btn btn-primary">
+                    <input type="radio" id="{{ option }}">{{ option }}
+                </label>
+            {% endfor %}
+        </div>
+
+        <input type="hidden" name="{{ varName }}">
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $('.btn-group .btn').on('click',function(){
+            $("input[name='{{ varName }}']").val($(this).text().trim());
+        });
+    </script>
+{% endblock %}

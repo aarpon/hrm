@@ -1,0 +1,27 @@
+{# templates/base/dropdown_parameter_panel.twig #}
+{# Extend base at the caller for correct rendering. #}
+
+
+{# Default values. #}
+{% if type != "danger" and type != "warning" and type != "info" and type != "success" %}
+    {% set type = "default" %}
+{% endif %}
+
+{% block main %}
+    {# Add a panel with a title and a heading. #}
+    <div class="panel panel-{{ type }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                {{ title }}
+            </h3>
+        </div>
+        <div class="panel-body">
+            {% include 'base/choice_parameter.twig' with vars %}
+        </div>
+        {% if footer is defined %}
+            <div class="panel-footer panel-custom">
+                <p>{{ footer }}</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
