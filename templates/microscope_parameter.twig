@@ -6,65 +6,77 @@
 {% endblock %}
 
 {% block main %}
-    <div class="row">
-        <div class= "col-xs-12 col-sm-8 col-md-6 col-lg-6">
-            <h3 class="text-center">Edit Microscopic Parameters</h3>
+    <form action="" method="post" id="microscope_parameter">
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                <h3 class="text-center">Edit Microscopic Parameters</h3>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'   : 'Microscope Type',
-            'label'   : 'Microscope Type: ',
-            'name'    : 'micrType',
-            'chanCnt' : chanCnt,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'warning',
-            'options' : ['Confocal','Widefield','Spinning Disk','Two Photon','STED','STED 3D','SPIM']} %}
-            {% include 'base/choice_parameter_panel.twig' with vars %}
+        <div class="row">
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
+                {% set vars = {
+                'title'   : 'Microscope Type',
+                'label'   : 'Microscope Type: ',
+                'varName' : 'MicroscopeType',
+                'chanCnt' : chanCnt,
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'warning',
+                'options' : ['Confocal','Widefield','Spinning Disk','Two Photon','STED','STED 3D','SPIM']} %}
+                {% include 'base/choice_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'   : 'Numerical Aperture',
+                'label'   : 'NA: ',
+                'varName' : 'NA',
+                'min'     : 0.2,
+                'max'     : 1.5,
+                'step'    : 0.1,
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'success'} %}
+                {% include 'base/num_parameter_panel.twig' with vars %}
+                {% set vars = {
+                'title'   : 'Objective Type',
+                'varName' : 'ObjectiveType',
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'success'} %}
+                {% include 'objective_type.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'   : 'Sample Medium',
+                'varName' : 'SampleMedium',
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'success'} %}
+                {% include 'sample_medium.twig' with vars %}
+            </div>
         </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-6">
-            <h3 class="text-center">Refractive Indices</h3>
-            <p class="text-center">How did you set up your microscope?</p>
+        <div class="form-group">
+            <ul class="pager">
+                <li><a onclick="process();" href="javascript:void(0);">Previous</a></li>
+                <li><a onclick="process();" href="javascript:void(0);">Next</a></li>
+                <div><input name="OK" type="hidden"/></div>
+            </ul>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-            {% set vars = {
-            'title'   : 'Numerical Aperture',
-            'label'   : 'NA: ',
-            'varName' : 'na',
-            'min'     : 0.2,
-            'max'     : 1.5,
-            'step'    : 0.1,
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success'} %}
-            {% include 'base/num_parameter_panel.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-            {% set vars = {
-            'title'   : 'Objective Type',
-            'varName' : 'objType',
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success'} %}
-            {% include 'objective_type.twig' with vars %}
-        </div>
-        <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-            {% set vars = {
-            'title'   : 'Sample Medium',
-            'varName' : 'sampleMedium',
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'success'} %}
-            {% include 'sample_medium.twig' with vars %}
-        </div>
-    </div>
-    <ul class="pager">
-        <li><a href="image_format.php">Previous</a></li>
-        <li><a href="capturing_parameter_new.php">Next</a></li>
-    </ul>
+    </form>
 {% endblock %}
 
 
+{% block scripts %}
+    <script type="text/javascript">
+        function process() {
+            var el = $("form input[name='OK']:hidden");
+            if (null === el) {
+                return;
+            }
+            var fr = $("form#microscope_parameter");
+            if (null === fr) {
+                return;
+            }
+            if ($.contains(fr.get(0), el.get(0))) {
+                el.val("OK");
+                fr.submit();
+            }
+        }
+    </script>
+{% endblock %}

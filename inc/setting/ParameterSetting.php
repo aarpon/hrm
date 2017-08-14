@@ -265,6 +265,7 @@ class ParameterSetting extends Setting {
             $parameter = $this->parameter("PointSpreadFunction");
             $parameter->setValue($postedParameters["PointSpreadFunction"]);
             $this->set($parameter);
+
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 return False;
