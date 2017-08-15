@@ -37,6 +37,8 @@ $message = "";
  *
  **************************************************************************** */
 if ($_SESSION['setting']->checkPostedMicroscopyParameters($_POST)) {
+    // Continue to the next page
+    header("Location: " . "capturing_parameter.php");
     exit();
 } else {
     $message = $_SESSION['setting']->message();
