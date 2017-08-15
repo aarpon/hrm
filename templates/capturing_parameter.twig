@@ -24,6 +24,8 @@
                 'footer'  : 'HRM internal parameter.',
                 'type'    : 'success'} %}
                 {% include 'base/num_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'   : 'Voxel Size',
                 'label'   : 'Z Step (nm): ',
@@ -34,6 +36,8 @@
                 'footer'  : 'HRM internal parameter.',
                 'type'    : 'success'} %}
                 {% include 'base/num_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'   : 'Time Interval',
                 'label'   : 'Time Interval (s): ',
@@ -74,8 +78,16 @@
         </div>
         <div class="form-group">
             <ul class="pager">
-                <li><a onclick="process();" href="javascript:void(0);">Previous</a></li>
-                <li><a onclick="process();" href="javascript:void(0);">Next</a></li>
+                <li><a onclick="deleteValuesAndRedirect('microscope_parameter.php');"
+                       href="javascript:void(0);">
+                        Previous
+                    </a>
+                </li>
+                <li><a onclick="deleteValuesAndProcess();"
+                       href="javascript:void(0);">
+                        Next
+                    </a>
+                </li>
                 <div><input name="OK" type="hidden"/></div>
             </ul>
         </div>
@@ -98,6 +110,38 @@
                 el.val("OK");
                 fr.submit();
             }
+        }
+    </script>
+
+    <script type="text/javascript">
+        // Requires jQuery
+        function deleteValues( idArray ) {
+            if (!window.sessionStorage) {
+            return;
+        }
+
+        $("select").each(
+        function() {
+            window.sessionStorage.removeItem( $(this).attr("name") );
+        } );
+        $( $.merge( $("input[type=text]"), $("input[type=radio]") ) ).each(
+        function() {
+                window.sessionStorage.removeItem( $(this).attr("id") );
+            } );
+        }
+    </script>
+
+    <script type="text/javascript">
+        function deleteValuesAndProcess() {
+            deleteValues();
+            process();
+        }
+    </script>
+
+    <script type="text/javascript">
+        function deleteValuesAndRedirect(page) {
+            deleteValues();
+            window.location = page;
         }
     </script>
 {% endblock %}
