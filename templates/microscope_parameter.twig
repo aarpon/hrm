@@ -28,7 +28,7 @@
                 {% set vars = {
                 'title'   : 'Numerical Aperture',
                 'label'   : 'NA: ',
-                'varName' : 'NA',
+                'varName' : 'NumericalAperture',
                 'min'     : 0.2,
                 'max'     : 1.5,
                 'step'    : 0.1,
@@ -49,6 +49,30 @@
                 'footer'  : 'HRM internal parameter.',
                 'type'    : 'success'} %}
                 {% include 'sample_medium.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'   : 'Excitation Wavelength',
+                'varName' : 'ExcitationWavelength',
+                'min'     : 400,
+                'max'     : 700,
+                'step'    : 1,
+                'chanCnt' : chanCnt,
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'success'} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'   : 'Emission Wavelength',
+                'varName' : 'EmissionWavelength',
+                'min'     : 400,
+                'max'     : 700,
+                'step'    : 1,
+                'chanCnt' : chanCnt,
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'success'} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
         </div>
         <div class="form-group">
