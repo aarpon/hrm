@@ -19,6 +19,8 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 session_start();
 
+$message = "";
+
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     header("Location: " . "login.php");
     exit();
@@ -28,8 +30,6 @@ if (isset($_GET['home'])) {
     header("Location: " . "home.php");
     exit();
 }
-
-$message = "";
 
 /* *****************************************************************************
  *

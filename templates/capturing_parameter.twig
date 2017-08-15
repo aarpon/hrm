@@ -1,0 +1,103 @@
+{# templates/image_parameters.twig #}
+{% extends "base.twig" %}
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="css/chan_num_parameter.css">
+{% endblock %}
+
+{% block main %}
+    <form action="" method="post" id="capturing_parameter">
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                <h3 class="text-center">Edit Microscopic Parameters</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'   : 'Voxel Size',
+                'label'   : 'Pixel size (nm): ',
+                'varName' : 'CCDCaptorSizeX',
+                'min'     : 10,
+                'max'     : 1000,
+                'step'    : 0.1,
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'success'} %}
+                {% include 'base/num_parameter_panel.twig' with vars %}
+                {% set vars = {
+                'title'   : 'Voxel Size',
+                'label'   : 'Z Step (nm): ',
+                'varName' : 'ZStepSize',
+                'min'     : 0,
+                'max'     : 1000,
+                'step'    : 0.1,
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'success'} %}
+                {% include 'base/num_parameter_panel.twig' with vars %}
+                {% set vars = {
+                'title'   : 'Time Interval',
+                'label'   : 'Time Interval (s): ',
+                'varName' : 'TimeInterval',
+                'min'     : 0,
+                'max'     : 1000,
+                'step'    : 0.1,
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'success'} %}
+                {% include 'base/num_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'   : 'Pinhole Radius',
+                'label'   : 'Backprojected Pinhole Radius (nm): ',
+                'varName' : 'PinholeSize',
+                'min'     : 25,
+                'max'     : 2500,
+                'step'    : 1,
+                'chanCnt' : chanCnt,
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'success'} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'   : 'Pinhole Spacing',
+                'label'   : 'Backprojected Pinhole Spacing (nm): ',
+                'varName' : 'PinholeSpacing',
+                'min'     : 25,
+                'max'     : 2500,
+                'step'    : 1,
+                'chanCnt' : chanCnt,
+                'footer'  : 'HRM internal parameter.',
+                'type'    : 'success'} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
+            </div>
+        </div>
+        <div class="form-group">
+            <ul class="pager">
+                <li><a onclick="process();" href="javascript:void(0);">Previous</a></li>
+                <li><a onclick="process();" href="javascript:void(0);">Next</a></li>
+                <div><input name="OK" type="hidden"/></div>
+            </ul>
+        </div>
+    </form>
+{% endblock %}
+
+
+{% block scripts %}
+    <script type="text/javascript">
+        function process() {
+            var el = $("form input[name='OK']:hidden");
+            if (null === el) {
+                return;
+            }
+            var fr = $("form#capturing_parameter");
+            if (null === fr) {
+                return;
+            }
+            if ($.contains(fr.get(0), el.get(0))) {
+                el.val("OK");
+                fr.submit();
+            }
+        }
+    </script>
+{% endblock %}
