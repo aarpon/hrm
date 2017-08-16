@@ -49,4 +49,5 @@ $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader);
 
 echo $twig->render('microscope_parameter.twig',
-                   array('chanCnt' => $_SESSION['setting']->numberOfChannels()));
+                   array('chanCnt' => $_SESSION['setting']->numberOfChannels(),
+                         'message' => $message));
