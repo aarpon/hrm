@@ -89,8 +89,16 @@ $numberOfChannels = array(
     'confidence' => $_SESSION['setting']->parameter("NumberOfChannels")->confidenceLevel(),
     'min'        => 1,
     'max'        => $db->getMaxChanCnt(),
-    'step'       => 1,
-);
+    'step'       => 1);
+
+$pointSpreadFunction = array(
+    'title'      => 'Point Spread Function ',
+    'varName'    => 'PointSpreadFunction',
+    'label'      => 'PSF: ',
+    'value'      => $_SESSION['setting']->parameter("PointSpreadFunction")->value(),
+    'confidence' => $_SESSION['setting']->parameter("PointSpreadFunction")->confidenceLevel(),
+    'options'    => $_SESSION['setting']->parameter("PointSpreadFunction")->possibleValues());
 
 echo $twig->render('image_format.twig',
-                   array('NumberOfChannels' => $numberOfChannels));
+                   array('NumberOfChannels'    => $numberOfChannels,
+                         'PointSpreadFunction' => $pointSpreadFunction));

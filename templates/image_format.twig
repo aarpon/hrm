@@ -27,12 +27,11 @@
     <div class="row">
         <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
             {% set vars = {
-            'title'   : 'Point Spread Function',
-            'label'   : 'PSF: ',
-            'varName' : 'PointSpreadFunction',
-            'footer'  : 'HRM internal parameter.',
-            'type'    : 'warning',
-            'options' : ['theoretical','measured']} %}
+            'title'      : PointSpreadFunction.title,
+            'label'      : PointSpreadFunction.label,
+            'varName'    : PointSpreadFunction.varName,
+            'confidence' : PointSpreadFunction.confidence,
+            'options'    : PointSpreadFunction.options} %}
             {% include 'base/choice_parameter_panel.twig' with vars %}
         </div>
     </div>
