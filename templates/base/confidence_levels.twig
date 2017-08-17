@@ -1,4 +1,4 @@
-{% macro toPanelType() %}
+{% macro toPanelType(confidence) %}
 {% if confidence is defined %}
     {% if confidence == "asIs" %}
         {% set type = "default" %}
@@ -16,13 +16,13 @@
         {% set type = "danger" %}
     {% endif %}
 {% else %}
-    {% set type = "default" %}
+    {% set type = "danger" %}
 {% endif %}
 {{type}}
 {% endmacro toPanelType %}
 
 
-{% macro toFooterText() %}
+{% macro toFooterText(confidence) %}
     {% if confidence is defined %}
         {% if confidence == "asIs" %}
             {% set text = "Reliable in file meta data" %}
@@ -40,7 +40,7 @@
             {% set text = "Not realiable in file meta data" %}
         {% endif %}
     {% else %}
-        {% set text = "HRM internal parameter" %}
+        {% set text = "" %}
     {% endif %}
     {{text}}
 {% endmacro toFooterText %}

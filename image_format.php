@@ -90,7 +90,6 @@ $numberOfChannels = array(
     'min'        => 1,
     'max'        => $db->getMaxChanCnt(),
     'step'       => 1,
-    'footer'     => $_SESSION['setting']->parameter("NumberOfChannels")->confidenceLevel(),
 );
 
 echo $twig->render('image_format.twig',

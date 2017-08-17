@@ -1,15 +1,12 @@
-{# templates/base/dropdown_parameter_panel.twig #}
-{# Extend base at the caller for correct rendering. #}
+{% import 'base/confidence_levels.twig' as level %}
 
-
-{# Default values. #}
-{% if type != "danger" and type != "warning" and type != "info" and type != "success" %}
-    {% set type = "default" %}
-{% endif %}
+{% set type   = level.toPanelType(confidence) %}
+{% set footer = level.toFooterText(confidence) %}
 
 {% block main %}
-    {# Add a panel with a title and a heading. #}
-    <div class="panel panel-{{ type }}">
+        {# Add a panel with a title and a heading.
+           Remove spaces around 'type'. #}
+        <div class="panel panel-{{type|replace({'\n':''})|replace({' ':''})}}">
         <div class="panel-heading">
             <h3 class="panel-title">
                 {{ title }}

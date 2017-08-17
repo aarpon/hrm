@@ -1,7 +1,7 @@
-{% import 'base/confidence_levels.twig' as confidence %}
+{% import 'base/confidence_levels.twig' as level %}
 
-{% set type   = confidence.toPanelType() %}
-{% set footer = confidence.toFooterText() %}
+{% set type   = level.toPanelType(confidence) %}
+{% set footer = level.toFooterText(confidence) %}
 
 {% block main %}
     {# Add a panel with a title and a heading.
