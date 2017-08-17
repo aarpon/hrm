@@ -1,0 +1,46 @@
+{% macro toPanelType() %}
+{% if confidence is defined %}
+    {% if confidence == "asIs" %}
+        {% set type = "default" %}
+    {% elseif confidence == "verified" %}
+        {% set type = "default" %}
+    {% elseif confidence == "reported" %}
+        {% set type = "default" %}
+    {% elseif confidence == "provided" %}
+        {% set type = "default" %}
+    {% elseif confidence == "estimated" %}
+        {% set type = "warning" %}
+    {% elseif confidence == "default" %}
+        {% set type = "warning" %}
+    {% else %}
+        {% set type = "danger" %}
+    {% endif %}
+{% else %}
+    {% set type = "default" %}
+{% endif %}
+{{type}}
+{% endmacro toPanelType %}
+
+
+{% macro toFooterText() %}
+    {% if confidence is defined %}
+        {% if confidence == "asIs" %}
+            {% set text = "Reliable in file meta data" %}
+        {% elseif confidence == "verified" %}
+            {% set text = "Reliable in file meta data" %}
+        {% elseif confidence == "reported" %}
+            {% set text = "Reliable in file meta data" %}
+        {% elseif confidence == "provided" %}
+            {% set text = "Reliable in file meta data" %}
+        {% elseif confidence == "estimated" %}
+            {% set text = "Not realiable in file meta data" %}
+        {% elseif confidence == "default" %}
+            {% set text = "Not realiable in file meta data" %}
+        {% else %}
+            {% set text = "Not realiable in file meta data" %}
+        {% endif %}
+    {% else %}
+        {% set text = "HRM internal parameter" %}
+    {% endif %}
+    {{text}}
+{% endmacro toFooterText %}

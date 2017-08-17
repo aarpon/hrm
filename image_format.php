@@ -81,5 +81,17 @@ if ($_SESSION['setting']->checkPostedImageParameters($_POST)) {
 
 $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader);
+
+$numberOfChannels = array(
+    'title'      => 'Number of Channels ',
+    'varName'    => 'NumberOfChannels',
+    'value'      => $_SESSION['setting']->numberOfChannels(),
+    'confidence' => $_SESSION['setting']->parameter("NumberOfChannels")->confidenceLevel(),
+    'min'        => 1,
+    'max'        => $db->getMaxChanCnt(),
+    'step'       => 1,
+    'footer'     => $_SESSION['setting']->parameter("NumberOfChannels")->confidenceLevel(),
+);
+
 echo $twig->render('image_format.twig',
-                   array('NumberOfChannels' => $_SESSION['setting']->numberOfChannels()));
+                   array('NumberOfChannels' => $numberOfChannels));
