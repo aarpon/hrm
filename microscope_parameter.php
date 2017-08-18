@@ -33,6 +33,25 @@ if (isset($_GET['home'])) {
 
 /* *****************************************************************************
  *
+ * SET THE CONFIDENCES FOR THE RELEVANT PARAMETERS
+ *
+ **************************************************************************** */
+
+/** @var ImageFileFormat $fileFormat */
+$fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
+$parameterNames = $_SESSION['setting']->microscopeParameterNames();
+$db = new DatabaseConnection();
+foreach ($parameterNames as $name) {
+    $parameter = $_SESSION['setting']->parameter($name);
+    $confidenceLevel = $db->getParameterConfidenceLevel(
+        $fileFormat->value(), $name);
+    /** @var Parameter $parameter */
+    $parameter->setConfidenceLevel($confidenceLevel);
+    $_SESSION['setting']->set($parameter);
+}
+
+/* *****************************************************************************
+ *
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
@@ -46,8 +65,26 @@ if ($_SESSION['setting']->checkPostedMicroscopyParameters($_POST)) {
 
 // The Twig handler.
 $loader = new Twig_Loader_Filesystem('templates');
-$twig = new Twig_Environment($loader);
+$twig   = new Twig_Environment($loader);
+
+$microscopeType = array(
+    'title'      => 'Microscope Type',
+    'varName'    => 'MicroscopeType',
+    'label'      => 'Microscope Type: ',
+    'confidence' => $_SESSION['setting']->parameter("MicroscopeType")->confidenceLevel(),
+    'options'    => $_SESSION['setting']->parameter("MicroscopeType")->possibleValues());
+
+$numericalAperture = array(
+    'title'      => 'Numerical Aperture',
+    'varName'    => 'NumericalAperture',
+    'label'      => 'NA: ',
+    'min'        => 0.2, /* TODO: add NA boundary values to the DB. */
+    'max'        => 1.5,
+    'step'       => 0.1,
+    'confidence' => $_SESSION['setting']->parameter("NumericalAperture")->confidenceLevel());
 
 echo $twig->render('microscope_parameter.twig',
-                   array('chanCnt' => $_SESSION['setting']->numberOfChannels(),
-                         'message' => $message));
+                   array('chanCnt'           => $_SESSION['setting']->numberOfChannels(),
+                         'MicroscopeType'    => $microscopeType,
+                         'NumericalAperture' => $numericalAperture,
+                         'message'           => $message));

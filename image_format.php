@@ -101,4 +101,5 @@ $pointSpreadFunction = array(
 
 echo $twig->render('image_format.twig',
                    array('NumberOfChannels'    => $numberOfChannels,
-                         'PointSpreadFunction' => $pointSpreadFunction));
+                         'PointSpreadFunction' => $pointSpreadFunction,
+                         'message'             => $message));

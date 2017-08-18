@@ -13,7 +13,7 @@
     {% elseif confidence == "provided" %}
         {% set type = "default" %}
     {% else %}
-        {% set type = "danger" %}
+        {% set type = "default" %}
     {% endif %}
 {% else %}
     {% set type = "default" %}
@@ -37,10 +37,10 @@
         {% elseif confidence == "provided" %}
             {% set text = "HRM parameter" %}
         {% else %}
-            {% set text = "Not realiable in file meta data" %}
+            {% set text = "HRM parameter" %}
         {% endif %}
     {% else %}
-        {% set text = "" %}
+        {% set text = "HRM parameter" %}
     {% endif %}
     {{text}}
 {% endmacro toFooterText %}

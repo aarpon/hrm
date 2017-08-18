@@ -52,7 +52,7 @@
 
             if (!isNaN(currentVal)) {
                 if (type == 'minus') {
-                    if (currentVal - {{ step }}> input.attr('min')) {
+                    if (currentVal - {{ step }} > input.attr('min')) {
                         input.val(currentVal - {{ step }}).change();
                     } else {
                         input.val({{ min }}).change();

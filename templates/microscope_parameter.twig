@@ -13,67 +13,64 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-3">
+            <div class="col-xs-11 col-sm-6 col-md-4 col-lg-4">
                 {% set vars = {
-                'title'   : 'Microscope Type',
-                'label'   : 'Microscope Type: ',
-                'varName' : 'MicroscopeType',
-                'chanCnt' : chanCnt,
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'warning',
-                'options' : ['multipoint confocal (spinning disk)','single point confocal','widefield','two photon','STED','STED 3D','SPIM']} %}
+                'title'      : MicroscopeType.title,
+                'label'      : MicroscopeType.label,
+                'varName'    : MicroscopeType.varName,
+                'confidence' : MicroscopeType.confidence,
+                'options'    : MicroscopeType.options} %}
                 {% include 'base/choice_parameter_panel.twig' with vars %}
             </div>
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
-                'title'   : 'Numerical Aperture',
-                'label'   : 'NA: ',
-                'varName' : 'NumericalAperture',
-                'min'     : 0.2,
-                'max'     : 1.5,
-                'step'    : 0.1,
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'success'} %}
+                'title'      : NumericalAperture.title,
+                'label'      : NumericalAperture.label,
+                'varName'    : NumericalAperture.varName,
+                'min'        : NumericalAperture.min,
+                'max'        : NumericalAperture.max,
+                'step'       : NumericalAperture.step,
+                'confidence' : NumericalAperture.confidence} %}
                 {% include 'base/num_parameter_panel.twig' with vars %}
-                {% set vars = {
-                'title'   : 'Objective Type',
-                'varName' : 'ObjectiveType',
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'success'} %}
-                {% include 'objective_type.twig' with vars %}
+                {#{% set vars = {#}
+                {#'title'   : 'Objective Type',#}
+                {#'varName' : 'ObjectiveType',#}
+                {#'footer'  : 'HRM internal parameter.',#}
+                {#'type'    : 'success'} %}#}
+                {#{% include 'objective_type.twig' with vars %}#}
             </div>
-            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-                {% set vars = {
-                'title'   : 'Sample Medium',
-                'varName' : 'SampleMedium',
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'success'} %}
-                {% include 'sample_medium.twig' with vars %}
-            </div>
-            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-                {% set vars = {
-                'title'   : 'Excitation Wavelength',
-                'varName' : 'ExcitationWavelength',
-                'min'     : 400,
-                'max'     : 700,
-                'step'    : 1,
-                'chanCnt' : chanCnt,
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'success'} %}
-                {% include 'base/chan_num_parameter_panel.twig' with vars %}
-            </div>
-            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-                {% set vars = {
-                'title'   : 'Emission Wavelength',
-                'varName' : 'EmissionWavelength',
-                'min'     : 400,
-                'max'     : 700,
-                'step'    : 1,
-                'chanCnt' : chanCnt,
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'success'} %}
-                {% include 'base/chan_num_parameter_panel.twig' with vars %}
-            </div>
+            {#<div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">#}
+                {#{% set vars = {#}
+                {#'title'   : 'Sample Medium',#}
+                {#'varName' : 'SampleMedium',#}
+                {#'footer'  : 'HRM internal parameter.',#}
+                {#'type'    : 'success'} %}#}
+                {#{% include 'sample_medium.twig' with vars %}#}
+            {#</div>#}
+            {#<div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">#}
+                {#{% set vars = {#}
+                {#'title'   : 'Excitation Wavelength',#}
+                {#'varName' : 'ExcitationWavelength',#}
+                {#'min'     : 400,#}
+                {#'max'     : 700,#}
+                {#'step'    : 1,#}
+                {#'chanCnt' : chanCnt,#}
+                {#'footer'  : 'HRM internal parameter.',#}
+                {#'type'    : 'success'} %}#}
+                {#{% include 'base/chan_num_parameter_panel.twig' with vars %}#}
+            {#</div>#}
+            {#<div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">#}
+                {#{% set vars = {#}
+                {#'title'   : 'Emission Wavelength',#}
+                {#'varName' : 'EmissionWavelength',#}
+                {#'min'     : 400,#}
+                {#'max'     : 700,#}
+                {#'step'    : 1,#}
+                {#'chanCnt' : chanCnt,#}
+                {#'footer'  : 'HRM internal parameter.',#}
+                {#'type'    : 'success'} %}#}
+                {#{% include 'base/chan_num_parameter_panel.twig' with vars %}#}
+            {#</div>#}
         </div>
         <div class="form-group">
             <ul class="pager">
