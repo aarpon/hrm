@@ -90,9 +90,17 @@ $objectiveType = array(
     'options'    => $_SESSION['setting']->parameter("ObjectiveType")->possibleValues(),
     'values'     => $_SESSION['setting']->parameter("ObjectiveType")->translatedValues());
 
+$sampleMedium = array(
+    'title'      => 'Sample Medium',
+    'varName'    => 'SampleMedium',
+    'confidence' => $_SESSION['setting']->parameter("SampleMedium")->confidenceLevel(),
+    'options'    => $_SESSION['setting']->parameter("SampleMedium")->possibleValues(),
+    'values'     => $_SESSION['setting']->parameter("SampleMedium")->translatedValues());
+
 echo $twig->render('microscope_parameter.twig',
                    array('chanCnt'           => $_SESSION['setting']->numberOfChannels(),
                          'MicroscopeType'    => $microscopeType,
                          'NumericalAperture' => $numericalAperture,
                          'ObjectiveType'     => $objectiveType,
+                         'SampleMedium'      => $sampleMedium,
                          'message'           => $message));

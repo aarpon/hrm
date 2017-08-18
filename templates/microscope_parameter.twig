@@ -32,6 +32,8 @@
                 'step'       : NumericalAperture.step,
                 'confidence' : NumericalAperture.confidence} %}
                 {% include 'base/num_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : ObjectiveType.title,
                 'varName'    : ObjectiveType.varName,
@@ -40,14 +42,15 @@
                 'confidence' : ObjectiveType.confidence} %}
                 {% include 'objective_type.twig' with vars %}
             </div>
-            {#<div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">#}
-                {#{% set vars = {#}
-                {#'title'   : 'Sample Medium',#}
-                {#'varName' : 'SampleMedium',#}
-                {#'footer'  : 'HRM internal parameter.',#}
-                {#'type'    : 'success'} %}#}
-                {#{% include 'sample_medium.twig' with vars %}#}
-            {#</div>#}
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'      : SampleMedium.title,
+                'varName'    : SampleMedium.varName,
+                'options'    : SampleMedium.options,
+                'values'     : SampleMedium.values,
+                'confidence' : SampleMedium.confidence} %}
+                {% include 'sample_medium.twig' with vars %}
+            </div>
             {#<div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">#}
                 {#{% set vars = {#}
                 {#'title'   : 'Excitation Wavelength',#}
