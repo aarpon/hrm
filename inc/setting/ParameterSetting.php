@@ -302,6 +302,7 @@ class ParameterSetting extends Setting {
     */
     public function checkPostedMicroscopyParameters(array $postedParameters) {
 
+
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
@@ -1294,6 +1295,8 @@ class ParameterSetting extends Setting {
 
             }
         }
+
+
 
         // PinholeSpacing must be defined for spinning disk confocals
         if ($this->isNipkowDisk()) {

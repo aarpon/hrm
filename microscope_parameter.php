@@ -83,8 +83,16 @@ $numericalAperture = array(
     'step'       => 0.1,
     'confidence' => $_SESSION['setting']->parameter("NumericalAperture")->confidenceLevel());
 
+$objectiveType = array(
+    'title'      => 'Objective Type',
+    'varName'    => 'ObjectiveType',
+    'confidence' => $_SESSION['setting']->parameter("ObjectiveType")->confidenceLevel(),
+    'options'    => $_SESSION['setting']->parameter("ObjectiveType")->possibleValues(),
+    'values'     => $_SESSION['setting']->parameter("ObjectiveType")->translatedValues());
+
 echo $twig->render('microscope_parameter.twig',
                    array('chanCnt'           => $_SESSION['setting']->numberOfChannels(),
                          'MicroscopeType'    => $microscopeType,
                          'NumericalAperture' => $numericalAperture,
+                         'ObjectiveType'     => $objectiveType,
                          'message'           => $message));

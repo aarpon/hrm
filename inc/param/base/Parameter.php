@@ -376,6 +376,16 @@ abstract class Parameter {
 
 
     /**
+     * Returns the translated possible values for a given possible parameter.
+     * @return mixed Translated possible values.
+     */
+    public function translatedValues() {
+        $db = new DatabaseConnection();
+        return $db->readTranslatedPossibleValues($this);
+    }
+
+
+    /**
      * Breaks composed Parameter names (using camel-case notation) into
      * individual words.
      *

@@ -32,12 +32,13 @@
                 'step'       : NumericalAperture.step,
                 'confidence' : NumericalAperture.confidence} %}
                 {% include 'base/num_parameter_panel.twig' with vars %}
-                {#{% set vars = {#}
-                {#'title'   : 'Objective Type',#}
-                {#'varName' : 'ObjectiveType',#}
-                {#'footer'  : 'HRM internal parameter.',#}
-                {#'type'    : 'success'} %}#}
-                {#{% include 'objective_type.twig' with vars %}#}
+                {% set vars = {
+                'title'      : ObjectiveType.title,
+                'varName'    : ObjectiveType.varName,
+                'options'    : ObjectiveType.options,
+                'values'     : ObjectiveType.values,
+                'confidence' : ObjectiveType.confidence} %}
+                {% include 'objective_type.twig' with vars %}
             </div>
             {#<div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">#}
                 {#{% set vars = {#}
