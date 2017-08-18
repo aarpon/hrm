@@ -97,10 +97,21 @@ $sampleMedium = array(
     'options'    => $_SESSION['setting']->parameter("SampleMedium")->possibleValues(),
     'values'     => $_SESSION['setting']->parameter("SampleMedium")->translatedValues());
 
+$lambdaEx = array(
+    'title'      => 'Excitation Wavelength',
+    'varName'    => 'ExcitationWavelength',
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels(),
+    'confidence' => $_SESSION['setting']->parameter("ExcitationWavelength")->confidenceLevel(),
+    'min'        => $_SESSION['setting']->parameter("ExcitationWavelength")->min(),
+    'max'        => $_SESSION['setting']->parameter("ExcitationWavelength")->max(),
+    'step'       => 1);
+
+
 echo $twig->render('microscope_parameter.twig',
-                   array('chanCnt'           => $_SESSION['setting']->numberOfChannels(),
-                         'MicroscopeType'    => $microscopeType,
-                         'NumericalAperture' => $numericalAperture,
-                         'ObjectiveType'     => $objectiveType,
-                         'SampleMedium'      => $sampleMedium,
-                         'message'           => $message));
+                   array('chanCnt'              => $_SESSION['setting']->numberOfChannels(),
+                         'MicroscopeType'       => $microscopeType,
+                         'NumericalAperture'    => $numericalAperture,
+                         'ObjectiveType'        => $objectiveType,
+                         'SampleMedium'         => $sampleMedium,
+                         'ExcitationWavelength' => $lambdaEx,
+                         'message'              => $message));

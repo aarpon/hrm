@@ -51,18 +51,17 @@
                 'confidence' : SampleMedium.confidence} %}
                 {% include 'sample_medium.twig' with vars %}
             </div>
-            {#<div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">#}
-                {#{% set vars = {#}
-                {#'title'   : 'Excitation Wavelength',#}
-                {#'varName' : 'ExcitationWavelength',#}
-                {#'min'     : 400,#}
-                {#'max'     : 700,#}
-                {#'step'    : 1,#}
-                {#'chanCnt' : chanCnt,#}
-                {#'footer'  : 'HRM internal parameter.',#}
-                {#'type'    : 'success'} %}#}
-                {#{% include 'base/chan_num_parameter_panel.twig' with vars %}#}
-            {#</div>#}
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'      : ExcitationWavelength.title,
+                'varName'    : ExcitationWavelength.varName,
+                'min'        : ExcitationWavelength.min,
+                'max'        : ExcitationWavelength.max,
+                'step'       : ExcitationWavelength.step,
+                'chanCnt'    : ExcitationWavelength.chanCnt,
+                'confidence' : ExcitationWavelength.confidence} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
+            </div>
             {#<div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">#}
                 {#{% set vars = {#}
                 {#'title'   : 'Emission Wavelength',#}
