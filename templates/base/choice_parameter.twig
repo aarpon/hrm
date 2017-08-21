@@ -12,12 +12,14 @@
 
         <div class="btn-group btn-block btn-group-vertical" data-toggle="buttons">
             {% for option in options %}
-                {% if loop.first %}
+                {% if not loop.first %}
+                    </br>
+                {% endif %}
+                {% if option == value %}
                     <label class="btn btn-primary active">
                         <input type="radio" id="{{ option }}">{{ option }}
                     </label>
                 {% else %}
-                    </br>
                     <label class="btn btn-primary">
                         <input type="radio" id="{{ option }}">{{ option }}
                     </label>
@@ -25,7 +27,7 @@
             {% endfor %}
         </div>
 
-        <input type="hidden" name="{{ varName }}" value="{{ options|first }}">
+        <input type="hidden" name="{{ varName }}" value="{{ value }}">
     </div>
 {% endblock %}
 

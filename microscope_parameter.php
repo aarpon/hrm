@@ -71,6 +71,7 @@ $microscopeType = array(
     'title'      => 'Microscope Type',
     'varName'    => 'MicroscopeType',
     'label'      => 'Microscope Type: ',
+    'value'      => $_SESSION['setting']->parameter("MicroscopeType")->value(),
     'confidence' => $_SESSION['setting']->parameter("MicroscopeType")->confidenceLevel(),
     'options'    => $_SESSION['setting']->parameter("MicroscopeType")->possibleValues());
 
