@@ -2,10 +2,12 @@
     {% set title = 'Channel' ~ ch %}
     {% set label = 'Ch ' ~ ch %}
     {% set outVarName = varName ~ ch %}
+    {% set value = values[loop.index - 1] %}
     {% set vars = {
         'title'   : title,
         'label'   : label,
         'varName' : outVarName,
+        'value'   : value,
         'min'     : min,
         'max'     : max,
         'step'    : step,

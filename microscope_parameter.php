@@ -78,10 +78,11 @@ $numericalAperture = array(
     'title'      => 'Numerical Aperture',
     'varName'    => 'NumericalAperture',
     'label'      => 'NA: ',
+    'value'      => $_SESSION['setting']->parameter("NumericalAperture")->value(),
+    'confidence' => $_SESSION['setting']->parameter("NumericalAperture")->confidenceLevel(),
     'min'        => 0.2, /* TODO: add NA boundary values to the DB. */
     'max'        => 1.5,
-    'step'       => 0.1,
-    'confidence' => $_SESSION['setting']->parameter("NumericalAperture")->confidenceLevel());
+    'step'       => 0.1);
 
 $objectiveType = array(
     'title'      => 'Objective Type',
@@ -101,11 +102,21 @@ $lambdaEx = array(
     'title'      => 'Excitation Wavelength',
     'varName'    => 'ExcitationWavelength',
     'chanCnt'    => $_SESSION['setting']->numberOfChannels(),
+    'values'     => $_SESSION['setting']->parameter("ExcitationWavelength")->value(),
     'confidence' => $_SESSION['setting']->parameter("ExcitationWavelength")->confidenceLevel(),
-    'min'        => $_SESSION['setting']->parameter("ExcitationWavelength")->min(),
-    'max'        => $_SESSION['setting']->parameter("ExcitationWavelength")->max(),
+    'min'        => 400, /* TODO: add lambdaEx boundary values to the DB. */
+    'max'        => 1000,
     'step'       => 1);
 
+$lambdaEm = array(
+    'title'      => 'Emission Wavelength',
+    'varName'    => 'EmissionWavelength',
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels(),
+    'values'     => $_SESSION['setting']->parameter("EmissionWavelength")->value(),
+    'confidence' => $_SESSION['setting']->parameter("EmissionWavelength")->confidenceLevel(),
+    'min'        => 400, /* TODO: add lambdaEx boundary values to the DB. */
+    'max'        => 700,
+    'step'       => 1);
 
 echo $twig->render('microscope_parameter.twig',
                    array('chanCnt'              => $_SESSION['setting']->numberOfChannels(),
@@ -114,4 +125,5 @@ echo $twig->render('microscope_parameter.twig',
                          'ObjectiveType'        => $objectiveType,
                          'SampleMedium'         => $sampleMedium,
                          'ExcitationWavelength' => $lambdaEx,
+                         'EmissionWavelength'   => $lambdaEm,
                          'message'              => $message));

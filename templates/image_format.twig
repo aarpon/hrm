@@ -17,10 +17,11 @@
             {% set vars = {
             'title'      : NumberOfChannels.title,
             'varName'    : NumberOfChannels.varName,
+            'value'      : NumberOfChannels.value,
+            'confidence' : NumberOfChannels.confidence,
             'min'        : NumberOfChannels.min,
             'max'        : NumberOfChannels.max,
-            'step'       : NumberOfChannels.step,
-            'confidence' : NumberOfChannels.confidence} %}
+            'step'       : NumberOfChannels.step} %}
             {% include 'base/num_parameter_panel.twig' with vars %}
         </div>
     </div>
