@@ -15,63 +15,62 @@
         <div class="row">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
-                'title'   : 'Voxel Size',
-                'label'   : 'Pixel size (nm): ',
-                'varName' : 'CCDCaptorSizeX',
-                'min'     : 10,
-                'max'     : 1000,
-                'step'    : 0.1,
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'success'} %}
+                'title'      : VoxelSizeXY.title,
+                'label'      : VoxelSizeXY.label,
+                'varName'    : VoxelSizeXY.varName,
+                'value'      : VoxelSizeXY.value,
+                'confidence' : VoxelSizeXY.confidence,
+                'min'        : VoxelSizeXY.min,
+                'max'        : VoxelSizeXY.max,
+                'step'       : VoxelSizeXY.step} %}
                 {% include 'base/num_parameter_panel.twig' with vars %}
             </div>
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
-                'title'   : 'Voxel Size',
-                'label'   : 'Z Step (nm): ',
-                'varName' : 'ZStepSize',
-                'min'     : 0,
-                'max'     : 1000,
-                'step'    : 0.1,
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'success'} %}
+                'title'      : ZStepSize.title,
+                'label'      : ZStepSize.label,
+                'varName'    : ZStepSize.varName,
+                'value'      : ZStepSize.value,
+                'confidence' : ZStepSize.confidence,
+                'min'        : ZStepSize.min,
+                'max'        : ZStepSize.max,
+                'step'       : ZStepSize.step} %}
                 {% include 'base/num_parameter_panel.twig' with vars %}
             </div>
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
-                'title'   : 'Time Interval',
-                'label'   : 'Time Interval (s): ',
-                'varName' : 'TimeInterval',
-                'min'     : 0,
-                'max'     : 1000,
-                'step'    : 0.1,
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'success'} %}
+                'title'      : TimeInterval.title,
+                'label'      : TimeInterval.label,
+                'varName'    : TimeInterval.varName,
+                'value'      : TimeInterval.value,
+                'confidence' : TimeInterval.confidence,
+                'min'        : TimeInterval.min,
+                'max'        : TimeInterval.max,
+                'step'       : TimeInterval.step} %}
                 {% include 'base/num_parameter_panel.twig' with vars %}
             </div>
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
-                'title'   : 'Pinhole Radius',
-                'label'   : 'Backprojected Pinhole Radius (nm): ',
-                'varName' : 'PinholeSize',
-                'min'     : 25,
-                'max'     : 2500,
-                'step'    : 1,
-                'chanCnt' : chanCnt,
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'success'} %}
+                'title'      : PinholeSize.title,
+                'varName'    : PinholeSize.varName,
+                'values'     : PinholeSize.values,
+                'confidence' : PinholeSize.confidence,
+                'min'        : PinholeSize.min,
+                'max'        : PinholeSize.max,
+                'step'       : PinholeSize.step,
+                'chanCnt'    : PinholeSize.chanCnt} %}
                 {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
-                'title'   : 'Pinhole Spacing',
-                'label'   : 'Backprojected Pinhole Spacing (nm): ',
-                'varName' : 'PinholeSpacing',
-                'min'     : 25,
-                'max'     : 2500,
-                'step'    : 1,
-                'footer'  : 'HRM internal parameter.',
-                'type'    : 'success'} %}
+                'title'      : PinholeSpacing.title,
+                'label'      : PinholeSpacing.label,
+                'varName'    : PinholeSpacing.varName,
+                'value'      : PinholeSpacing.value,
+                'confidence' : PinholeSpacing.confidence,
+                'min'        : PinholeSpacing.min,
+                'max'        : PinholeSpacing.max,
+                'step'       : PinholeSpacing.step} %}
                 {% include 'base/num_parameter_panel.twig' with vars %}
             </div>
         </div>
