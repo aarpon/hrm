@@ -24,6 +24,32 @@
             </div>
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
+                'title'      : ExcitationWavelength.title,
+                'varName'    : ExcitationWavelength.varName,
+                'values'     : ExcitationWavelength.values,
+                'confidence' : ExcitationWavelength.confidence,
+                'min'        : ExcitationWavelength.min,
+                'max'        : ExcitationWavelength.max,
+                'step'       : ExcitationWavelength.step,
+                'chanCnt'    : ExcitationWavelength.chanCnt} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'      : EmissionWavelength.title,
+                'varName'    : EmissionWavelength.varName,
+                'values'     : EmissionWavelength.values,
+                'confidence' : EmissionWavelength.confidence,
+                'min'        : EmissionWavelength.min,
+                'max'        : EmissionWavelength.max,
+                'step'       : EmissionWavelength.step,
+                'chanCnt'    : EmissionWavelength.chanCnt} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
                 'title'      : NumericalAperture.title,
                 'label'      : NumericalAperture.label,
                 'varName'    : NumericalAperture.varName,
@@ -51,30 +77,6 @@
                 'values'     : SampleMedium.values,
                 'confidence' : SampleMedium.confidence} %}
                 {% include 'sample_medium.twig' with vars %}
-            </div>
-            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-                {% set vars = {
-                'title'      : ExcitationWavelength.title,
-                'varName'    : ExcitationWavelength.varName,
-                'values'     : ExcitationWavelength.values,
-                'confidence' : ExcitationWavelength.confidence,
-                'min'        : ExcitationWavelength.min,
-                'max'        : ExcitationWavelength.max,
-                'step'       : ExcitationWavelength.step,
-                'chanCnt'    : ExcitationWavelength.chanCnt} %}
-                {% include 'base/chan_num_parameter_panel.twig' with vars %}
-            </div>
-            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
-                {% set vars = {
-                'title'      : EmissionWavelength.title,
-                'varName'    : EmissionWavelength.varName,
-                'values'     : EmissionWavelength.values,
-                'confidence' : EmissionWavelength.confidence,
-                'min'        : EmissionWavelength.min,
-                'max'        : EmissionWavelength.max,
-                'step'       : EmissionWavelength.step,
-                'chanCnt'    : EmissionWavelength.chanCnt} %}
-                {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
         </div>
         <div class="form-group">

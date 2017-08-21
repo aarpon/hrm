@@ -88,9 +88,9 @@ $voxelSizeXY = array(
     'label'      => 'Pixel size (nm): ',
     'value'      => $_SESSION['setting']->parameter("CCDCaptorSizeX")->value(),
     'confidence' => $_SESSION['setting']->parameter("CCDCaptorSizeX")->confidenceLevel(),
-    'min'        => 0.2, /* TODO: add CCDCaptorSizeX boundary values to the DB. */
-    'max'        => 1.5,
-    'step'       => 0.1);
+    'min'        => 20, /* TODO: add CCDCaptorSizeX boundary values to the DB. */
+    'max'        => 1000,
+    'step'       => 1);
 
 $voxelSizeZ = array(
     'title'      => 'Voxel Size',
@@ -98,9 +98,9 @@ $voxelSizeZ = array(
     'label'      => 'Z step (nm): ',
     'value'      => $_SESSION['setting']->parameter("ZStepSize")->value(),
     'confidence' => $_SESSION['setting']->parameter("ZStepSize")->confidenceLevel(),
-    'min'        => 0.2, /* TODO: add ZStepSize boundary values to the DB. */
-    'max'        => 1.5,
-    'step'       => 0.1);
+    'min'        => 20, /* TODO: add ZStepSize boundary values to the DB. */
+    'max'        => 1000,
+    'step'       => 1);
 
 $timeInterval = array(
     'title'      => 'Time Interval',
