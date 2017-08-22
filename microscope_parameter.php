@@ -63,6 +63,13 @@ if ($_SESSION['setting']->checkPostedMicroscopyParameters($_POST)) {
     $message = $_SESSION['setting']->message();
 }
 
+
+/* *****************************************************************************
+ *
+ * CREATE THE PAGE
+ *
+ **************************************************************************** */
+
 // The Twig handler.
 $loader = new Twig_Loader_Filesystem('templates');
 $twig   = new Twig_Environment($loader);
@@ -128,3 +135,5 @@ echo $twig->render('microscope_parameter.twig',
                          'ExcitationWavelength' => $lambdaEx,
                          'EmissionWavelength'   => $lambdaEm,
                          'message'              => $message));
+
+?>

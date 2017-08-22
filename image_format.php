@@ -75,12 +75,12 @@ if ($_SESSION['setting']->checkPostedImageParameters($_POST)) {
 
 /* *****************************************************************************
  *
- * THE HTML PAGE VIA TWIG
+ * CREATE THE PAGE
  *
  **************************************************************************** */
 
 $loader = new Twig_Loader_Filesystem('templates');
-$twig = new Twig_Environment($loader);
+$twig   = new Twig_Environment($loader);
 
 $numberOfChannels = array(
     'title'      => 'Number of Channels ',
@@ -103,3 +103,5 @@ echo $twig->render('image_format.twig',
                    array('NumberOfChannels'    => $numberOfChannels,
                          'PointSpreadFunction' => $pointSpreadFunction,
                          'message'             => $message));
+
+?>
