@@ -150,8 +150,72 @@ $spimExcMode = array(
     'options'    => $_SESSION['setting']->parameter("SpimExcMode")->possibleValues(),
     'chanCnt'    => $_SESSION['setting']->numberOfChannels());
 
+$spimGaussWidth = array(
+    'title'      => 'SPIM Gauss Width (microns)',
+    'varName'    => 'SpimGaussWidth',
+    'value'      => $_SESSION['setting']->parameter("SpimGaussWidth")->value(),
+    'confidence' => $_SESSION['setting']->parameter("SpimGaussWidth")->confidenceLevel(),
+    'min'        => 0, /* TODO: add spimGaussWidth boundary values to the DB. */
+    'max'        => 100,
+    'step'       => 1,
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
+
+$spimFocusOffset = array(
+    'title'      => 'SPIM Focus Offset (microns)',
+    'varName'    => 'SpimFocusOffset',
+    'value'      => $_SESSION['setting']->parameter("SpimFocusOffset")->value(),
+    'confidence' => $_SESSION['setting']->parameter("SpimFocusOffset")->confidenceLevel(),
+    'min'        => 0, /* TODO: add spimFocusOffset boundary values to the DB. */
+    'max'        => 10,
+    'step'       => 1,
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
+
+$spimCenterOffset = array(
+    'title'      => 'SPIM Center Offset (microns)',
+    'varName'    => 'SpimCenterOffset',
+    'value'      => $_SESSION['setting']->parameter("SpimCenterOffset")->value(),
+    'confidence' => $_SESSION['setting']->parameter("SpimCenterOffset")->confidenceLevel(),
+    'min'        => 0, /* TODO: add spimCenterOffset boundary values to the DB. */
+    'max'        => 10,
+    'step'       => 1,
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
+
+$spimNA = array(
+    'title'      => 'SPIM NA',
+    'varName'    => 'SpimNA',
+    'value'      => $_SESSION['setting']->parameter("SpimNA")->value(),
+    'confidence' => $_SESSION['setting']->parameter("SpimNA")->confidenceLevel(),
+    'min'        => 0.1, /* TODO: add spimNA boundary values to the DB. */
+    'max'        => 1.2,
+    'step'       => 0.1,
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
+
+$spimFill = array(
+    'title'      => 'SPIM Fill Factor',
+    'varName'    => 'SpimFill',
+    'value'      => $_SESSION['setting']->parameter("SpimFill")->value(),
+    'confidence' => $_SESSION['setting']->parameter("SpimFill")->confidenceLevel(),
+    'min'        => 0.5, /* TODO: add spimFill boundary values to the DB. */
+    'max'        => 4,
+    'step'       => 0.5,
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
+
+$spimDir = array(
+    'title'      => 'SPIM Illumination Direction',
+    'varName'    => 'SpimDir',
+    'value'      => $_SESSION['setting']->parameter("SpimDir")->value(),
+    'confidence' => $_SESSION['setting']->parameter("SpimDir")->confidenceLevel(),
+    'options'    => $_SESSION['setting']->parameter("SpimDir")->possibleValues(),
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
+
 
 echo $twig->render('spim_parameters.twig',
-    array('SPIMExcMode'   => $spimExcMode,
-          'message'       => $message));
+    array('SPIMExcMode'      => $spimExcMode,
+          'SPIMGaussWidth'   => $spimGaussWidth,
+          'SPIMFocusOffset'  => $spimFocusOffset,
+          'SPIMCenterOffset' => $spimCenterOffset,
+          'SPIMNA'           => $spimNA,
+          'SPIMFill'         => $spimFill,
+          'SPIMDir'          => $spimDir,
+          'message'          => $message));
 ?>
