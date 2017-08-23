@@ -1,0 +1,12 @@
+{% for ch in 0..chanCnt-1 %}
+    {% set title = 'Channel' ~ ch %}
+    {% set label = 'Ch ' ~ ch %}
+    {% set outVarName = varName ~ ch %}
+    {% set value = values[loop.index - 1] %}
+    {% set vars = {
+    'title'   : title,
+    'label'   : label,
+    'varName' : outVarName,
+    'value'   : value} %}
+    {% include 'base/file_picker.twig' with vars %}
+{% endfor %}
