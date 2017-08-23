@@ -49,7 +49,6 @@ foreach ($parameterNames as $name) {
     $_SESSION['setting']->set($parameter);
 }
 
-
 /* *****************************************************************************
  *
  * WHICH IS THE NEXT PAGE?
