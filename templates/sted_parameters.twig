@@ -1,0 +1,97 @@
+{% extends "base.twig" %}
+
+{% block main %}
+    <form action="" method="post" id="sted_parameters">
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                <h3 class="text-center">Edit Microscopic Parameters</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'      : STEDDepletionMode.title,
+                'varName'    : STEDDepletionMode.varName,
+                'value'      : STEDDepletionMode.value,
+                'confidence' : STEDDepletionMode.confidence,
+                'options'    : STEDDepletionMode.options} %}
+                {% include 'base/dropdown_parameter_panel.twig' with vars %}
+            </div>
+        </div>
+        <div class="form-group">
+            <ul class="pager">
+                <li><a onclick="deleteValuesAndRedirect('microscope_parameter.php');"
+                       href="javascript:void(0);">
+                        Previous
+                    </a>
+                </li>
+                <li><a onclick="deleteValuesAndProcess();"
+                       href="javascript:void(0);">
+                        Next
+                    </a>
+                </li>
+                <div><input name="OK" type="hidden"/></div>
+            </ul>
+        </div>
+    </form>
+
+    {% include 'base/alert_message.twig' with vars %}
+{% endblock %}
+
+
+{% block scripts %}
+    <script type="text/javascript">
+        function process() {
+            var el = $("form input[name='OK']:hidden");
+            if (null === el) {
+                return;
+            }
+            var fr = $("form#sted_parameters");
+            if (null === fr) {
+                return;
+            }
+            if ($.contains(fr.get(0), el.get(0))) {
+                el.val("OK");
+                fr.submit();
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        // Requires jQuery
+        function deleteValues( idArray ) {
+            if (!window.sessionStorage) {
+            return;
+        }
+
+        $("select").each(
+        function() {
+            window.sessionStorage.removeItem( $(this).attr("name") );
+        } );
+        $( $.merge( $("input[type=text]"), $("input[type=radio]") ) ).each(
+        function() {
+                window.sessionStorage.removeItem( $(this).attr("id") );
+            } );
+        }
+    </script>
+
+    <script type="text/javascript">
+        function deleteValuesAndProcess() {
+            deleteValues();
+            process();
+        }
+    </script>
+
+    <script type="text/javascript">
+        function deleteValuesAndRedirect(page) {
+            deleteValues();
+            window.location = page;
+        }
+    </script>
+
+
+    <script type="text/javascript">
+        setStedEntryProperties();
+    </script>
+
+{% endblock %}
