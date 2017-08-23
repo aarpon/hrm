@@ -13,14 +13,63 @@
                 'title'      : STEDDepletionMode.title,
                 'varName'    : STEDDepletionMode.varName,
                 'value'      : STEDDepletionMode.value,
+                'chanCnt'    : STEDDepletionMode.chanCnt,
                 'confidence' : STEDDepletionMode.confidence,
                 'options'    : STEDDepletionMode.options} %}
-                {% include 'base/dropdown_parameter_panel.twig' with vars %}
+                {% include 'base/chan_dropdown_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'      : STEDSatFactor.title,
+                'varName'    : STEDSatFactor.varName,
+                'values'     : STEDSatFactor.values,
+                'confidence' : STEDSatFactor.confidence,
+                'min'        : STEDSatFactor.min,
+                'max'        : STEDSatFactor.max,
+                'step'       : STEDSatFactor.step,
+                'chanCnt'    : STEDSatFactor.chanCnt} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'      : STEDWavelength.title,
+                'varName'    : STEDWavelength.varName,
+                'values'     : STEDWavelength.values,
+                'confidence' : STEDWavelength.confidence,
+                'min'        : STEDWavelength.min,
+                'max'        : STEDWavelength.max,
+                'step'       : STEDWavelength.step,
+                'chanCnt'    : STEDWavelength.chanCnt} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'      : STEDImmunity.title,
+                'varName'    : STEDImmunity.varName,
+                'values'     : STEDImmunity.values,
+                'confidence' : STEDImmunity.confidence,
+                'min'        : STEDImmunity.min,
+                'max'        : STEDImmunity.max,
+                'step'       : STEDImmunity.step,
+                'chanCnt'    : STEDImmunity.chanCnt} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
+            </div>
+            <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
+                {% set vars = {
+                'title'      : STED3D.title,
+                'varName'    : STED3D.varName,
+                'values'     : STED3D.values,
+                'confidence' : STED3D.confidence,
+                'min'        : STED3D.min,
+                'max'        : STED3D.max,
+                'step'       : STED3D.step,
+                'chanCnt'    : STED3D.chanCnt} %}
+                {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
         </div>
         <div class="form-group">
             <ul class="pager">
-                <li><a onclick="deleteValuesAndRedirect('microscope_parameter.php');"
+                <li><a onclick="deleteValuesAndRedirect('capturing_parameter.php');"
                        href="javascript:void(0);">
                         Previous
                     </a>

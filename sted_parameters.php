@@ -86,8 +86,7 @@ if ($psf == 'measured') {
         // calculate whether an aberration correction is necessary and we leave
         // the decision to the user in the aberration_correction.php page.
         $pageToGo = 'aberration_correction.php';
-        $_SESSION['setting']->parameter(
-            'AberrationCorrectionNecessary')->setValue('1');
+        $_SESSION['setting']->parameter('AberrationCorrectionNecessary')->setValue('1');
     } else {
         // If we know both the refractive indices we can calculate the deviation
         // and skip the aberration correction page in case the deviation is smaller
@@ -102,12 +101,10 @@ if ($psf == 'measured') {
             // Make sure to turn off the correction
             $_SESSION['setting']->parameter(
                 'AberrationCorrectionNecessary')->setValue('0');
-            $_SESSION['setting']->parameter(
-                'PerformAberrationCorrection')->setValue('0');
+            $_SESSION['setting']->parameter('PerformAberrationCorrection')->setValue('0');
         } else {
             $pageToGo = 'aberration_correction.php';
-            $_SESSION['setting']->parameter(
-                'AberrationCorrectionNecessary')->setValue('1');
+            $_SESSION['setting']->parameter('AberrationCorrectionNecessary')->setValue('1');
         }
     }
 }
@@ -145,19 +142,61 @@ if ($_SESSION['setting']->checkPostedStedParameters($_POST)) {
 $loader = new Twig_Loader_Filesystem('templates');
 $twig = new Twig_Environment($loader);
 
-
-//echo print_r($_SESSION['setting'], true);
-
 $stedDepletionMode = array(
     'title'      => 'STED Depletion Mode',
-    'varName'    => 'STEDDepletionMode',
+    'varName'    => 'StedDepletionMode',
     'value'      => $_SESSION['setting']->parameter("StedDepletionMode")->value(),
     'confidence' => $_SESSION['setting']->parameter("StedDepletionMode")->confidenceLevel(),
-    'options'    => $_SESSION['setting']->parameter("StedDepletionMode")->possibleValues());
+    'options'    => $_SESSION['setting']->parameter("StedDepletionMode")->possibleValues(),
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
+
+$stedSatFactor = array(
+    'title'      => 'STED Saturation Factor',
+    'varName'    => 'StedSaturationFactor',
+    'value'      => $_SESSION['setting']->parameter("StedSaturationFactor")->value(),
+    'confidence' => $_SESSION['setting']->parameter("StedSaturationFactor")->confidenceLevel(),
+    'min'        => 0, /* TODO: add stedSatFactor boundary values to the DB. */
+    'max'        => 80,
+    'step'       => 1,
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
+
+$stedWavelength = array(
+    'title'      => 'STED Wavelength (nm)',
+    'varName'    => 'StedWavelength',
+    'value'      => $_SESSION['setting']->parameter("StedWavelength")->value(),
+    'confidence' => $_SESSION['setting']->parameter("StedWavelength")->confidenceLevel(),
+    'min'        => 400, /* TODO: add stedWavelength boundary values to the DB. */
+    'max'        => 800,
+    'step'       => 1,
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
+
+$stedImmunity = array(
+    'title'      => 'STED Immunity (%)',
+    'varName'    => 'StedImmunity',
+    'value'      => $_SESSION['setting']->parameter("StedImmunity")->value(),
+    'confidence' => $_SESSION['setting']->parameter("StedImmunity")->confidenceLevel(),
+    'min'        => 0, /* TODO: add stedImmunity boundary values to the DB. */
+    'max'        => 100,
+    'step'       => 1,
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
+
+$sted3D = array(
+    'title'      => 'STED 3D (%)',
+    'varName'    => 'Sted3D',
+    'value'      => $_SESSION['setting']->parameter("Sted3D")->value(),
+    'confidence' => $_SESSION['setting']->parameter("Sted3D")->confidenceLevel(),
+    'min'        => 0, /* TODO: add sted3D boundary values to the DB. */
+    'max'        => 100,
+    'step'       => 1,
+    'chanCnt'    => $_SESSION['setting']->numberOfChannels());
 
 
  echo $twig->render('sted_parameters.twig',
-    array('STEDDepletionMode'     => $stedDepletionMode,
-        'message'                 => $message));
+    array('STEDDepletionMode'   => $stedDepletionMode,
+          'STEDSatFactor'       => $stedSatFactor,
+          'STEDWavelength'      => $stedWavelength,
+          'STEDImmunity'        => $stedImmunity,
+          'STED3D'              => $sted3D,
+          'message'             => $message));
 
 ?>
