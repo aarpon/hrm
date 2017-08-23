@@ -78,7 +78,7 @@ if ($micr == "STED" || $micr == 'STED 3D') {
     $pageToGo = 'sted_parameters.php';
 } elseif ($micr == "SPIM") {
     $pageToGo = 'spim_parameters.php';
-} elseif ($micr == 'measured') {
+} elseif ($psf == 'measured') {
     $pageToGo = 'select_psf.php';
     // Make sure to turn off the correction
     $_SESSION['setting']->parameter('AberrationCorrectionNecessary')->setValue('0');
@@ -90,7 +90,6 @@ if ($micr == "STED" || $micr == 'STED 3D') {
         'SampleMedium')->translatedValue());
     $objectiveRI = floatval($_SESSION['setting']->parameter(
         'ObjectiveType')->translatedValue());
-
     // Calculate the deviation
     if (($sampleRI == 0) || ($objectiveRI == 0)) {
         // If at least one of the refractive indices is not known, we cannot
@@ -129,8 +128,8 @@ if ($_SESSION['setting']->checkPostedCapturingParameters($_POST)) {
         $saved = $_SESSION['setting']->save();
         $message = $_SESSION['setting']->message();
         if ($saved) {
-            header("Location: " . $pageToGo);
-            exit();
+           header("Location: " . $pageToGo);
+           exit();
         }
     }
     header("Location: " . $pageToGo);
