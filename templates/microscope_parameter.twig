@@ -1,13 +1,41 @@
 {% extends "base.twig" %}
 
+{% block body %}
+<body data-spy="scroll" data-target=".navbar">
+</body>
+{% endblock %}
+
+{% block navigation %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="micr-params-navbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="micr-param-navbar">
+            <ul class="nav navbar-nav">
+                <li><a href="#MicroscopeType">Microscope Type</a></li>
+                <li><a href="#Wavelengths">Wavelengths</a></li>
+                <li><a href="#RefractiveIndexes">Refractive Indexes</a></li>
+                <li><a href="#NumericalAperture">Numerical Aperture</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
 {% block main %}
+
     <form action="" method="post" id="microscope_parameter">
         <div class="row">
             <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
                 <h3 class="text-center">Edit Microscopic Parameters</h3>
             </div>
         </div>
-        <div class="row">
+        <div  id="MicroscopeType" class="container-fluid">
             <div class="col-xs-11 col-sm-6 col-md-4 col-lg-4">
                 {% set vars = {
                 'title'      : MicroscopeType.title,
@@ -18,6 +46,8 @@
                 'options'    : MicroscopeType.options} %}
                 {% include 'base/choice_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="Wavelengths" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : ExcitationWavelength.title,
@@ -43,7 +73,7 @@
                 {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
         </div>
-        <div class="row">
+        <div id="NumericalAperture" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : NumericalAperture.title,
@@ -56,6 +86,8 @@
                 'step'       : NumericalAperture.step} %}
                 {% include 'base/num_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="RefractiveIndexes" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : ObjectiveType.title,
