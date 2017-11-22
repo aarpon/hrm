@@ -1,30 +1,30 @@
 {% extends "base.twig" %}
 
 {% block body %}
-<body data-spy="scroll" data-target=".navbar">
-</body>
+    <body data-spy="scroll" data-target=".navbar">
+    </body>
 {% endblock %}
 
 {% block navigation %}
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="micr-params-navbar">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="micr-params-navbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="micr-params-navbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="#MicroscopeType">Microscope Type</a></li>
+                    <li><a href="#Wavelengths">Wavelengths</a></li>
+                    <li><a href="#NumericalAperture">Numerical Aperture</a></li>
+                    <li><a href="#RefractiveIndexes">Refractive Indexes</a></li>
+                </ul>
+            </div>
         </div>
-        <div class="collapse navbar-collapse" id="micr-param-navbar">
-            <ul class="nav navbar-nav">
-                <li><a href="#MicroscopeType">Microscope Type</a></li>
-                <li><a href="#Wavelengths">Wavelengths</a></li>
-                <li><a href="#RefractiveIndexes">Refractive Indexes</a></li>
-                <li><a href="#NumericalAperture">Numerical Aperture</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+    </nav>
 {% endblock %}
 
 {% block main %}
@@ -35,7 +35,7 @@
                 <h3 class="text-center">Edit Microscopic Parameters</h3>
             </div>
         </div>
-        <div  id="MicroscopeType" class="container-fluid">
+        <div id="MicroscopeType" class="container-fluid">
             <div class="col-xs-11 col-sm-6 col-md-4 col-lg-4">
                 {% set vars = {
                 'title'      : MicroscopeType.title,

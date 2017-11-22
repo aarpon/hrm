@@ -1,5 +1,30 @@
 {% extends "base.twig" %}
 
+{% block body %}
+    <body data-spy="scroll" data-target=".navbar">
+    </body>
+{% endblock %}
+
+{% block navigation %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="capt-params-navbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="capt-params-navbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="#VoxelSizes">Voxel Sizes</a></li>
+                    <li><a href="#PinholeSizes">Pinhole Sizes</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
 {% block main %}
     <form action="" method="post" id="capturing_parameter">
         <div class="row">
@@ -7,7 +32,7 @@
                 <h3 class="text-center">Edit Microscopic Parameters</h3>
             </div>
         </div>
-        <div class="row">
+        <div id="VoxelSizes" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : VoxelSizeXY.title,
@@ -45,7 +70,7 @@
                 {% include 'base/num_parameter_panel.twig' with vars %}
             </div>
         </div>
-        <div class="row">
+        <div id="PinholeSizes" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : PinholeSize.title,

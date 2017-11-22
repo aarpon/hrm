@@ -1,5 +1,34 @@
 {% extends "base.twig" %}
 
+{% block body %}
+    <body data-spy="scroll" data-target=".navbar">
+    </body>
+{% endblock %}
+
+{% block navigation %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="aberr-navbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="aberr-navbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="#EnableCorrection">Enable Correction</a></li>
+                    <li><a href="#SampleOrientation">Sample Orientation</a></li>
+                    <li><a href="#CorrectionMode">Correction Mode</a></li>
+                    <li><a href="#NumberOfPSFs">Number of PSFs</a></li>
+                    <li><a href="#PSFDepth">PSF Depth</a></li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
 {% block main %}
     <form action="" method="post" id="aberration_correction">
         <div class="row">
@@ -7,7 +36,7 @@
                 <h3 class="text-center">Edit Microscopic Parameters</h3>
             </div>
         </div>
-        <div class="row">
+        <div id="EnableCorrection" class="container-fluid">
             <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
                 {% set vars = {
                 'title'      : PerformAberrationCorrection.title,
@@ -18,6 +47,8 @@
                 'options'    : PerformAberrationCorrection.options} %}
                 {% include 'base/choice_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="SampleOrientation" class="container-fluid">
             <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
                 {% set vars = {
                 'title'      : CoverslipRelativePosition.title,
@@ -28,6 +59,8 @@
                 'options'    : CoverslipRelativePosition.options} %}
                 {% include 'base/choice_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="CorrectionMode" class="container-fluid">
             <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
                 {% set vars = {
                 'title'      : AberrationCorrectionMode.title,
@@ -38,6 +71,8 @@
                 'options'    : AberrationCorrectionMode.options} %}
                 {% include 'base/choice_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="NumberOfPSFs" class="container-fluid">
             <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
                 {% set vars = {
                 'title'      : AdvancedCorrectionOptions.title,
@@ -49,7 +84,7 @@
                 {% include 'base/choice_parameter_panel.twig' with vars %}
             </div>
         </div>
-        <div class="row">
+        <div id="PSFDepth" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : PSFGenerationDepth.title,

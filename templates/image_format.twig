@@ -1,56 +1,81 @@
 {% extends "base.twig" %}
 
-{% block main %}
-<form action="" method="post" id="image_format">
-    <div class="row">
-        <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
-            <h3 class="text-center">Edit Microscopic Parameters</h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'      : NumberOfChannels.title,
-            'varName'    : NumberOfChannels.varName,
-            'value'      : NumberOfChannels.value,
-            'confidence' : NumberOfChannels.confidence,
-            'min'        : NumberOfChannels.min,
-            'max'        : NumberOfChannels.max,
-            'step'       : NumberOfChannels.step} %}
-            {% include 'base/num_parameter_panel.twig' with vars %}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
-            {% set vars = {
-            'title'      : PointSpreadFunction.title,
-            'label'      : PointSpreadFunction.label,
-            'varName'    : PointSpreadFunction.varName,
-            'value'      : PointSpreadFunction.value,
-            'confidence' : PointSpreadFunction.confidence,
-            'options'    : PointSpreadFunction.options} %}
-            {% include 'base/choice_parameter_panel.twig' with vars %}
-        </div>
-    </div>
-    <div class="form-group">
-        <ul class="pager">
-            <li>
-                <a onclick="document.location.href='select_parameter_settings.php'"
-                   href="javascript:void(0);">
-                    Previous
-                </a>
-            </li>
-            <li>
-                <a onclick="process();"
-                   href="javascript:void(0);">
-                    Next
-                </a>
-            </li>
-            <div>
-                <input name="OK" type="hidden"/>
+{% block body %}
+    <body data-spy="scroll" data-target=".navbar">
+    </body>
+{% endblock %}
+
+{% block navigation %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="img-format-navbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
             </div>
-        </ul>
-    </div>
+            <div class="collapse navbar-collapse" id="img-format-navbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="#NumberOfChannels">Number Of Channels</a></li>
+                    <li><a href="#PointSpreadFunction">Point Spread Function</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block main %}
+    <form action="" method="post" id="image_format">
+        <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-6 col-lg-6">
+                <h3 class="text-center">Edit Microscopic Parameters</h3>
+            </div>
+        </div>
+        <div id="NumberOfChannels" class="container-fluid">
+            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
+                {% set vars = {
+                'title'      : NumberOfChannels.title,
+                'varName'    : NumberOfChannels.varName,
+                'value'      : NumberOfChannels.value,
+                'confidence' : NumberOfChannels.confidence,
+                'min'        : NumberOfChannels.min,
+                'max'        : NumberOfChannels.max,
+                'step'       : NumberOfChannels.step} %}
+                {% include 'base/num_parameter_panel.twig' with vars %}
+            </div>
+        </div>
+        <div id="PointSpreadFunction" class="container-fluid">
+            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3">
+                {% set vars = {
+                'title'      : PointSpreadFunction.title,
+                'label'      : PointSpreadFunction.label,
+                'varName'    : PointSpreadFunction.varName,
+                'value'      : PointSpreadFunction.value,
+                'confidence' : PointSpreadFunction.confidence,
+                'options'    : PointSpreadFunction.options} %}
+                {% include 'base/choice_parameter_panel.twig' with vars %}
+            </div>
+        </div>
+        <div class="form-group">
+            <ul class="pager">
+                <li>
+                    <a onclick="document.location.href='select_parameter_settings.php'"
+                       href="javascript:void(0);">
+                        Previous
+                    </a>
+                </li>
+                <li>
+                    <a onclick="process();"
+                       href="javascript:void(0);">
+                        Next
+                    </a>
+                </li>
+                <div>
+                    <input name="OK" type="hidden"/>
+                </div>
+            </ul>
+        </div>
     </form>
 
     {% include 'base/alert_message.twig' with vars %}
