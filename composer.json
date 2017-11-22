@@ -37,7 +37,7 @@
     "fineuploader/php-traditional-server": "1.0.1",
     "monolog/monolog": "1.19.0",
     "components/jquery": "3.2.1",
-    "twbs/bootstrap": "v3.3.7",
+    "twbs/bootstrap": "v4.0.0-beta.2",
       "twig/twig": "~1.0",
       "bootflat/bootflat": "2.0.x"
   },
