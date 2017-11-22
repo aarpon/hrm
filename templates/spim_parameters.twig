@@ -1,5 +1,34 @@
 {% extends "base.twig" %}
 
+{% block body %}
+    <body data-spy="scroll" data-target=".navbar">
+    </body>
+{% endblock %}
+
+{% block navigation %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="spim-navbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="spim-navbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="#SPIMExcMode">Excitation Mode</a></li>
+                    <li><a href="#SPIMGaussWidth">Gauss Width</a></li>
+                    <li><a href="#SPIMFocusOffset">Focus Offset</a></li>
+                    <li><a href="#SPIMCenterOffset">Center Offset</a></li>
+                    <li><a href="#SPIMNA">Illumination NA</a></li>
+                    <li><a href="#SPIMFill">Illumination Fill Factor</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
 {% block main %}
     <form action="" method="post" id="sted_parameters">
         <div class="row">
@@ -7,7 +36,7 @@
                 <h3 class="text-center">Edit Microscopic Parameters</h3>
             </div>
         </div>
-        <div class="row">
+        <div id="SPIMExcMode" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : SPIMExcMode.title,
@@ -18,6 +47,8 @@
                 'options'    : SPIMExcMode.options} %}
                 {% include 'base/chan_dropdown_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="SPIMGaussWidth" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : SPIMGaussWidth.title,
@@ -30,6 +61,8 @@
                 'chanCnt'    : SPIMGaussWidth.chanCnt} %}
                 {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="SPIMFocusOffset" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : SPIMFocusOffset.title,
@@ -42,6 +75,8 @@
                 'chanCnt'    : SPIMFocusOffset.chanCnt} %}
                 {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="SPIMCenterOffset" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : SPIMCenterOffset.title,
@@ -54,6 +89,8 @@
                 'chanCnt'    : SPIMCenterOffset.chanCnt} %}
                 {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="SPIMNA" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : SPIMNA.title,
@@ -66,6 +103,8 @@
                 'chanCnt'    : SPIMNA.chanCnt} %}
                 {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="SPIMFill" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : SPIMFill.title,
@@ -78,6 +117,8 @@
                 'chanCnt'    : SPIMFill.chanCnt} %}
                 {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="SPIMDir" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : SPIMDir.title,

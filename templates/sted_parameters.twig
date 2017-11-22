@@ -1,5 +1,33 @@
 {% extends "base.twig" %}
 
+{% block body %}
+    <body data-spy="scroll" data-target=".navbar">
+    </body>
+{% endblock %}
+
+{% block navigation %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="sted-navbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="sted-navbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="#STEDDepletionMode">Depletion Mode</a></li>
+                    <li><a href="#STEDSatFactor">Saturation Factor</a></li>
+                    <li><a href="#STEDWavelength">Wavelength</a></li>
+                    <li><a href="#STEDImmunity">Immunity Fraction</a></li>
+                    <li><a href="#STED3D">STED 3D</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
 {% block main %}
     <form action="" method="post" id="sted_parameters">
         <div class="row">
@@ -7,7 +35,7 @@
                 <h3 class="text-center">Edit Microscopic Parameters</h3>
             </div>
         </div>
-        <div class="row">
+        <div id="STEDDepletionMode" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : STEDDepletionMode.title,
@@ -18,6 +46,8 @@
                 'options'    : STEDDepletionMode.options} %}
                 {% include 'base/chan_dropdown_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="STEDSatFactor" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : STEDSatFactor.title,
@@ -30,6 +60,8 @@
                 'chanCnt'    : STEDSatFactor.chanCnt} %}
                 {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="STEDWavelength" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : STEDWavelength.title,
@@ -42,6 +74,8 @@
                 'chanCnt'    : STEDWavelength.chanCnt} %}
                 {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="STEDImmunity" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
                 'title'      : STEDImmunity.title,
@@ -54,9 +88,10 @@
                 'chanCnt'    : STEDImmunity.chanCnt} %}
                 {% include 'base/chan_num_parameter_panel.twig' with vars %}
             </div>
+        </div>
+        <div id="STED3D" class="container-fluid">
             <div class="col-xs-11 col-sm-4 col-md-3 col-lg-2">
                 {% set vars = {
-                'title'      : STED3D.title,
                 'varName'    : STED3D.varName,
                 'values'     : STED3D.values,
                 'confidence' : STED3D.confidence,
