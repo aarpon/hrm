@@ -3387,11 +3387,14 @@ class Fileserver
     }
 
     /**
-     * a getter :)
+     * Return current file list.
+     *
+     * The function does not scan the file system but exclusively return currently stored list.
+     * Use getFiles() or getFilesFrom() to first scan and rebuild the file list.
      *
      * @return array|null
      */
-    public function justGimmeTheFilesAndDoNothingElse()
+    public function getCurrentFileList()
     {
         return $this->files;
     }

@@ -55,7 +55,7 @@ $message = "";
 if (isset($_POST['down'])) {
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
         $indices = array_values($_POST['userfiles']);
-        $files = $_SESSION['fileserver']->justGimmeTheFilesAndDoNothingElse();
+        $files = $_SESSION['fileserver']->getCurrentFileList();
         $selection = array();
         foreach ($indices as $i) {
             $selection[] = $files[$i];
@@ -88,7 +88,7 @@ $script = array("settings.js", "ajax_utils.js");
 
 // All the user's files in the server.
 if ($_SESSION['fileserver']->hasFiles()) {
-    $allFiles = $_SESSION['fileserver']->justGimmeTheFilesAndDoNothingElse();
+    $allFiles = $_SESSION['fileserver']->getCurrentFileList();
 } else {
     $allFiles = $_SESSION['fileserver']->scanAndStoreFiles(TRUE);
 }
