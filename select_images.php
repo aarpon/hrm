@@ -54,23 +54,18 @@ if (isset($_POST['autoseries'])) {
 $message = "";
 if (isset($_POST['down'])) {
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-        $indicies = array_values($_POST['userfiles']);
+        $indices = array_values($_POST['userfiles']);
         $files = $_SESSION['fileserver']->justGimmeTheFilesAndDoNothingElse();
         $selection = array();
-        foreach ($indicies as $i) {
+        foreach ($indices as $i) {
             $selection[] = $files[$i];
         }
         $_SESSION['fileserver']->addFilesToSelection($selection);
     }
 } else if (isset($_POST['up'])) {
     if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
-        $indicies = array_values($_POST['selectedfiles']);
-        $files = $_SESSION['fileserver']->justGimmeTheFilesAndDoNothingElse();
-        $selection = array();
-        foreach ($indicies as $i) {
-            $selection[] = $files[$i];
-        }
-        $_SESSION['fileserver']->removeFilesFromSelection($selection);
+        $selectedFiles = array_values($_POST['selectedfiles']);
+        $_SESSION['fileserver']->removeFilesFromSelection($selectedFiles);
     }
 } else if (isset($_POST['update'])) {
     $_SESSION['fileserver']->resetFiles();
