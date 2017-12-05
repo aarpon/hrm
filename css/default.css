@@ -10,14 +10,17 @@ Copyright and license notice: see license.txt
 /* *** Font faces *********************************************************** */
 
 @font-face {
-    font-family: 'ubuntu_font';
-    src: url('Ubuntu-Regular-webfont.eot');
-    src: url('Ubuntu-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('Ubuntu-Regular-webfont.woff') format('woff'),
-         url('Ubuntu-Regular-webfont.ttf') format('truetype'),
-         url('Ubuntu-Regular-webfont.svg#UbuntuRegular') format('svg');
-    font-weight: normal;
+    font-family: 'Open Sans';
+    font-weight: 300;
     font-style: normal;
+    src: url('Open Sans-300.eot');
+    src: url('Open Sans-300.eot?#iefix') format('embedded-opentype'),
+    local('Open Sans Light'),
+    local('Open Sans-300'),
+    url('Open Sans-300.woff2') format('woff2'),
+    url('Open Sans-300.woff') format('woff'),
+    url('Open Sans-300.ttf') format('truetype'),
+    url('Open Sans-300.svg#Open Sans') format('svg');
 }
 
 /* basic elements */
@@ -25,7 +28,7 @@ Copyright and license notice: see license.txt
 body {
     background: #fff;
     color: #000;
-    font-family: ubuntu_font;
+    font-family: 'Open Sans', sans-serif;
     font-size: 14px;
     text-align: center;
     margin: 0px;
@@ -151,7 +154,7 @@ table {
 
 #statstable h3 {
     color: rgb(62,87,111);
-    font-family: ubuntu_font;
+    font-family: 'Open Sans', sans-serif;
     font-weight: normal;
     font-size: 16px;
 }
