@@ -389,25 +389,10 @@ include("header.inc.php");
                 ?>
 
                 <fieldset>
-                    <legend>
-                        <a href="javascript:openWindow(
-               'http://www.svi.nl/HuygensRemoteManagerHelpRegistrationPage')">
-                            <img src="images/help.png" alt="?"/></a>
-                        Registration
-                    </legend>
-
                     <div id="login_registration">
-                        <table>
-                            <tr>
-                                <td class="icon"
-                                    onclick="document.location.href='registration.php'">
-                                </td>
-                                <td class="text">
+				<a href="registration.php">
                                     <b>No HRM account yet?</b><br/>
-                                    Please register <a href="registration.php">here</a>.
-                                </td>
-                            </tr>
-                        </table>
+                                    Click here to register.</a>
                     </div>
 
                 </fieldset>
