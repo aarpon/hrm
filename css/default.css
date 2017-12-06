@@ -88,9 +88,9 @@ table {
 /* specific div elements */
 
 .ui-dialog-titlebar {
-  background-color: #62B0F9;
-  background-image: none;
-  color: #FFFFFF;
+    background-color: #62B0F9;
+    background-image: none;
+    color: #FFFFFF;
 }
 
 .intro {
@@ -106,7 +106,7 @@ table {
 
 #basket {
     width: 1000px;
-    border: #ccc 2px solid;
+    border: #ddd 1px solid;
     margin: 0px auto 0px auto;
 }
 
@@ -153,7 +153,7 @@ table {
 }
 
 #statstable h3 {
-    color: rgb(62,87,111);
+    color: rgb(62, 87, 111);
     font-family: 'Open Sans', sans-serif;
     font-weight: normal;
     font-size: 16px;
@@ -169,7 +169,9 @@ table {
     background-color: #eee;
 }
 
-.clear { clear: both;}
+.clear {
+    clear: both;
+}
 
 #nav {
     color: #888;
@@ -229,16 +231,18 @@ table {
 }
 
 #welcome h3 {
-  background-color: #eee;
-  font-size: 16px;
-  height: 40px;
-  font-weight: bold;
-  text-align: center;
+    /*background-color: #eee;*/
+    font-size: 16px;
+    height: 40px;
+    font-weight: bold;
+    text-align: center;
+    border: solid 1px #ddd;
 }
 
 #welcome h2 {
-  font-size: 20px;
-  margin-top: 15px;
+    font-size: 20px;
+    margin-top: 15px;
+    border: solid 1px #ddd;
 }
 
 #welcome h4 {
@@ -260,19 +264,21 @@ table {
 }
 
 #content h3 {
-  background-color: #eee;
-  font-size: 16px;
-  height: 40px;
-  font-weight: bold;
-  text-align: center;
+    /*background-color: #eee;*/
+    font-size: 16px;
+    height: 40px;
+    font-weight: bold;
+    text-align: center;
+    border: solid 1px #ddd;
 }
 
 #content h2 {
-  background-color: #eee;
-  font-size: 16px;
-  height: 18px;
-  font-weight: bold;
-  text-align: center;
+    /*background-color: #eee;*/
+    font-size: 16px;
+    height: 18px;
+    font-weight: bold;
+    text-align: center;
+    border: solid 1px #ddd;
 }
 
 #content h4 {
@@ -286,38 +292,40 @@ table {
 }
 
 #content_disabled {
-  float: left;
-  width: 480px;
-  text-align: left;
-  border-right-style: dotted;
-  border-right-width: 1px;
-  margin: 0px 0px 0px 0px;
-  padding: 0px 15px 0px 15px;
+    float: left;
+    width: 480px;
+    text-align: left;
+    /*border-right-style: dotted;
+    border-right-width: 1px;*/
+    margin: 0px 0px 0px 0px;
+    padding: 0px 15px 0px 15px;
 }
 
 #content_disabled h3 {
-  background-color: #eee;
-  color: grey;
-  font-size: 16px;
-  height: 40px;
-  font-weight: bold;
-  text-align: center;
+    /*background-color: #eee;*/
+    color: grey;
+    font-size: 16px;
+    height: 40px;
+    font-weight: bold;
+    text-align: center;
+    border: solid 1px #ddd;
 }
 
 #content_disabled h2 {
-  background-color: #eee;
-  color: grey;
-  font-size: 16px;
-  height: 18px;
-  font-weight: bold;
-  text-align: center;
+    /*background-color: #eee;*/
+    color: grey;
+    font-size: 16px;
+    height: 18px;
+    font-weight: bold;
+    text-align: center;
+    border: solid 1px #ddd;
 }
 
 #content_disabled h4 {
-  color: grey;
-  font-size: 12px;
-  font-weight: bold;
-  text-align: justify;
+    color: grey;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: justify;
 }
 
 #content_disabled p {
@@ -325,104 +333,104 @@ table {
 }
 
 #separator {
-  width: 1500px;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #CCCCCC;
-  margin: 20px 0px 20px 0px;
+    width: 1500px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #CCCCCC;
+    margin: 20px 0px 20px 0px;
 }
 
 #logos {
-  font-size: 70%;
-  text-align: center;
+    font-size: 70%;
+    text-align: center;
 }
 
 #logos table {
-  border: 0px;
-  width: 580px;
+    border: 0px;
+    width: 580px;
 }
 
 #logos table.firstRow {
-  margin: 20px 0px 30px 0px;
+    margin: 20px 0px 30px 0px;
 }
 
 #logos table.secondRow {
-  margin: 20px 0px 30px 0px;
+    margin: 20px 0px 30px 0px;
 }
 
 #logos table tr.caption {
-  vertical-align: top;
-  text-align: center;
+    vertical-align: top;
+    text-align: center;
 }
 
 #logos table td.epfl {
-  height: 60px;
-  width: 160px;
-  cursor: pointer;
-  background: url("../images/logo_epfl.png") no-repeat center;
-  background-size: 90px;
+    height: 60px;
+    width: 160px;
+    cursor: pointer;
+    background: url("../images/logo_epfl.png") no-repeat center;
+    background-size: 90px;
 }
 
 #logos table td.mri {
-  height: 60px;
-  width: 160px;
-  cursor: pointer;
-  background: url("../images/logo_mri.png") no-repeat center;
-  background-size: 60px;
+    height: 60px;
+    width: 160px;
+    cursor: pointer;
+    background: url("../images/logo_mri.png") no-repeat center;
+    background-size: 60px;
 }
 
 #logos table td.svi {
-  height: 60px;
-  width: 160px;
-  cursor: pointer;
-  background: url("../images/logo_svi.png") no-repeat center;
-  background-size: 60px;
+    height: 60px;
+    width: 160px;
+    cursor: pointer;
+    background: url("../images/logo_svi.png") no-repeat center;
+    background-size: 60px;
 }
 
 #logos table td.bsse {
-  height: 80px;
-  width: 240px;
-  margin-top: 50px;
-  padding-bottom: 5px;
-  cursor: pointer;
-  background: url("../images/logo_bsse.png") no-repeat center;
-  background-size: 100px;
+    height: 80px;
+    width: 240px;
+    margin-top: 50px;
+    padding-bottom: 5px;
+    cursor: pointer;
+    background: url("../images/logo_bsse.png") no-repeat center;
+    background-size: 100px;
 }
 
 #logos table td.fmi {
-  height: 80px;
-  width: 240px;
-  cursor: pointer;
-  background: url("../images/logo_fmi.png") no-repeat center;
-  background-size: 70px;
+    height: 80px;
+    width: 240px;
+    cursor: pointer;
+    background: url("../images/logo_fmi.png") no-repeat center;
+    background-size: 70px;
 }
 
 #logos table td.bio-basel {
-  height: 80px;
-  width: 240px;
-  cursor: pointer;
-  background: url("../images/logo_bio_basel.png") no-repeat center;
-  background-size: 90px;
+    height: 80px;
+    width: 240px;
+    cursor: pointer;
+    background: url("../images/logo_bio_basel.png") no-repeat center;
+    background-size: 90px;
 }
 
 #logos table td.lin {
-  height: 80px;
-  width: 240px;
-  cursor: pointer;
-  background: url("../images/logo_lin_en.png") no-repeat center;
-  background-size: 90px;
+    height: 80px;
+    width: 240px;
+    cursor: pointer;
+    background: url("../images/logo_lin_en.png") no-repeat center;
+    background-size: 90px;
 }
 
 #logos table td.cni {
-  height: 80px;
-  width: 240px;
-  cursor: pointer;
-  background: url("../images/logo_cni_pp.png") no-repeat center;
-  background-size: 90px;
+    height: 80px;
+    width: 240px;
+    cursor: pointer;
+    background: url("../images/logo_cni_pp.png") no-repeat center;
+    background-size: 90px;
 }
 
 #logos table td.blank {
-  width: 40px;
+    width: 40px;
 }
 
 #templates select {
@@ -446,7 +454,7 @@ table {
 }
 
 #selection input {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 #autoseries_label {
@@ -458,15 +466,15 @@ table {
 }
 
 #selection label {
-  position: relative;
-  left: 13.8em;
+    position: relative;
+    left: 13.8em;
 }
 
 #selection_disabled {
-  opacity: 0.4;
-  filter: alpha(opacity=40);
-  font-size: 0.8em;
-  text-align: center;
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+    font-size: 0.8em;
+    text-align: center;
 }
 
 #up_form {
@@ -564,9 +572,11 @@ input.update {
 input.download {
     background: url("../images/download.png") no-repeat center;
 }
+
 input.upload {
     background: url("../images/upload.png") no-repeat center;
 }
+
 input.omero {
     background: url("../images/omero_data.png") no-repeat center;
 }
@@ -578,9 +588,9 @@ input.save {
 }
 
 #actions {
-  text-align: center;
-  font-size: 70%;
-  padding: 5px 0 0 0;
+    text-align: center;
+    font-size: 70%;
+    padding: 5px 0 0 0;
 }
 
 #actions label {
@@ -591,11 +601,11 @@ input.save {
 }
 
 #actions_disabled {
-  opacity: 0.4;
-  filter: alpha(opacity=40);
-  text-align: center;
-  font-size: 70%;
-  padding: 5px 0 0 0;
+    opacity: 0.4;
+    filter: alpha(opacity=40);
+    text-align: center;
+    font-size: 70%;
+    padding: 5px 0 0 0;
 }
 
 #actions_disabled label {
@@ -612,7 +622,7 @@ input.save {
 }
 
 #omeroTree {
-  width: 450px;
+    width: 450px;
 }
 
 #login {
@@ -621,31 +631,31 @@ input.save {
 }
 
 #login_registration {
-  font-size: 12px;
-  height: 48px;
-  width: 150px;
-  text-align: left;
-  padding-left: 0px;
-  padding-bottom: 10px;
+    font-size: 12px;
+    height: 48px;
+    width: 150px;
+    text-align: left;
+    padding-left: 0px;
+    padding-bottom: 10px;
 }
 
 #login_registration table {
-  border: 0px;
-  width: 200px;
+    border: 0px;
+    width: 200px;
 }
 
 #login_registration table td.icon {
-  height: 48px;
-  width: 40px;
-  cursor: pointer;
-  background: url("../images/registration.png") no-repeat center;
-  background-size: 48px;
+    height: 48px;
+    width: 40px;
+    cursor: pointer;
+    background: url("../images/registration.png") no-repeat center;
+    background-size: 48px;
 }
 
 #login_registration table td.text {
-  text-align: center;
-  height: 48px;
-  width: 100px;
+    text-align: center;
+    height: 48px;
+    width: 100px;
 
 }
 
@@ -722,11 +732,12 @@ input.save {
 }
 
 #info h3 {
-    background-color: #eee;
+    /*background-color: #eee;*/
     font-size: 16px;
     line-height: 1.0;
     font-weight: bold;
     text-align: center;
+    border: solid 1px #ddd;
 }
 
 #footer {
@@ -773,12 +784,13 @@ table#Servers td {
 }
 
 #joblist h3 {
-    background-color: #eee;
+    /*background-color: #eee;*/
     margin-top: 15px;
     font-size: 24px;
     font-weight: bold;
     text-align: center;
     line-height: 1.0;
+    border: solid 1px #ddd;
 }
 
 #joblist summary {
@@ -854,7 +866,7 @@ table#Servers td {
 }
 
 #queue input {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 #cac table {
@@ -881,53 +893,53 @@ table#Servers td {
 }
 
 #jobParameters {
-  margin-top: 2em;
+    margin-top: 2em;
 }
 
 #jobParameters table {
-  margin-bottom: 2em;
-  font-size: 100%;
-  width: 610px;
+    margin-bottom: 2em;
+    font-size: 100%;
+    width: 610px;
 }
 
 #jobParameters td {
-  text-align: center;
+    text-align: center;
 }
 
 #jobParameters td.header {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 #jobParameters td.param {
-  width: 175px;
-  font-weight: bold;
-  background-color: #eee;
+    width: 175px;
+    font-weight: bold;
+    background-color: #eee;
 }
 
 #jobParameters td.value {
-  width: 100px;
-  font-weight: bold;
-  background-color: #eee;
+    width: 100px;
+    font-weight: bold;
+    background-color: #eee;
 }
 
 #jobParameters td.channel {
-  width: 50px;
-  font-weight: bold;
-  background-color: #eee;
+    width: 50px;
+    font-weight: bold;
+    background-color: #eee;
 }
 
 #jobParameters td.source {
-  width: 100px;
-  font-weight: bold;
-  background-color: #eee;
+    width: 100px;
+    font-weight: bold;
+    background-color: #eee;
 }
 
 #jobParameters td.metadata {
-  background-color: #CEFEC6;
+    background-color: #CEFEC6;
 }
 
 #jobParameters td.userdef {
-  background-color: #CFD7F2;
+    background-color: #CFD7F2;
 }
 
 #colocPage {
@@ -935,10 +947,10 @@ table#Servers td {
 }
 
 #colocTabs {
-  width: 1500px;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  overflow: hidden;
+    width: 1500px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    overflow: hidden;
 }
 
 #colocTab {
@@ -968,153 +980,153 @@ table#Servers td {
 }
 
 #colocResults {
-  width: 1600px;
+    width: 1600px;
 }
 
 #colocRun {
-  float: left;
-  width: 1600px;
+    float: left;
+    width: 1600px;
 }
 
 #colocHist {
-  float: left;
-  padding-right: 18px;
-  text-align: center;
+    float: left;
+    padding-right: 18px;
+    text-align: center;
 }
 
 #ColocCoefficientSelectionDiv table {
-  font-size: 100%;
+    font-size: 100%;
 }
 
 #ColocCoefficientSelectionDiv td.text {
-  text-align: right;
+    text-align: right;
 }
 
 #ColocCoefficientSelectionDiv td.check {
-  text-align: left;
+    text-align: left;
 }
 
 #colocCoefficients table {
-  font-size: 100%;
-  width: 1200px;
-  float: left;
+    font-size: 100%;
+    width: 1200px;
+    float: left;
 }
 
 #colocCoefficients td {
-  text-align: center;
+    text-align: center;
 }
 
 #colocCoefficients td.title {
-  text-align: center;
-  font-weight: bold;
-  background-color: #BFFFB3;
+    text-align: center;
+    font-weight: bold;
+    background-color: #BFFFB3;
 }
 
 #colocCoefficients td.header {
-  width: 80px;
-  font-weight: bold;
-  background-color: #CFD7F2;
+    width: 80px;
+    font-weight: bold;
+    background-color: #CFD7F2;
 }
 
 #colocCoefficients td.coefficient {
-  background-color: #DAFFDA;
+    background-color: #DAFFDA;
 }
 
 #colocCoefficients td.thresh {
-  background-color: #EEFFEE;
+    background-color: #EEFFEE;
 }
 
 #colocCoefficients td.cell {
-  background-color: #DAFFDA;
+    background-color: #DAFFDA;
 }
 
 #colocCoefficients td.marked {
-  background-color: #B6ECFF;
+    background-color: #B6ECFF;
 }
 
 #colocMap table {
-  font-size: 100%;
-  width: 800px;
-  float: left;
+    font-size: 100%;
+    width: 800px;
+    float: left;
 }
 
 #colocMap td {
-  text-align: center;
+    text-align: center;
 }
 
 #colocMap td.title {
-  text-align: center;
-  font-weight: bold;
-  background-color: #CFD7F2;
+    text-align: center;
+    font-weight: bold;
+    background-color: #CFD7F2;
 }
 
 #colocMap td.cell {
-  padding-right: 1em;
+    padding-right: 1em;
 }
 
 #warning table {
-  font-size: 105%;
-  padding-bottom: 1em;
-  width: 610px;
-  border: none;
-  left:0px;
+    font-size: 105%;
+    padding-bottom: 1em;
+    width: 610px;
+    border: none;
+    left: 0px;
 }
 
 #warning td {
-  text-align: left;
-  border: thin solid;
+    text-align: left;
+    border: thin solid;
 }
 
 #warning td.text {
-  color: #E80010;
-  padding-left: 6px;
+    color: #E80010;
+    padding-left: 6px;
 }
 
 #scaling table {
-  margin-bottom: 2em;
-  font-size: 100%;
-  width: 610px;
+    margin-bottom: 2em;
+    font-size: 100%;
+    width: 610px;
 }
 
 #scaling td {
-  text-align: center;
+    text-align: center;
 }
 
 #scaling td.header {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 #scaling td.param {
-  width: 175px;
-  font-weight: bold;
-  background-color: #eee;
+    width: 175px;
+    font-weight: bold;
+    background-color: #eee;
 }
 
 #scaling td.value {
-  width: 100px;
-  font-weight: bold;
-  background-color: #eee;
+    width: 100px;
+    font-weight: bold;
+    background-color: #eee;
 }
 
 #scaling td.channel {
-  width: 50px;
-  font-weight: bold;
-  background-color: #eee;
+    width: 50px;
+    font-weight: bold;
+    background-color: #eee;
 }
 
 #scaling td.reason {
-  width: 100px;
-  font-weight: bold;
-  background-color: #eee;
+    width: 100px;
+    font-weight: bold;
+    background-color: #eee;
 }
 
 #scaling td.cell {
-  background-color: #CFD7F2;
+    background-color: #CFD7F2;
 }
 
 #listusers {
-  text-align: center;
-  padding-bottom: 1em;
+    text-align: center;
+    padding-bottom: 1em;
 }
 
 #listusers table {
@@ -1168,12 +1180,13 @@ table#Servers td {
 }
 
 #homepage h3 {
-    background-color: #eee;
+    /*background-color: #eee;*/
     margin-top: 15px;
     font-size: 24px;
     font-weight: bold;
     text-align: center;
     line-height: 1.0;
+    border: solid 1px #ddd;
 }
 
 #homepage table {
@@ -1187,11 +1200,11 @@ table#Servers td {
 }
 
 #homepage table tr.separator {
-  height: 1px;
-  width: 200px;
-  border-width: 1px 0px 0px 0px;
-  border-style: solid;
-  border-color: #CCCCCC;
+    height: 1px;
+    width: 200px;
+    border-width: 1px 0px 0px 0px;
+    border-style: solid;
+    border-color: #CCCCCC;
 }
 
 #homepage table td {
@@ -1214,7 +1227,7 @@ table#Servers td {
 }
 
 #homepage .cell {
-    position:relative;
+    position: relative;
     top: 25px;
 }
 
@@ -1392,9 +1405,9 @@ fieldset legend {
 }
 
 fieldset.report {
-  margin-top:10px;
-  margin-bottom:10px;
-  padding-right:15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-right: 15px;
 }
 
 fieldset.p {
@@ -1408,8 +1421,7 @@ fieldset .values {
     width: 100%;
 }
 
-fieldset .reset
-{
+fieldset .reset {
     background: url("../images/reset.png") no-repeat left center;
     position: absolute;
     top: 0px;
@@ -1461,9 +1473,9 @@ input.launch {
 }
 
 input.launch_start {
-  width: 80px;
-  height: 60px;
-  background: url("../images/launch_start.png") no-repeat right;
+    width: 80px;
+    height: 60px;
+    background: url("../images/launch_start.png") no-repeat right;
 }
 
 input.next {
@@ -1538,11 +1550,13 @@ input.noPreview {
     padding-bottom: 0;
     cursor: pointer;
 }
+
 #ithumba {
     padding-top: 3px;
     padding-bottom: 0;
     cursor: pointer;
 }
+
 #ithumbb {
     padding-bottom: 0;
     background: #444;
@@ -1553,6 +1567,7 @@ input.noPreview {
 #thumb {
     position: relative;
 }
+
 select {
     width: 100%;
     text-align: center;
@@ -1627,6 +1642,7 @@ option.default {
     margin: 0px;
     padding: 0px;
 }
+
 #message p {
     color: red;
 }
@@ -1698,7 +1714,7 @@ option.default {
     max-width: 25%;
 }
 
-#prevMenu .menuEntry,.menuEntryActive {
+#prevMenu .menuEntry, .menuEntryActive {
     background-color: #fff;
     font-size: 0.7em;
     border: #fff 1px solid;
@@ -1731,9 +1747,8 @@ option.default {
 }
 
 #report {
-  background: #ff9;
+    background: #ff9;
 }
-
 
 #system {
     width: 100%;
@@ -1788,32 +1803,32 @@ option.default {
 }
 
 div.StedDeplModeValues {
-   width: 250px;
-   float: left;
-   vertical-align: middle;
+    width: 250px;
+    float: left;
+    vertical-align: middle;
 }
 
 /* Confidence levels for parameters: provided, asIs, verified,
    reported, estimated, default */
 .asIs {
-	/*background: url("../images/param_asis.png") repeat-y left;*/
+    /*background: url("../images/param_asis.png") repeat-y left;*/
 }
 
 .verified {
-	/*background: url("../images/param_verified.png") repeat-y left;*/
+    /*background: url("../images/param_verified.png") repeat-y left;*/
 }
 
 .reported {
 
-	/*background: url("../images/param_reported.png") repeat-y left;*/
+    /*background: url("../images/param_reported.png") repeat-y left;*/
 }
 
 .estimated {
-	/*background: url("../images/param_estimated.png") repeat-y left;*/
+    /*background: url("../images/param_estimated.png") repeat-y left;*/
 }
 
 .default {
-	/*background: url("../images/param_default.png") repeat-y left;*/
+    /*background: url("../images/param_default.png") repeat-y left;*/
 }
 
 .message_confidence_asIs {
@@ -2006,16 +2021,16 @@ div.StedDeplModeValues {
 
 /* Make sure the tooltip is initially hidden */
 .toolTip {
-  display: none;
+    display: none;
 }
 
 .updateNotification {
-  font-size: 13px;
-  font-weight: bold;
+    font-size: 13px;
+    font-weight: bold;
 }
 
 .noUpdateNotification {
-  font-size: 13px;
+    font-size: 13px;
 }
 
 .updateError {
