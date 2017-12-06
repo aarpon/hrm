@@ -377,12 +377,14 @@ include("header.inc.php");
                 <input id="password" name="password" type="password"
                        class="textfield"
                        tabindex="2"/> <br/>
-                <a href="reset_password.php"><img src="images/forgot_pwd.png"
-                                                  width="24"/>
-                    &nbsp;Forgot my password</a>
+
                 <input type="hidden" name="request" value="<?php echo $req ?>"/>
                 <input type="submit" class="button" value="login"/>
+
             </fieldset>
+
+                <a href="reset_password.php">
+                    &nbsp;Forgot my password</a>
 
             <?php
             if (ProxyFactory::getDefaultAuthenticationMode() == "integrated") {

@@ -521,10 +521,6 @@ table {
     margin: 5px;
 }
 
-input.copy {
-    background: url("../images/copy.png") no-repeat center;
-}
-
 input.down {
     background: url("../images/add.png") no-repeat center;
 }
@@ -1475,28 +1471,16 @@ input.calc {
     background: url("../images/calc.png") no-repeat right;
 }
 
-input.ok {
-    width: 60px;
-    height: 60px;
-    background: url("../images/ok.png") no-repeat center;
-}
-
 input.cancel {
     width: 60px;
     height: 60px;
     background: url("../images/cancel.png") no-repeat center;
 }
 
-input.apply {
-    width: 60px;
-    height: 60px;
-    background: url("../images/apply.png") no-repeat center;
-}
-
 input.back {
     width: 60px;
     height: 60px;
-    background: url("../images/back.png") no-repeat center;
+    background: url("../images/previous.png") no-repeat center;
 }
 
 input.upload {
