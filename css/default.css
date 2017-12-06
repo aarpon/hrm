@@ -175,8 +175,8 @@ table {
     color: #888;
     font-size: 12px;
     font-weight: bold;
-    border-top: #ccc 2px solid;
-    border-bottom: #ccc 2px solid;
+    /*border-top: #ccc 2px solid;
+    border-bottom: #ccc 2px solid;*/
 }
 
 #navright {
@@ -213,7 +213,7 @@ table {
 
 #controls {
     text-align: center;
-    border-top: #ccc 1px dotted;
+    /*border-top: #ccc 1px dotted;*/
     margin-top: 30px;
     width: 100%;
 }
@@ -732,9 +732,9 @@ input.save {
 #footer {
     clear: both;
     font-size: 60%;
-    padding: 5px 0px 5px 0px;
-    border-top: #ccc 2px solid;
-    border-bottom: #ccc 2px solid;
+    padding: 45px 0px 5px 0px;
+    /*border-top: #ccc 2px solid;
+    border-bottom: #ccc 2px solid;*/
 }
 
 #about {

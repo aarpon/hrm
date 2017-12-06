@@ -111,10 +111,6 @@ $loggedIn = (isset($_SESSION['user']) && $_SESSION['user']->isLoggedIn());
 
 </div>
 
-<div id="bottom">
-</div>
-
-
 </div> <!-- basket -->
 
 </body>
