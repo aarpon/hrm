@@ -96,11 +96,11 @@ table {
 .intro {
     font-size: 16px;
     padding-top: 15px;
-    border-top-style: dotted;
-    border-top-width: 1px;
+    /*border-top-style: dotted;
+    border-top-width: 1px;*/
     padding-bottom: 15px;
-    border-bottom-style: dotted;
-    border-bottom-width: 1px;
+    /*border-bottom-style: dotted;
+    border-bottom-width: 1px;*/
     line-height: 1.5;
 }
 
@@ -220,10 +220,10 @@ table {
 
 #welcome {
     float: left;
-    width: 480px;
-    text-align: left;
-    border-right-style: dotted;
-    border-right-width: 1px;
+    width: 580px;
+    text-align: center;
+    /*border-right-style: dotted;
+    border-right-width: 1px;*/
     margin: 0px 0px 0px 0px;
     padding: 0px 15px 0px 15px;
 }
@@ -339,7 +339,7 @@ table {
 
 #logos table {
   border: 0px;
-  width: 480px;
+  width: 580px;
 }
 
 #logos table.firstRow {
