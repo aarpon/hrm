@@ -1404,6 +1404,7 @@ fieldset.p {
 fieldset .values {
     position: relative;
     padding-left: 20px;
+    margin-bottom: 10px;
     width: 100%;
 }
 

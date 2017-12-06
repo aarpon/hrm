@@ -322,13 +322,15 @@ if ($saveToDB == true) {
                     ) {
                         ?>
 
-                        <a href="#"
-                           onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
-                           onmouseout="UnTip()"
-                           onclick="storeValuesAndRedirect( 'calculate_pixel_size.php');">
-                            <img src="images/calc_small.png" alt=""/>
-                            Calculate from CCD pixel size
-                        </a>
+                        <p>
+                            <a href="#"
+                               onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
+                               onmouseout="UnTip()"
+                               onclick="storeValuesAndRedirect( 'calculate_pixel_size.php');">
+                                <img src="images/calc_small.png" alt=""/>
+                                Calculate from CCD pixel size
+                            </a>
+                        </p>
 
                         <?php
                     }
