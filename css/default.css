@@ -105,7 +105,7 @@ table {
 }
 
 #basket {
-    width: 800px;
+    width: 1000px;
     border: #ccc 2px solid;
     margin: 0px auto 0px auto;
 }
@@ -253,10 +253,8 @@ table {
 
 #content {
     float: left;
-    width: 480px;
+    width: 580px;
     text-align: left;
-    border-right-style: dotted;
-    border-right-width: 1px;
     margin: 0px 0px 0px 0px;
     padding: 0px 15px 0px 15px;
 }
@@ -696,7 +694,7 @@ input.save {
 
 #rightpanel {
     float: right;
-    width: 250px;
+    width: 350px;
     text-align: right;
     margin: 0px 0px 0px 0px;
     padding: 0px 20px 0px 15px;
@@ -1376,18 +1374,21 @@ span.spacer {
 }
 
 fieldset {
+    border: none;
     margin: 5px;
     margin-top: 15px;
     padding: 10px 5px 10px 10px;
-    -moz-border-radius: 7px;
+    /*-moz-border-radius: 7px;
     -webkit-border-radius: 7px;
-    border-radius: 7px;
+    border-radius: 7px;*/
 }
 
 fieldset legend {
-    font-size: 1.0em;
+    font-size: 1.2em;
     font-weight: bold;
     text-align: left;
+    color: black;
+    width: 100%
 }
 
 fieldset.report {
@@ -1794,33 +1795,39 @@ div.StedDeplModeValues {
 /* Confidence levels for parameters: provided, asIs, verified,
    reported, estimated, default */
 .asIs {
-	background: url("../images/param_asis.png") repeat-y left;
+	/*background: url("../images/param_asis.png") repeat-y left;*/
 }
 
 .verified {
-	background: url("../images/param_verified.png") repeat-y left;
+	/*background: url("../images/param_verified.png") repeat-y left;*/
 }
 
 .reported {
 
-	background: url("../images/param_reported.png") repeat-y left;
+	/*background: url("../images/param_reported.png") repeat-y left;*/
 }
 
 .estimated {
-	background: url("../images/param_estimated.png") repeat-y left;
+	/*background: url("../images/param_estimated.png") repeat-y left;*/
 }
 
 .default {
-	background: url("../images/param_default.png") repeat-y left;
+	/*background: url("../images/param_default.png") repeat-y left;*/
 }
 
 .message_confidence_asIs {
     border: none;
     height: 30px;
-    margin-top: 5px;
+    margin-top: 0px;
     margin-bottom: -5px;
-    background: url("../images/text_asis.png") no-repeat bottom;
-    color: #b09065;
+    /*background: url("../images/text_asis.png") no-repeat bottom;
+    color: #b09065;*/
+}
+
+.message_confidence_asIs:before {
+    font-size: 0.8em;
+    content: "Known to be present in file metadata and most likely correct: could be omitted.";
+    color: #009C89;
 }
 
 .message_confidence_verified {
@@ -1828,8 +1835,14 @@ div.StedDeplModeValues {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url("../images/text_verified.png") no-repeat bottom;
-    color: #000000;
+    /*background: url("../images/text_verified.png") no-repeat bottom;
+    color: #000000;*/
+}
+
+.message_confidence_verified:before {
+    font-size: 0.8em;
+    content: "Known to be present in file metadata and most likely correct: could be omitted.";
+    color: #009C89;
 }
 
 .message_confidence_reported {
@@ -1837,8 +1850,14 @@ div.StedDeplModeValues {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url("../images/text_reported.png") no-repeat bottom;
-    color: #b09065;
+    /*background: url("../images/text_reported.png") no-repeat bottom;
+    color: #b09065;*/
+}
+
+.message_confidence_reported:before {
+    font-size: 0.8em;
+    content: "Known to be present in file metadata and most likely correct: could be omitted.";
+    color: #009C89;
 }
 
 .message_confidence_estimated {
@@ -1846,8 +1865,14 @@ div.StedDeplModeValues {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url("../images/text_estimated.png") no-repeat bottom;
-    color: #1F467F;
+    /*background: url("../images/text_estimated.png") no-repeat bottom;
+    color: #1F467F;*/
+}
+
+.message_confidence_estimated:before {
+    font-size: 0.8em;
+    content: "Known to be missing or incorrect in file metadata: must be provided.";
+    color: #b09065;
 }
 
 .message_confidence_default {
@@ -1855,8 +1880,14 @@ div.StedDeplModeValues {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url("../images/text_default.png") no-repeat bottom;
-    color: #009C89;
+    /*background: url("../images/text_default.png") no-repeat bottom;
+    color: #009C89;*/
+}
+
+.message_confidence_default:before {
+    font-size: 0.8em;
+    content: "Known to be missing or incorrect in file metadata: must be provided.";
+    color: #b09065;
 }
 
 .message_confidence_provided {
@@ -1864,8 +1895,14 @@ div.StedDeplModeValues {
     height: 30px;
     margin-top: 5px;
     margin-bottom: -5px;
-    background: url("../images/text_provided.png") no-repeat bottom;
-    color: #555A43;
+    /*background: url("../images/text_provided.png") no-repeat bottom;
+    color: #555A43;*/
+}
+
+.message_confidence_provided:before {
+    font-size: 0.8em;
+    content: "Internal HRM parameter: must be provided.";
+    color: #000000;
 }
 
 #login_user {
