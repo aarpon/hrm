@@ -498,7 +498,7 @@ $info = "<h3>Quick help</h3>" .
                        onchange="storeFileFormatSelection(ImageFileFormat,this)"
                 />
 
-                Automatically load file series if supported
+                Automatically load file series (when applicable)
 
             </label>
 
