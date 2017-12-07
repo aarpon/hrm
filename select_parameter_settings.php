@@ -504,6 +504,18 @@ if (!$_SESSION['user']->isAdmin()) {
                    class="icon create"
                    onmouseover="TagToTip('ttSpanCreate' )"
                    onmouseout="UnTip()"/>
+            <input name="edit"
+                   type="submit"
+                   value=""
+                   class="icon edit"
+                   onmouseover="TagToTip('ttSpanEdit' )"
+                   onmouseout="UnTip()"/>
+            <input name="copy"
+                   type="submit"
+                   value=""
+                   class="icon clone"
+                   onmouseover="TagToTip('ttSpanClone' )"
+                   onmouseout="UnTip()"/>
             <input name="imageTotemplate"
                    type="button"
                    value=""
@@ -518,19 +530,6 @@ if (!$_SESSION['user']->isAdmin()) {
                    onmouseover="TagToTip('ttSpanHuygens' )"
                    onmouseout="UnTip()"
                    onclick="UnTip(); hu2template('micr');"/>
-            <input name="copy"
-                   type="submit"
-                   value=""
-                   class="icon clone"
-                   onmouseover="TagToTip('ttSpanClone' )"
-                   onmouseout="UnTip()"/>
-            <input name="edit"
-                   type="submit"
-                   value=""
-                   class="icon edit"
-                   onmouseover="TagToTip('ttSpanEdit' )"
-                   onmouseout="UnTip()"/>
-
 
             <?php
 

@@ -452,13 +452,6 @@ else {
                        class="icon create"
                        onmouseover="TagToTip('ttSpanCreate' )"
                        onmouseout="UnTip()" />
-                <input name="huTotemplate"
-                       type="button"
-                       value=""
-                       class="icon huygens"
-                       onmouseover="TagToTip('ttSpanHuygens' )"
-                       onmouseout="UnTip()"
-                       onclick="UnTip(); hu2template('decon')" />
                 <input name="edit"
                        type="submit"
                        value=""
@@ -471,6 +464,13 @@ else {
                        class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
                        onmouseout="UnTip()" />
+                <input name="huTotemplate"
+                       type="button"
+                       value=""
+                       class="icon huygens"
+                       onmouseover="TagToTip('ttSpanHuygens' )"
+                       onmouseout="UnTip()"
+                       onclick="UnTip(); hu2template('decon')" />
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
