@@ -399,73 +399,96 @@ if (!$_SESSION['user']->isAdmin()) {
 
         <div id="<?php echo "actions" . $divState; ?>"
              class="taskselection">
-            <input name="create"
-                <?php echo $widgetState ?>
+          <table id="actions">
+             <tr>
+                <td class="button">
+                  <input name="create" <?php echo $widgetState ?>
                    type="submit"
                    value=""
                    class="icon create"
                    onmouseover="TagToTip('ttSpanCreate' )"
                    onmouseout="UnTip()"/>
-            <input name="edit"
-                <?php echo $widgetState ?>
+                </td>
+                <td class="button">
+                  <input name="edit" <?php echo $widgetState ?>
                    type="submit"
                    value=""
                    class="icon edit"
                    onmouseover="TagToTip('ttSpanEdit' )"
                    onmouseout="UnTip()"/>
-            <input name="copy"
-                <?php echo $widgetState ?>
+                </td>
+                <td class="button">
+                  <input name="copy" <?php echo $widgetState ?>
                    type="submit"
                    value=""
                    class="icon clone"
                    onmouseover="TagToTip('ttSpanClone' )"
                    onmouseout="UnTip()"/>
-
-            <?php
-
-            if (!$_SESSION['user']->isAdmin()) {
-
-                ?>
-
-                <input name="share"
-                    <?php echo $widgetState ?>
+                </td>
+<?php
+  if (!$_SESSION['user']->isAdmin()) {
+?>
+                <td class="button">
+                  <input name="share" <?php echo $widgetState ?>
                        type="button"
                        onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
                        value=""
                        class="icon share"
                        onmouseover="TagToTip('ttSpanShare' )"
                        onmouseout="UnTip()"/>
-
-                <input name="make_default"
-                    <?php echo $widgetState ?>
+                  </td>
+                  <td class="button">
+                    <input name="make_default" <?php echo $widgetState ?>
                        type="submit"
                        value=""
                        class="icon mark"
                        onmouseover="TagToTip('ttSpanDefault' )"
                        onmouseout="UnTip()"/>
-                <?php
-
-            }
-
-            ?>
-            <input type="hidden" name="annihilate"/>
-            <input name="delete"
-                <?php echo $widgetState ?>
-                   type="button"
-                   value=""
-                   class="icon delete"
-                   onclick="warn(this.form,
+                  </td>
+<?php
+ }
+?>
+                  <td class="button">
+                    <input type="hidden" name="annihilate"/>
+                    <input name="delete" <?php echo $widgetState ?>
+                     type="button"
+                     value=""
+                    class="icon delete"
+                    onclick="warn(this.form,
                          'Do you really want to delete this analysis template?',
                          this.form['analysis_setting'].selectedIndex )"
-                   onmouseover="TagToTip('ttSpanDelete' )"
-                   onmouseout="UnTip()"/>
-            <label>New/clone analysis template set name:
-                <input name="new_setting"
-                       type="text"
-                       class="textfield"/>
-            </label>
+                    onmouseover="TagToTip('ttSpanDelete' )"
+                    onmouseout="UnTip()"/>
+                  </td>
+                </tr>
+                <tr>
+                    <td class="label">
+                     New
+                    </td>
+                    <td class="label">
+                     Edit
+                    </td>
+                    <td class="label">
+                     Duplicate
+                    </td>
+<?php
+if (!$_SESSION['user']->isAdmin()) {
+?>       
+                    <td class="label">
+                     Share
+                    </td>
+                    <td class="label">
+                     Mark as<br />favorite
+                    </td>
+<?php
+}
+?>      
+                    <td class="label">
+                     Remove
+                    </td>
+                </tr>
+              </table>
             <input name="OK" type="hidden"/>
-
         </div>
         <?php
 

@@ -498,63 +498,74 @@ if (!$_SESSION['user']->isAdmin()) {
 
         <div id="upMsg"></div>
         <div id="actions" class="parameterselection">
-            <input name="create"
+           <table id="actions">
+              <tr>
+                <td class="button">
+                  <input name="create"
                    type="submit"
                    value=""
                    class="icon create"
                    onmouseover="TagToTip('ttSpanCreate' )"
                    onmouseout="UnTip()"/>
-            <input name="edit"
+                </td>
+                <td class="button">
+                  <input name="edit"
                    type="submit"
                    value=""
                    class="icon edit"
                    onmouseover="TagToTip('ttSpanEdit' )"
                    onmouseout="UnTip()"/>
-            <input name="copy"
+                </td>
+                <td class="button">
+                  <input name="copy"
                    type="submit"
                    value=""
                    class="icon clone"
                    onmouseover="TagToTip('ttSpanClone' )"
                    onmouseout="UnTip()"/>
-            <input name="imageTotemplate"
+                </td>
+                <td class="button">
+                  <input name="imageTotemplate"
                    type="button"
                    value=""
                    class="icon imageTotemplate"
                    onmouseover="TagToTip('ttSpanImageToTemplate')"
                    onmouseout="UnTip()"
                    onclick='UnTip(); image2template(<?php echo json_encode($validFiles); ?>)'/>
-            <input name="huTotemplate"
+                </td>
+                <td class="button">
+                  <input name="huTotemplate"
                    type="button"
                    value=""
                    class="icon huygens"
                    onmouseover="TagToTip('ttSpanHuygens' )"
                    onmouseout="UnTip()"
                    onclick="UnTip(); hu2template('micr');"/>
-
-            <?php
-
-            if (!$_SESSION['user']->isAdmin()) {
-
-                ?>
-                <input name="share"
+                </td>
+<?php
+  if (!$_SESSION['user']->isAdmin()) {
+?>
+                <td class="button">
+                  <input name="share"
                        type="button"
                        onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
                        value=""
                        class="icon share"
                        onmouseover="TagToTip('ttSpanShare' )"
                        onmouseout="UnTip()"/>
-                <input name="make_default" type="submit" value=""
+                </td>
+                <td class="button">
+                  <input name="make_default" type="submit" value=""
                        class="icon mark"
                        onmouseover="TagToTip('ttSpanDefault' )"
                        onmouseout="UnTip()"/>
-                <?php
-
-            }
-
-            ?>
-
-            <input type="hidden" name="annihilate"/>
-            <input name="delete"
+                </td>
+<?php
+}
+?>
+                <td class="button">
+                  <input type="hidden" name="annihilate"/>
+                  <input name="delete"
                    type="button"
                    value=""
                    class="icon delete"
@@ -563,17 +574,45 @@ if (!$_SESSION['user']->isAdmin()) {
                         this.form['setting'].selectedIndex )"
                    onmouseover="TagToTip('ttSpanDelete' )"
                    onmouseout="UnTip()"/>
-            <label>New/clone image template name:
-                <input name="new_setting"
-                       type="text"
-                       class="textfield"/>
-            </label>
+                </td>
+             </tr>
+             <tr>
+                <td class="label">
+                     New
+                </td>
+                <td class="label">
+                     Edit
+                </td>
+                <td class="label">
+                     Duplicate
+                </td>
+                <td class="label">
+                     From<br />Image
+                </td>
+                <td class="label">
+                     From<br />Huygens
+                </td>
+<?php
+if (!$_SESSION['user']->isAdmin()) {
+?>       
+                <td class="label">
+                     Share
+                </td>
+                <td class="label">
+                     Mark as<br />favorite
+                </td>
+<?php
+}
+?>      
+                <td class="label">
+                     Remove
+                </td>
+              </tr>
+            </table>                
             <input name="OK" type="hidden"/>
-
-
         </div>
+        
         <?php
-
         if (!$_SESSION['user']->isAdmin()) {
 
             ?>
