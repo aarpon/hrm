@@ -9,44 +9,19 @@ Copyright and license notice: see license.txt
 
 /* *** Font faces *********************************************************** */
 
-
-@media  (-webkit-min-device-pixel-ratio: 1),
-(min-resolution: 75dpi) {
-
-    /* Low-resolution screens */
-    @font-face {
-        font-family: 'Open Sans';
-        font-weight: 400;
-        font-style: normal;
-        src: url('OpenSans-Regular.eot');
-        src: url('OpenSans-Regular.eot?#iefix') format('embedded-opentype'),
-        url('OpenSans-Regular.woff2') format('woff2'),
-        url('OpenSans-Regular.woff') format('woff'),
-        url('OpenSans-Regular.ttf') format('truetype'),
-        url('OpenSans-Regular.svg#Open Sans') format('svg');
-    }
-}
-
-@media  (-webkit-min-device-pixel-ratio: 1.5),
-(min-resolution: 144dpi){
-
-    /* High-resolution screens */
-    @font-face {
-        font-family: 'Open Sans';
-        font-weight: 300;
-        font-style: normal;
-        src: url('OpenSans-Light.eot');
-        src: url('OpenSans-Light.eot?#iefix') format('embedded-opentype'),
-        url('OpenSans-Light.woff2') format('woff2'),
-        url('OpenSans-Light.woff') format('woff'),
-        url('OpenSans-Light.ttf') format('truetype'),
-        url('OpenSans-Light.svg#Open Sans') format('svg');
-    }
-
+@font-face {
+    font-family: 'Open Sans';
+    font-weight: 400;
+    font-style: normal;
+    src: url('OpenSans-Light.eot');
+    src: url('OpenSans-Light.eot?#iefix') format('embedded-opentype'),
+    url('OpenSans-Light.woff2') format('woff2'),
+    url('OpenSans-Light.woff') format('woff'),
+    url('OpenSans-Light.ttf') format('truetype'),
+    url('OpenSans-Light.svg#Open Sans') format('svg');
 }
 
 /* basic elements */
-
 body {
     background: #fff;
     color: #000;
@@ -54,6 +29,17 @@ body {
     font-size: 14px;
     text-align: center;
     margin: 0px;
+}
+
+@media  only screen and (-webkit-min-device-pixel-ratio: 1.5),
+        only screen and (-o-min-device-pixel-ratio: 150/100),
+        only screen and (min-resolution: 96dpi),
+        only screen and (min-resolution: 1.5dppx) {
+
+    /* HIDPI screens */
+    body {
+        font-weight: 300;
+    }
 }
 
 pre {
