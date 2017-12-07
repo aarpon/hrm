@@ -91,7 +91,7 @@ class Nav
      */
     public static function linkReportIssue()
     {
-        return self::buildLinkHTMLElement("Bug report",
+        return self::buildLinkHTMLElement("Feedback",
             "http://hrm.svi.nl:8080/redmine/projects/public/issues/new",
             "images/report_issue.png", "Bug report", true);
     }
