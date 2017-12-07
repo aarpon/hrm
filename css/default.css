@@ -111,6 +111,13 @@ table {
     color: #FFFFFF;
 }
 
+#welcome_intro {
+    font-size: 16px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    line-height: 1.5;
+}
+
 .intro {
     font-size: 16px;
     padding-top: 15px;
@@ -359,7 +366,7 @@ table {
 }
 
 #logos {
-    font-size: 70%;
+    font-size: 85%;
     text-align: center;
 }
 
@@ -376,79 +383,96 @@ table {
     margin: 20px 0px 30px 0px;
 }
 
+#logos table.thirdRow {
+    margin: 20px 0px 30px 0px;
+}
+
 #logos table tr.caption {
     vertical-align: top;
     text-align: center;
 }
 
+#logos table td {
+    width: 200px;
+}
+
 #logos table td.epfl {
-    height: 60px;
-    width: 160px;
+    height: 120px;
     cursor: pointer;
-    background: url("../images/logo_epfl.png") no-repeat center;
-    background-size: 90px;
+    background: url("../images/logo_epfl.jpg") no-repeat center;
+    background-size: 140px;
 }
 
 #logos table td.mri {
-    height: 60px;
-    width: 160px;
+    height: 120px;
     cursor: pointer;
     background: url("../images/logo_mri.png") no-repeat center;
-    background-size: 60px;
+    background-size: 140px;
 }
 
 #logos table td.svi {
-    height: 60px;
-    width: 160px;
+    height: 120px;
     cursor: pointer;
     background: url("../images/logo_svi.png") no-repeat center;
-    background-size: 60px;
+    background-size: 140px;
 }
 
 #logos table td.bsse {
-    height: 80px;
-    width: 240px;
+    height: 120px;
     margin-top: 50px;
     padding-bottom: 5px;
     cursor: pointer;
-    background: url("../images/logo_bsse.png") no-repeat center;
-    background-size: 100px;
+    background: url("../images/logo_bsse.jpg") no-repeat center;
+    background-size: 140px;
 }
 
 #logos table td.fmi {
-    height: 80px;
-    width: 240px;
+    height: 120px;
     cursor: pointer;
     background: url("../images/logo_fmi.png") no-repeat center;
-    background-size: 70px;
+    background-size: 140px;
 }
 
 #logos table td.bio-basel {
-    height: 80px;
-    width: 240px;
+    height: 120px;
     cursor: pointer;
-    background: url("../images/logo_bio_basel.png") no-repeat center;
-    background-size: 90px;
+    background: url("../images/logo_biozentrum.png") no-repeat center;
+    background-size: 140px;
 }
 
 #logos table td.lin {
-    height: 80px;
-    width: 240px;
+    height: 120px;
     cursor: pointer;
-    background: url("../images/logo_lin_en.png") no-repeat center;
-    background-size: 90px;
+    background: url("../images/logo_lin.jpeg") no-repeat center;
+    background-size: 140px;
 }
 
 #logos table td.cni {
-    height: 80px;
-    width: 240px;
+    height: 120px;
     cursor: pointer;
-    background: url("../images/logo_cni_pp.png") no-repeat center;
-    background-size: 90px;
+    background: url("../images/logo_cni.png") no-repeat center;
+    background-size: 140px;
+}
+
+#logos table td.unf {
+    height: 120px;
+    cursor: pointer;
+    background: url("../images/logo_unf.png") no-repeat center;
+    background-size: 140px;
+}
+
+#logos table td.miap {
+    height: 120px;
+    cursor: pointer;
+    background: url("../images/logo_miap.png") no-repeat center;
+    background-size: 140px;
 }
 
 #logos table td.blank {
-    width: 40px;
+    height: 120px;
+    cursor: pointer;
+    background: url("../images/logo_blank.png") no-repeat center;
+    background-size: 140px;
 }
 
 #templates select {
