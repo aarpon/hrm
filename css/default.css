@@ -11,12 +11,10 @@ Copyright and license notice: see license.txt
 
 @font-face {
     font-family: 'Open Sans';
-    font-weight: 300;
+    font-weight: 400;
     font-style: normal;
     src: url('OpenSans-Light.eot');
     src: url('OpenSans-Light.eot?#iefix') format('embedded-opentype'),
-    local('Open Sans Light'),
-    local('Open Sans-300'),
     url('OpenSans-Light.woff2') format('woff2'),
     url('OpenSans-Light.woff') format('woff'),
     url('OpenSans-Light.ttf') format('truetype'),
@@ -24,7 +22,6 @@ Copyright and license notice: see license.txt
 }
 
 /* basic elements */
-
 body {
     background: #fff;
     color: #000;
@@ -32,6 +29,17 @@ body {
     font-size: 14px;
     text-align: center;
     margin: 0px;
+}
+
+@media  only screen and (-webkit-min-device-pixel-ratio: 1.5),
+        only screen and (-o-min-device-pixel-ratio: 150/100),
+        only screen and (min-resolution: 96dpi),
+        only screen and (min-resolution: 1.5dppx) {
+
+    /* HIDPI screens */
+    body {
+        font-weight: 300;
+    }
 }
 
 pre {
