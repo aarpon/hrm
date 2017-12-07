@@ -330,7 +330,7 @@ include("header.inc.php");
 
                 <td class="text">
                     <div class="cell">
-                        <a href="./select_images.php">Start a job</a>
+                        <a href="./select_images.php">Launch jobs</a>
                         <br/>
                         <p>Create and start restoration and analysis jobs.</p>
                     </div>
