@@ -240,7 +240,7 @@ table {
 
 #welcome {
     float: left;
-    width: 580px;
+    width: 970px;
     text-align: center;
     /*border-right-style: dotted;
     border-right-width: 1px;*/
@@ -365,7 +365,7 @@ table {
 
 #logos table {
     border: 0px;
-    width: 580px;
+    width: 100%;
 }
 
 #logos table.firstRow {
@@ -660,6 +660,8 @@ input.save {
 #login {
     font-size: 14px;
     text-align: center;
+    width: 100%;
+    display: none;
 }
 
 #login_registration {
@@ -685,7 +687,7 @@ input.save {
 #login p.expl {
     font-size: 12px;
     font-weight: normal;
-    text-align: left;
+    text-align: center;
     padding: 0px 5px;
 }
 
@@ -701,7 +703,7 @@ input.save {
 }
 
 #login input.textfield {
-    width: 90%;
+    width: 300px;
     text-align: center;
     margin-bottom: 10px;
 }
@@ -709,7 +711,7 @@ input.save {
 #login input.button {
     margin-top: 10px;
     font-size: 12px;
-    width: 60%;
+    width: 200px;
     font-weight: bold;
 }
 
@@ -1643,6 +1645,7 @@ option.default {
 }
 
 #message p {
+    text-align: center;
     color: red;
 }
 

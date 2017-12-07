@@ -153,6 +153,20 @@ class Nav
     }
 
     /**
+     * Generate HTML code to the login link.
+     *
+     * @return string HTML code to the login link.
+     */
+    public static function linkLogIn()
+    {
+        return self::buildLinkHTMLElement("Login",
+            "#",
+            "images/user.png",
+            "Login", false,
+            "$(\"#login\").toggle()");
+    }
+
+    /**
      * Generate HTML code to the logout link.
      *
      * This function requires the URL of the current page. You can
@@ -238,14 +252,24 @@ class Nav
      * @param string $altText Alternative text for the image.
      * @param bool $extern True if the link must be opened in another tab/window.
      *                     false otherwise.
+     * @param string $onclick Add string defining javascript call for an onclick event.
+     *                        The 'onclick=' fragment must be omitted!
      * @return string HTML string to be echoed in the page.
      */
     private static function buildLinkHTMLElement($text, $url, $img_url,
-                                                 $altText, $extern = false)
+                                                 $altText, $extern = false,
+                                                 $onclick="")
     {
-        $onclick = "";
-        if ($extern == true) {
-            $onclick = 'onclick="this.target=\'_blank\';return true;"';
+        if ($onclick != "") {
+            if ($extern == true) {
+                $onclick = 'onclick=' . $onclick . ";this.target=\'_blank\';return true;";
+            } else {
+                $onclick = 'onclick=' . $onclick;
+            }
+        } else {
+            if ($extern == true) {
+                $onclick = 'onclick="this.target=\'_blank\';return true;"';
+            }
         }
         $html = '<li><a href="' . $url . '" ' . $onclick . '>' .
             '<img src="' . $img_url . '" ' .

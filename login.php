@@ -150,19 +150,71 @@ include("header.inc.php");
             <?php
             echo(Nav::linkWikiPage('HuygensRemoteManagerHelpLogin'));
             echo(Nav::linkMailingList());
-            ?>
-        </ul>
-    </div>
-    <div id="navright">
-        <ul>
-            <?php
             echo(Nav::linkWhatsNew());
             echo(Nav::linkProjectWebsite());
             echo(Nav::linkSVIWiki());
             ?>
         </ul>
     </div>
+    <div id="navright">
+        <ul>
+            <?php
+            echo(Nav::linkLogIn());
+            ?>
+        </ul>
+    </div>
     <div class="clear"></div>
+</div>
+
+<div id="login">
+    <form method="post" action="">
+        <fieldset>
+            <legend>
+                <a href="javascript:openWindow(
+               'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
+                    <img src="images/help.png" alt="?"/></a> Login
+            </legend>
+
+            <p class="expl">Please enter your credentials.</p>
+
+            <label for="username">Username</label><br/>
+            <input id="username" name="username" type="text"
+                   class="textfield"
+                   tabindex="1"/> <br/>
+            <label for="password">Password</label><br/>
+            <input id="password" name="password" type="password"
+                   class="textfield"
+                   tabindex="2"/> <br/>
+
+            <input type="hidden" name="request" value="<?php echo $req ?>"/>
+            <input type="submit" class="button" value="login"/>
+
+        </fieldset>
+
+        <a href="reset_password.php">
+            &nbsp;Forgot my password</a>
+
+        <?php
+        if (ProxyFactory::getDefaultAuthenticationMode() == "integrated") {
+            ?>
+
+            <fieldset>
+                <div id="login_registration">
+                    <a href="registration.php">
+                        <b>No HRM account yet?</b><br/>
+                        Click here to register.</a>
+                </div>
+
+            </fieldset>
+            <?php
+        }
+        ?>
+    </form>
+</div>
+
+<!-- Error messages -->
+<div id="message">
+    <?php echo "<p>$message</p>"; ?>
 </div>
 
 <div id="welcome"><?php
@@ -223,9 +275,9 @@ include("header.inc.php");
 
     <p class="intro">
         The <a href="javascript:openWindow('http://hrm.sourceforge.net')">
-        Huygens Remote Manager</a> is an easy to use interface to the Huygens
+            Huygens Remote Manager</a> is an easy to use interface to the Huygens
         Software by <a href="javascript:openWindow('http://www.svi.nl')">
-        Scientific Volume Imaging B.V.</a> that allows for multi-user,
+            Scientific Volume Imaging B.V.</a> that allows for multi-user,
         large-scale deconvolution and analysis.</p>
 
     <?php
@@ -355,65 +407,6 @@ include("header.inc.php");
     </div>
 </div>
 <!-- welcome -->
-
-<div id="rightpanel">
-    <p>&nbsp;</p>
-    <div id="login">
-        <form method="post" action="">
-            <fieldset>
-                <legend>
-                    <a href="javascript:openWindow(
-               'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
-                        <img src="images/help.png" alt="?"/></a> Login
-                </legend>
-
-                <p class="expl">Please enter your credentials.</p>
-
-                <label for="username">Username</label><br/>
-                <input id="username" name="username" type="text"
-                       class="textfield"
-                       tabindex="1"/> <br/>
-                <label for="password">Password</label><br/>
-                <input id="password" name="password" type="password"
-                       class="textfield"
-                       tabindex="2"/> <br/>
-
-                <input type="hidden" name="request" value="<?php echo $req ?>"/>
-                <input type="submit" class="button" value="login"/>
-
-            </fieldset>
-
-                <a href="reset_password.php">
-                    &nbsp;Forgot my password</a>
-
-            <?php
-            if (ProxyFactory::getDefaultAuthenticationMode() == "integrated") {
-                ?>
-
-                <fieldset>
-                    <div id="login_registration">
-				<a href="registration.php">
-                                    <b>No HRM account yet?</b><br/>
-                                    Click here to register.</a>
-                    </div>
-
-                </fieldset>
-                <?php
-            }
-            ?>
-
-
-        </form>
-    </div>
-
-    <div id="message"><?php
-
-        echo "<p>$message</p>";
-
-        ?></div>
-
-</div>
-<!-- rightpanel -->
 
 <?php
 
