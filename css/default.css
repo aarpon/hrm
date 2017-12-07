@@ -13,14 +13,14 @@ Copyright and license notice: see license.txt
     font-family: 'Open Sans';
     font-weight: 300;
     font-style: normal;
-    src: url('Open Sans-300.eot');
-    src: url('Open Sans-300.eot?#iefix') format('embedded-opentype'),
+    src: url('OpenSans-Light.eot');
+    src: url('OpenSans-Light.eot?#iefix') format('embedded-opentype'),
     local('Open Sans Light'),
     local('Open Sans-300'),
-    url('Open Sans-300.woff2') format('woff2'),
-    url('Open Sans-300.woff') format('woff'),
-    url('Open Sans-300.ttf') format('truetype'),
-    url('Open Sans-300.svg#Open Sans') format('svg');
+    url('OpenSans-Light.woff2') format('woff2'),
+    url('OpenSans-Light.woff') format('woff'),
+    url('OpenSans-Light.ttf') format('truetype'),
+    url('OpenSans-Light.svg#Open Sans') format('svg');
 }
 
 /* basic elements */

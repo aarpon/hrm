@@ -30,9 +30,7 @@ if (Util::using_IE()) {
     }
     echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
 ?>
-    <!-- Font -->
-    <link href="https://fonts.googleapis.com/css?family=Open Sans" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
     <link rel="stylesheet" href="css/jqtree-custom.css">
     <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
