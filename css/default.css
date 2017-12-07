@@ -13,6 +13,18 @@ Copyright and license notice: see license.txt
     font-family: 'Open Sans';
     font-weight: 400;
     font-style: normal;
+    src: url('OpenSans-Regular.eot');
+    src: url('OpenSans-Regular.eot?#iefix') format('embedded-opentype'),
+    url('OpenSans-Regular.woff2') format('woff2'),
+    url('OpenSans-Regular.woff') format('woff'),
+    url('OpenSans-Regular.ttf') format('truetype'),
+    url('OpenSans-Regular.svg#Open Sans') format('svg');
+}
+
+@font-face {
+    font-family: 'Open Sans Light';
+    font-weight: 300;
+    font-style: normal;
     src: url('OpenSans-Light.eot');
     src: url('OpenSans-Light.eot?#iefix') format('embedded-opentype'),
     url('OpenSans-Light.woff2') format('woff2'),
@@ -26,18 +38,16 @@ body {
     background: #fff;
     color: #000;
     font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
     font-size: 14px;
     text-align: center;
     margin: 0px;
 }
 
-@media  only screen and (-webkit-min-device-pixel-ratio: 1.5),
-        only screen and (-o-min-device-pixel-ratio: 150/100),
-        only screen and (min-resolution: 96dpi),
-        only screen and (min-resolution: 1.5dppx) {
+@media (min-resolution: 144dpi) {
 
-    /* HIDPI screens */
     body {
+        font-family: 'Open Sans Light', sans-serif;
         font-weight: 300;
     }
 }
