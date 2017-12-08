@@ -935,6 +935,8 @@ function changeVisibility(id) {
     blockElement = document.getElementById(id);
     if (blockElement.style.display == "none")
         blockElement.style.display = "block";
+    else if (blockElement.style.display == "")
+        blockElement.style.display = "block";
     else if (blockElement.style.display == "block")
         blockElement.style.display = "none";
     return blockElement.style.display;
