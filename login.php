@@ -149,7 +149,7 @@ include("header.inc.php");
         <ul>
             <?php
             echo(Nav::linkWikiPage('HuygensRemoteManagerHelpLogin'));
-            echo(Nav::externalLinks());
+            echo(Nav::externalSupportLinks());
             ?>
         </ul>
     </div>

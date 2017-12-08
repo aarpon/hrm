@@ -299,12 +299,11 @@ class Nav
     }
 
     /**
-     * Generate HTML code for a dropdown menu with the external links to various documentation entries.
+     * Generate HTML code for a dropdown menu with the external support links to various documentation entries.
      *
-     * @param string $pageName The title of the page in the SVI wiki.
      * @return string HTML code to render the documentation pull-down menu.
      */
-    public static function externalLinks()
+    public static function externalSupportLinks()
     {
         $linkToSVIWiki = Nav::linkSVIWiki($wrapInLiElement = false);
         $linkToProjectWebsite = Nav::linkProjectWebsite($wrapInLiElement = false);
@@ -314,9 +313,9 @@ class Nav
         $html = <<<EOT
 <li>
     <div class="dropdown">
-        <img src="images/note.png" alt="External links" />
-        <button onclick="expandExternalLinksDropdownMenu()" class="dropbtn">External links</button>
-        <div id="docuDropdownMenu" class="dropdown-content">
+        <img src="images/note.png" alt="Support" />
+        <button onclick="expandExternalSupportLinksDropdownMenu()" class="dropbtn">Support</button>
+        <div id="supportDropdownMenu" class="dropdown-content">
             $linkToSVIWiki
             $linkToProjectWebsite
             $linkToMailingList
@@ -328,8 +327,8 @@ class Nav
 <script type="text/javascript">
 
     /* When the user clicks on the button, toggle between hiding and showing the dropdown content */
-    function expandExternalLinksDropdownMenu() {
-        document.getElementById("docuDropdownMenu").classList.toggle("show");
+    function expandExternalSupportLinksDropdownMenu() {
+        document.getElementById("supportDropdownMenu").classList.toggle("show");
     }
 
     // Close the dropdown menu if the user clicks outside of it
