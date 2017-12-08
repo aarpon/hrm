@@ -138,7 +138,7 @@ table {
 #title {
     display: block;
     color: black;
-    text-align: left;
+    text-align: center;
     border-bottom: solid #eee 1px;
     margin-bottom: 5px;
 }
