@@ -70,6 +70,8 @@ function addDevelopers(array $name_list, array $email_list)
 
 <?php
 
+use hrm\System;
+
 // Check whether a user is currently logged in
 $loggedIn = (isset($_SESSION['user']) && $_SESSION['user']->isLoggedIn());
 
@@ -77,6 +79,18 @@ $loggedIn = (isset($_SESSION['user']) && $_SESSION['user']->isLoggedIn());
 
 <div id="footer">
 
+    <div id="version_info">
+        Huygens Remote Manager
+        <?php
+            $devel = '.hrm_devel_version';
+            if (file_exists($devel)) {
+                echo file_get_contents($devel);
+            } else {
+                echo "v" . System::getHRMVersionAsString();
+            }
+        ?>
+        <br/>
+    </div>
     created 2004 by
     <?php
     $name_list = array("Volker B&auml;cker");
@@ -90,7 +104,7 @@ $loggedIn = (isset($_SESSION['user']) && $_SESSION['user']->isLoggedIn());
 
     and released under the terms of the
     <a href="http://www.huygens-rm.org/wp/?page_id=81">CeCILL license</a>
-    <br/>extended 2006-2016 by
+    <br/>extended 2006-2018 by
     <?php
     $name_list = array("Asheesh Gulati", "Alessandra Griffa",
         "Jos&eacute; Vi&ntilde;a", "Daniel Sevilla",

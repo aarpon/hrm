@@ -800,6 +800,11 @@ input.save {
     border-bottom: #ccc 2px solid;*/
 }
 
+#footer #version_info {
+    font-size: 120%;
+    font-weight: bold;
+}
+
 #about {
     clear: both;
     font-size: 75%;
