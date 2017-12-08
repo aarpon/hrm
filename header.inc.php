@@ -95,7 +95,7 @@ if (isset($generatedScript)) {
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
         Please upgrade to a later version of Internet Explorer or to a new
-        broswer altogether.</h3>
+        browser altogether.</h3>
     <link rel="stylesheet" href="css/default_ie.css">
     <![endif]-->
 
@@ -131,7 +131,6 @@ if (isset($generatedScript)) {
             }
             ?></span>
       </h1>
-  	  <div id="logo"></div>
 	  </div>
 <?php } ?>
 

@@ -136,13 +136,17 @@ table {
 }
 
 #title {
-    position: relative;
-    height: 86px;
-    background: url("../images/title_bkg.png") repeat-x top left;
-    padding-left: 180px;
-    padding-top: 5px;
-    border: #fff 2px solid;
-    color: white;
+    display: block;
+    color: black;
+    text-align: left;
+    border-bottom: solid #eee 1px;
+    margin-bottom: 5px;
+}
+
+#title h1 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px;
 }
 
 #logo {
@@ -771,10 +775,13 @@ input.save {
 #info h3 {
     /*background-color: #eee;*/
     font-size: 16px;
-    line-height: 1.0;
+    line-height: 40px;
+    white-space: nowrap;
     font-weight: bold;
     text-align: center;
     border: solid 1px #ddd;
+    height:40px;
+    /*vertical-align: middle;*/
 }
 
 #footer {
@@ -787,7 +794,7 @@ input.save {
 
 #about {
     clear: both;
-    font-size: 60%;
+    font-size: 75%;
     padding: 5px 0px 5px 0px;
 }
 
@@ -1223,7 +1230,7 @@ table#Servers td {
     font-weight: bold;
     text-align: center;
     line-height: 1.0;
-    border: solid 1px #ddd;
+    /*border: solid 1px #ddd;*/
 }
 
 #homepage table {
@@ -1596,6 +1603,9 @@ input.noPreview {
 select {
     width: 100%;
     text-align: center;
+    border: 1px solid #eee;
+    background-color: #fff;
+    padding: 5px;
 }
 
 select.snrselect {
