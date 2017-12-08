@@ -98,7 +98,7 @@ if (isset($_POST['copy_public'])) {
         }
     } else $message = "Please select a setting to copy";
 } else if (isset($_POST['create'])) {
-    $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
+      $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
 
     if ($setting != NULL) {
         $setting->parameter("ImageFileFormat")->setValue($fileFormat);
@@ -107,6 +107,7 @@ if (isset($_POST['copy_public'])) {
         exit();
     }
     $message = $_SESSION['editor']->message();
+    
 } else if (isset($_POST['copy'])) {
     $_SESSION['editor']->copySelectedSetting($_POST['new_setting']);
     $message = $_SESSION['editor']->message();
@@ -502,11 +503,11 @@ if (!$_SESSION['user']->isAdmin()) {
               <tr>
                 <td class="button">
                   <input name="create"
-                   type="submit"
                    value=""
                    class="icon create"
                    onmouseover="TagToTip('ttSpanCreate' )"
-                   onmouseout="UnTip()"/>
+                   onmouseout="UnTip()"
+                   onclick="changeVisibility('newTemplateNameDiv')"/>
                 </td>
                 <td class="button">
                   <input name="edit"
@@ -611,6 +612,14 @@ if (!$_SESSION['user']->isAdmin()) {
             </table>                
             <input name="OK" type="hidden"/>
         </div>
+
+<div id="newTemplateNameDiv">
+     <label>Enter a name for the new template:
+           <input name="new_setting"
+                  type="text"
+                  class="textfield"/>
+     </label>
+</div>
         
         <?php
         if (!$_SESSION['user']->isAdmin()) {
@@ -631,11 +640,8 @@ if (!$_SESSION['user']->isAdmin()) {
                        onmouseout="UnTip()"/>
             </div>
 
-
-            <?php
-
+        <?php
         }
-
         ?>
 
     </form> <!-- select -->
