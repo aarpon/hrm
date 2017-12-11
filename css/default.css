@@ -685,7 +685,15 @@ input.save {
     width: 450px;
 }
 
-#newTemplateNameDiv {
+#newTemplateDiv {
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+    display: none;
+    padding: 30px 30px 0 0;
+}
+
+#copyTemplateDiv {
     font-size: 14px;
     text-align: center;
     width: 100%;

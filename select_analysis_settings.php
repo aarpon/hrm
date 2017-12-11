@@ -83,17 +83,17 @@ if (isset($_POST['copy_public'])) {
             $message = $_SESSION['editor']->message();
         }
     } else $message = "Please select a setting to copy";
-} else if (isset($_POST['create'])) {
+} else if (!empty($_POST['new_setting_create'])) {
     $analysis_setting = $_SESSION['analysiseditor']->createNewSetting(
-        $_POST['new_setting']);
+        $_POST['new_setting_create']);
     if ($analysis_setting != NULL) {
         $_SESSION['analysis_setting'] = $analysis_setting;
         header("Location: " . "coloc_analysis.php");
         exit();
     }
     $message = $_SESSION['analysiseditor']->message();
-} else if (isset($_POST['copy'])) {
-    $_SESSION['analysiseditor']->copySelectedSetting($_POST['new_setting']);
+} else if (!empty($_POST['new_setting_copy'])) {
+    $_SESSION['analysiseditor']->copySelectedSetting($_POST['new_setting_copy']);
     $message = $_SESSION['analysiseditor']->message();
 } else if (isset($_POST['edit'])) {
     $analysis_setting = $_SESSION['analysiseditor']->loadSelectedSetting();
@@ -403,11 +403,12 @@ if (!$_SESSION['user']->isAdmin()) {
              <tr>
                 <td class="button">
                   <input name="create" <?php echo $widgetState ?>
-                   type="submit"
+                   type="button"
                    value=""
                    class="icon create"
                    onmouseover="TagToTip('ttSpanCreate' )"
-                   onmouseout="UnTip()"/>
+                   onmouseout="UnTip()"
+                   onclick="hide('copyTemplateDiv'); changeVisibility('newTemplateDiv')"/>
                 </td>
                 <td class="button">
                   <input name="edit" <?php echo $widgetState ?>
@@ -419,11 +420,12 @@ if (!$_SESSION['user']->isAdmin()) {
                 </td>
                 <td class="button">
                   <input name="copy" <?php echo $widgetState ?>
-                   type="submit"
+                   type="button"
                    value=""
                    class="icon clone"
                    onmouseover="TagToTip('ttSpanClone' )"
-                   onmouseout="UnTip()"/>
+                   onmouseout="UnTip()"
+                   onclick="hide('newTemplateDiv'); changeVisibility('copyTemplateDiv')"/>
                 </td>
 <?php
   if (!$_SESSION['user']->isAdmin()) {
@@ -490,6 +492,23 @@ if (!$_SESSION['user']->isAdmin()) {
               </table>
             <input name="OK" type="hidden"/>
         </div>
+        
+        <div id="newTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_create"
+                     type="text"
+                     class="textfield"/>
+           </label>
+        </div>
+        <div id="copyTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_copy"
+                     type="text"
+                     class="textfield"/>
+           </label>
+        </div>
+
+
         <?php
 
         if (!$_SESSION['user']->isAdmin()) {

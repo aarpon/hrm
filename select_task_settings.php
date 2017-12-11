@@ -79,17 +79,17 @@ if (isset($_POST['copy_public'])) {
   }
   else $message = "Please select a setting to copy";
 }
-else if (isset($_POST['create'])) {
+else if (!empty($_POST['new_setting_create'])) {
   $task_setting = $_SESSION['taskeditor']->createNewSetting(
-    $_POST['new_setting']);
+    $_POST['new_setting_create']);
   if ($task_setting != NULL) {
     $_SESSION['task_setting'] = $task_setting;
     header("Location: " . "task_parameter.php"); exit();
   }
   $message = $_SESSION['taskeditor']->message();
 }
-else if (isset($_POST['copy'])) {
-  $_SESSION['taskeditor']->copySelectedSetting($_POST['new_setting']);
+else if (!empty($_POST['new_setting_copy'])) {
+  $_SESSION['taskeditor']->copySelectedSetting($_POST['new_setting_copy']);
   $message = $_SESSION['taskeditor']->message();
 }
 else if (isset($_POST['huTotemplate'])) {
@@ -450,12 +450,12 @@ else {
                   <tr>
                     <td class="button">
                       <input name="create"
-                       type="submit"
-                       onclick="hideShow()"
+                       type="button"
                        value=""
                        class="icon create"
                        onmouseover="TagToTip('ttSpanCreate' )"
-                       onmouseout="UnTip()" />
+                       onmouseout="UnTip()"
+                       onclick="hide('copyTemplateDiv'); changeVisibility('newTemplateDiv')"/> 
                     </td>
                     <td class="button">
                       <input name="edit"
@@ -467,12 +467,13 @@ else {
                     </td>
                     <td class="button">
                       <input name="copy"
-                       type="submit"
+                       type="button"
                        value=""
                        class="icon clone"
                        onmouseover="TagToTip('ttSpanClone' )"
-                       onmouseout="UnTip()" />
-                      </td>
+                       onmouseout="UnTip()"
+                       onclick="hide('newTemplateDiv'); changeVisibility('copyTemplateDiv')"/>
+                    </td>
                     <td class="button">
                       <input name="huTotemplate"
                        type="button"
@@ -554,6 +555,21 @@ if (!$_SESSION['user']->isAdmin()) {
                 </table>                
                 <input name="OK" type="hidden" />
             </div>
+
+       <div id="newTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_create"
+                     type="text"
+                     class="textfield"/>
+           </label>
+        </div>
+        <div id="copyTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_copy"
+                     type="text"
+                     class="textfield"/>
+           </label>
+        </div>
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
