@@ -188,19 +188,9 @@ if (isset($generatedScript)) {
 <div id="basket">
 
 <?php if (!isset($excludeTitle)) { ?>
-	  <div id="title">
-	  <h1>
-          Huygens Remote Manager
-            <span id="about">
-            <?php
-            $devel = '.hrm_devel_version';
-            if (file_exists($devel)) {
-                echo file_get_contents($devel);
-            } else {
-                echo "v" . System::getHRMVersionAsString();
-            }
-            ?></span>
-      </h1>
-	  </div>
+    <div id="title">
+        <h1>
+            Huygens Remote Manager
+        </h1>
+    </div>
 <?php } ?>
-
