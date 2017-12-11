@@ -75,6 +75,7 @@ if (!isset($_SESSION['fileserver'])) {
 
 $message = "";
 
+
 /* *****************************************************************************
  *
  * PROCESS THE POSTED PARAMETERS
@@ -97,8 +98,8 @@ if (isset($_POST['copy_public'])) {
             $message = $_SESSION['editor']->message();
         }
     } else $message = "Please select a setting to copy";
-} else if (isset($_POST['create'])) {
-      $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting']);
+} else if (!empty($_POST['new_setting_create'])) {
+      $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting_create']);
 
     if ($setting != NULL) {
         $setting->parameter("ImageFileFormat")->setValue($fileFormat);
@@ -108,8 +109,8 @@ if (isset($_POST['copy_public'])) {
     }
     $message = $_SESSION['editor']->message();
     
-} else if (isset($_POST['copy'])) {
-    $_SESSION['editor']->copySelectedSetting($_POST['new_setting']);
+} else if (!empty($_POST['new_setting_copy'])) {
+    $_SESSION['editor']->copySelectedSetting($_POST['new_setting_copy']);
     $message = $_SESSION['editor']->message();
 } else if (isset($_POST['imageTotemplate']) && isset($_POST['fileselection'])) {
     $setting = NULL;
@@ -496,18 +497,18 @@ if (!$_SESSION['user']->isAdmin()) {
             $validFiles = $_SESSION['fileserver']->selectedFiles();
         }
         ?>
-
         <div id="upMsg"></div>
         <div id="actions" class="parameterselection">
            <table id="actions">
               <tr>
                 <td class="button">
                   <input name="create"
+                   type="button"
                    value=""
                    class="icon create"
                    onmouseover="TagToTip('ttSpanCreate' )"
                    onmouseout="UnTip()"
-                   onclick="changeVisibility('newTemplateNameDiv')"/>
+                   onclick="hide('copyTemplateDiv'); changeVisibility('newTemplateDiv')"/>
                 </td>
                 <td class="button">
                   <input name="edit"
@@ -519,11 +520,12 @@ if (!$_SESSION['user']->isAdmin()) {
                 </td>
                 <td class="button">
                   <input name="copy"
-                   type="submit"
+                   type="button"
                    value=""
                    class="icon clone"
                    onmouseover="TagToTip('ttSpanClone' )"
-                   onmouseout="UnTip()"/>
+                   onmouseout="UnTip()"
+                   onclick="hide('newTemplateDiv'); changeVisibility('copyTemplateDiv')"/>
                 </td>
                 <td class="button">
                   <input name="imageTotemplate"
@@ -613,13 +615,21 @@ if (!$_SESSION['user']->isAdmin()) {
             <input name="OK" type="hidden"/>
         </div>
 
-<div id="newTemplateNameDiv">
-     <label>Enter a name for the new template:
-           <input name="new_setting"
-                  type="text"
-                  class="textfield"/>
-     </label>
-</div>
+        <div id="newTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_create"
+                     type="text"
+                     class="textfield"/>
+           </label>
+        </div>
+        <div id="copyTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_copy"
+                     type="text"
+                     class="textfield"/>
+           </label>
+        </div>
+
         
         <?php
         if (!$_SESSION['user']->isAdmin()) {
