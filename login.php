@@ -268,8 +268,6 @@ include("header.inc.php");
     }
 
     ?>
-    <h1>Welcome</h1>
-
     <div id="welcome_intro">
         The <a href="javascript:openWindow('http://hrm.sourceforge.net')">
             Huygens Remote Manager</a> is an easy to use interface to the<br/>
