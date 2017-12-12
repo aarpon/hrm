@@ -383,14 +383,14 @@ include("header.inc.php");
                 <td>
                     <a href="http://www.lin-magdeburg.de"
                        onclick="this.target='_blank'; return true;">
-                        Leibniz Institute for Neurobiology<br/>
+                        Leibniz Institute for Neurobiology
                     </a><br/>
                     Magdeburg
                 </td>
                 <td>
                     <a href="http://cni.ifn-magdeburg.de"
                        onclick="this.target='_blank'; return true;">
-                        Combinatorial Neuroimaging<br/>
+                        Combinatorial Neuroimaging
                     </a><br/>
                     Magdeburg
                 </td>
