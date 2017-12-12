@@ -1647,6 +1647,13 @@ option.default {
     margin: 1px 5px 1px 1px;
 }
 
+.textfield_30 {
+    size: 30;
+    text-align: left;
+    vertical-align: middle;
+    margin: 1px 5px 1px 1px;
+}
+
 .psffile {
     width: 70%;
 }

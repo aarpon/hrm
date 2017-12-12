@@ -611,6 +611,9 @@ if (!$_SESSION['user']->isAdmin()) {
                      Remove
                 </td>
               </tr>
+              <tr>
+
+              </tr>
             </table>                
             <input name="OK" type="hidden"/>
         </div>
@@ -619,14 +622,21 @@ if (!$_SESSION['user']->isAdmin()) {
            <label>Enter a name for the new template:
               <input name="new_setting_create"
                      type="text"
-                     class="textfield"/>
+                     class="textfield_30"/>
+              <input name="submit"
+                   type="submit"
+                   value="Submit"/>
            </label>
+
         </div>
         <div id="copyTemplateDiv">
            <label>Enter a name for the new template:
               <input name="new_setting_copy"
                      type="text"
-                     class="textfield"/>
+                     class="textfield_30"/>
+              <input name="submit"
+                   type="submit"
+                   value="Submit"/>
            </label>
         </div>
 
