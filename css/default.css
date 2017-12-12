@@ -629,6 +629,12 @@ input.save {
     background: url("../images/save.png") no-repeat center;
 }
 
+input.apply {
+    width: 60px;
+    height: 60px;
+    background: url("../images/apply.png") no-repeat center;
+}
+
 #actions {
     text-align: center;
     font-size: 70%;
