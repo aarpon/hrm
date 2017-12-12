@@ -188,14 +188,39 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to the login link.
      */
-    public static function linkLogIn($wrapInLiElement = true)
+    public static function linkLogIn($wrapInLiElement = true, $showSignUp = true, $req = "")
     {
-        return self::buildLinkHTMLElement("Login",
-            "#",
-            "images/user.png",
-            "Login", false,
-            $wrapInLiElement,
-            "$(\"#login\").toggle()");
+        $openingLi = "";
+        $closingLi = "";
+        if ($wrapInLiElement == true) {
+            $openingLi = "<li>";
+            $closingLi = "</li>";
+        }
+
+        if ($showSignUp == true) {
+            $signUpElement = <<<EOT
+<button type="button" class="button" value="signup" onclick="location.href = 'registration.php';">Sign up</button>
+EOT;
+        } else {
+            $signUpElement = "";
+        }
+
+        $html = <<<EOT
+<div id = "login">
+<img src="images/user.png" alt="Login"/>
+<form method="post" action="login.php">
+<label for="username">User name</label>
+<input id="username" name="username" type="text" class="textfield" tabindex="1"/>
+<label for="password">Password</label>
+<input id="password" name="password" type="password" class="textfield" tabindex="2"/>
+<input type="hidden" name="request" value="$req"/>
+<button type="submit" class="dark" value="login">Log in</button>
+$signUpElement
+<button type="button" class="button" value="reset" onclick="location.href = 'reset_password.php';">Reset</button>
+</form>
+</div>
+EOT;
+        return $openingLi . $html . $closingLi;
     }
 
     /**

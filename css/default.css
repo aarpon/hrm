@@ -144,7 +144,7 @@ table {
 }
 
 #title h1 {
-    font-size: 18px;
+    font-size: 36px;
     font-weight: bold;
     margin: 10px;
 }
@@ -227,7 +227,7 @@ table {
 }
 
 #nav li {
-    display: inline;
+    display: inline-block;
     padding: 4px;
 }
 
@@ -702,60 +702,33 @@ input.save {
 }
 
 #login {
-    font-size: 14px;
-    text-align: center;
-    width: 100%;
-    display: none;
-}
-
-#login_registration {
-    font-size: 12px;
-    height: 48px;
-    text-align: center;
-    padding-left: 0px;
-    padding-bottom: 10px;
-}
-
-#login fieldset {
-    -moz-border-radius: 7px;
-    -webkit-border-radius: 7px;
-    border-radius: 7px;
-}
-
-#login legend {
-    font-size: 16px;
-    font-weight: bold;
     text-align: left;
+    display: inline-block;
+    white-space: nowrap;
+    margin-right: 25px;
 }
 
-#login p.expl {
-    font-size: 12px;
-    font-weight: normal;
-    text-align: center;
-    padding: 0px 5px;
-}
-
-#login a {
-    font-size: 11px;
-    font-weight: normal;
-    text-align: center;
+#login img {
+    float:left;
+    margin-right: 4px;
 }
 
 #login label {
-    font-size: 12px;
     font-weight: normal;
 }
 
 #login input.textfield {
-    width: 300px;
+    width: 80px;
     text-align: center;
-    margin-bottom: 10px;
 }
 
-#login input.button {
-    margin-top: 10px;
-    font-size: 12px;
-    width: 200px;
+#login button {
+    width: 70px;
+    font-weight: normal;
+}
+
+#login .dark {
+    background-color: #ddd;
     font-weight: bold;
 }
 
