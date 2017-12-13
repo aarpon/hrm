@@ -338,8 +338,8 @@ EOT;
         $html = <<<EOT
 <li>
     <div class="dropdown">
-        <img src="images/note.png" alt="Support" />
-        <button onclick="expandExternalSupportLinksDropdownMenu()" class="dropbtn">Support</button>
+        <img src="images/resources.png" alt="Resources" />
+        <button onclick="expandExternalSupportLinksDropdownMenu()" class="dropbtn">Resources</button>
         <div id="supportDropdownMenu" class="dropdown-content">
             $linkToSVIWiki
             $linkToProjectWebsite
