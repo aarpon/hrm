@@ -65,7 +65,7 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
 if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
 
     if ($_SESSION['task_setting']->numberOfChannels() > 1) {
-        header("Location: " . "chromatic_aberration.php");
+        header("Location: " . "post_processing.php");
         exit();
     } else {
 

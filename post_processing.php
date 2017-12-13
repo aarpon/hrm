@@ -29,10 +29,10 @@ $message = "";
  **************************************************************************** */
 
 /** @var ChromaticAberration $parameter */
-$parameter = $_SESSION['task_setting']->parameter("ChromaticAberration");
+$chromaticParam = $_SESSION['task_setting']->parameter("ChromaticAberration");
 $chanCnt = $_SESSION['task_setting']->numberOfChannels();
-$componentCnt = $parameter->componentCnt();
-$chromaticArray = $parameter->value();
+$componentCnt = $chromaticParam->componentCnt();
+$chromaticArray = $chromaticParam->value();
 ksort($chromaticArray);
 
 
