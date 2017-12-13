@@ -563,7 +563,8 @@ if (!$_SESSION['user']->isAdmin()) {
                      class="textfield_30"/>
               <input name="submit"
                      type="submit"
-                     value="Submit"/>
+                     value="Submit"
+                     class="submit_btn"/>
            </label>
         </div>
         <div id="copyTemplateDiv">
@@ -573,7 +574,8 @@ if (!$_SESSION['user']->isAdmin()) {
                      class="textfield_30"/>
               <input name="submit"
                      type="submit"
-                     value="Submit"/>
+                     value="Submit"
+                     class="submit_btn"/>
            </label>
         </div>
 <?php

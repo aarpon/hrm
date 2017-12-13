@@ -242,6 +242,18 @@ table {
     color: white;
 }
 
+.submit_btn {
+    background-color: #0099FF; /* Blue. */
+    border: none;
+    color: white;
+    padding: 6px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
 #controls {
     text-align: center;
     /*border-top: #ccc 1px dotted;*/
@@ -1657,6 +1669,7 @@ option.default {
     size: 30;
     text-align: left;
     vertical-align: middle;
+    padding: 4px;
     margin: 1px 5px 1px 1px;
 }
 
