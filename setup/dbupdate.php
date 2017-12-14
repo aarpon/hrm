@@ -5383,7 +5383,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "TStabilization";
     $record["value"] = "0";
-    $record["translation"] = "No, do not stabilize deconvolved time series.";
+    $record["translation"] = "Do not stabilize deconvolved time series";
     $record["isDefault"] = "t";
 
     // Skip it if the row is already there.
@@ -5405,7 +5405,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "TStabilizationMethod";
-    $record["value"] = "Correlation";
+    $record["value"] = "corr";
     $record["translation"] = "Correlation";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -5416,7 +5416,7 @@ if ($current_revision < $n) {
         return;
     }
 
-    $record["value"] = "CM";
+    $record["value"] = "cm";
     $record["translation"] = "Center Of Mass";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -5427,7 +5427,7 @@ if ($current_revision < $n) {
         return;
     }
 
-    $record["value"] = "ModelBased";
+    $record["value"] = "model";
     $record["translation"] = "Model Based";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -5484,7 +5484,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "TStabilizationCropping";
-    $record["value"] = "Original";
+    $record["value"] = "original";
     $record["translation"] = "Original";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -5495,7 +5495,7 @@ if ($current_revision < $n) {
         return;
     }
 
-    $record["value"] = "Tight";
+    $record["value"] = "tight";
     $record["translation"] = "Tight";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -5506,7 +5506,7 @@ if ($current_revision < $n) {
         return;
     }
 
-    $record["value"] = "Full";
+    $record["value"] = "full";
     $record["translation"] = "Full";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);

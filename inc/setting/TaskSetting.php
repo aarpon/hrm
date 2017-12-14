@@ -286,7 +286,10 @@ class TaskSetting extends Setting
         $this->message = '';
         $noErrorsFound = True;
 
-        foreach ($postedParameters as $param) {
+        foreach ($postedParameters as $name => $param) {
+            if (strpos($name, 'ChromaticAberration') === false) {
+                continue;
+            }
             if ($param != "" && !is_numeric($param)) {
                 $noErrorsFound = False;
                 $this->message = "Value must be numeric";

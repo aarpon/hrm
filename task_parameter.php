@@ -61,7 +61,6 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
  *
  **************************************************************************** */
 
-
 if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
 
     if ($_SESSION['task_setting']->numberOfChannels() > 1) {

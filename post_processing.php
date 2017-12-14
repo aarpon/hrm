@@ -41,7 +41,6 @@ ksort($chromaticArray);
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
-
 if ($_SESSION['task_setting']->checkPostedChromaticAberrationParameters($_POST)
     && $_SESSION['task_setting']->checkPostedTStabilizationParameters($_POST)) {
     $saved = $_SESSION['task_setting']->save();

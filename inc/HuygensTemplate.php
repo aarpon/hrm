@@ -584,6 +584,7 @@ class HuygensTemplate
                   'mode'    => '',
                   'rot'     => '',
                   'crop'    => '',
+                  'dim'     => 't',
                   'listID'  => 'stabilize:post');
 
         /* Options for the 'colocalization analysis' action. */
@@ -832,6 +833,7 @@ class HuygensTemplate
                 case 'ZStabilization':
                 case 'algorithms':
                 case 'chromatic':
+                case 'TStabilization':
                 case 'colocalization':
                 case '2Dhistogram':
                 case 'XYXZRawAtSrcDir':
@@ -1158,7 +1160,7 @@ class HuygensTemplate
                 case 'enabled':               
                     $taskDescr .= $TStabilizeParam->value();
                     break;
-                case 'method':               
+                case 'mode':               
                     $taskDescr .= $TStabilizeMethodParam->value();
                     break;
                 case 'rot':               
@@ -1166,6 +1168,9 @@ class HuygensTemplate
                     break;
                 case 'crop':               
                     $taskDescr .= $TStabilizeCroppingParam->value();
+                    break;
+                case 'dim':               
+                    $taskDescr .= $value;
                     break;
                 case 'listID':
                     $taskDescr = $this->string2tcllist($taskDescr);
@@ -2787,6 +2792,7 @@ class HuygensTemplate
             case 'adjbl':
             case 'imgSave':
             case 'stabilize':
+            case 'stabilize:post':   
                 break;
             case 'coloc':
             case 'hist':
