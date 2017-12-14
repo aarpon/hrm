@@ -584,7 +584,6 @@ class HuygensTemplate
                   'mode'    => '',
                   'rot'     => '',
                   'crop'    => '',
-                  'dim'     => 't',
                   'listID'  => 'stabilize:post');
 
         /* Options for the 'colocalization analysis' action. */
@@ -1168,9 +1167,6 @@ class HuygensTemplate
                     break;
                 case 'crop':               
                     $taskDescr .= $TStabilizeCroppingParam->value();
-                    break;
-                case 'dim':               
-                    $taskDescr .= $value;
                     break;
                 case 'listID':
                     $taskDescr = $this->string2tcllist($taskDescr);
