@@ -265,6 +265,75 @@ class TaskSetting extends Setting
             }
         }
 
+        return $noErrorsFound;
+    }
+
+    /**
+     * Checks that the posted Aberration Correction Parameters are defined.
+     * This correction is optional.
+     * @param array $postedParameters The array of posted parameters.
+     * @return bool True if all Parameters are defined and valid, false
+     * otherwise.
+     */
+    public function checkPostedChromaticAberrationParameters(array $postedParameters)
+    {
+
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return False;
+        }
+
+        $this->message = '';
+        $noErrorsFound = True;
+
+        foreach ($postedParameters as $param) {
+            if ($param != "" && !is_numeric($param)) {
+                $noErrorsFound = False;
+                $this->message = "Value must be numeric";
+                break;
+            }
+        }
+
+        if (!$noErrorsFound) {
+            return $noErrorsFound;
+        }
+
+        $parameter = $this->parameter("ChromaticAberration");
+
+        /* The posted parameters are received in increasing 'chan component'
+           order. */
+        $i = 0;
+        foreach ($postedParameters as $name => $param) {
+            if (strpos($name, 'ChromaticAberration') === false) {
+                continue;
+            }
+
+            $valuesArray[$i] = $param;
+            $i++;
+        }
+
+        $parameter->setValue($valuesArray);
+
+        return $noErrorsFound;
+    }
+
+    /**
+     * Checks that the posted T Stabilization Parameters are defined.
+     * This correction is optional.
+     * @param array $postedParameters The array of posted parameters.
+     * @return bool True if all Parameters are defined and valid, false
+     * otherwise.
+     */
+    public function checkPostedTStabilizationParameters(array $postedParameters)
+    {
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return False;
+        }
+
+        $this->message = '';
+        $noErrorsFound = True;
+        
         // Stabilization in T
         if (isset($postedParameters["TStabilization"]) ||
             $postedParameters["TStabilization"] == ''
@@ -316,55 +385,6 @@ class TaskSetting extends Setting
                 $noErrorsFound = False;
             }
         }
-
-        return $noErrorsFound;
-    }
-
-    /**
-     * Checks that the posted Aberration Correction Parameters are defined.
-     * This correction is optional.
-     * @param array $postedParameters The array of posted parameters.
-     * @return bool True if all Parameters are defined and valid, false
-     * otherwise.
-     */
-    public function checkPostedChromaticAberrationParameters(array $postedParameters)
-    {
-
-        if (count($postedParameters) == 0) {
-            $this->message = '';
-            return False;
-        }
-
-        $this->message = '';
-        $noErrorsFound = True;
-
-        foreach ($postedParameters as $param) {
-            if ($param != "" && !is_numeric($param)) {
-                $noErrorsFound = False;
-                $this->message = "Value must be numeric";
-                break;
-            }
-        }
-
-        if (!$noErrorsFound) {
-            return $noErrorsFound;
-        }
-
-        $parameter = $this->parameter("ChromaticAberration");
-
-        /* The posted parameters are received in increasing 'chan component'
-           order. */
-        $i = 0;
-        foreach ($postedParameters as $name => $param) {
-            if (strpos($name, 'ChromaticAberration') === false) {
-                continue;
-            }
-
-            $valuesArray[$i] = $param;
-            $i++;
-        }
-
-        $parameter->setValue($valuesArray);
 
         return $noErrorsFound;
     }
@@ -656,7 +676,6 @@ class TaskSetting extends Setting
         if (isset($aberration)) {
             $this->parameter['ChromaticAberration']->setValue($aberration);
         }
-
 
         // Stabilization in T.
         if (strpos($huArray['stabilize:post enabled'], "") === FALSE) {

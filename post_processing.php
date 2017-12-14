@@ -42,7 +42,8 @@ ksort($chromaticArray);
  *
  **************************************************************************** */
 
-if ($_SESSION['task_setting']->checkPostedChromaticAberrationParameters($_POST)) {
+if ($_SESSION['task_setting']->checkPostedChromaticAberrationParameters($_POST)
+    && $_SESSION['task_setting']->checkPostedTStabilizationParameters($_POST)) {
     $saved = $_SESSION['task_setting']->save();
     if ($saved) {
         header("Location: " . "select_task_settings.php");
@@ -104,9 +105,9 @@ include("header.inc.php");
 
 <div id="content">
     <h2>Restoration - Post Deconvolution</h2>
-    <div id="cac">
+    <form method="post" action="" id="select">
 
-
+    <div id="ChromaticAberration">
         <fieldset class="setting provided"
                   onmouseover="changeQuickHelp( 'chromatic' );">
 
@@ -141,8 +142,6 @@ include("header.inc.php");
                 ?>
             </select>
 
-
-            <form method="post" action="" id="select">
                 <table id="ChromaticAberration">
                     <tr>
                         <td class="header">Ch</td>
@@ -189,7 +188,7 @@ include("header.inc.php");
     </div> <!-- ChromaticAberrationCorrector -->
 
 
-    <div id="TStabilization">
+    <div id="TimeStabilization">
 
         <fieldset class="setting provided"
                   onmouseover="changeQuickHelp( 'tstabilization' );">
@@ -212,36 +211,143 @@ include("header.inc.php");
                     title="Stabilization of Time Series"
                     onclick="changeTStabilization(this)"
                     onchange="changeTStabilization(this)">
+   <?php
+            $parameterTStabilization = $_SESSION['task_setting']->parameter("TStabilization");
+            $possibleValues = $parameterTStabilization->possibleValues();
+            $selectedValue = $parameterTStabilization->value();
+            
+            // The javascript expects option values to match their indexes:
+             sort($possibleValues);
+
+             foreach ($possibleValues as $possibleValue) {
+                 $translation = $parameterTStabilization->translatedValueFor($possibleValue);
+                 if ($possibleValue == "0" && $selectedValue == "") {
+                     $option = "selected=\"selected\"";
+                 } else if ($possibleValue == $selectedValue) {
+                     $option = "selected=\"selected\"";
+                 } else {
+                     $option = "";
+                 }
+   ?>
+                 <option <?php echo $option ?>
+                     value="<?php echo $possibleValue ?>">
+                    <?php echo $translation ?>
+                 </option>
+   <?php
+             }
+   ?>
             </select>
 
             <br /><br />
-            
+
+
             Stabilization Method:
             <select name="TStabilizationMethod"
                     id="TStabilizationMethod"
-                    title="Stabililzation Method">
+                    title="Stabilization Method">
+   <?php
+            $parameterTStabilizationMethod =
+                $_SESSION['task_setting']->parameter("TStabilizationMethod");
+            $possibleValues = $parameterTStabilizationMethod->possibleValues();
+            $selectedValue = $parameterTStabilizationMethod->value();
+            
+            // The javascript expects option values to match their indexes:
+             sort($possibleValues);
+
+             foreach ($possibleValues as $possibleValue) {
+                 $translation =
+                     $parameterTStabilizationMethod->translatedValueFor($possibleValue);
+                 if ($possibleValue == "0" && $selectedValue == "") {
+                     $option = "selected=\"selected\"";
+                 } else if ($possibleValue == $selectedValue) {
+                     $option = "selected=\"selected\"";
+                 } else {
+                     $option = "";
+                 }
+   ?>
+                 <option <?php echo $option ?>
+                     value="<?php echo $possibleValue ?>">
+                    <?php echo $translation ?>
+                 </option>
+   <?php
+             }
+   ?>
             </select>
 
             <br /><br />
-            
+
+
+
             Detect Rotations:
             <select name="TStabilizationRotation"
                     id="TStabilizationRotation"
-                    title="Stabililzation Rotation">
-            </select>
+                    title="Stabilization Rotation">
+   <?php
+            $parameterTStabilizationRotation =
+                $_SESSION['task_setting']->parameter("TStabilizationRotation");
+            $possibleValues = $parameterTStabilizationRotation->possibleValues();
+            $selectedValue = $parameterTStabilizationRotation->value();
+            
+            // The javascript expects option values to match their indexes:
+             sort($possibleValues);
 
+             foreach ($possibleValues as $possibleValue) {
+                 $translation = $parameterTStabilizationRotation->translatedValueFor($possibleValue);
+                 if ($possibleValue == "0" && $selectedValue == "") {
+                     $option = "selected=\"selected\"";
+                 } else if ($possibleValue == $selectedValue) {
+                     $option = "selected=\"selected\"";
+                 } else {
+                     $option = "";
+                 }
+   ?>
+                 <option <?php echo $option ?>
+                     value="<?php echo $possibleValue ?>">
+                    <?php echo $translation ?>
+                 </option>
+   <?php
+             }
+   ?>
+            </select>
+            
             <br /><br />
+
+
 
             Cropping Scheme:
             <select name="TStabilizationCropping"
                     id="TStabilizationCropping"
-                    title="Stabililzation Cropping">
+                    title="Stabilization Cropping">
+
+   <?php
+            $parameterTStabilizationCropping =
+                $_SESSION['task_setting']->parameter("TStabilizationCropping");
+            $possibleValues = $parameterTStabilizationCropping->possibleValues();
+            $selectedValue = $parameterTStabilizationCropping->value();
+            
+            // The javascript expects option values to match their indexes:
+             sort($possibleValues);
+
+             foreach ($possibleValues as $possibleValue) {
+                 $translation = $parameterTStabilizationCropping->translatedValueFor($possibleValue);
+                 if ($possibleValue == "0" && $selectedValue == "") {
+                     $option = "selected=\"selected\"";
+                 } else if ($possibleValue == $selectedValue) {
+                     $option = "selected=\"selected\"";
+                 } else {
+                     $option = "";
+                 }
+   ?>
+                 <option <?php echo $option ?>
+                     value="<?php echo $possibleValue ?>">
+                    <?php echo $translation ?>
+                 </option>
+   <?php
+             }
+   ?>
             </select>
 
-
-    </div> <!-- TStabilization -->
-
-
+    </div> <!-- TimeStabilization -->
 
 
     <div><input name="OK" type="hidden"/></div>

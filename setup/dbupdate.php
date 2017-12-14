@@ -5443,8 +5443,8 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "TStabilizationRotation";
     $record["value"] = "0";
-    $record["translation"] = "Detect rotation during stabilization";
-    $record["isDefault"] = "t";
+    $record["translation"] = "Include rotations";
+    $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
@@ -5462,6 +5462,7 @@ if ($current_revision < $n) {
     }
 
     $record["value"] = "1";
+    $record["translation"] = "Skip rotations";
     $record["isDefault"] = "t";
 
     // Skip it if the row is already there.
