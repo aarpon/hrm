@@ -103,7 +103,7 @@ include("header.inc.php");
 
 
 <div id="content">
-    <h2>Restoration - Chromatic Aberration</h2>
+    <h2>Restoration - Post Deconvolution</h2>
     <div id="cac">
 
 
@@ -187,6 +187,61 @@ include("header.inc.php");
                     skipping.</p>
 
     </div> <!-- ChromaticAberrationCorrector -->
+
+
+    <div id="TStabilization">
+
+        <fieldset class="setting provided"
+                  onmouseover="changeQuickHelp( 'tstabilization' );">
+
+            <legend>
+                <a href="javascript:openWindow(
+                       'http://www.svi.nl/ObjectStabilizer')">
+                    <img src="images/help.png" alt="?"/>
+                </a>
+                stabilize time series?
+            </legend>
+
+            <p>Correct for cell motion, thermal drift, shaking, and other
+               types of movement such as x-y-z translations and rotations.</p>
+
+
+            Stabilization of Time Series:
+            <select name="TStabilization"
+                    id="TStabilization"
+                    title="Stabilization of Time Series"
+                    onclick="changeTStabilization(this)"
+                    onchange="changeTStabilization(this)">
+            </select>
+
+            <br /><br />
+            
+            Stabilization Method:
+            <select name="TStabilizationMethod"
+                    id="TStabilizationMethod"
+                    title="Stabililzation Method">
+            </select>
+
+            <br /><br />
+            
+            Detect Rotations:
+            <select name="TStabilizationRotation"
+                    id="TStabilizationRotation"
+                    title="Stabililzation Rotation">
+            </select>
+
+            <br /><br />
+
+            Cropping Scheme:
+            <select name="TStabilizationCropping"
+                    id="TStabilizationCropping"
+                    title="Stabililzation Cropping">
+            </select>
+
+
+    </div> <!-- TStabilization -->
+
+
 
 
     <div><input name="OK" type="hidden"/></div>

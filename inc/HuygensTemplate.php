@@ -171,6 +171,12 @@ class HuygensTemplate
     private $algArray;
 
     /**
+     * Array with information on the time series stabilize subtask.
+     * @var array
+     */
+    private $TStabilizeArray;
+
+    /**
      * Array with information on the colocalization analysis subtask.
      * @var  array
      */
@@ -433,6 +439,7 @@ class HuygensTemplate
                 'autocrop'                => 'autocrop',
                 'adjustBaseline'          => 'adjbl',
                 'ZStabilization'          => 'stabilize',
+                'TStabilization'          => 'stabilize:post',
                 'algorithms'              => '',
                 'colocalization'          => 'coloc',
                 'chromatic'               => 'shift',
@@ -570,6 +577,14 @@ class HuygensTemplate
         $this->ZStabilizeArray =
             array('enabled' => '0',
                   'listID'  => 'stabilize');
+
+        /* Options for the 'TStabilization' action. */
+        $this->TStabilizeArray =
+            array('enabled' => '0',
+                  'mode'    => '',
+                  'rot'     => '',
+                  'crop'    => '',
+                  'listID'  => 'stabilize:post');
 
         /* Options for the 'colocalization analysis' action. */
         $this->colocArray =
@@ -886,6 +901,9 @@ class HuygensTemplate
                 case 'chromatic':
                     $tasksDescr .= $this->getImgTaskDescrChromatic();
                     break;
+                case 'TStabilization':
+                    $tasksDescr .= $this->getImgTaskDescrTStabilize();
+                    break;
                 case 'colocalization':
                     $tasksDescr .= $this->getImgTaskDescrColocs();
                     break;
@@ -1115,6 +1133,52 @@ class HuygensTemplate
 
         return $allTasksDescr;
     }
+
+    /**
+     * Get options for the 'TStabilize' task.
+     * @return string Tcl list with the 'TStabilize' task and its options.
+     */
+    private function getImgTaskDescrTStabilize()
+    {
+
+        $taskDescr = "";
+
+        $TStabilizeParam = $this->deconSetting->parameter('TStabilization');
+        $TStabilizeMethodParam = $this->deconSetting->parameter('TStabilizationMethod');
+        $TStabilizeRotationParam = $this->deconSetting->parameter('TStabilizationRotation');
+        $TStabilizeCroppingParam = $this->deconSetting->parameter('TStabilizationCropping');
+
+        foreach ($this->TStabilizeArray as $key => $value) {
+
+            if ($key != "listID") {
+                $taskDescr .= " " . $key . " ";
+            }
+
+            switch ($key) {
+                case 'enabled':               
+                    $taskDescr .= $TStabilizeParam->value();
+                    break;
+                case 'method':               
+                    $taskDescr .= $TStabilizeMethodParam->value();
+                    break;
+                case 'rot':               
+                    $taskDescr .= $TStabilizeRotationParam->value();
+                    break;
+                case 'crop':               
+                    $taskDescr .= $TStabilizeCroppingParam->value();
+                    break;
+                case 'listID':
+                    $taskDescr = $this->string2tcllist($taskDescr);
+                    $taskDescr = $value . " " . $taskDescr;
+                    break;
+                default:
+                    Log::error("Image T stabilize option $key not yet implemented.");
+            }
+        }
+
+        return $taskDescr;
+    }
+
 
     /**
      * Get options for the 'Autocrop' task.

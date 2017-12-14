@@ -70,3 +70,15 @@ window.helpText[ "default" ] =
   '<p>These parameters comprise the deconvolution algorithm, the ' +
   'signal-to-noise ratio (SNR) of the images, the mode for background ' +
   'estimation, and the stopping criteria.</p>';
+
+window.helpText[ "tstabilization" ] =
+    '<p>Choose method <b>Cross correlation</b> for general x-y-z translations ' +
+    'and axial rotations. Adjacent time frames will be compared. The software ' +
+    'will try to find the best alignment by maximizing structural overlap.' +
+    '</p><p>Choose method <b>Model based</b> if the geometry of the imaged' +
+    'object did not change much during the acquisition.</p>' +
+    '<p>The <b>CM</b> method works best if the image contains a single large' +
+    'object. No objects should cross the image borders.</p>' +
+    '<p>The cropping method <b>Full</b> will preserve the size of the ' +
+    'stabilized data. Method <b>Tight</b> will crop away large background ' +
+    'regions.';
