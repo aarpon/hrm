@@ -246,12 +246,13 @@ table {
     background-color: #0099FF; /* Blue. */
     border: none;
     color: white;
-    padding: 6px 24px;
+    margin: 5px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 14px;
-    vertical-align: middle;
+    font-size: 13px;
+    /* vertical-align: middle; */
+    /* padding: 6px; */
 }
 
 #controls {
