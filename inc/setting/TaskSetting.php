@@ -429,7 +429,10 @@ class TaskSetting extends Setting
     public function displayString($numberOfChannels = 0, $micrType = NULL)
     {
         $result = '';
+
+        // These parameters are important to properly display other parameters.
         $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
+        $TStabilization = $this->parameter('TStabilization')->value();   
         foreach ($this->parameter as $parameter) {
             /** @var SignalNoiseRatio $parameter */
             if ($parameter->name() == 'SignalNoiseRatio') {
@@ -446,6 +449,15 @@ class TaskSetting extends Setting
             ) {
                 continue;
             }
+            if ($parameter->name() == 'TStabilizationMethod'
+              && $TStabilization == 0)
+                continue;
+            if ($parameter->name() == 'TStabilizationRotation'
+              && $TStabilization == 0)
+                continue;
+            if ($parameter->name() == 'TStabilizationCropping'
+              && $TStabilization == 0)
+                continue;
             $result = $result .
                 $parameter->displayString($numberOfChannels);
         }

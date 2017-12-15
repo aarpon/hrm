@@ -253,10 +253,13 @@ include("header.inc.php");
         /*
               TIME STABILIZATION: METHOD
         */
-        
+           $visibility = " style=\"display: none\"";
+           if ($parameterTStabilization->value() == 1)
+              $visibility = " style=\"display: block\"";
+    
         ?>
 
-         <div id="TStabilizationMethodDiv">
+         <div id="TStabilizationMethodDiv" <?php echo $visibility ?>>
 
            Stabilization Method:
 
@@ -304,7 +307,7 @@ include("header.inc.php");
         
         ?>
 
-         <div id="TStabilizationRotationDiv">
+         <div id="TStabilizationRotationDiv" <?php echo $visibility ?>>
 
            Detect Rotations:
 
@@ -350,7 +353,7 @@ include("header.inc.php");
         
         ?>
         
-         <div id="TStabilizationCroppingDiv">
+         <div id="TStabilizationCroppingDiv" <?php echo $visibility ?>>
 
           Cropping Scheme:
 
