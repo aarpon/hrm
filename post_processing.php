@@ -104,6 +104,7 @@ include("header.inc.php");
 
 <div id="content">
     <h2>Restoration - Post Deconvolution</h2>
+    
     <form method="post" action="" id="select">
 
     <div id="ChromaticAberration">
@@ -118,10 +119,11 @@ include("header.inc.php");
                 correct images for chromatic aberration?
             </legend>
 
-            <p>Multi-channel images often display chromatic aberrations.
-                Correcting for this is crucial for image visualization and
-                analysis.</p>
-
+           <p>
+             Multi-channel images often display chromatic aberrations.
+             Correcting for this is crucial for image visualization and
+             analysis.
+           </p>
 
             Reference channel:
 
@@ -185,7 +187,15 @@ include("header.inc.php");
                     skipping.</p>
 
     </div> <!-- ChromaticAberrationCorrector -->
+    
 
+        <?php
+
+        /*
+              TIME STABILIZATION
+        */
+        
+        ?>
 
     <div id="TimeStabilization">
 
@@ -200,17 +210,18 @@ include("header.inc.php");
                 stabilize time series?
             </legend>
 
-            <p>Correct for cell motion, thermal drift, shaking, and other
-               types of movement such as x-y-z translations and rotations.</p>
-
+            <p>
+              Correct for cell motion, thermal drift, shaking, and other
+              types of movement such as x-y-z translations and rotations.
+            </p>
 
             Stabilization of Time Series:
+
             <select name="TStabilization"
                     id="TStabilization"
                     title="Stabilization of Time Series"
-                    onclick="changeTStabilization(this)"
-                    onchange="changeTStabilization(this)">
-   <?php
+                    onchange="switchTStabilizationMode(this)">
+           <?php
             $parameterTStabilization = $_SESSION['task_setting']->parameter("TStabilization");
             $possibleValues = $parameterTStabilization->possibleValues();
             $selectedValue = $parameterTStabilization->value();
@@ -227,24 +238,32 @@ include("header.inc.php");
                  } else {
                      $option = "";
                  }
-   ?>
+           ?>
                  <option <?php echo $option ?>
                      value="<?php echo $possibleValue ?>">
                     <?php echo $translation ?>
                  </option>
-   <?php
+           <?php
              }
-   ?>
+           ?>           
             </select>
 
-            <br /><br />
+        <?php
 
+        /*
+              TIME STABILIZATION: METHOD
+        */
+        
+        ?>
 
-            Stabilization Method:
+         <div id="TStabilizationMethodDiv">
+
+           Stabilization Method:
+
             <select name="TStabilizationMethod"
                     id="TStabilizationMethod"
                     title="Stabilization Method">
-   <?php
+        <?php
             $parameterTStabilizationMethod =
                 $_SESSION['task_setting']->parameter("TStabilizationMethod");
             $possibleValues = $parameterTStabilizationMethod->possibleValues();
@@ -263,25 +282,36 @@ include("header.inc.php");
                  } else {
                      $option = "";
                  }
-   ?>
+        ?>
                  <option <?php echo $option ?>
                      value="<?php echo $possibleValue ?>">
                     <?php echo $translation ?>
                  </option>
-   <?php
+                 
+        <?php
              }
-   ?>
+        ?>        
             </select>
 
-            <br /><br />
+         </div> <!-- TStabilizationMethodDiv -->
 
 
+        <?php
 
-            Detect Rotations:
+        /*
+              TIME STABILIZATION: ROTATION
+        */
+        
+        ?>
+
+         <div id="TStabilizationRotationDiv">
+
+           Detect Rotations:
+
             <select name="TStabilizationRotation"
                     id="TStabilizationRotation"
                     title="Stabilization Rotation">
-   <?php
+         <?php
             $parameterTStabilizationRotation =
                 $_SESSION['task_setting']->parameter("TStabilizationRotation");
             $possibleValues = $parameterTStabilizationRotation->possibleValues();
@@ -299,26 +329,36 @@ include("header.inc.php");
                  } else {
                      $option = "";
                  }
-   ?>
+         ?>
                  <option <?php echo $option ?>
                      value="<?php echo $possibleValue ?>">
                     <?php echo $translation ?>
                  </option>
-   <?php
+         <?php
              }
-   ?>
+         ?>
             </select>
             
-            <br /><br />
+         </div> <!-- TStabilizationRotationDiv -->
 
 
+        <?php
 
-            Cropping Scheme:
+        /*
+              TIME STABILIZATION: CROPPING
+        */
+        
+        ?>
+        
+         <div id="TStabilizationCroppingDiv">
+
+          Cropping Scheme:
+
             <select name="TStabilizationCropping"
                     id="TStabilizationCropping"
                     title="Stabilization Cropping">
 
-   <?php
+         <?php
             $parameterTStabilizationCropping =
                 $_SESSION['task_setting']->parameter("TStabilizationCropping");
             $possibleValues = $parameterTStabilizationCropping->possibleValues();
@@ -336,15 +376,17 @@ include("header.inc.php");
                  } else {
                      $option = "";
                  }
-   ?>
+         ?>
                  <option <?php echo $option ?>
                      value="<?php echo $possibleValue ?>">
                     <?php echo $translation ?>
                  </option>
-   <?php
+         <?php
              }
-   ?>
+         ?>         
             </select>
+
+          </div> <!-- TStabilizationCroppingDiv -->
 
     </div> <!-- TimeStabilization -->
 

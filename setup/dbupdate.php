@@ -5360,7 +5360,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "TStabilization";
     $record["value"] = "1";
-    $record["translation"] = "Stabilize deconvolved time series";
+    $record["translation"] = "Stabilize time series after deconvolution";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
