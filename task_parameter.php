@@ -62,20 +62,8 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
  **************************************************************************** */
 
 if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
-
-    if ($_SESSION['task_setting']->numberOfChannels() > 1) {
         header("Location: " . "post_processing.php");
         exit();
-    } else {
-
-        $saved = $_SESSION['task_setting']->save();
-        if ($saved) {
-            header("Location: " . "select_task_settings.php");
-            exit();
-        } else {
-            $message = $_SESSION['task_setting']->message();
-        }
-    }
 } else {
     $message = $_SESSION['task_setting']->message();
 }
@@ -104,23 +92,9 @@ include("header.inc.php");
         selection page. All changes will be lost!
     </span>
 
-<?php
-if ($_SESSION['task_setting']->numberOfChannels() == 1) {
-    ?>
-    <span class="toolTip" id="ttSpanSave">
-    Save and return to the processing parameters selection page.
-    </span>
-
-    <?php
-} else {
-
-    ?>
     <span class="toolTip" id="ttSpanForward">
         Continue to next page.
     </span>
-    <?php
-}
-?>
 
 <span class="toolTip" id="ttEstimateSnr">
         Use a sample raw image to find a SNR estimate for each channel.
@@ -680,29 +654,10 @@ for ($j = 1; $j <= 4; $j++) {
                    onmouseover="TagToTip('ttSpanCancel' )"
                    onmouseout="UnTip()"
                    onclick="deleteValuesAndRedirect('select_task_settings.php' );"/>
-
-            <?php
-            /* Don't proceed to the chromatic aberration page. */
-            if ($_SESSION['task_setting']->numberOfChannels() == 1) {
-                ?>
-                <input type="submit" value=""
-                       class="icon save"
-                       onmouseover="TagToTip('ttSpanSave')"
-                       onmouseout="UnTip()"
-                       onclick="process()"/>
-
-                <?php
-            } else {
-                ?>
                 <input type="submit" value="" class="icon next"
                        onmouseover="TagToTip('ttSpanForward' )"
                        onmouseout="UnTip()"
                        onclick="process()"/>
-                <?php
-            }
-            ?>
-
-
         </div>
 
     </form>
