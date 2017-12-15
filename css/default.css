@@ -139,7 +139,7 @@ table {
     display: block;
     color: #8e94a0;
     text-align: center;
-    border-bottom: solid #eee 1px;
+    border-bottom: solid #aaa 1px;
     margin-bottom: 5px;
 }
 
@@ -277,7 +277,7 @@ table {
     height: 40px;
     font-weight: bold;
     text-align: center;
-    border: solid 1px #ddd;
+    border: solid 1px #aaa;
 }
 
 #welcome h2 {
@@ -310,7 +310,7 @@ table {
     height: 40px;
     font-weight: bold;
     text-align: center;
-    border: solid 1px #ddd;
+    border: solid 1px #aaa;
 }
 
 #content h2 {
@@ -349,7 +349,7 @@ table {
     height: 40px;
     font-weight: bold;
     text-align: center;
-    border: solid 1px #ddd;
+    border: solid 1px #aaa;
 }
 
 #content_disabled h2 {
@@ -786,7 +786,7 @@ input.apply {
     white-space: nowrap;
     font-weight: bold;
     text-align: center;
-    border: solid 1px #ddd;
+    border: solid 1px #aaa;
     height:40px;
     /*vertical-align: middle;*/
 }
@@ -846,7 +846,7 @@ table#Servers td {
     font-weight: bold;
     text-align: center;
     line-height: 1.0;
-    border: solid 1px #ddd;
+    border: solid 1px #aaa;
 }
 
 #joblist summary {
@@ -1242,7 +1242,7 @@ table#Servers td {
     font-weight: bold;
     text-align: center;
     line-height: 1.0;
-    /*border: solid 1px #ddd;*/
+    border: solid 1px #aaa;
 }
 
 #homepage table {
@@ -1497,6 +1497,9 @@ ol li {
 
 input {
     text-align: center;
+    height: 18px;
+    border: solid #aaa 1px;
+    background-color: white;
 }
 
 input.icon {
@@ -1615,7 +1618,7 @@ input.noPreview {
 select {
     width: 100%;
     text-align: center;
-    border: 1px solid #eee;
+    border: 1px solid #aaa;
     background-color: #fff;
     padding: 5px;
 }
@@ -2237,7 +2240,7 @@ div.StedDeplModeValues {
     background-color: white;
     min-width: 200px;
     box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.2);
-    border: solid #eee 1px;
+    border: solid #aaa 1px;
     text-align: left;
 }
 

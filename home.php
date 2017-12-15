@@ -73,7 +73,7 @@ include("header.inc.php");
         $_SESSION['BEEN_HOME'] = 1;
     }
     ?>
-    <h3><img src="images/home.png" alt="Home"/>&nbsp;
+    <h3><img src="images/home_large.png" alt="Home"/>&nbsp;
         <?php echo $textHome; ?></h3>
 
     <!-- Here we display update information. This div is initially hidden -->
