@@ -295,6 +295,126 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
                     </p>
 
                 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                <?php
+
+                $visibility = " style=\"display: none\"";
+                if ($selectedMode == "gmle") {
+                    $visibility = " style=\"display: block\"";
+                }
+
+                ?>
+                <div id="gmle-snr"
+                     class="multichannel"<?php echo $visibility ?>>
+                    <ul>
+                        <li>SNR:
+                            <div class="multichannel">
+                                <?php
+
+                                /*
+                                                           SIGNAL-TO-NOISE RATIO
+                                */
+
+                                $signalNoiseRatioParam =
+                                    $_SESSION['task_setting']->parameter("SignalNoiseRatio");
+                                $signalNoiseRatioValue = $signalNoiseRatioParam->value();
+
+
+                                for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+
+                                    $value = "";
+                                    if ($selectedMode == "gmle")
+                                        $value = $signalNoiseRatioValue[$i];
+
+                                    /* Add a line break after a number of entries. */
+                                    if ($_SESSION['task_setting']->numberOfChannels() == 4) {
+                                        if ($i == 2) {
+                                            echo "<br />";
+                                        }
+                                    } else {
+                                        if ($i == 3) {
+                                            echo "<br />";
+                                        }
+                                    }
+
+
+                                    ?>
+                                    <span class="nowrap">Ch<?php echo $i; ?>:
+        &nbsp;&nbsp;&nbsp;
+                              <span class="multichannel">
+                                  <input
+                                      id="SignalNoiseRatioGMLE<?php echo $i; ?>"
+                                      name="SignalNoiseRatioGMLE<?php echo $i; ?>"
+                                      title="Signal-to-noise ratio (GMLE)"
+                                      type="text"
+                                      size="8"
+                                      value="<?php echo $value; ?>"
+                                      class="multichannelinput"/>
+                                        </span>&nbsp;
+                                    </span>
+                                    <?php
+
+                                }
+
+                                ?>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <p><a href="#"
+                          onmouseover="TagToTip('ttEstimateSnr' )"
+                          onmouseout="UnTip()"
+                          onclick="storeValuesAndRedirect(
+                            'estimate_snr_from_image.php');">
+                            <img src="images/calc_small.png" alt=""/>
+                            Estimate SNR from image</a>
+                    </p>
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 <?php
 
                 $visibility = " style=\"display: none\"";

@@ -467,12 +467,17 @@ class TaskSetting extends Setting
         } else if (strpos($huArray['qmle:0'], "") === FALSE) {
             $algorithm = $this->parameter('DeconvolutionAlgorithm');
             $algorithm->setValue("qmle");
+        } else if (strpos($huArray['gmle:0'], "") === FALSE) {
+            $algorithm = $this->parameter('DeconvolutionAlgorithm');
+            $algorithm->setValue("gmle");
         }
 
         // SNR.
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
                 $key = "cmle:" . $chan . " sn";
+            } else if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "gmle:" . $chan . " sn";
             } else {
                 $key = "qmle:" . $chan . " sn";
             }
@@ -497,13 +502,17 @@ class TaskSetting extends Setting
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             $keyCmleBgMode = "cmle:" . $chan . " bgMode";
             $keyQmleBgMode = "qmle:" . $chan . " bgMode";
+            $keyGmleBgMode = "gmle:" . $chan . " bgMode";   
             $keyCmleBgVal = "cmle:" . $chan . " bg";
             $keyQmleBgVal = "qmle:" . $chan . " bg";
+            $keyGmleBgVal = "gmle:" . $chan . " bg";
 
             if (isset($huArray[$keyCmleBgMode])) {
                 $bgMode = $huArray[$keyCmleBgMode];
             } else if (isset($huArray[$keyQmleBgMode])) {
                 $bgMode = $huArray[$keyQmleBgMode];
+            } else if (isset($huArray[$keyGmleBgMode])) {
+                $bgMode = $huArray[$keyGmleBgMode];
             } else {
                 $bgMode = "auto";
             }
@@ -512,6 +521,8 @@ class TaskSetting extends Setting
                 $bgVal = $huArray[$keyCmleBgVal];
             } else if (isset($huArray[$keyQmleBgVal])) {
                 $bgVal = $huArray[$keyQmleBgVal];
+            } else if (isset($huArray[$keyGmleBgVal])) {
+                $bgVal = $huArray[$keyGmleBgVal];
             } else {
                 $bgVal = 0.;
             }
@@ -535,6 +546,8 @@ class TaskSetting extends Setting
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
                 $key = "cmle:" . $chan . " it";
+            } else if ($this->parameter('DeconvolutionAlgorithm')->value() == "gmle") {
+                $key = "gmle:" . $chan . " it";
             } else {
                 $key = "qmle:" . $chan . " it";
             }
@@ -552,6 +565,8 @@ class TaskSetting extends Setting
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
                 $key = "cmle:" . $chan . " q";
+            } else if ($this->parameter('DeconvolutionAlgorithm')->value() == "gmle") {
+                $key = "gmle:" . $chan . " q";
             } else {
                 $key = "qmle:" . $chan . " q";
             }

@@ -62,6 +62,9 @@ function switchSnrMode() {
     if ( changeVisibility('cmle-snr') != "none" ) {
         window.restorationMode = 'cmle';
     }
+    if ( changeVisibility('gmle-snr') != "none" ) {
+        window.restorationMode = 'gmle';
+    }
     if ( changeVisibility('qmle-snr') != "none") {
         window.restorationMode = 'qmle';
     }

@@ -165,7 +165,7 @@ class HuygensTemplate
     private $chromaticArray;
 
     /**
-     * Array with information on the image cmle/qmle subtask.
+     * Array with information on the image cmle/qmle/gmle subtask.
      * @var array
      */
     private $algArray;

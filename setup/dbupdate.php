@@ -5346,6 +5346,40 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
+
+// -----------------------------------------------------------------------------
+// Update to revision 16
+// Description: Add GMLE to the list of deconvolution algorithms
+//              
+//              
+//              
+// -----------------------------------------------------------------------------
+$n = 16;
+if ($current_revision < $n) {
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "DeconvolutionAlgorithm";
+    $record["value"] = "gmle";
+    $record["translation"] = "Good's Roughness Maximum Likelihood Estimation";
+    $record["isDefault"] = "t";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+    
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
 fclose($fh);
 
 return;

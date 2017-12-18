@@ -15,7 +15,8 @@ window.helpText[ "method" ] =
   'important ones: the <b>CMLE algorithm</b> is optimally suited for ' +
   'low-signal images; the <b>QMLE algorithm</b> is faster than CMLE, ' +
   'but it only works well with noise-free images (for example, good quality ' +
-  'widefield images).</p>';
+  'widefield images). Alternatively, <b>GMLE</b> can be used as a fast, ' +
+  'good-quality algorithm for noisy images.</p>';
 
 window.helpText[ "snr" ] =
   '<p>The SNR controls the sharpness of the result: only with noise-free ' +
@@ -23,7 +24,7 @@ window.helpText[ "snr" ] =
   'amplifying noise.</p>' +
   '<p>The different deconvolution algorithms have different requirements on ' +
   'the SNR parameter.</p>' +
-  '<p>For the <strong>CMLE algorithm</strong>, you are asked to give a numerical ' +
+  '<p>For the <strong>CMLE and GMLE algorithms</strong>, you are asked to give a numerical ' +
   'estimation of the SNR of your images. The SNR estimator can help you calculate ' +
   'the SNR for your images.</p>' +
   '<p>For the <strong>QMLE algorithm</strong>, only a coarser classification ' +

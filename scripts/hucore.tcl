@@ -485,7 +485,7 @@ proc getDeconDataFromHuTemplate {} {
         set chanCnt 0
         foreach item $taskList {
             set item [::Template::Decon::stripSuffix $item]
-            if {$item ni {"cmle" "qmle"}} continue
+            if {$item ni {"cmle" "qmle" "gmle"}} continue
             incr chanCnt
         }
         if {$chanCnt == 0} {
@@ -506,7 +506,9 @@ proc getDeconDataFromHuTemplate {} {
     dict map {dictKey dictValue} [dict get $templDict params] {
 
         set item [::Template::Decon::stripSuffix $dictKey]
-        if {$item ni {"cmle" "qmle" "stabilize" "shift" "autocrop"}} continue
+        if {$item ni {"cmle" "qmle" "gmle" "stabilize" "shift" "autocrop"}} {
+            continue
+        }
         reportKeyValue $dictKey $dictValue
         
         foreach {param value} $dictValue {
