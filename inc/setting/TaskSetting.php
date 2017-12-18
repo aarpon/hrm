@@ -476,7 +476,7 @@ class TaskSetting extends Setting
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
                 $key = "cmle:" . $chan . " sn";
-            } else if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+            } else if ($this->parameter('DeconvolutionAlgorithm')->value() == "gmle") {
                 $key = "gmle:" . $chan . " sn";
             } else {
                 $key = "qmle:" . $chan . " sn";

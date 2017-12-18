@@ -175,7 +175,7 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
 
             <select name="DeconvolutionAlgorithm"
                     title="Deconvolution algorithm"
-                    onchange="switchSnrMode();">
+                    onchange="switchSnrMode(this.value);">
 
                 <?php
 
@@ -384,38 +384,7 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
                 </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <?php
+              <?php
 
                 $visibility = " style=\"display: none\"";
                 if ($selectedMode == "qmle") {
@@ -644,14 +613,14 @@ for ($j = 1; $j <= 4; $j++) {
                     }
 
                     /*!
-                        \todo	The visibility toggle should be restored but but only the
+                        \todo	The visibility toggle should be restored but only the
                                 quality change should be hidden for qmle, not the whole stopping
                                 criteria div!
                                 Also restore the changeVisibility("cmle-it") call in
                                 scripts/settings.js.
                      */
                     //$visibility = " style=\"display: none\"";
-                    //if ($selectedMode == "cmle") {
+                    //if ($selectedMode == "cmle" || $selectedMode =="gmle") {
                     $visibility = " style=\"display: block\"";
                     //}
 

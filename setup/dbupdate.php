@@ -5361,7 +5361,7 @@ if ($current_revision < $n) {
     $record["parameter"] = "DeconvolutionAlgorithm";
     $record["value"] = "gmle";
     $record["translation"] = "Good's Roughness Maximum Likelihood Estimation";
-    $record["isDefault"] = "t";
+    $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
