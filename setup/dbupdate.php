@@ -5346,6 +5346,71 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
+// -----------------------------------------------------------------------------
+// Update to revision 16
+// Description: Add more advanced modes of spherical aberration correction
+//              
+//              
+//              
+// -----------------------------------------------------------------------------
+$n = 16;
+if ($current_revision < $n) {
+
+
+    // Delete the PSF generated at user-defined depth.
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "AdvancedCorrectionOptions";
+    $record["value"] = "user";
+
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             " 'AND value='" . $record['value'] . "'";
+
+    if ($db->Execute( $query )->RecordCount( ) != 0) {
+        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    // Add AdvancedCorrectionOptions = few-slabs
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "AdvancedCorrectionOptions";
+    $record["value"] = "few-slabs";
+    $record["translation"] = "Depth-dependend correction performed on few brick slabs";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] . "'" .
+             " AND value='" . $record['value'] . "'";
+    if ($db->Execute( $query )->RecordCount( ) == 0) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+    
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
 fclose($fh);
 
 return;

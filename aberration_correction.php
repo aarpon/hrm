@@ -133,8 +133,7 @@ include("header.inc.php");
 
         <!-- (1) PERFORM SPHERICAL ABERRATION CORRECTION? -->
 
-        <h4>Do you want to enable depth-specific PSF correction?
-            This will try to compensate for spherical aberrations introduced
+        <h4>This will try to compensate for spherical aberrations introduced
             by refractive index mismatches.
         </h4>
 
@@ -223,10 +222,9 @@ include("header.inc.php");
 
         <div id="CoverslipRelativePositionDiv"<?php echo $visibility ?>>
 
-            <h4>For depth-dependent correction to work properly, you have to
-                specify
-                the relative position of the coverslip with respect to the first
-                acquired plane of the dataset.
+            <h4>For the correction to work properly, please 
+                specify the relative position of the coverslip with respect to
+                the first acquired plane of the dataset.
             </h4>
 
             <?php
@@ -320,9 +318,7 @@ include("header.inc.php");
 
             ?>
 
-            <h4>At this point the HRM has enough information to perform
-                depth-dependent
-                aberration correction. Please notice that in certain
+            <h4>Please notice that in certain
                 circumstances,
                 the automatic correction scheme might generate artifacts in the
                 result.
