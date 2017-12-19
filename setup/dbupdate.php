@@ -1742,7 +1742,7 @@ if ($current_revision < $n) {
 
 // -----------------------------------------------------------------------------
 // Update to revision 6
-// Description: change lenght of text fields (settings name and translation).
+// Description: change length of text fields (settings name and translation).
 //              Correct field in possible_values
 // -----------------------------------------------------------------------------
 $n = 6;
@@ -5356,8 +5356,41 @@ if ($current_revision < $n) {
 $n = 16;
 if ($current_revision < $n) {
 
+    // PerformAberrationCorrection will be phased out.
+    // The correction will always be on when there's a RI mismatch from now on.
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "PerformAberrationCorrection";
+    $record["value"] = "0";
+    $record["translation"] = "No, do not perform depth-dependent correction";
+    $record["isDefault"] = "f";
 
-    // Delete the PSF generated at user-defined depth.
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] ."' AND value like '" . $record["value"] . "'") ) {
+        $msg = "An error occurred while updating the database to revision " . $n . ", update PSFGenerationDepth boundary values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "PerformAberrationCorrection";
+    $record["value"] = "1";
+    $record["translation"] = "Yes, perform depth-dependent correction";
+    $record["isDefault"] = "t";
+
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] ."' AND value like '" . $record["value"] . "'") ) {
+        $msg = "An error occurred while updating the database to revision " . $n . ", update PSFGenerationDepth boundary values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+
+
+    // Delete the PSF generated at user-defined depth. Deprecated. 
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "AdvancedCorrectionOptions";
@@ -5378,12 +5411,13 @@ if ($current_revision < $n) {
     }
 
 
+
     // Add AdvancedCorrectionOptions = few-slabs
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "AdvancedCorrectionOptions";
     $record["value"] = "few-slabs";
-    $record["translation"] = "Depth-dependend correction performed on few brick slabs";
+    $record["translation"] = "Depth-dependent correction performed on few brick slabs";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -5400,6 +5434,7 @@ if ($current_revision < $n) {
            return;
        }
     }
+
 
     // Update revision
     if(!update_dbrevision($n))

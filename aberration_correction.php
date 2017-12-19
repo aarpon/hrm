@@ -151,65 +151,6 @@ include("header.inc.php");
 
         ?>
 
-        <fieldset class="setting <?php
-        echo $parameterPerformAberrationCorrection->confidenceLevel();
-        ?>"
-                  onmouseover="changeQuickHelp( 'enable' );">
-
-            <legend>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpDepthDependentPsf')">
-                    <img src="images/help.png" alt="?"/>
-                </a>
-                enable depth-dependent PSF correction?
-            </legend>
-
-            <select id="PerformAberrationCorrection"
-                    title="Enable depth-dependent PSF correction?"
-                    name="PerformAberrationCorrection"
-                    onchange="switchCorrection();">
-
-                <?php
-
-                $possibleValues =
-                    $parameterPerformAberrationCorrection->possibleValues();
-                $selectedValue =
-                    $parameterPerformAberrationCorrection->value();
-                // The javascript expects option values to match their indexes:
-                sort($possibleValues);
-
-                foreach ($possibleValues as $possibleValue) {
-                    $translation =
-                        $parameterPerformAberrationCorrection->
-                        translatedValueFor($possibleValue);
-                    if ($possibleValue == "0" && $selectedValue == "") {
-                        $option = "selected=\"selected\"";
-                    } else if ($possibleValue == $selectedValue) {
-                        $option = "selected=\"selected\"";
-                    } else {
-                        $option = "";
-                    }
-
-                    ?>
-
-                    <option <?php echo $option ?>
-                        value="<?php echo $possibleValue ?>">
-                        <?php echo $translation ?>
-                    </option>
-
-                    <?php
-                }
-                ?>
-
-            </select>
-
-            <p class="message_confidence_<?php
-            echo $parameterPerformAberrationCorrection->confidenceLevel(); ?>">
-                &nbsp;
-            </p>
-
-        </fieldset>
-
         <!-- (2) SPECIFY SAMPLE ORIENTATION -->
 
         <?php
