@@ -5357,7 +5357,7 @@ $n = 16;
 if ($current_revision < $n) {
 
     // PerformAberrationCorrection will be phased out.
-    // The correction will always be on when there's a RI mismatch from now on.
+    // From now on the correction will always be on when there's a RI mismatch.
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "PerformAberrationCorrection";
