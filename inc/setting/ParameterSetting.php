@@ -1657,10 +1657,10 @@ class ParameterSetting extends Setting {
         // These parameters are important to properly display all the others
         $numberOfChannels = $this->parameter("NumberOfChannels")->value();
         $PSFmode = $this->parameter("PointSpreadFunction")->value();
+        $aberrationCorrectionNecessary =
+            $this->parameter("AberrationCorrectionNecessary")->value();
         $aberrationCorrectionMode =
             $this->parameter("AberrationCorrectionMode")->value();
-        $advancedCorrectionOptions =
-            $this->parameter("AdvancedCorrectionOptions")->value();
 
         // Not everything needs to be displayed, either because the Parameter
         // might be only internally used, or because it does not make sense for
@@ -1685,11 +1685,20 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'Binning') // This is obsolete
                 continue;
-            if ($parameter->name() == "AberrationCorrectionNecessary" &&
-                    $PSFmode == 'measured')
+            if ($parameter->name() == 'AberrationCorrectionNecessary'
+              && $PSFmode == 'measured')
                 continue;
-            if ($parameter->name() == 'CoverslipRelativePosition' &&
-                    $PSFmode == 'measured')
+            if ($parameter->name() == 'CoverslipRelativePosition'
+              && ($PSFmode == 'measured' || !$aberrationCorrectionNecessary))
+                continue;
+            if ($parameter->name() == 'AberrationCorrectionMode'
+              && ($PSFmode == 'measured' || !$aberrationCorrectionNecessary))
+                continue;
+            if ($parameter->name() == 'AdvancedCorrectionOptions'
+              && ($PSFmode == 'measured' || !$aberrationCorrectionNecessary))
+                continue;
+            if ($parameter->name() == 'AdvancedCorrectionOptions'
+              && $aberrationCorrectionMode != 'advanced')
                 continue;
             if ($parameter->name() == 'PSF' && $PSFmode == 'theoretical')
                 continue;

@@ -45,8 +45,8 @@ class AdvancedCorrectionOptions extends ChoiceParameter
     {
         $value = "undefined";
         switch ($this->value()) {
-            case 'user':
-                $value = "user-defined depth";
+            case 'few-slabs':
+                $value = "few slabs";
                 break;
             case 'slice':
                 $value = "slice by slice";

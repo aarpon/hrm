@@ -548,6 +548,7 @@ class HuygensTemplate
         $this->algArray =
             array('q'       => '',
                   'brMode'  => '',
+                  'varPsf'  => '',
                   'it'      => '',
                   'bgMode'  => '',
                   'bg'      => '',
@@ -1824,6 +1825,9 @@ class HuygensTemplate
                 case 'brMode':
                     $taskDescr .= $this->getBrMode();
                     break;
+                case 'varPsf':
+                    $taskDescr .= $this->getVarPsf();
+                    break;
                 case 'it':
                     $taskDescr .= $this->getIterations();
                     break;
@@ -1874,20 +1878,40 @@ class HuygensTemplate
 
         $brMode = "auto";
 
-        if ($SAcorr['AberrationCorrectionNecessary'] == 1
-            && $SAcorr['PerformAberrationCorrection'] != 0
-        ) {
-
+        if ($SAcorr['AberrationCorrectionNecessary'] == 1) {
             if ($SAcorr['AberrationCorrectionMode'] != 'automatic') {
                 if ($SAcorr['AdvancedCorrectionOptions'] == 'slice') {
                     $brMode = 'sliceBySlice';
                 } elseif ($SAcorr['AdvancedCorrectionOptions'] == 'few') {
                     $brMode = 'few';
+                } elseif ($SAcorr['AdvancedCorrectionOptions'] == 'few-slabs') {
+                    $brMode = 'one';
                 }
             }
         }
 
         return $brMode;
+    }
+
+    /**
+     * Gets the varPsf mode.
+     * @return string varPsf mode.
+     */
+    private function getVarPsf()
+    {
+        $SAcorr = $this->getSAcorr();
+
+        $varPsf = "off";
+
+        if ($SAcorr['AberrationCorrectionNecessary'] == 1) {
+            if ($SAcorr['AberrationCorrectionMode'] != 'automatic') {
+                if ($SAcorr['AdvancedCorrectionOptions'] == 'few-slabs') {
+                    $varPsf = 'few';
+                }
+            }
+        }
+
+        return $varPsf;
     }
 
     /**
