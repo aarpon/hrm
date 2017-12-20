@@ -103,6 +103,9 @@ include("header.inc.php");
 <span class="toolTip" id="ttSpanSave">
         Save and return to the image parameters selection page.
     </span>
+<span class="toolTip" id="ttCoverslip">
+        Use a sample raw image to find the coverslip position.
+    </span>
 
 <div id="nav">
     <div id="navleft">
@@ -215,6 +218,15 @@ include("header.inc.php");
                     ?>
 
                 </select>
+
+                    <p><a href="#"
+                          onmouseover="TagToTip('ttCoverslip' )"
+                          onmouseout="UnTip()"
+                          onclick="storeValuesAndRedirect(
+                            'coverslip_viewer.php');">
+                            <img src="images/preview.png" alt=""/>
+                            Visualize</a>
+                    </p>
 
                 <p class="message_confidence_<?php
                 echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>">
