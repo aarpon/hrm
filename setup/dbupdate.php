@@ -5417,7 +5417,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "AdvancedCorrectionOptions";
     $record["value"] = "few-slabs";
-    $record["translation"] = "Depth-dependent correction performed on few brick slabs";
+    $record["translation"] = "Depth-dependent correction performed on few slabs";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
