@@ -135,11 +135,12 @@ include("header.inc.php");
         $parameterSampleMedium =
             $_SESSION['setting']->parameter("SampleMedium")->value();
         if (!isset($parameterObjectiveType) || !isset($parameterSampleMedium)) {
-           $explain = "This combination of objective and sample medium " .
-                      "may produce spherical aberration in the image.";
+           $explain = "The selected combination of objective and sample medium " .
+                      "can lead to spherical aberration in the image.";
         } else if ($parameterObjectiveType != $parameterSampleMedium) {
-           $explain = "The difference between the objective type and sample " .
-                      "medium produces spherical aberration in the image.";
+           $explain = "The selected objective type and sample medium produce " .
+                      "spherical aberration in the image (refractive index " .
+                      "mismatch).";
         }
        ?>
            <h4><?php echo $explain; ?></h4>
