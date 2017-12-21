@@ -5350,7 +5350,7 @@ if ($current_revision < $n) {
 // Update to revision 16
 // Description: 
 //    * Add GMLE to the list of deconvolution algorithms
-//    * Description: Add more advanced modes of spherical aberration correction
+//    * Add more advanced modes of spherical aberration correction
 //    * Add Stabilization of time series              
 // -----------------------------------------------------------------------------
 $n = 16;
@@ -5475,74 +5475,6 @@ if ($current_revision < $n) {
             $msg = "An error occurred while updating " .
                 "the database to revision " . $n . ".";
             write_message($msg);
-    
-    $tabname = "possible_values";
-    $record = array();
-    $record["parameter"] = "DeconvolutionAlgorithm";
-    $record["value"] = "gmle";
-    $record["translation"] = "Good's Roughness Maximum Likelihood Estimation";
-    $record["isDefault"] = "f";
-    $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
-        write_message($msg);
-        write_to_error($msg);
-        return;
-    }
-
-
-    // PerformAberrationCorrection will be phased out.
-    // From now on the correction will always be on when there's a RI mismatch.
-    $tabname = "possible_values";
-    $record = array();
-    $record["parameter"] = "PerformAberrationCorrection";
-    $record["value"] = "0";
-    $record["translation"] = "No, do not perform depth-dependent correction";
-    $record["isDefault"] = "f";
-
-    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] ."' AND value like '" . $record["value"] . "'") ) {
-        $msg = "An error occurred while updating the database to revision " . $n . ", update PSFGenerationDepth boundary values.";
-        write_message($msg);
-        write_to_error($msg);
-        return false;
-    }
-
-
-
-    $tabname = "possible_values";
-    $record = array();
-    $record["parameter"] = "PerformAberrationCorrection";
-    $record["value"] = "1";
-    $record["translation"] = "Yes, perform depth-dependent correction";
-    $record["isDefault"] = "t";
-
-    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] ."' AND value like '" . $record["value"] . "'") ) {
-        $msg = "An error occurred while updating the database to revision " . $n . ", update PSFGenerationDepth boundary values.";
-        write_message($msg);
-        write_to_error($msg);
-        return false;
-    }
-
-
-
-    // Delete the PSF generated at user-defined depth. Deprecated. 
-    $tabname = "possible_values";
-    $record = array();
-    $record["parameter"] = "AdvancedCorrectionOptions";
-    $record["value"] = "user";
-
-    $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             " 'AND value='" . $record['value'] . "'";
-
-    if ($db->Execute( $query )->RecordCount( ) != 0) {
-        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
-            $msg = "An error occurred while updating the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_log($msg);
-            write_to_error($msg);
-            return;
-        }
     }
 
 
@@ -5580,6 +5512,76 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return;
+    }
+    
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "DeconvolutionAlgorithm";
+    $record["value"] = "gmle";
+    $record["translation"] = "Good's Roughness Maximum Likelihood Estimation";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+
+    // PerformAberrationCorrection will be phased out.
+    // From now on the correction will always be on when there's a RI mismatch.
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "PerformAberrationCorrection";
+    $record["value"] = "0";
+    $record["translation"] = "No, do not perform depth-dependent correction";
+    $record["isDefault"] = "f";
+
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] ."' AND value like '" . $record["value"] . "'") ) {
+        $msg = "An error occurred while updating the database to revision " . $n . ", update PSFGenerationDepth boundary values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "PerformAberrationCorrection";
+    $record["value"] = "1";
+    $record["translation"] = "Yes, perform depth-dependent correction";
+    $record["isDefault"] = "t";
+
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] ."' AND value like '" . $record["value"] . "'") ) {
+        $msg = "An error occurred while updating the database to revision " . $n . ", update PSFGenerationDepth boundary values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+
+    // Delete the PSF generated at user-defined depth. Deprecated. 
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "AdvancedCorrectionOptions";
+    $record["value"] = "user";
+
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             " 'AND value='" . $record['value'] . "'";
+
+    if ($db->Execute( $query )->RecordCount( ) != 0) {
+        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
 
     // Add AdvancedCorrectionOptions = few-slabs
     $tabname = "possible_values";
