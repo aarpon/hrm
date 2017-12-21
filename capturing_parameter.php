@@ -303,17 +303,19 @@ if ($saveToDB == true) {
             $textForCaptorSize = "pixel size (nm)";
 
             ?>
-            <ul>
-
-                <li>
+            <table>
+              <tr>
+                <td>
                     <?php echo $textForCaptorSize ?>:
+                </td>
+                <td>
                     <input id="CCDCaptorSizeX"
                            title="Pixel size"
                            name="CCDCaptorSizeX"
                            type="text"
                            size="5"
                            value="<?php echo $value ?>"/>
-                    <br/>
+                </td>
                     <?php
                     // The calculation of pixel size from CCD chip makes sense
                     // only for widefield microscopes
@@ -322,22 +324,26 @@ if ($saveToDB == true) {
                     ) {
                         ?>
 
-                        <a href="#"
-                           onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
-                           onmouseout="UnTip()"
-                           onclick="storeValuesAndRedirect( 'calculate_pixel_size.php');">
-                            <img src="images/calc_small.png" alt=""/>
-                            Calculate from CCD pixel size
-                        </a>
+                        <p>
+                            <a href="#"
+                               onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
+                               onmouseout="UnTip()"
+                               onclick="storeValuesAndRedirect( 'calculate_pixel_size.php');">
+                                <img src="images/calc_small.png" alt=""/>
+                                Calculate from CCD pixel size
+                            </a>
+                        </p>
 
                         <?php
                     }
                     ?>
-                </li>
-
-                <li>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                <td>
                     z-step (nm):
-
+                </td>
                     <?php
 
                     /***************************************************************************
@@ -349,18 +355,21 @@ if ($saveToDB == true) {
                     $parameterZStepSize = $_SESSION['setting']->parameter("ZStepSize");
 
                     ?>
+                <td>
                     <input id="ZStepSize"
                            title="Z step size"
                            name="ZStepSize"
                            type="text"
                            size="5"
                            value="<?php echo $parameterZStepSize->value() ?>"/>
-                        <span class="message_small">&nbsp;
-                            Set to <b>Nyquist rate in Z</b> for 2D datasets.
-                        </span>
-                </li>
-
-            </ul>
+                </td>
+                <td>
+                    <span class="message_small">&nbsp;
+                      Set to <b>Nyquist rate in Z</b> for 2D datasets.
+                    </span>
+                </td>
+            </tr>
+            </table>
 
             <a href="#"
                onmouseover="TagToTip('ttSpanNyquist')"

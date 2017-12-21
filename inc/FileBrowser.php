@@ -515,8 +515,7 @@ include("header_fb.inc.php");
             var totalAllowedSizeOfSingleFile = <?php echo(UtilV2::getMaxUploadFileSize()); ?>;
 
             $("#upMsgError").empty();
-            $("#upMsg").empty().text("Selected " + totalSizeOfSelectedFiles + " of " +
-                totalAllowedSizeOfSelectedFiles + " bytes.");
+            $("#upMsg").empty();
 
             $('#fine-uploader-manual-trigger').fineUploader({
                 template: 'qq-template-manual-trigger',

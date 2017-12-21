@@ -402,7 +402,7 @@ foreach ($files as $file) {
             a mistake, use the links on the left to go back and fix it.</p>
 
         <p>Once you are okay with the parameters, press the
-            <img src="images/launch_start.png" alt="Create job" width="30"
+            <img src="images/launch_start.png" alt="Create job" width="22"
                  height="22"/> <b>launch job</b> button to add the job to the
             queue and go back to
             the home page.</p>

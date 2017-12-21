@@ -83,17 +83,17 @@ if (isset($_POST['copy_public'])) {
             $message = $_SESSION['editor']->message();
         }
     } else $message = "Please select a setting to copy";
-} else if (isset($_POST['create'])) {
+} else if (!empty($_POST['new_setting_create'])) {
     $analysis_setting = $_SESSION['analysiseditor']->createNewSetting(
-        $_POST['new_setting']);
+        $_POST['new_setting_create']);
     if ($analysis_setting != NULL) {
         $_SESSION['analysis_setting'] = $analysis_setting;
         header("Location: " . "coloc_analysis.php");
         exit();
     }
     $message = $_SESSION['analysiseditor']->message();
-} else if (isset($_POST['copy'])) {
-    $_SESSION['analysiseditor']->copySelectedSetting($_POST['new_setting']);
+} else if (!empty($_POST['new_setting_copy'])) {
+    $_SESSION['analysiseditor']->copySelectedSetting($_POST['new_setting_copy']);
     $message = $_SESSION['analysiseditor']->message();
 } else if (isset($_POST['edit'])) {
     $analysis_setting = $_SESSION['analysiseditor']->loadSelectedSetting();
@@ -399,74 +399,124 @@ if (!$_SESSION['user']->isAdmin()) {
 
         <div id="<?php echo "actions" . $divState; ?>"
              class="taskselection">
-            <input name="create"
-                <?php echo $widgetState ?>
-                   type="submit"
+          <table id="actions">
+             <tr>
+                <td class="button">
+                  <input name="create" <?php echo $widgetState ?>
+                   type="button"
                    value=""
                    class="icon create"
                    onmouseover="TagToTip('ttSpanCreate' )"
-                   onmouseout="UnTip()"/>
-            <input name="edit"
-                <?php echo $widgetState ?>
+                   onmouseout="UnTip()"
+                   onclick="hide('copyTemplateDiv'); changeVisibility('newTemplateDiv')"/>
+                </td>
+                <td class="button">
+                  <input name="edit" <?php echo $widgetState ?>
                    type="submit"
                    value=""
                    class="icon edit"
                    onmouseover="TagToTip('ttSpanEdit' )"
                    onmouseout="UnTip()"/>
-            <input name="copy"
-                <?php echo $widgetState ?>
-                   type="submit"
+                </td>
+                <td class="button">
+                  <input name="copy" <?php echo $widgetState ?>
+                   type="button"
                    value=""
                    class="icon clone"
                    onmouseover="TagToTip('ttSpanClone' )"
-                   onmouseout="UnTip()"/>
-
-            <?php
-
-            if (!$_SESSION['user']->isAdmin()) {
-
-                ?>
-
-                <input name="share"
-                    <?php echo $widgetState ?>
+                   onmouseout="UnTip()"
+                   onclick="hide('newTemplateDiv'); changeVisibility('copyTemplateDiv')"/>
+                </td>
+<?php
+  if (!$_SESSION['user']->isAdmin()) {
+?>
+                <td class="button">
+                  <input name="share" <?php echo $widgetState ?>
                        type="button"
                        onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
                        value=""
                        class="icon share"
                        onmouseover="TagToTip('ttSpanShare' )"
                        onmouseout="UnTip()"/>
-
-                <input name="make_default"
-                    <?php echo $widgetState ?>
+                  </td>
+                  <td class="button">
+                    <input name="make_default" <?php echo $widgetState ?>
                        type="submit"
                        value=""
                        class="icon mark"
                        onmouseover="TagToTip('ttSpanDefault' )"
                        onmouseout="UnTip()"/>
-                <?php
-
-            }
-
-            ?>
-            <input type="hidden" name="annihilate"/>
-            <input name="delete"
-                <?php echo $widgetState ?>
-                   type="button"
-                   value=""
-                   class="icon delete"
-                   onclick="warn(this.form,
+                  </td>
+<?php
+ }
+?>
+                  <td class="button">
+                    <input type="hidden" name="annihilate"/>
+                    <input name="delete" <?php echo $widgetState ?>
+                     type="button"
+                     value=""
+                    class="icon delete"
+                    onclick="warn(this.form,
                          'Do you really want to delete this analysis template?',
                          this.form['analysis_setting'].selectedIndex )"
-                   onmouseover="TagToTip('ttSpanDelete' )"
-                   onmouseout="UnTip()"/>
-            <label>New/clone analysis template set name:
-                <input name="new_setting"
-                       type="text"
-                       class="textfield"/>
-            </label>
+                    onmouseover="TagToTip('ttSpanDelete' )"
+                    onmouseout="UnTip()"/>
+                  </td>
+                </tr>
+                <tr>
+                    <td class="label">
+                     New
+                    </td>
+                    <td class="label">
+                     Edit
+                    </td>
+                    <td class="label">
+                     Duplicate
+                    </td>
+<?php
+if (!$_SESSION['user']->isAdmin()) {
+?>       
+                    <td class="label">
+                     Share
+                    </td>
+                    <td class="label">
+                     Mark as<br />favorite
+                    </td>
+<?php
+}
+?>      
+                    <td class="label">
+                     Remove
+                    </td>
+                </tr>
+              </table>
             <input name="OK" type="hidden"/>
-
         </div>
+        
+        <div id="newTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_create"
+                     type="text"
+                     class="textfield_30"/>
+              <input name="submit"
+                     type="submit"
+                     value="Submit"
+                     class="submit_btn"/>
+           </label>
+        </div>
+        <div id="copyTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_copy"
+                     type="text"
+                     class="textfield_30"/>
+              <input name="submit"
+                     type="submit"
+                     value="Submit"
+                     class="submit_btn"/>
+           </label>
+        </div>
+
+
         <?php
 
         if (!$_SESSION['user']->isAdmin()) {

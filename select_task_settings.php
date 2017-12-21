@@ -79,17 +79,17 @@ if (isset($_POST['copy_public'])) {
   }
   else $message = "Please select a setting to copy";
 }
-else if (isset($_POST['create'])) {
+else if (!empty($_POST['new_setting_create'])) {
   $task_setting = $_SESSION['taskeditor']->createNewSetting(
-    $_POST['new_setting']);
+    $_POST['new_setting_create']);
   if ($task_setting != NULL) {
     $_SESSION['task_setting'] = $task_setting;
     header("Location: " . "task_parameter.php"); exit();
   }
   $message = $_SESSION['taskeditor']->message();
 }
-else if (isset($_POST['copy'])) {
-  $_SESSION['taskeditor']->copySelectedSetting($_POST['new_setting']);
+else if (!empty($_POST['new_setting_copy'])) {
+  $_SESSION['taskeditor']->copySelectedSetting($_POST['new_setting_copy']);
   $message = $_SESSION['taskeditor']->message();
 }
 else if (isset($_POST['huTotemplate'])) {
@@ -446,57 +446,73 @@ else {
             <div id="upMsg"></div>
             <div id="actions"
                  class="taskselection">
-                <input name="create"
-                       type="submit"
+                 <table id="actions">
+                  <tr>
+                    <td class="button">
+                      <input name="create"
+                       type="button"
                        value=""
                        class="icon create"
                        onmouseover="TagToTip('ttSpanCreate' )"
+                       onmouseout="UnTip()"
+                       onclick="hide('copyTemplateDiv'); changeVisibility('newTemplateDiv')"/> 
+                    </td>
+                    <td class="button">
+                      <input name="edit"
+                       type="submit"
+                       value=""
+                       class="icon edit"
+                       onmouseover="TagToTip('ttSpanEdit' )"
                        onmouseout="UnTip()" />
-                <input name="huTotemplate"
+                    </td>
+                    <td class="button">
+                      <input name="copy"
+                       type="button"
+                       value=""
+                       class="icon clone"
+                       onmouseover="TagToTip('ttSpanClone' )"
+                       onmouseout="UnTip()"
+                       onclick="hide('newTemplateDiv'); changeVisibility('copyTemplateDiv')"/>
+                    </td>
+                    <td class="button">
+                      <input name="huTotemplate"
                        type="button"
                        value=""
                        class="icon huygens"
                        onmouseover="TagToTip('ttSpanHuygens' )"
                        onmouseout="UnTip()"
                        onclick="UnTip(); hu2template('decon')" />
-                <input name="edit"
-                       type="submit"
-                       value=""
-                       class="icon edit"
-                       onmouseover="TagToTip('ttSpanEdit' )"
-                       onmouseout="UnTip()" />
-                <input name="copy"
-                       type="submit"
-                       value=""
-                       class="icon clone"
-                       onmouseover="TagToTip('ttSpanClone' )"
-                       onmouseout="UnTip()" />
+                    </td>
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {
 
 ?>
-
-                <input name="share"
-                    type="button"
-                    onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
-                    value=""
-                    class="icon share"
-                    onmouseover="TagToTip('ttSpanShare' )"
-                    onmouseout="UnTip()" />
-                <input name="make_default"
+                    <td class="button">
+                      <input name="share"
+                       type="button"
+                       onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
+                       value=""
+                       class="icon share"
+                       onmouseover="TagToTip('ttSpanShare' )"
+                       onmouseout="UnTip()" />
+                    </td>
+                    <td class="button">
+                      <input name="make_default"
                        type="submit"
                        value=""
                        class="icon mark"
                        onmouseover="TagToTip('ttSpanDefault' )"
                        onmouseout="UnTip()" />
+                    </td>
 <?php
 
 }
 
 ?>
-                <input type="hidden" name="annihilate" />
-                <input name="delete"
+                    <td class="button">
+                      <input type="hidden" name="annihilate" />
+                      <input name="delete"
                        type="button"
                        value=""
                        class="icon delete"
@@ -505,14 +521,63 @@ if (!$_SESSION['user']->isAdmin()) {
                          this.form['task_setting'].selectedIndex )"
                        onmouseover="TagToTip('ttSpanDelete' )"
                        onmouseout="UnTip()" />
-                <label>New/clone restoration template name:
-                    <input name="new_setting"
-                           type="text"
-                           class="textfield" />
-                </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label">
+                     New
+                    </td>
+                    <td class="label">
+                     Edit
+                    </td>
+                    <td class="label">
+                     Duplicate
+                    </td>
+                    <td class="label">
+                     From<br />Huygens
+                    </td>
+<?php
+if (!$_SESSION['user']->isAdmin()) {
+?>       
+                    <td class="label">
+                     Share
+                    </td>
+                    <td class="label">
+                     Mark as<br />favorite
+                    </td>
+<?php
+}
+?>      
+                    <td class="label">
+                     Remove
+                    </td>
+                  </tr>
+                </table>                
                 <input name="OK" type="hidden" />
-
             </div>
+
+       <div id="newTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_create"
+                     type="text"
+                     class="textfield_30"/>
+              <input name="submit"
+                     type="submit"
+                     value="Submit"
+                     class="submit_btn"/>
+           </label>
+        </div>
+        <div id="copyTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_copy"
+                     type="text"
+                     class="textfield_30"/>
+              <input name="submit"
+                     type="submit"
+                     value="Submit"
+                     class="submit_btn"/>
+           </label>
+        </div>
 <?php
 
 if (!$_SESSION['user']->isAdmin()) {

@@ -165,7 +165,7 @@ if (isset($generatedScript)) {
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
         Please upgrade to a later version of Internet Explorer or to a new
-        broswer altogether.</h3>
+        browser altogether.</h3>
     <link rel="stylesheet" href="css/default_ie.css">
     <![endif]-->
 
@@ -188,20 +188,9 @@ if (isset($generatedScript)) {
 <div id="basket">
 
 <?php if (!isset($excludeTitle)) { ?>
-	  <div id="title">
-	  <h1>
-          Huygens Remote Manager
-            <span id="about">
-            <?php
-            $devel = '.hrm_devel_version';
-            if (file_exists($devel)) {
-                echo file_get_contents($devel);
-            } else {
-                echo "v" . System::getHRMVersionAsString();
-            }
-            ?></span>
-      </h1>
-  	  <div id="logo"></div>
-	  </div>
+    <div id="title">
+        <h1>
+            Huygens Remote Manager
+        </h1>
+    </div>
 <?php } ?>
-
