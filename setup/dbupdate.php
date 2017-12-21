@@ -5475,6 +5475,7 @@ if ($current_revision < $n) {
             $msg = "An error occurred while updating " .
                 "the database to revision " . $n . ".";
             write_message($msg);
+        }
     }
 
 
