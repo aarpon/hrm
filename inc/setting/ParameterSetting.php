@@ -61,10 +61,8 @@ class ParameterSetting extends Setting {
             'PSF',
             'CoverslipRelativePosition',
             'AberrationCorrectionNecessary',
-            'PerformAberrationCorrection',
             'AberrationCorrectionMode',
             'AdvancedCorrectionOptions',
-            'PSFGenerationDepth',
             'StedDepletionMode',
             'StedSaturationFactor',
             'StedWavelength',
@@ -1352,43 +1350,6 @@ class ParameterSetting extends Setting {
         $this->message = '';
         $noErrorsFound = True;
 
-        // PerformAberrationCorrection
-        $valueSet = isset($postedParameters["PerformAberrationCorrection"]) &&
-                $postedParameters["PerformAberrationCorrection"] != '';
-
-        $parameter = $this->parameter("PerformAberrationCorrection");
-
-        if ($valueSet) {
-
-            // Set the Parameter and check the value
-            $parameter->setValue($postedParameters["PerformAberrationCorrection"]);
-            $this->set($parameter);
-            if (!$parameter->check()) {
-                $this->message = $parameter->message();
-                $noErrorsFound = False;
-            }
-        } else {
-
-            $mustProvide = $parameter->mustProvide();
-
-            // Reset the Parameter
-            $parameter->reset();
-            $this->set($parameter);
-
-            // If the Parameter value must be provided, we return an error
-            if ($mustProvide) {
-                $this->message =
-                    "Please choose whether to perform the correction!";
-                $noErrorsFound = False;
-            }
-        }
-
-        // If the aberration correction is inactive, there is no point in
-        // checking the other parameters.
-        if ($this->parameter("PerformAberrationCorrection")->value() == 0) {
-            return $noErrorsFound;
-        }
-
         // CoverslipRelativePosition
         $valueSet = isset($postedParameters["CoverslipRelativePosition"]) &&
                 $postedParameters["CoverslipRelativePosition"] != '';
@@ -1488,45 +1449,6 @@ class ParameterSetting extends Setting {
             return $noErrorsFound;
         }
 
-        $parameter = $this->parameter("PerformAberrationCorrection");
-        $perform = $parameter->value();
-        $parameter = $this->parameter("AberrationCorrectionMode");
-        $mode = $parameter->value();
-
-        if ($perform == 1 && $mode == "advanced") {
-
-            // PSFGenerationDepth
-            $valueSet = isset($postedParameters["PSFGenerationDepth"]) &&
-                    $postedParameters["PSFGenerationDepth"] != '';
-
-            $parameter = $this->parameter("PSFGenerationDepth");
-
-            if ($valueSet) {
-
-                // Set the Parameter and check the value
-                $parameter->setValue($postedParameters["PSFGenerationDepth"]);
-                $this->set($parameter);
-                if (!$parameter->check()) {
-                    $this->message = $parameter->message();
-                    $noErrorsFound = False;
-                }
-            } else {
-
-                $mustProvide = $parameter->mustProvide();
-
-                // Reset the Parameter
-                $parameter->reset();
-                $this->set($parameter);
-
-                // If the Parameter value must be provided, we return an error
-                if ($mustProvide) {
-                    $this->message =
-                        "Please indicate the depth for PSF generation!";
-                    $noErrorsFound = False;
-                }
-            }
-        }
-
         return $noErrorsFound;
     }
 
@@ -1599,16 +1521,12 @@ class ParameterSetting extends Setting {
         $parameters = array(
             'AberrationCorrectionNecessary' =>
                 $this->parameter('AberrationCorrectionNecessary')->value(),
-            'PerformAberrationCorrection' =>
-                $this->parameter('PerformAberrationCorrection')->value(),
             'CoverslipRelativePosition' =>
                 $this->parameter('CoverslipRelativePosition')->value(),
             'AberrationCorrectionMode' =>
                 $this->parameter('AberrationCorrectionMode')->value(),
             'AdvancedCorrectionOptions' =>
-                $this->parameter('AdvancedCorrectionOptions')->value(),
-            'PSFGenerationDepth' =>
-                $this->parameter('PSFGenerationDepth')->value());
+                $this->parameter('AdvancedCorrectionOptions')->value());
         return $parameters;
     }
 
@@ -1739,12 +1657,10 @@ class ParameterSetting extends Setting {
         // These parameters are important to properly display all the others
         $numberOfChannels = $this->parameter("NumberOfChannels")->value();
         $PSFmode = $this->parameter("PointSpreadFunction")->value();
-        $performAberrationCorrection =
-            $this->parameter("PerformAberrationCorrection")->value();
+        $aberrationCorrectionNecessary =
+            $this->parameter("AberrationCorrectionNecessary")->value();
         $aberrationCorrectionMode =
             $this->parameter("AberrationCorrectionMode")->value();
-        $advancedCorrectionOptions =
-            $this->parameter("AdvancedCorrectionOptions")->value();
 
         // Not everything needs to be displayed, either because the Parameter
         // might be only internally used, or because it does not make sense for
@@ -1769,28 +1685,22 @@ class ParameterSetting extends Setting {
                 continue;
             if ($parameter->name() == 'Binning') // This is obsolete
                 continue;
-            if ($parameter->name() == "AberrationCorrectionNecessary" &&
-                    $PSFmode == 'measured')
+            if ($parameter->name() == 'AberrationCorrectionNecessary'
+              && $PSFmode == 'measured')
                 continue;
-            if ($parameter->name() == 'CoverslipRelativePosition' &&
-                    $PSFmode == 'measured')
+            if ($parameter->name() == 'CoverslipRelativePosition'
+              && ($PSFmode == 'measured' || !$aberrationCorrectionNecessary))
+                continue;
+            if ($parameter->name() == 'AberrationCorrectionMode'
+              && ($PSFmode == 'measured' || !$aberrationCorrectionNecessary))
+                continue;
+            if ($parameter->name() == 'AdvancedCorrectionOptions'
+              && ($PSFmode == 'measured' || !$aberrationCorrectionNecessary))
+                continue;
+            if ($parameter->name() == 'AdvancedCorrectionOptions'
+              && $aberrationCorrectionMode != 'advanced')
                 continue;
             if ($parameter->name() == 'PSF' && $PSFmode == 'theoretical')
-                continue;
-            if ($parameter->name() == 'CoverslipRelativePosition' &&
-                    $performAberrationCorrection == 0)
-                continue;
-            if ($parameter->name() == 'AberrationCorrectionMode' &&
-                    $performAberrationCorrection == 0)
-                continue;
-            if ($parameter->name() == 'AdvancedCorrectionOptions' &&
-                    !( $performAberrationCorrection == 1 &&
-                    $aberrationCorrectionMode == 'advanced' ))
-                continue;
-            if ($parameter->name() == 'PSFGenerationDepth' &&
-                    !( $performAberrationCorrection == 1 &&
-                    $aberrationCorrectionMode == 'advanced' &&
-                    $advancedCorrectionOptions == 'user' ))
                 continue;
             if ($parameter->name() == 'StedDepletionMode'
                 && (!$this->isSted() && !$this->isSted3D()))

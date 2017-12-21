@@ -58,14 +58,20 @@ function seek(channel) {
 
 window.onunload = function() {if (snitch != null) snitch.close()};
 
-function switchSnrMode() {
-    if ( changeVisibility('cmle-snr') != "none" ) {
-        window.restorationMode = 'cmle';
+function switchSnrMode(algorithm) {
+    if (algorithm == 'cmle') {
+        $('#cmle-snr').show();
+        $('#gmle-snr').hide();
+        $('#qmle-snr').hide();
+    } else if (algorithm == 'gmle') {
+        $('#cmle-snr').hide();
+        $('#gmle-snr').show();
+        $('#qmle-snr').hide();
+    } else if (algorithm == 'qmle') {
+        $('#cmle-snr').hide();
+        $('#gmle-snr').hide();
+        $('#qmle-snr').show();
     }
-    if ( changeVisibility('qmle-snr') != "none") {
-        window.restorationMode = 'qmle';
-    }
-    //changeVisibility('cmle-it');
 }
 
 // Requires jQuery
