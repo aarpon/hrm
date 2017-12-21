@@ -65,8 +65,6 @@ if (count($_POST) > 0) {
         // Make sure to turn off the aberration correction since we use a measured PSF
         $_SESSION['setting']->parameter(
             'AberrationCorrectionNecessary')->setValue('0');
-        $_SESSION['setting']->parameter(
-            'PerformAberrationCorrection')->setValue('0');
         $saved = $_SESSION['setting']->save();
         $message = $_SESSION['setting']->message();
         if ($saved) {

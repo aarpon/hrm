@@ -89,20 +89,6 @@ function switchColocMode() {
     }
 }
 
-function switchCorrection() {
-    var element = document.getElementById('PerformAberrationCorrection');
-    if (element.selectedIndex == 1) {
-        show('CoverslipRelativePositionDiv');
-        show('AberrationCorrectionModeDiv');
-        switchAdvancedCorrection();
-    }
-    else {
-        hide('CoverslipRelativePositionDiv');
-        hide('AberrationCorrectionModeDiv');
-        hide('AdvancedCorrectionOptionsDiv');
-    }
-    switchAdvancedCorrectionScheme()
-}
 
 function switchAdvancedCorrection() {
     var element = document.getElementById('AberrationCorrectionMode');

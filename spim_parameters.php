@@ -227,8 +227,6 @@ if ($PSF == 'measured') {
     // Make sure to turn off the correction
     $_SESSION['setting']->parameter(
         'AberrationCorrectionNecessary')->setValue('0');
-    $_SESSION['setting']->parameter(
-        'PerformAberrationCorrection')->setValue('0');
 } else {
     // Get the refractive indices: if they are not set, the floatval conversion
     // will change them into 0s
@@ -259,8 +257,6 @@ if ($PSF == 'measured') {
             // Make sure to turn off the correction
             $_SESSION['setting']->parameter(
                 'AberrationCorrectionNecessary')->setValue('0');
-            $_SESSION['setting']->parameter(
-                'PerformAberrationCorrection')->setValue('0');
         } else {
             $pageToGo = 'aberration_correction.php';
             $_SESSION['setting']->parameter(

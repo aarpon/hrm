@@ -18,7 +18,9 @@ window.helpText[ "enable" ] =
 window.helpText[ "orientation" ] =
   '<p>For depth-dependent correction to work properly, the relative position ' +
   'of the coverslip with respect to the first acquired plane of the dataset ' +
-  'has to be specified.</p>';
+    'has to be specified.</p><p>A preview of the image, see the ' +
+    '\'Raw images\' folder, can be helpful to assess the orientation saved ' +
+    'by the acquisition system.</p>';
 
 window.helpText[ "mode" ] =
   '<p>Automatic correction should work fine in most of the cases. For very ' +
