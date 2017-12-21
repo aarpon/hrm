@@ -926,27 +926,34 @@ table#Servers td {
     vertical-align: middle;
 }
 
-#cac table {
+#ChromaticAberration table {
     font-size: 90%;
     padding-bottom: 1em;
 }
 
-#cac td.header {
+#ChromaticAberration td.header {
     font-weight: bold;
 }
 
-#cac select {
+#ChromaticAberration select {
     width: 15%;
     text-align: center;
     margin-top: 1em;
     margin-bottom: 2em;
 }
 
-#cac p.info {
+#ChromaticAberration p.info {
     text-align: center;
     margin-bottom: 0em;
     color: #4988DE;
     font-size: 90%;
+}
+
+#TimeStabilization select {
+    width: 100%;
+    text-align: left;
+    margin-top: 1em;
+    margin-bottom: 2em;
 }
 
 #jobParameters {

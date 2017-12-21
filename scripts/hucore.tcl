@@ -471,6 +471,10 @@ proc getMetaDataFromHuTemplate {} {
 
 # Script for reading in a Huygens deconvolution template and output template data.
 proc getDeconDataFromHuTemplate {} {
+
+    set parseKeys {
+        "cmle" "qmle" "stabilize" "shift" "autocrop" "stabilize:post"
+    } 
     
     set error [ getInputVariables {huTemplate} ]
     if { $error } { exit 1 }
@@ -506,7 +510,7 @@ proc getDeconDataFromHuTemplate {} {
     dict map {dictKey dictValue} [dict get $templDict params] {
 
         set item [::Template::Decon::stripSuffix $dictKey]
-        if {$item ni {"cmle" "qmle" "stabilize" "shift" "autocrop"}} continue
+        if {$item ni $parseKeys} continue
         reportKeyValue $dictKey $dictValue
         
         foreach {param value} $dictValue {

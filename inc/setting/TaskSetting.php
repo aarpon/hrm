@@ -47,7 +47,11 @@ class TaskSetting extends Setting
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
             'ZStabilization',
-            'ChromaticAberration');
+            'ChromaticAberration',
+            'TStabilization',
+            'TStabilizationMethod',   
+            'TStabilizationRotation',
+            'TStabilizationCropping');
 
         // Instantiate the Parameter objects
         foreach ($parameterClasses as $class) {
@@ -282,7 +286,10 @@ class TaskSetting extends Setting
         $this->message = '';
         $noErrorsFound = True;
 
-        foreach ($postedParameters as $param) {
+        foreach ($postedParameters as $name => $param) {
+            if (strpos($name, 'ChromaticAberration') === false) {
+                continue;
+            }
             if ($param != "" && !is_numeric($param)) {
                 $noErrorsFound = False;
                 $this->message = "Value must be numeric";
@@ -309,6 +316,78 @@ class TaskSetting extends Setting
         }
 
         $parameter->setValue($valuesArray);
+
+        return $noErrorsFound;
+    }
+
+    /**
+     * Checks that the posted T Stabilization Parameters are defined.
+     * This correction is optional.
+     * @param array $postedParameters The array of posted parameters.
+     * @return bool True if all Parameters are defined and valid, false
+     * otherwise.
+     */
+    public function checkPostedTStabilizationParameters(array $postedParameters)
+    {
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return False;
+        }
+
+        $this->message = '';
+        $noErrorsFound = True;
+        
+        // Stabilization in T
+        if (isset($postedParameters["TStabilization"]) ||
+            $postedParameters["TStabilization"] == ''
+        ) {
+            $parameter = $this->parameter("TStabilization");
+            $parameter->setValue($postedParameters["TStabilization"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+
+        // Stabilization in T: Method
+        if (isset($postedParameters["TStabilizationMethod"]) ||
+            $postedParameters["TStabilizationMethod"] == ''
+        ) {
+            $parameter = $this->parameter("TStabilizationMethod");
+            $parameter->setValue($postedParameters["TStabilizationMethod"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+
+        // Stabilization in T: Rotations
+        if (isset($postedParameters["TStabilizationRotation"]) ||
+            $postedParameters["TStabilizationRotation"] == ''
+        ) {
+            $parameter = $this->parameter("TStabilizationRotation");
+            $parameter->setValue($postedParameters["TStabilizationRotation"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+
+        // Stabilization in T: Cropping
+        if (isset($postedParameters["TStabilizationCropping"]) ||
+            $postedParameters["TStabilizationCropping"] == ''
+        ) {
+            $parameter = $this->parameter("TStabilizationCropping");
+            $parameter->setValue($postedParameters["TStabilizationCropping"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
 
         return $noErrorsFound;
     }
@@ -350,7 +429,10 @@ class TaskSetting extends Setting
     public function displayString($numberOfChannels = 0, $micrType = NULL)
     {
         $result = '';
+
+        // These parameters are important to properly display other parameters.
         $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
+        $TStabilization = $this->parameter('TStabilization')->value();   
         foreach ($this->parameter as $parameter) {
             /** @var SignalNoiseRatio $parameter */
             if ($parameter->name() == 'SignalNoiseRatio') {
@@ -367,6 +449,15 @@ class TaskSetting extends Setting
             ) {
                 continue;
             }
+            if ($parameter->name() == 'TStabilizationMethod'
+              && $TStabilization == 0)
+                continue;
+            if ($parameter->name() == 'TStabilizationRotation'
+              && $TStabilization == 0)
+                continue;
+            if ($parameter->name() == 'TStabilizationCropping'
+              && $TStabilization == 0)
+                continue;
             $result = $result .
                 $parameter->displayString($numberOfChannels);
         }
@@ -566,7 +657,7 @@ class TaskSetting extends Setting
             }
         }
 
-        // Stabilization.
+        // Stabilization in Z.
         if (strpos($huArray['stabilize enabled'], "") === FALSE) {
             $stabilize = $huArray['stabilize enabled'];
             $this->parameter['ZStabilization']->setValue($stabilize);
@@ -599,6 +690,30 @@ class TaskSetting extends Setting
         }
         if (isset($aberration)) {
             $this->parameter['ChromaticAberration']->setValue($aberration);
+        }
+
+        // Stabilization in T.
+        if (strpos($huArray['stabilize:post enabled'], "") === FALSE) {
+            $stabilize = $huArray['stabilize:post enabled'];
+            $this->parameter['TStabilization']->setValue($stabilize);
+        }
+
+        // Stabilization in T: Method
+        if (strpos($huArray['stabilize:post mode'], "") === FALSE) {
+            $method = $huArray['stabilize:post mode'];
+            $this->parameter['TStabilizationMethod']->setValue($method);
+        }
+
+        // Stabilization in T: Rotations
+        if (strpos($huArray['stabilize:post rot'], "") === FALSE) {
+            $rotation = $huArray['stabilize:post rot'];
+            $this->parameter['TStabilizationRotation']->setValue($rotation);
+        }
+
+        // Stabilization in T: Cropping
+        if (strpos($huArray['stabilize:post crop'], "") === FALSE) {
+            $cropping = $huArray['stabilize:post crop'];
+            $this->parameter['TStabilizationCropping']->setValue($cropping);
         }
     }
 

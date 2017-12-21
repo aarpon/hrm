@@ -83,6 +83,18 @@ function switchColocMode() {
     }
 }
 
+function switchTStabilizationMode() {
+    if ($('#TStabilization').val() == 1) {
+        $('#TStabilizationMethodDiv').show();
+        $('#TStabilizationRotationDiv').show();
+        $('#TStabilizationCroppingDiv').show();
+    } else {
+        $('#TStabilizationMethodDiv').hide();
+        $('#TStabilizationRotationDiv').hide();
+        $('#TStabilizationCroppingDiv').hide();
+    }
+}
+
 function switchCorrection() {
     var element = document.getElementById('PerformAberrationCorrection');
     if (element.selectedIndex == 1) {

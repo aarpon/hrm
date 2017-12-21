@@ -97,11 +97,12 @@ include("header.inc.php");
 
         <?php
 
-        /***************************************************************************
-         *
-         * Colocalization
-         ***************************************************************************/
+        /*
+              COLOCALIZATION
+        */
+        
         ?>
+        
         <fieldset class="setting"
                   onmouseover="changeQuickHelp( 'perform' );">
 
