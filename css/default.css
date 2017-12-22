@@ -311,7 +311,7 @@ table {
     height: 40px;
     font-weight: bold;
     text-align: center;
-    border: solid 1px #aaa;
+    padding: 0px 0px 20px 0px;
 }
 
 #content h2 {
@@ -787,8 +787,8 @@ input.apply {
     white-space: nowrap;
     font-weight: bold;
     text-align: center;
-    border: solid 1px #aaa;
     height:40px;
+    padding: 0px 0px 20px 0px;
     /*vertical-align: middle;*/
 }
 
