@@ -743,14 +743,31 @@ input.apply {
     text-align: center;
 }
 
-#login button {
-    width: 70px;
+#login .button {
     font-weight: normal;
+    background-color: white;
+    border: thin groove;
+    margin: 2px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+    height: 22px;
+    width: 60px;
 }
 
 #login .dark {
-    background-color: #ddd;
     font-weight: bold;
+    background-color: #71cb55; /* Green. */
+    border: none;
+    color: white;
+    margin: 2px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+    padding: 0px 20px 0px 20px;
+    height: 22px;
 }
 
 #rightpanel {
