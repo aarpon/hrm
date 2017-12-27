@@ -625,7 +625,7 @@ if (!$_SESSION['user']->isAdmin()) {
                      class="textfield_30"/>
               <input name="submit"
                    type="submit"
-                   value="Submit"
+                   value="Create"
                    class="submit_btn"/>
            </label>
 
@@ -637,7 +637,7 @@ if (!$_SESSION['user']->isAdmin()) {
                      class="textfield_30"/>
               <input name="submit"
                    type="submit"
-                   value="Submit"
+                   value="Create"
                    class="submit_btn"/>
            </label>
         </div>

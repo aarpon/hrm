@@ -244,16 +244,17 @@ table {
 }
 
 .submit_btn {
-    background-color: #0099FF; /* Blue. */
+    background-color: #71cb55; /* Green. */
     border: none;
     color: white;
-    margin: 5px;
+    margin: 2px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 13px;
     /* vertical-align: middle; */
-    /* padding: 6px; */
+    padding: 0px 20px 0px 20px;
+    height: 30px;
 }
 
 #controls {
