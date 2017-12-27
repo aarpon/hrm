@@ -1809,7 +1809,7 @@ class Fileserver
         echo '
       <div id="prevBasket"> <!--basket-->
       <div id="title">
-      <h2>HRM image preview</h2>
+      <h3>HRM image preview</h3>
       <h3>' . $file . '</h3>
       <div id="logo"></div>
       </div>';

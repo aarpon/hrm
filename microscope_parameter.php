@@ -159,7 +159,7 @@ $nParamRequiringReset = 0;
 
 <div id="content">
 
-    <h2>Optical parameters / 1</h2>
+    <h3>Optical parameters / 1</h3>
 
     <form method="post" action="" id="select">
 

@@ -339,7 +339,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h2>SPIM parameters </h2>
+    <h3>SPIM parameters </h3>
 
     <form method="post" action="" id="select">
 

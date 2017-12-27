@@ -126,7 +126,7 @@ $nParamRequiringReset = 0;
 
 <div id="content">
 
-    <h2>Number of channels and PSF modality</h2>
+    <h3>Number of channels and PSF modality</h3>
 
     <form method="post" action="" id="select">
 

@@ -351,7 +351,7 @@ table {
     height: 40px;
     font-weight: bold;
     text-align: center;
-    border: solid 1px #aaa;
+    padding: 0px 0px 20px 0px;
 }
 
 #content_disabled h2 {
@@ -847,8 +847,7 @@ table#Servers td {
     font-size: 24px;
     font-weight: bold;
     text-align: center;
-    line-height: 1.0;
-    border: solid 1px #aaa;
+    padding: 0px 0px 20px 0px;
 }
 
 #joblist summary {

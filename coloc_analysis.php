@@ -91,7 +91,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h2>Analysis - colocalization</h2>
+    <h3>Analysis - colocalization</h3>
 
     <form method="post" action="" id="select">
 
