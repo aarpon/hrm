@@ -139,8 +139,9 @@ table {
     display: block;
     color: #8e94a0;
     text-align: center;
-    border-bottom: solid #aaa 1px;
+    border-bottom: solid #ddd 1px;
     margin-bottom: 5px;
+    background: url("../images/logo.png") no-repeat top left;
 }
 
 #title h1 {
