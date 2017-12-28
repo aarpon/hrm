@@ -116,6 +116,7 @@ include("header.inc.php");
             <select id="ColocAnalysis"
                     title="Perform coloc analysis?"
                     name="ColocAnalysis"
+                    class="selection"
                     onchange="switchColocMode();">
 
                 <?php

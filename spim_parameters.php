@@ -383,6 +383,7 @@ include("header.inc.php");
                             <td>
                                 <select name="SpimExcMode<?php echo $chan; ?>"
                                         title="SPIM excitation mode for channel <?php echo $chan; ?>"
+                                        class="selection"
                                         onchange="changeSpimEntryProperties(this,<?php echo $chan; ?>)">
 
                                     <?php
@@ -766,6 +767,7 @@ include("header.inc.php");
                             <td>
                                 <select name="SpimDir<?php echo $chan; ?>"
                                         title="SPIM illumination direction for channel <?php echo $chan; ?>"
+                                        class="selection"
                                         id="SpimDir<?php echo $chan; ?>">
 
                                     <?php

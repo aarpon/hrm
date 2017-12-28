@@ -148,6 +148,7 @@ include("header.inc.php");
 
             <select name="DeconvolutionAlgorithm"
                     title="Deconvolution algorithm"
+                    class="selection"   
                     onchange="switchSnrMode(this.value);">
 
                 <?php
@@ -379,6 +380,7 @@ include("header.inc.php");
                             Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
                             <select class="snrselect"
                                     title="Signal-to-noise ration (QMLE)"
+                                    class="selection"
                                     name="SignalNoiseRatioQMLE<?php echo $i ?>">
 <?php
 
@@ -442,7 +444,8 @@ for ($j = 1; $j <= 4; $j++) {
 
                 <select id="Autocrop"
                         title="Autocrop"
-                        name="Autocrop">
+                        name="Autocrop"
+                        class="selection">
                     <?php
 
                     /*
@@ -693,7 +696,8 @@ for ($j = 1; $j <= 4; $j++) {
 
                 <select id="ZStabilization"
                         title="Z stabilization"
-                        name="ZStabilization">
+                        name="ZStabilization"
+                        class="selection">
                     <?php
 
                     /*

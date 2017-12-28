@@ -130,8 +130,11 @@ include("header.inc.php");
                 Statistics
             </legend>
 
-            <select name="Statistics" title="Available statistics"
-                    id="Statistics" size="1">
+            <select name="Statistics"
+                    title="Available statistics"
+                    id="Statistics"
+                    class="selection"
+                    size="1">
 
                 <!-- Show/hide the group selector based on the statistics chosen -->
                 <script>
@@ -213,7 +216,10 @@ include("header.inc.php");
                 if ($_SESSION['user']->isAdmin()) {
                     ?>
 
-                    <select name="Group" title="Available groups" id="Group"
+                    <select name="Group"
+                            title="Available groups"
+                            id="Group"
+                            class="selection"
                             size="1">
 
                         <?php

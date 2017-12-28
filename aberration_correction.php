@@ -188,7 +188,8 @@ include("header.inc.php");
                 </legend>
 
                 <select name="CoverslipRelativePosition"
-                        title="Specify sample orientation">
+                        title="Specify sample orientation"
+                        class="selection">
 
                     <?php
 
@@ -277,6 +278,7 @@ include("header.inc.php");
                 <select id="AberrationCorrectionMode"
                         title="Correction mode"
                         name="AberrationCorrectionMode"
+                        class="selection"
                         onchange="switchAdvancedCorrection();">
 
                     <?php
@@ -360,6 +362,7 @@ include("header.inc.php");
                 <select id="AdvancedCorrectionOptions"
                         title="Advanced correction scheme"
                         name="AdvancedCorrectionOptions"
+                        class="selection"
                         onchange="switchAdvancedCorrectionScheme();">
 
                     <?php

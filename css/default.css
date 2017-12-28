@@ -129,6 +129,13 @@ table {
     line-height: 1.5;
 }
 
+.selection {
+    width: 100%;
+    margin-top: 1em;
+    margin-bottom: 2em;
+    border: thin solid;
+}
+
 #basket {
     width: 1000px;
     border: #ddd 1px solid;
@@ -137,7 +144,7 @@ table {
 
 #title {
     display: block;
-    color: #4da6ff;
+    color: #5294e2;
     text-align: center;
     border-bottom: solid #ddd 1px;
     margin-bottom: 5px;
@@ -747,7 +754,7 @@ input.apply {
     font-weight: normal;
     background-color: white;
     border: thin solid;
-    border-color: #4da6ff;
+    border-color: #5294e2;
     margin: 2px;
     text-align: center;
     text-decoration: none;

@@ -240,6 +240,7 @@ include("header.inc.php");
                           placeholder="Request message (optional)..."
                           id="note"
                           rows="3"
+                          class="selection"
                           cols="30"><?php if ($clean["note"] != "") { echo($clean["note"]); } ?>
                 </textarea>
                 </div>

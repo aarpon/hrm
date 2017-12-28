@@ -302,6 +302,7 @@ if (!$_SESSION['user']->isAdmin()) {
                     ?>
                     <select name="public_setting"
                             title="Admin templates"
+                            class="selection"
                             onclick="ajaxGetParameterListForSet('analysis_setting', $(this).val(), true);"
                             onchange="ajaxGetParameterListForSet('analysis_setting', $(this).val(), true);"
                             size="5"<?php echo $flag ?>>
@@ -370,6 +371,7 @@ if (!$_SESSION['user']->isAdmin()) {
                 ?>
                 <select name="analysis_setting" id="setting"
                         title="Your templates"
+                        class="selection"
                         onclick="ajaxGetParameterListForSet('analysis_setting', $(this).val(), false);"
                         onchange="ajaxGetParameterListForSet('analysis_setting', $(this).val(), false);"
                         size="<?php echo $size ?>"
@@ -555,6 +557,7 @@ if (!$_SESSION['user']->isAdmin()) {
             <div id="users">
 
                 <select id="usernameselect" name="usernameselect[]"
+                        class="selection"
                         title="Users"
                         size="5" multiple="multiple">
                     <option>&nbsp;</option>

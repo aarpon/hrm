@@ -307,7 +307,7 @@ function image2template(selectedFiles) {
 function createImageSelection(fileList) {
 
     html = '<div><select id="fileselection" name="fileselection" width="253" '
-        + 'style="width: 253px"">'
+        + 'class="selection">'
         + '<option>Choose a file</option>';
 
     for (i = 0; i < fileList.length; i++) {

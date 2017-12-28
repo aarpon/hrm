@@ -71,7 +71,10 @@ include("header.inc.php");
 
     <fieldset>
         <legend>log</legend>
-            <textarea rows="15" title="Update log" readonly="readonly">
+            <textarea title="Update log"
+                      class="selection"
+                      rows="15"
+                      readonly="readonly">
 <?php
 
 echo $message;
