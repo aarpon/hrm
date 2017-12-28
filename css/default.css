@@ -113,8 +113,8 @@ table {
 
 #welcome_intro {
     font-size: 16px;
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 30px;
+    padding-bottom: 30px;
     line-height: 1.5;
 }
 
@@ -395,7 +395,7 @@ table {
 }
 
 #logos table.firstRow {
-    margin: 20px 0px 30px 0px;
+    margin: 6px 0px 30px 0px;
 }
 
 #logos table.secondRow {
@@ -416,82 +416,82 @@ table {
 }
 
 #logos table td.epfl {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_epfl.jpg") no-repeat center;
-    background-size: 140px;
+    background-size: 130px;
 }
 
 #logos table td.mri {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_mri.png") no-repeat center;
-    background-size: 120px;
+    background-size: 80px;
 }
 
 #logos table td.svi {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_svi.png") no-repeat center;
-    background-size: 140px;
+    background-size: 80px;
 }
 
 #logos table td.bsse {
-    height: 120px;
+    height: 100px;
     margin-top: 50px;
     padding-bottom: 5px;
     cursor: pointer;
     background: url("../images/logo_bsse.jpg") no-repeat center;
-    background-size: 140px;
+    background-size: 124px;
 }
 
 #logos table td.fmi {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_fmi.png") no-repeat center;
-    background-size: 140px;
+    background-size: 100px;
 }
 
 #logos table td.bio-basel {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_biozentrum.png") no-repeat center;
-    background-size: 140px;
+    background-size: 130px;
 }
 
 #logos table td.lin {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_lin.jpeg") no-repeat center;
-    background-size: 140px;
+    background-size: 130px;
 }
 
 #logos table td.cni {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_cni.png") no-repeat center;
-    background-size: 140px;
+    background-size: 130px;
 }
 
 #logos table td.unf {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_unf.png") no-repeat center;
-    background-size: 140px;
+    background-size: 120px;
 }
 
 #logos table td.miap {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_miap.png") no-repeat center;
-    background-size: 140px;
+    background-size: 110px;
 }
 
 #logos table td.blank {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_blank.png") no-repeat center;
-    background-size: 140px;
+    background-size: 100px;
 }
 
 #templates select {
@@ -814,14 +814,13 @@ input.apply {
 #footer {
     clear: both;
     font-size: 60%;
-    padding: 45px 0px 5px 0px;
+    padding: 30px 0px 5px 0px;
     /*border-top: #ccc 2px solid;
     border-bottom: #ccc 2px solid;*/
 }
 
 #footer #version_info {
     font-size: 120%;
-    font-weight: bold;
 }
 
 #about {

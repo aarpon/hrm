@@ -245,10 +245,9 @@ include("header.inc.php");
     ?>
 
     <div id="logos">
-
+    A collaboration of:
         <!-- First row -->
         <table class="firstRow">
-
             <!-- Logos -->
             <tr>
                 <td class="mri"
