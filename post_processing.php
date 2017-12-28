@@ -116,7 +116,7 @@ include("header.inc.php");
                        'http://www.svi.nl/ChromaticAberrationCorrector')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                correct images for chromatic aberration?
+                Chromatic Aberration Correction
             </legend>
 
            <p>
@@ -208,7 +208,7 @@ include("header.inc.php");
                        'http://www.svi.nl/ObjectStabilizer')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                stabilize time series?
+                Stabilization Of Time Series
             </legend>
 
             <p>

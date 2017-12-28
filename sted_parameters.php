@@ -293,7 +293,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3>STED parameters </h3>
+    <h3>STED Parameters </h3>
 
     <form method="post" action="" id="select">
 

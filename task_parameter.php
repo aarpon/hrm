@@ -143,7 +143,7 @@ include("header.inc.php");
                 <a href="javascript:openWindow(
                        'https://svi.nl/RestorationMethod')">
                     <img src="images/help.png" alt="?"/></a>
-                deconvolution algorithm
+                Deconvolution Algorithm
             </legend>
 
             <select name="DeconvolutionAlgorithm"
@@ -188,7 +188,7 @@ include("header.inc.php");
                 <a href="javascript:openWindow(
                     'http://www.svi.nl/SignalToNoiseRatio')">
                     <img src="images/help.png" alt="?"/></a>
-                signal/noise ratio
+                Signal/Noise Ratio
             </legend>
 
             <div id="snr"
@@ -439,7 +439,7 @@ for ($j = 1; $j <= 4; $j++) {
                         'http://www.svi.nl/HelpCropper')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    crop surrounding background areas?
+                    Cropping Mode
                 </legend>
 
                 <select id="Autocrop"
@@ -483,7 +483,7 @@ for ($j = 1; $j <= 4; $j++) {
                 <a href="javascript:openWindow(
                     'http://www.svi.nl/BackgroundMode')">
                     <img src="images/help.png" alt="?"/></a>
-                background mode
+                Background Mode
             </legend>
 
             <div id="background">
@@ -615,7 +615,7 @@ for ($j = 1; $j <= 4; $j++) {
                       onmouseover="changeQuickHelp('stopcrit');">
 
                 <legend>
-                    stopping criteria
+                    Stopping Criteria
                 </legend>
 
                 <div id="criteria">
