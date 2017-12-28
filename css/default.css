@@ -746,7 +746,8 @@ input.apply {
 #login .button {
     font-weight: normal;
     background-color: white;
-    border: thin groove;
+    border: thin solid;
+    border-color: #4da6ff;
     margin: 2px;
     text-align: center;
     text-decoration: none;
