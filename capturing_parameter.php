@@ -366,6 +366,7 @@ if ($saveToDB == true) {
             </table>
 
             <p class="message_small"><?php echo $NyquistMessage; ?></p>
+            <p></p>
             <a href="#"
                onmouseover="TagToTip('ttSpanNyquist')"
                onmouseout="UnTip()"
@@ -460,7 +461,7 @@ if ($saveToDB == true) {
 
                 <?php
                 if ($_SESSION['setting']->numberOfChannels() > 1) {
-                    ?>  <p>&nbsp;</p> <?php
+                    ?>  <p></p> <?php
                 }
                 ?>
                 <div class="multichannel">
@@ -497,7 +498,7 @@ if ($saveToDB == true) {
                     }
 
                     ?></div>
-                <p>&nbsp;</p>
+                <p></p>
 
                 <?php
                 /** @var NumericalAperture $parameterNA */
@@ -561,7 +562,7 @@ if ($saveToDB == true) {
                                value="<?php echo $parameterPinholeSpacing->value() ?>"/>
                     </li>
                 </ul>
-                <p>&nbsp;</p>
+                <p></p>
 
                 <a href="#"
                    onmouseover="TagToTip('ttSpanPinholeSpacing' )"
