@@ -133,7 +133,8 @@ table {
     width: 100%;
     margin-top: 1em;
     margin-bottom: 2em;
-    border: thin solid;
+    /*    border: thin solid; */
+    background-color: #fdfdfd;
 }
 
 #basket {
