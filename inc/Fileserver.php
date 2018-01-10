@@ -360,6 +360,25 @@ class Fileserver
     }
 
     /**
+     * Searches the source folder recursively, stores and returns all
+     * found files. Currently stored files are replaced.
+     *
+     * @param bool $expand If true, names of subimages (as in the case of
+     * lif files) are expanded and returned in the list of file names.
+     *
+     * @return array Sorted array of file names.
+     */
+    public function scanAndStoreFiles($expand)
+    {
+        // Process
+        $this->setDefaultImageExtensions();
+        $this->expandSubImages($expand);
+        $this->getFiles();
+
+        return $this->files();
+    }
+
+    /**
      * Searches the destination folder recursively and returns all found files.
      * @param string $extension Extension to be considered to scan the folder. Omit to get all files.
      * @return array|bool Sorted array of file names or false if the destination folder does not exist.
@@ -2922,12 +2941,14 @@ class Fileserver
      * represented by their first image file.
      *
      * The list is stored!
+     *
+     * TODO: That is a confusing function name; sounds like a getter, but it it's not!!!
      */
     private function getFiles()
     {
         $this->files = array();
         if (!file_exists($this->sourceFolder())) return False;
-        $this->getFilesFrom($this->sourceFolder(), "");
+        $this->getFilesFrom2($this->sourceFolder(), "");
         if (count($this->files) == 0) return False;
         $extArr = $this->imageExtensions();
 
@@ -3305,6 +3326,77 @@ class Fileserver
             }
         }
         $dir->close();
+    }
+
+    /**
+     * Another way to scan the file system and retrieve a file list
+     *
+     * @param $iniDir
+     * @param $prefix
+     */
+    private function getFilesFrom2($iniDir, $prefix)
+    {
+        foreach ($this->scanRecursive($iniDir, $prefix) as $entry) {
+            if ($this->isValidImage($entry) and $this->isImage($entry)) {
+                $this->files[] = $entry;
+            }
+        }
+    }
+
+    /**
+     * Recursive scan
+     * (optimized)
+     *
+     * @param $input_dir
+     * @param string $prefix
+     * @param array $nonos
+     * @return array
+     */
+    private function scanRecursive($input_dir, $prefix = "", $nonos = [".", "..", "hrm_previews"])
+    {
+        if ($prefix != "") {
+            $prefix = $prefix . DIRECTORY_SEPARATOR;
+        }
+
+        $files = array();
+        $items = array_slice(scandir($input_dir), 2);
+        foreach ($items as $item) {
+            $subdir = $input_dir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($subdir)) {
+                if (in_array($item, $nonos)) {
+                    continue;
+                } else {
+                    $prepend = $prefix . $item;
+                    $files = array_merge($files, $this->scanRecursive($subdir, $prepend, $nonos));
+                }
+            } else {
+                $files[] = $prefix . $item;
+            }
+        }
+        return $files;
+    }
+
+    /**
+     * Check if there are files in the file list
+     *
+     * @return bool
+     */
+    public function hasFiles()
+    {
+        return !($this->files == NULL);
+    }
+
+    /**
+     * Return current file list.
+     *
+     * The function does not scan the file system but exclusively return currently stored list.
+     * Use getFiles() or getFilesFrom() to first scan and rebuild the file list.
+     *
+     * @return array|null
+     */
+    public function getCurrentFileList()
+    {
+        return $this->files;
     }
 
     /**
