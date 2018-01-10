@@ -103,7 +103,7 @@ include("header.inc.php");
 
 
 <div id="content">
-    <h2>Restoration - Post Deconvolution</h2>
+    <h3>Restoration - Post Deconvolution</h3>
     
     <form method="post" action="" id="select">
 
@@ -116,7 +116,7 @@ include("header.inc.php");
                        'http://www.svi.nl/ChromaticAberrationCorrector')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                correct images for chromatic aberration?
+                Chromatic Aberration Correction
             </legend>
 
            <p>
@@ -130,6 +130,7 @@ include("header.inc.php");
             <select name="ReferenceChannel"
                     id="ReferenceChannel"
                     title="Reference channel"
+                    class="selection"
                     onclick="changeChromaticChannelReference(this)"
                     onchange="changeChromaticChannelReference(this)">
                 <?php
@@ -207,7 +208,7 @@ include("header.inc.php");
                        'http://www.svi.nl/ObjectStabilizer')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                stabilize time series?
+                Stabilization Of Time Series
             </legend>
 
             <p>
@@ -218,8 +219,9 @@ include("header.inc.php");
             Stabilization of Time Series:
 
             <select name="TStabilization"
-                    id="TStabilization"
+                    id="TStabilization"                    
                     title="Stabilization of Time Series"
+                    class="selection"
                     onchange="switchTStabilizationMode(this)">
            <?php
             $parameterTStabilization = $_SESSION['task_setting']->parameter("TStabilization");
@@ -265,7 +267,8 @@ include("header.inc.php");
 
             <select name="TStabilizationMethod"
                     id="TStabilizationMethod"
-                    title="Stabilization Method">
+                    title="Stabilization Method"
+                    class="selection">
         <?php
             $parameterTStabilizationMethod =
                 $_SESSION['task_setting']->parameter("TStabilizationMethod");
@@ -313,7 +316,8 @@ include("header.inc.php");
 
             <select name="TStabilizationRotation"
                     id="TStabilizationRotation"
-                    title="Stabilization Rotation">
+                    title="Stabilization Rotation"
+                    class="selection">
          <?php
             $parameterTStabilizationRotation =
                 $_SESSION['task_setting']->parameter("TStabilizationRotation");
@@ -359,7 +363,8 @@ include("header.inc.php");
 
             <select name="TStabilizationCropping"
                     id="TStabilizationCropping"
-                    title="Stabilization Cropping">
+                    title="Stabilization Cropping"
+                    class="selection">
 
          <?php
             $parameterTStabilizationCropping =

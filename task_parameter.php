@@ -129,7 +129,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h2>Restoration - Deconvolution</h2>
+    <h3>Restoration - Deconvolution</h3>
 
     <form method="post" action="" id="select">
 
@@ -143,11 +143,12 @@ include("header.inc.php");
                 <a href="javascript:openWindow(
                        'https://svi.nl/RestorationMethod')">
                     <img src="images/help.png" alt="?"/></a>
-                deconvolution algorithm
+                Deconvolution Algorithm
             </legend>
 
             <select name="DeconvolutionAlgorithm"
                     title="Deconvolution algorithm"
+                    class="selection"   
                     onchange="switchSnrMode(this.value);">
 
                 <?php
@@ -187,7 +188,7 @@ include("header.inc.php");
                 <a href="javascript:openWindow(
                     'http://www.svi.nl/SignalToNoiseRatio')">
                     <img src="images/help.png" alt="?"/></a>
-                signal/noise ratio
+                Signal/Noise Ratio
             </legend>
 
             <div id="snr"
@@ -379,6 +380,7 @@ include("header.inc.php");
                             Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
                             <select class="snrselect"
                                     title="Signal-to-noise ration (QMLE)"
+                                    class="selection"
                                     name="SignalNoiseRatioQMLE<?php echo $i ?>">
 <?php
 
@@ -437,12 +439,13 @@ for ($j = 1; $j <= 4; $j++) {
                         'http://www.svi.nl/HelpCropper')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    crop surrounding background areas?
+                    Cropping Mode
                 </legend>
 
                 <select id="Autocrop"
                         title="Autocrop"
-                        name="Autocrop">
+                        name="Autocrop"
+                        class="selection">
                     <?php
 
                     /*
@@ -480,7 +483,7 @@ for ($j = 1; $j <= 4; $j++) {
                 <a href="javascript:openWindow(
                     'http://www.svi.nl/BackgroundMode')">
                     <img src="images/help.png" alt="?"/></a>
-                background mode
+                Background Mode
             </legend>
 
             <div id="background">
@@ -612,7 +615,7 @@ for ($j = 1; $j <= 4; $j++) {
                       onmouseover="changeQuickHelp('stopcrit');">
 
                 <legend>
-                    stopping criteria
+                    Stopping Criteria
                 </legend>
 
                 <div id="criteria">
@@ -693,7 +696,8 @@ for ($j = 1; $j <= 4; $j++) {
 
                 <select id="ZStabilization"
                         title="Z stabilization"
-                        name="ZStabilization">
+                        name="ZStabilization"
+                        class="selection">
                     <?php
 
                     /*

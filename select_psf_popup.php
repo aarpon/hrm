@@ -72,8 +72,11 @@ $emSetting = $emSettingArr[$chan];
                 ?>
 
                 <div id="userfiles">
-                    <select name="userfiles[]" title="Available PSF files"
-                            size="10" onchange="lock(this)">
+                    <select name="userfiles[]"
+                            title="Available PSF files"
+                            class="selection"
+                            size="10"
+                            onchange="lock(this)">
                         <?php
 
                         $showWarning = false;

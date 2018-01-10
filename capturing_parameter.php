@@ -262,11 +262,9 @@ if ($saveToDB == true) {
 
 <div id="content">
 
-    <h2>Optical parameters / 2</h2>
+    <h3>Optical Parameters (2)</h3>
 
     <form method="post" action="capturing_parameter.php" id="select">
-
-        <h4>How were these images captured?</h4>
 
         <?php
 
@@ -289,10 +287,10 @@ if ($saveToDB == true) {
                        'http://www.svi.nl/SampleSize')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                voxel size
+                Voxel Size
             </legend>
+            <h4>How were these images captured?</h4>
 
-            <p class="message_small"><?php echo $NyquistMessage; ?></p>
             <?php
 
             $value = $parameterCCDCaptorSizeX->value();
@@ -312,6 +310,7 @@ if ($saveToDB == true) {
                            size="5"
                            value="<?php echo $value ?>"/>
                 </td>
+                <td>
                     <?php
                     // The calculation of pixel size from CCD chip makes sense
                     // only for widefield microscopes
@@ -333,7 +332,6 @@ if ($saveToDB == true) {
                         <?php
                     }
                     ?>
-                    <td>
                     </td>
                 </tr>
                 <tr>
@@ -364,9 +362,11 @@ if ($saveToDB == true) {
                       Set to <b>Nyquist rate in Z</b> for 2D datasets.
                     </span>
                 </td>
-            </tr>
+              </tr>
             </table>
 
+            <p class="message_small"><?php echo $NyquistMessage; ?></p>
+            <p></p>
             <a href="#"
                onmouseover="TagToTip('ttSpanNyquist')"
                onmouseout="UnTip()"
@@ -405,7 +405,7 @@ if ($saveToDB == true) {
                     'http://www.svi.nl/TimeSeries')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                time interval
+                Time Interval
             </legend>
             <ul>
                 <li>Time interval (s):
@@ -453,7 +453,7 @@ if ($saveToDB == true) {
                         'http://www.svi.nl/PinholeRadius')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    pinhole radius
+                    Backprojected Pinhole Radius
                 </legend>
                 <ul>
                     <li>backprojected pinhole radius (nm):</li>
@@ -461,7 +461,7 @@ if ($saveToDB == true) {
 
                 <?php
                 if ($_SESSION['setting']->numberOfChannels() > 1) {
-                    ?>  <p>&nbsp;</p> <?php
+                    ?>  <p></p> <?php
                 }
                 ?>
                 <div class="multichannel">
@@ -498,7 +498,7 @@ if ($saveToDB == true) {
                     }
 
                     ?></div>
-                <p>&nbsp;</p>
+                <p></p>
 
                 <?php
                 /** @var NumericalAperture $parameterNA */
@@ -550,10 +550,10 @@ if ($saveToDB == true) {
                         'http://www.svi.nl/PinholeSpacing')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    backprojected pinhole spacing
+                    Backprojected Pinhole Spacing
                 </legend>
                 <ul>
-                    <li>pinhole spacing (micron):
+                    <li>backprojected pinhole spacing (micron):
                         <input id="PinholeSpacing"
                                title="Pinhole spacing"
                                name="PinholeSpacing"
@@ -562,7 +562,7 @@ if ($saveToDB == true) {
                                value="<?php echo $parameterPinholeSpacing->value() ?>"/>
                     </li>
                 </ul>
-                <p>&nbsp;</p>
+                <p></p>
 
                 <a href="#"
                    onmouseover="TagToTip('ttSpanPinholeSpacing' )"

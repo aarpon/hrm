@@ -212,7 +212,10 @@ if (isset($_POST['add'])) {
 
                     <br/>
 
-                    <select title="Authentication mode" name="authMode" id="authMode">
+                    <select name="authMode"
+                            id="authMode"
+                            title="Authentication mode"
+                            class="selection">
 
                         <?php
 

@@ -175,6 +175,7 @@ include("header.inc.php");
             ?>
             <select name="OutputFileFormat"
                     id="OutputFileFormat"
+                    class="selection"
                     title="Output file format"
                     size="1">
                 <?php
@@ -262,6 +263,7 @@ include("header.inc.php");
         </legend>
             <textarea name="parameter_settings_report"
                       title="Summary"
+                      class="selection"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -284,7 +286,8 @@ echo $_SESSION['setting']->displayString();
             </a>: <?php echo $_SESSION['task_setting']->name() ?>
         </legend>
             <textarea name="task_settings_report"
-                      title="Summary"
+                      title="Summary"                      
+                      class="selection"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -316,6 +319,7 @@ echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType);
         </legend>
             <textarea name="analysis_settings_report"
                       title="Summary"
+                      class="selection"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -341,6 +345,7 @@ echo $_SESSION['analysis_setting']->displayString();
         </legend>
             <textarea name="task_settings_report"
                       title="Summary"
+                      class="selection"
                       cols="50"
                       rows="3"
                       readonly="readonly">

@@ -349,6 +349,7 @@ if (!$_SESSION['user']->isAdmin()) {
 
 ?>
 <select name="public_setting" title="Admin templates"
+     class="selection"
      onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
      onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), true);"
      size="5"<?php echo $flag ?>>
@@ -415,6 +416,7 @@ if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
 ?>
 <select name="task_setting" id="setting" title="Your templates"
+    class="selection"
     onclick="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
     onchange="ajaxGetParameterListForSet('task_setting', $(this).val(), false);"
     size="<?php echo $size ?>"
@@ -534,7 +536,7 @@ if (!$_SESSION['user']->isAdmin()) {
                      Duplicate
                     </td>
                     <td class="label">
-                     From<br />Huygens
+                     Huygens<br />template
                     </td>
 <?php
 if (!$_SESSION['user']->isAdmin()) {
@@ -563,7 +565,7 @@ if (!$_SESSION['user']->isAdmin()) {
                      class="textfield_30"/>
               <input name="submit"
                      type="submit"
-                     value="Submit"
+                     value="Create"
                      class="submit_btn"/>
            </label>
         </div>
@@ -574,7 +576,7 @@ if (!$_SESSION['user']->isAdmin()) {
                      class="textfield_30"/>
               <input name="submit"
                      type="submit"
-                     value="Submit"
+                     value="Create"
                      class="submit_btn"/>
            </label>
         </div>
@@ -615,8 +617,12 @@ if (!$_SESSION['user']->isAdmin()) {
             </p>
             <div id="users">
 
-                <select id="usernameselect" name="usernameselect[]"
-                        size="5" multiple="multiple" title="Users">
+                <select id="usernameselect"
+                        name="usernameselect[]"
+                        class="selection"
+                        size="5"
+                        multiple="multiple"
+                        title="Users">
                     <option>&nbsp;</option>
                 </select>
             </div>

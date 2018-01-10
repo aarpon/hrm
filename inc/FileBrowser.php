@@ -460,6 +460,7 @@ include("header_fb.inc.php");
 
         <div id="userfiles" onmouseover="showPreview()">
           <select name="userfiles[]" id="fileSelection"
+                  class="selection"
                   onchange="imageAction(this)"
                   onkeyup="this.blur();this.focus();"
                   size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>

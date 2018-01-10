@@ -113,8 +113,8 @@ table {
 
 #welcome_intro {
     font-size: 16px;
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 30px;
+    padding-bottom: 30px;
     line-height: 1.5;
 }
 
@@ -129,6 +129,14 @@ table {
     line-height: 1.5;
 }
 
+.selection {
+    width: 100%;
+    margin-top: 1em;
+    margin-bottom: 2em;
+    /*    border: thin solid; */
+    background-color: #fdfdfd;
+}
+
 #basket {
     width: 1000px;
     border: #ddd 1px solid;
@@ -137,10 +145,11 @@ table {
 
 #title {
     display: block;
-    color: #8e94a0;
+    color: #5294e2;
     text-align: center;
-    border-bottom: solid #aaa 1px;
+    border-bottom: solid #ddd 1px;
     margin-bottom: 5px;
+    background: url("../images/logo.png") no-repeat top left;
 }
 
 #title h1 {
@@ -243,16 +252,17 @@ table {
 }
 
 .submit_btn {
-    background-color: #0099FF; /* Blue. */
+    background-color: #71cb55; /* Green. */
     border: none;
     color: white;
-    margin: 5px;
+    margin: 2px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 13px;
     /* vertical-align: middle; */
-    /* padding: 6px; */
+    padding: 0px 20px 0px 20px;
+    height: 30px;
 }
 
 #controls {
@@ -311,7 +321,7 @@ table {
     height: 40px;
     font-weight: bold;
     text-align: center;
-    border: solid 1px #aaa;
+    padding: 0px 0px 20px 0px;
 }
 
 #content h2 {
@@ -350,7 +360,7 @@ table {
     height: 40px;
     font-weight: bold;
     text-align: center;
-    border: solid 1px #aaa;
+    padding: 0px 0px 20px 0px;
 }
 
 #content_disabled h2 {
@@ -393,7 +403,7 @@ table {
 }
 
 #logos table.firstRow {
-    margin: 20px 0px 30px 0px;
+    margin: 6px 0px 30px 0px;
 }
 
 #logos table.secondRow {
@@ -414,82 +424,82 @@ table {
 }
 
 #logos table td.epfl {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_epfl.jpg") no-repeat center;
-    background-size: 140px;
+    background-size: 130px;
 }
 
 #logos table td.mri {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_mri.png") no-repeat center;
-    background-size: 120px;
+    background-size: 80px;
 }
 
 #logos table td.svi {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_svi.png") no-repeat center;
-    background-size: 140px;
+    background-size: 80px;
 }
 
 #logos table td.bsse {
-    height: 120px;
+    height: 100px;
     margin-top: 50px;
     padding-bottom: 5px;
     cursor: pointer;
     background: url("../images/logo_bsse.jpg") no-repeat center;
-    background-size: 140px;
+    background-size: 124px;
 }
 
 #logos table td.fmi {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_fmi.png") no-repeat center;
-    background-size: 140px;
+    background-size: 100px;
 }
 
 #logos table td.bio-basel {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_biozentrum.png") no-repeat center;
-    background-size: 140px;
+    background-size: 130px;
 }
 
 #logos table td.lin {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_lin.jpeg") no-repeat center;
-    background-size: 140px;
+    background-size: 130px;
 }
 
 #logos table td.cni {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_cni.png") no-repeat center;
-    background-size: 140px;
+    background-size: 130px;
 }
 
 #logos table td.unf {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_unf.png") no-repeat center;
-    background-size: 140px;
+    background-size: 120px;
 }
 
 #logos table td.miap {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_miap.png") no-repeat center;
-    background-size: 140px;
+    background-size: 110px;
 }
 
 #logos table td.blank {
-    height: 120px;
+    height: 100px;
     cursor: pointer;
     background: url("../images/logo_blank.png") no-repeat center;
-    background-size: 140px;
+    background-size: 100px;
 }
 
 #templates select {
@@ -741,14 +751,32 @@ input.apply {
     text-align: center;
 }
 
-#login button {
-    width: 70px;
+#login .button {
     font-weight: normal;
+    background-color: white;
+    border: thin solid;
+    border-color: #5294e2;
+    margin: 2px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+    height: 22px;
+    width: 60px;
 }
 
 #login .dark {
-    background-color: #ddd;
     font-weight: bold;
+    background-color: #71cb55; /* Green. */
+    border: none;
+    color: white;
+    margin: 2px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+    padding: 0px 20px 0px 20px;
+    height: 22px;
 }
 
 #rightpanel {
@@ -787,22 +815,21 @@ input.apply {
     white-space: nowrap;
     font-weight: bold;
     text-align: center;
-    border: solid 1px #aaa;
     height:40px;
+    padding: 0px 0px 20px 0px;
     /*vertical-align: middle;*/
 }
 
 #footer {
     clear: both;
     font-size: 60%;
-    padding: 45px 0px 5px 0px;
+    padding: 30px 0px 5px 0px;
     /*border-top: #ccc 2px solid;
     border-bottom: #ccc 2px solid;*/
 }
 
 #footer #version_info {
     font-size: 120%;
-    font-weight: bold;
 }
 
 #about {
@@ -846,8 +873,7 @@ table#Servers td {
     font-size: 24px;
     font-weight: bold;
     text-align: center;
-    line-height: 1.0;
-    border: solid 1px #aaa;
+    padding: 0px 0px 20px 0px;
 }
 
 #joblist summary {
@@ -1250,7 +1276,6 @@ table#Servers td {
     font-weight: bold;
     text-align: center;
     line-height: 1.0;
-    border: solid 1px #aaa;
 }
 
 #homepage table {

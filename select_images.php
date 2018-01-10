@@ -377,7 +377,9 @@ $info = "<h3>Quick help</h3>" .
                 Image file format
             </legend>
 
-            <select name="ImageFileFormat" id="ImageFileFormat"
+            <select name="ImageFileFormat"
+                    class="selection"
+                    id="ImageFileFormat"
                     title="Supported image file formats"
                     size="1"
                     onclick="storeFileFormatSelection(this,autoseries)"
@@ -430,12 +432,13 @@ $info = "<h3>Quick help</h3>" .
 
                 ?>
 
-                <select onchange="imageAction(this)"
-                        title="List of available images"
-                        id="filesPerFormat"
+                <select id="filesPerFormat"
                         name="userfiles[]"
+                        class="selection"
+                        title="List of available images"
                         size="10"
-                        multiple="multiple"<?php echo $flag ?>>
+                        multiple="multiple"<?php echo $flag ?>
+                        onchange="imageAction(this)">
                     <?php
                     $keyArr = array();
                     if ($allFiles == null) {
@@ -498,7 +501,7 @@ $info = "<h3>Quick help</h3>" .
                        onchange="storeFileFormatSelection(ImageFileFormat,this)"
                 />
 
-                Automatically load file series (when applicable)
+                When applicable, load file series automatically
 
             </label>
 
@@ -535,10 +538,11 @@ $info = "<h3>Quick help</h3>" .
                 }
 
                 ?>
-                <select onclick="imageAction(this)"
-                        onchange="imageAction(this)"
-                        title="List of selected images"
+                <select title="List of selected images"
                         id="selectedimages"
+                        class="selection"
+                        onclick="imageAction(this)"
+                        onchange="imageAction(this)"
                         name="selectedfiles[]"
                         size="5"
                         multiple="multiple"<?php echo $flag ?>>

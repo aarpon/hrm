@@ -91,7 +91,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h2>Analysis - colocalization</h2>
+    <h3>Analysis - Colocalization</h3>
 
     <form method="post" action="" id="select">
 
@@ -116,6 +116,7 @@ include("header.inc.php");
             <select id="ColocAnalysis"
                     title="Perform coloc analysis?"
                     name="ColocAnalysis"
+                    class="selection"
                     onchange="switchColocMode();">
 
                 <?php

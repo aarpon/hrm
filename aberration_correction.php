@@ -128,7 +128,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h2>Spherical aberration correction</h2>
+    <h3>Spherical Aberration Correction</h3>
 
     <form method="post" action="" id="select">
     
@@ -159,9 +159,6 @@ include("header.inc.php");
 
         <div id="CoverslipRelativePositionDiv">
 
-            <h4>To remove this aberration please specify the relative position of the coverslip with respect to the first acquired plane of the dataset.
-            </h4>
-
             <?php
 
             /***************************************************************************
@@ -184,11 +181,16 @@ include("header.inc.php");
                    'http://www.svi.nl/HuygensRemoteManagerHelpSpecifySampleOrientation')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    specify sample orientation
+                    Sample Orientation
                 </legend>
+                <h4>To remove the aberration please specify the relative
+                    position of the coverslip with respect to the first
+                    acquired plane of the dataset.
+                </h4>
 
                 <select name="CoverslipRelativePosition"
-                        title="Specify sample orientation">
+                        title="Specify sample orientation"
+                        class="selection">
 
                     <?php
 
@@ -225,7 +227,7 @@ include("header.inc.php");
                           onclick="storeValuesAndRedirect(
                             'coverslip_viewer.php');">
                             <img src="images/preview.png" alt=""/>
-                            Visualize</a>
+                            Visualize the image</a>
                     </p>
 
                 <p class="message_confidence_<?php
@@ -255,12 +257,6 @@ include("header.inc.php");
 
             ?>
 
-            <h4>Please notice that in certain
-                circumstances,
-                the automatic correction might generate artifacts in the
-                result.
-                If this is the case, please choose the advanced correction mode.
-            </h4>
 
             <fieldset class="setting <?php
             echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>"
@@ -271,12 +267,18 @@ include("header.inc.php");
                'http://www.svi.nl/HuygensRemoteManagerHelpSaCorrectionMode')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    correction mode
+                    Correction Mode
                 </legend>
+                <h4>Please notice that in certain circumstances, the
+                    automatic correction might generate artifacts in the
+                    result. If this is the case, please choose the advanced
+                    correction mode.
+                </h4>
 
                 <select id="AberrationCorrectionMode"
                         title="Correction mode"
                         name="AberrationCorrectionMode"
+                        class="selection"
                         onchange="switchAdvancedCorrection();">
 
                     <?php
@@ -343,8 +345,6 @@ include("header.inc.php");
 
             ?>
 
-            <h4>Most aberrations can be removed by using bricks or slice by slice. Slabs work better to restore images with extreme aberrations (e.g. very thick widefield data sets).</h4>
-
             <fieldset class="setting <?php echo
             $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>"
                       onmouseover="changeQuickHelp( 'advanced' );">
@@ -354,12 +354,17 @@ include("header.inc.php");
            'http://www.svi.nl/HuygensRemoteManagerHelpAdvancedSaCorrection')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    advanced correction scheme
+                    Advanced Correction
                 </legend>
+               <h4>Most aberrations can be removed by using bricks or slice by
+                   slice. Slabs work better to restore images with extreme
+                   aberrations (e.g. very thick widefield data sets).
+               </h4>
 
                 <select id="AdvancedCorrectionOptions"
                         title="Advanced correction scheme"
                         name="AdvancedCorrectionOptions"
+                        class="selection"
                         onchange="switchAdvancedCorrectionScheme();">
 
                     <?php

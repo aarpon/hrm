@@ -400,6 +400,7 @@ if (!$_SESSION['user']->isAdmin()) {
                     ?>
                     <select name="public_setting"
                             title="Admin templates"
+                            class="selection"
                             onclick="ajaxGetParameterListForSet('setting', $(this).val(), true);"
                             onchange="ajaxGetParameterListForSet('setting', $(this).val(), true);"
                             size="5"<?php echo $flag ?>>
@@ -461,7 +462,9 @@ if (!$_SESSION['user']->isAdmin()) {
                 if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
 
                 ?>
-                <select name="setting" id="setting"
+                <select name="setting"
+                        id="setting"
+                        class="selection"
                         title="Your templates"
                         onclick="ajaxGetParameterListForSet('setting', $(this).val(), false);"
                         onchange="ajaxGetParameterListForSet('setting', $(this).val(), false);"
@@ -590,10 +593,10 @@ if (!$_SESSION['user']->isAdmin()) {
                      Duplicate
                 </td>
                 <td class="label">
-                     From<br />Image
+                     From<br />image
                 </td>
                 <td class="label">
-                     From<br />Huygens
+                     Huygens<br />template
                 </td>
 <?php
 if (!$_SESSION['user']->isAdmin()) {
@@ -625,7 +628,7 @@ if (!$_SESSION['user']->isAdmin()) {
                      class="textfield_30"/>
               <input name="submit"
                    type="submit"
-                   value="Submit"
+                   value="Create"
                    class="submit_btn"/>
            </label>
 
@@ -637,7 +640,7 @@ if (!$_SESSION['user']->isAdmin()) {
                      class="textfield_30"/>
               <input name="submit"
                    type="submit"
-                   value="Submit"
+                   value="Create"
                    class="submit_btn"/>
            </label>
         </div>
@@ -679,7 +682,9 @@ if (!$_SESSION['user']->isAdmin()) {
             </p>
             <div id="users">
 
-                <select id="usernameselect" name="usernameselect[]"
+                <select id="usernameselect"
+                        name="usernameselect[]"
+                        class="selection"   
                         title="Users"
                         size="5" multiple="multiple">
                     <option>&nbsp;</option>

@@ -275,7 +275,7 @@ echo "\n</div> <!-- content -->\n";
         $message = "";
 
         if ($error) print $error . "<br><br>";
-        print "\n<h2>" . str_replace("_", " ", $micro) . "</h2>";
+        print "\n<h3>" . str_replace("_", " ", $micro) . "</h3>";
         print "\n<form action=\"calculate_bp_pinhole.php\" method=\"post\"" .
             " id=\"select\">";
         print "\n<fieldset class=\"setting\">";
@@ -482,7 +482,7 @@ echo "\n</div> <!-- content -->\n";
         }
 
         if ($error) {
-            $out .= "<h2>Error!</h2>\n" . $error;
+            $out .= "<h3>Error!</h3>\n" . $error;
         } else {
             $result = round($phr / $M, 2);
             $out .= "<h4>";

@@ -142,7 +142,10 @@ include("header.inc.php");
 <br /><br />
     <fieldset>
         <legend>log</legend>
-            <textarea title="Log" rows="10" readonly="readonly">
+            <textarea title="Log"
+                      class="selection"
+                      rows="10"
+                      readonly="readonly">
 <?php
 
 echo $message;
