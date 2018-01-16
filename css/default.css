@@ -145,7 +145,7 @@ table {
 
 #title {
     display: block;
-    color: #5294e2;
+    color: black;
     text-align: center;
     border-bottom: solid #ddd 1px;
     margin-bottom: 5px;
@@ -767,7 +767,7 @@ input.apply {
 
 #login .dark {
     font-weight: bold;
-    background-color: #71cb55; /* Green. */
+    background-color: #5294e2; /* Light blue. */
     border: none;
     color: white;
     margin: 2px;
