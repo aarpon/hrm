@@ -166,7 +166,7 @@ if (isset($generatedScript)) {
     <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
         Please upgrade to a later version of Internet Explorer or to a new
         browser altogether.</h3>
-    <link rel="stylesheet" href="css/default_ie.css">
+    <link rel="stylesheet" href="css/default.css">
     <![endif]-->
 
 <?php
