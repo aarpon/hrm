@@ -1350,6 +1350,15 @@ class ParameterSetting extends Setting {
         $this->message = '';
         $noErrorsFound = True;
 
+        // If no aberration correction is necessary, or it is not active, we do not need to
+        // test (since most parameter values will not be set anyway)
+        if (isset($postedParameters["AberrationCorrectionNecessary"]) &&
+            ($postedParameters["AberrationCorrectionNecessary"] == 0)) {
+            $this->message = '';
+            $noErrorsFound = True;
+            return $noErrorsFound;
+        }
+
         // CoverslipRelativePosition
         $valueSet = isset($postedParameters["CoverslipRelativePosition"]) &&
                 $postedParameters["CoverslipRelativePosition"] != '';
