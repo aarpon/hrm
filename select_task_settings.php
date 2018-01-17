@@ -562,6 +562,7 @@ if (!$_SESSION['user']->isAdmin()) {
            <label>Enter a name for the new template:
               <input name="new_setting_create"
                      type="text"
+                     size="30"
                      class="textfield_30"/>
               <input name="input_submit"
                      type="submit"
@@ -573,6 +574,7 @@ if (!$_SESSION['user']->isAdmin()) {
            <label>Enter a name for the new template:
               <input name="new_setting_copy"
                      type="text"
+                     size="30"
                      class="textfield_30"/>
               <input name="input_submit"
                      type="submit"

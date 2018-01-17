@@ -452,11 +452,11 @@ include("header_fb.inc.php");
             }
         ?>
 
-        <p class="message_small"><?php echo $explanation_text; ?></p>
-
       <fieldset >
 
         <legend><?php echo $form_title; ?></legend>
+
+          <p class="message_small"><?php echo $explanation_text; ?></p>
 
         <div id="userfiles" onmouseover="showPreview()">
           <select name="userfiles[]" id="fileSelection"

@@ -291,13 +291,15 @@ if ($saveToDB == true) {
             </legend>
             <h4>How were these images captured?</h4>
 
+            <p class="message_small"><?php echo $NyquistMessage; ?></p>
+
             <?php
 
             $value = $parameterCCDCaptorSizeX->value();
             $textForCaptorSize = "pixel size (nm)";
 
             ?>
-            <table>
+            <table id="table_nyquist">
               <tr>
                 <td>
                     <?php echo $textForCaptorSize ?>:
@@ -358,14 +360,13 @@ if ($saveToDB == true) {
                            value="<?php echo $parameterZStepSize->value() ?>"/>
                 </td>
                 <td>
-                    <span class="message_small">&nbsp;
-                      Set to <b>Nyquist rate in Z</b> for 2D datasets.
+                    <span class="message_small">
+                        Set to <b>Nyquist rate in Z</b> for 2D datasets.
                     </span>
                 </td>
               </tr>
             </table>
 
-            <p class="message_small"><?php echo $NyquistMessage; ?></p>
             <p></p>
             <a href="#"
                onmouseover="TagToTip('ttSpanNyquist')"
