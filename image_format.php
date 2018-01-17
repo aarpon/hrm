@@ -153,7 +153,10 @@ $nParamRequiringReset = 0;
                 </a>
                 Number Of Channels
             </legend>
-            <h4>How many channels (wavelengths) in your datasets?</h4>  
+
+            <h4>How many channels (wavelengths) in your datasets?</h4>
+
+            <p class="message_confidence_<?php echo $parameterNumberOfChannels->confidenceLevel(); ?>"></p>
 
             <?php
 
@@ -202,14 +205,6 @@ $nParamRequiringReset = 0;
 
             </div> <!-- values -->
 
-
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterNumberOfChannels->confidenceLevel(); ?>">
-                    &nbsp;
-                </p>
-            </div>
-
         </fieldset>
 
         <?php
@@ -239,6 +234,8 @@ $nParamRequiringReset = 0;
                 bead images or a theoretical PSF generated from explicitly
                 specified parameters?
             </h4>
+
+            <p class="message_confidence_<?php echo $parameterPointSpreadFunction->confidenceLevel(); ?>"></p>
 
             <div class="values">
                 <?php
@@ -290,13 +287,6 @@ $nParamRequiringReset = 0;
                 Measured
             </div> <!-- values -->
 
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterPointSpreadFunction->confidenceLevel(); ?>">
-                    &nbsp;
-                </p>
-
-            </div>
         </fieldset>
 
         <div id="controls"

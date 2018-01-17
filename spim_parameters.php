@@ -368,6 +368,8 @@ include("header.inc.php");
                 SPIM Excitation Mode
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterSpimExcMode->confidenceLevel(); ?>"></p>
+
             <div class="SpimExcModeValues">
                 <table class="SpimExcModeValues">
 
@@ -400,7 +402,7 @@ include("header.inc.php");
                                         }
                                         ?>
                                         <option
-                                            value=<?php echo $translatedValue;
+                                                value=<?php echo $translatedValue;
                                         echo $selected; ?>>
                                             <?php echo $possibleValue; ?>
                                         </option>
@@ -418,12 +420,6 @@ include("header.inc.php");
                 </table> <!-- SpimExcModeValues -->
             </div> <!-- SpimExcModeValues -->
 
-
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterSpimExcMode->confidenceLevel(); ?>">&nbsp;
-                </p>
-            </div>
         </fieldset>
 
 
@@ -450,6 +446,7 @@ include("header.inc.php");
                 SPIM Gauss Width (&#956;m)
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterSpimGaussWidth->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -480,11 +477,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterSpimGaussWidth->confidenceLevel(); ?>">&nbsp;
-                    </p>
-                </div>
         </fieldset>
 
         <?php
@@ -510,6 +502,7 @@ include("header.inc.php");
                 SPIM Focus Offset (&#956;m)
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterSpimFocusOffset->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -540,12 +533,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterSpimFocusOffset->confidenceLevel(); ?>">
-                        &nbsp;
-                    </p>
-                </div>
         </fieldset>
 
 
@@ -572,6 +559,7 @@ include("header.inc.php");
                 SPIM Center Offset (&#956;m)
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterSpimCenterOffset->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -602,12 +590,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterSpimCenterOffset->confidenceLevel(); ?>">
-                        &nbsp;
-                    </p>
-                </div>
         </fieldset>
 
 
@@ -633,6 +615,7 @@ include("header.inc.php");
                 SPIM NA
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterSpimNA->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -663,11 +646,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterSpimNA->confidenceLevel(); ?>">&nbsp;
-                    </p>
-                </div>
         </fieldset>
 
         <?php
@@ -692,6 +670,7 @@ include("header.inc.php");
                 SPIM Fill Factor
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterSpimFill->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -722,11 +701,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterSpimFill->confidenceLevel(); ?>">&nbsp;
-                    </p>
-                </div>
         </fieldset>
 
         <?php
@@ -751,6 +725,7 @@ include("header.inc.php");
                 SPIM Illumination Direction
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterSpimDir->confidenceLevel(); ?>"></p>
 
             <div class="SpimDirValues">
                 <table class="SpimDirValues">
@@ -800,11 +775,6 @@ include("header.inc.php");
                 </table> <!-- SpimDirValues -->
             </div> <!-- SpimDirValues -->
 
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterSpimDir->confidenceLevel(); ?>">&nbsp;
-                </p>
-            </div>
         </fieldset>
 
 

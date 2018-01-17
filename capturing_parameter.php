@@ -291,7 +291,7 @@ if ($saveToDB == true) {
             </legend>
             <h4>How were these images captured?</h4>
 
-            <p class="message_small"><?php echo $NyquistMessage; ?></p>
+            <p class="message_confidence_<?php echo $parameterCCDCaptorSizeX->confidenceLevel(); ?>"></p>
 
             <?php
 
@@ -366,6 +366,7 @@ if ($saveToDB == true) {
                 </td>
               </tr>
             </table>
+            <p class="message_small"><?php echo $NyquistMessage; ?></p>
 
             <p></p>
             <a href="#"
@@ -378,13 +379,6 @@ if ($saveToDB == true) {
                 &nbsp;<img src="images/web.png" alt="external link"/>
             </a>
 
-            <?php
-            $cl = "message_confidence_" .
-                $parameterCCDCaptorSizeX->confidenceLevel();
-            ?>
-            <p class="<?php echo $cl; ?>">
-                &nbsp;
-            </p>
         </fieldset>
 
         <?php
@@ -408,6 +402,7 @@ if ($saveToDB == true) {
                 </a>
                 Time Interval
             </legend>
+            <p class="message_confidence_<?php echo $parameterTimeInterval->confidenceLevel(); ?>"></p>
             <ul>
                 <li>Time interval (s):
                     <input id="TimeInterval"
@@ -421,14 +416,6 @@ if ($saveToDB == true) {
                 </span>
                 </li>
             </ul>
-
-            <?php
-            $cl = "message_confidence_" .
-                $parameterTimeInterval->confidenceLevel();
-            ?>
-            <p class="<?php echo $cl; ?>">
-                &nbsp;
-            </p>
 
         </fieldset>
 
@@ -456,6 +443,9 @@ if ($saveToDB == true) {
                     </a>
                     Backprojected Pinhole Radius
                 </legend>
+
+                <p class="message_confidence_<?php echo $parameterPinholeSize->confidenceLevel(); ?>"></p>
+
                 <ul>
                     <li>backprojected pinhole radius (nm):</li>
                 </ul>
@@ -515,14 +505,6 @@ if ($saveToDB == true) {
                     Backprojected pinhole calculator
                 </a>
 
-                <?php
-                $cl = "message_confidence_" .
-                    $parameterPinholeSize->confidenceLevel();
-                ?>
-                <p class="<?php echo $cl; ?>">
-                    &nbsp;
-                </p>
-
             </fieldset>
             <?php
 
@@ -553,6 +535,9 @@ if ($saveToDB == true) {
                     </a>
                     Backprojected Pinhole Spacing
                 </legend>
+
+                <p class="message_confidence_<?php echo $parameterPinholeSpacing->confidenceLevel(); ?>"></p>
+
                 <ul>
                     <li>backprojected pinhole spacing (micron):
                         <input id="PinholeSpacing"
@@ -573,14 +558,6 @@ if ($saveToDB == true) {
                     <img src="images/calc_small.png" alt=""/>
                     Backprojected pinhole calculator
                 </a>
-
-                <?php
-                $cl = "message_confidence_" .
-                    $parameterPinholeSpacing->confidenceLevel();
-                ?>
-                <p class="<?php echo $cl; ?>">
-                    &nbsp;
-                </p>
 
             </fieldset>
             <?php

@@ -119,6 +119,8 @@ include("header.inc.php");
     <h3><img alt="SelectPSF" src="./images/psf.png"
              width="40"/>&nbsp;Distilled PSF file selection</h3>
 
+    <p class="message_confidence_<?php echo $_SESSION['setting']->parameter("PointSpreadFunction")->confidenceLevel(); ?>"></p>
+
     <form method="post" action="select_psf.php" id="select">
 
         <div id="psfselection" class="provided">
@@ -182,7 +184,6 @@ include("header.inc.php");
         </div>
 
         <div><input name="OK" type="hidden"/></div>
-        <p class="message_confidence_Provide">&nbsp;</p>
 
         <div id="controls">
             <input type="button" value="" class="icon previous"

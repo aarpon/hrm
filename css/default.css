@@ -1948,7 +1948,7 @@ div.StedDeplModeValues {
 
 .message_confidence_provided {
     border: none;
-    height: 30px;
+    height: 0;
     margin-top: 5px;
     margin-bottom: -5px;
 }
@@ -1957,6 +1957,7 @@ div.StedDeplModeValues {
     font-size: 0.8em;
     content: "";
     color: #000000;
+    height: 0;
 }
 
 #login_user {

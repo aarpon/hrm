@@ -322,6 +322,8 @@ include("header.inc.php");
                 STED Depletion Mode
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterStedDeplMode->confidenceLevel(); ?>"></p>
+
             <div class="StedDeplModeValues">
                 <table class="StedDeplModeValues">
 
@@ -383,12 +385,6 @@ include("header.inc.php");
                 </table> <!-- StedDeplModeValues -->
             </div> <!-- StedDeplModeValues -->
 
-
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterStedDeplMode->confidenceLevel(); ?>">&nbsp;
-                </p>
-            </div>
         </fieldset>
 
 
@@ -414,6 +410,7 @@ include("header.inc.php");
                 STED Saturation Factor
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterStedSatFact->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -451,11 +448,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterStedSatFact->confidenceLevel(); ?>">&nbsp;
-                    </p>
-                </div>
         </fieldset>
 
         <?php
@@ -480,6 +472,7 @@ include("header.inc.php");
                 STED Wavelength (nm)
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterStedLambda->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -517,11 +510,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterStedLambda->confidenceLevel(); ?>">&nbsp;
-                    </p>
-                </div>
         </fieldset>
 
 
@@ -547,6 +535,7 @@ include("header.inc.php");
                 STED Immunity Fraction (%)
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterStedImmunity->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -584,11 +573,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterStedImmunity->confidenceLevel(); ?>">&nbsp;
-                    </p>
-                </div>
         </fieldset>
 
 
@@ -615,6 +599,7 @@ include("header.inc.php");
                     STED 3D (%)
                 </legend>
 
+                <p class="message_confidence_<?php echo $parameterSted3D->confidenceLevel(); ?>"></p>
 
                 <div class="multichannel">
                     <?php
@@ -652,11 +637,6 @@ include("header.inc.php");
                     }
                     ?>
 
-                    <div class="bottom">
-                        <p class="message_confidence_<?php
-                        echo $parameterSted3D->confidenceLevel(); ?>">&nbsp;
-                        </p>
-                    </div>
             </fieldset>
             <?php
         }

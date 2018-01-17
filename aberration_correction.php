@@ -188,6 +188,8 @@ include("header.inc.php");
                     acquired plane of the dataset.
                 </h4>
 
+                <p class="message_confidence_<?php echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>">
+
                 <select name="CoverslipRelativePosition"
                         title="Specify sample orientation"
                         class="selection">
@@ -230,9 +232,6 @@ include("header.inc.php");
                             Visualize the image</a>
                     </p>
 
-                <p class="message_confidence_<?php
-                echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>">
-                    &nbsp;
                 </p>
 
             </fieldset>
