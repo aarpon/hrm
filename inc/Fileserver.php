@@ -1826,11 +1826,9 @@ class Fileserver
 
 
         echo '
-      <div id="prevBasket"> <!--basket-->
+      <div id="basket"> <!--basket-->
       <div id="title">
-      <h3>HRM image preview</h3>
-      <h3>' . $file . '</h3>
-      <div id="logo"></div>
+      <h1>HRM image preview</h1>
       </div>';
 
         $pdest = $this->destinationFolder();
@@ -1951,17 +1949,17 @@ class Fileserver
 
         // Define some arrays
         $desc = array('MIP' => "MIP",
-            'parameters' => "parameters",
-            'log' => "log",
+            'parameters' => "Parameters",
+            'log' => "Log",
             'SFP' => "SFP",
-            'stack' => "slicer",
-            'tSeries' => "series",
-            'stackMovie' => "stack movie",
-            'tSeriesMovie' => "series movie",
-            'tSeriesSfpMovie' => "series SFP movie",
-            'colocalization' => "colocalization",
-            'history' => "history",
-            'remarks' => "remarks");
+            'stack' => "Slicer",
+            'tSeries' => "Series",
+            'stackMovie' => "Stack movie",
+            'tSeriesMovie' => "Series movie",
+            'tSeriesSfpMovie' => "Series SFP movie",
+            'colocalization' => "Colocalization",
+            'history' => "History",
+            'remarks' => "Remarks");
 
         $tip = array('MIP' => "Compare Maximum Intensity Projections",
             'parameters' => "List the image parameters used (useful to check the runtime parameters that were used if the template was incomplete)",
@@ -2072,7 +2070,7 @@ class Fileserver
         }
         echo "</div>\n";
         echo "</div>\n";
-        echo "<div id=\"previewContents\">\n";
+        echo "<div id=\"previewContents\">\n<h3>$file</h3>";
 
         if ($mode == "stack" || $mode == "tSeries") {
             $this->viewStrip($file, "$mode.compare", "dest", true);
