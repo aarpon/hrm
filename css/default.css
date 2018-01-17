@@ -1792,7 +1792,7 @@ option.default {
     white-space: nowrap;
     display: inline-block;
     vertical-align:  middle;
-    font-size: 0.8em;
+    font-size: 1.0em;
 }
 
 #prevMenu .menuEntryActive {
