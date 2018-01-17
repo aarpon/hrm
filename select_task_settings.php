@@ -563,7 +563,7 @@ if (!$_SESSION['user']->isAdmin()) {
               <input name="new_setting_create"
                      type="text"
                      class="textfield_30"/>
-              <input name="submit"
+              <input name="input_submit"
                      type="submit"
                      value="Create"
                      class="submit_btn"/>
@@ -574,7 +574,7 @@ if (!$_SESSION['user']->isAdmin()) {
               <input name="new_setting_copy"
                      type="text"
                      class="textfield_30"/>
-              <input name="submit"
+              <input name="input_submit"
                      type="submit"
                      value="Create"
                      class="submit_btn"/>
