@@ -2258,6 +2258,8 @@ div.StedDeplModeValues {
     color: black;
     background-color: white;
     padding: 0px;
+    font-weight: bold;
+    font-family: 'Open Sans', sans-serif;
 }
 
 /* Dropdown button on hover & focus */
