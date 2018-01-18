@@ -155,7 +155,7 @@ table {
     margin: 10px;
     position: relative;
     top: 10px;
-    color: slategrey;
+    color: lightslategrey;
 }
 
 #logo {
@@ -1300,13 +1300,13 @@ table#Servers td {
 #homepage table a:link {
     font-size: 20px;
     font-weight: bold;
-    color: #000;
+    color: lightslategrey;
 }
 
 #homepage table a:visited {
     font-size: 20px;
     font-weight: bold;
-    color: #000;
+    color: lightslategrey;
 }
 
 #homepage .added_jobs {
