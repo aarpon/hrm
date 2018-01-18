@@ -126,19 +126,12 @@ table {
 .intro {
     font-size: 16px;
     padding-top: 15px;
-    /*border-top-style: dotted;
-    border-top-width: 1px;*/
     padding-bottom: 15px;
-    /*border-bottom-style: dotted;
-    border-bottom-width: 1px;*/
     line-height: 1.5;
 }
 
 .selection {
     width: 100%;
-    margin-top: 1em;
-    margin-bottom: 2em;
-    /*    border: thin solid; */
     background-color: #fdfdfd;
 }
 
@@ -219,8 +212,6 @@ table {
     color: #888;
     font-size: 12px;
     font-weight: bold;
-    /*border-top: #ccc 2px solid;
-    border-bottom: #ccc 2px solid;*/
 }
 
 #navright {
@@ -285,7 +276,6 @@ table {
 }
 
 #welcome h3 {
-    /*background-color: #eee;*/
     font-size: 16px;
     height: 40px;
     font-weight: bold;
@@ -326,7 +316,6 @@ table {
 }
 
 #content h2 {
-    /*background-color: #eee;*/
     font-size: 16px;
     height: 18px;
     font-weight: bold;
@@ -362,7 +351,7 @@ table {
 }
 
 #content_disabled h2 {
-    /*background-color: #eee;*/
+
     color: grey;
     font-size: 16px;
     height: 18px;
@@ -527,7 +516,7 @@ table {
 }
 
 #autoseries {
-    margin-top: 5px;
+    vertical-align: middle;
 }
 
 #selection label {
@@ -804,7 +793,6 @@ input.apply {
 }
 
 #info h3 {
-    /*background-color: #eee;*/
     font-size: 16px;
     line-height: 40px;
     white-space: nowrap;
