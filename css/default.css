@@ -1949,7 +1949,17 @@ div.StedDeplModeValues {
 
 #login_user {
     margin: 0;
-    border-bottom: 1px dotted;
+    text-align: left;
+}
+
+#login_user h1,
+#login_user h2,
+#login_user h3,
+#login_user h4,
+#login_user h5,
+#login_user h6 {
+    border: 0;
+    color: lightslategrey;
 }
 
 #cal_from {
