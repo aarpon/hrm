@@ -153,7 +153,6 @@ table {
     color: black;
     text-align: center;
     border-bottom: solid #ddd 1px;
-    margin-bottom: 5px;
     background: url("../images/logo.png") no-repeat top left;
 }
 
@@ -161,6 +160,9 @@ table {
     font-size: 36px;
     font-weight: bold;
     margin: 10px;
+    position: relative;
+    top: 10px;
+    color: slategrey;
 }
 
 #logo {
