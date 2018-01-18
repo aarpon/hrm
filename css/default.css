@@ -1674,7 +1674,6 @@ option.default {
 .textfield {
     width: 50%;
     text-align: left;
-    vertical-align: middle;
     margin: 1px 5px 1px 1px;
 }
 
