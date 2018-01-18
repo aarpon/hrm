@@ -956,6 +956,10 @@ table#Servers td {
     font-size: 90%;
 }
 
+#AberrationCorrectionModeDiv {
+    margin-top: 25px;
+}
+
 #TimeStabilization select {
     width: 100%;
     text-align: left;
