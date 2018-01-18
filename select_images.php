@@ -70,7 +70,6 @@ if (isset($_POST['down'])) {
 } else if (isset($_POST['update'])) {
     $_SESSION['fileserver']->resetFiles();
 } else if (isset($_POST['OK'])) {
-    print_r("ok<br/>");
     if (!$_SESSION['fileserver']->hasSelection()) {
         $message = "Please add at least one image to your selection";
     } else {
@@ -78,7 +77,6 @@ if (isset($_POST['down'])) {
         exit();
     }
 } else if ($_SESSION['fileserver'] == null) {
-    print_r("init<br/>");
     // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
     $_SESSION['fileserver'] = new Fileserver($name);
     $_SESSION['autoseries'] = "TRUE";
