@@ -2078,6 +2078,18 @@ class DatabaseConnection
     }
 
     /**
+     * Gets the (active) licenses store in the hucore_license table.
+     * @return array of licenses.
+     */
+    public function getActiveLicenses()
+    {
+        $query = "SELECT feature FROM hucore_license;";
+        $licenses = $this->query($query);
+        $licenses = $this->flatten($licenses);
+        return $licenses;
+    }
+
+    /**
      * Updates the database with the current HuCore license details.
      * @param string $licDetails A string with the supported license features.
      * @return bool True if the license details were successfully saved, false
@@ -2264,7 +2276,6 @@ class DatabaseConnection
 
         return intval($result);
     }
-    
 
     public function getAllServers($server)
     {
