@@ -245,29 +245,29 @@ include("header.inc.php");
     ?>
 
     <div id="logos">
-    A collaboration of:
+        A <a href="credits.php">collaboration</a> of:
         <!-- First row -->
         <table class="firstRow">
             <!-- Logos -->
             <tr>
                 <td class="mri"
-                    onclick="javascript:openWindow('http://www.mri.cnrs.fr')">
+                    onclick="javascript:openWindow('https://www.mri.cnrs.fr')">
                 </td>
                 <td class="fmi"
-                    onclick="javascript:openWindow('http://www.fmi.ch')">
+                    onclick="javascript:openWindow('https://www.fmi.ch')">
                 </td>
                 <td class="epfl"
-                    onclick="javascript:openWindow('http://biop.epfl.ch')">
+                    onclick="javascript:openWindow('https://biop.epfl.ch')">
                 </td>
                 <td class="svi"
-                    onclick="javascript:openWindow('http://www.svi.nl')">
+                    onclick="javascript:openWindow('https://www.svi.nl')">
                 </td>
             </tr>
 
             <!-- Captions -->
             <tr class="caption">
                 <td>
-                    <a href="http://www.mri.cnrs.fr"
+                    <a href="https://www.mri.cnrs.fr"
                        onclick="this.target='_blank'; return true;">
                         Montpellier RIO Imaging
                     </a><br/>
@@ -275,7 +275,7 @@ include("header.inc.php");
 
                 </td>
                 <td>
-                    <a href="http://www.fmi.ch/faim"
+                    <a href="https://www.fmi.ch/faim"
                        onclick="this.target='_blank'; return true;">
                         Facility for Advanced Imaging<br/>
                         and Microscopy
@@ -283,14 +283,14 @@ include("header.inc.php");
                     Friedrich Miescher Institute
                 </td>
                 <td>
-                    <a href="http://biop.epfl.ch"
+                    <a href="https://biop.epfl.ch"
                        onclick="this.target='_blank'; return true;">
                         BioImaging and Optics platform
                     </a><br/>
                     EPF Lausanne
                 </td>
                 <td>
-                    <a href="http://svi.nl"
+                    <a href="https://svi.nl"
                        onclick="this.target='_blank'; return true;">
                         Scientific Volume Imaging
                     </a><br/>
@@ -306,10 +306,10 @@ include("header.inc.php");
             <!-- Logos -->
             <tr>
                 <td class="bsse"
-                    onclick="javascript:openWindow('http://www.bsse.ethz.ch')">
+                    onclick="javascript:openWindow('https://www.bsse.ethz.ch')">
                 </td>
                 <td class="bio-basel"
-                    onclick="javascript:openWindow('http://www.biozentrum.unibas.ch')">
+                    onclick="javascript:openWindow('https://www.biozentrum.unibas.ch')">
                 </td>
                 <td class="lin"
                     onclick="javascript:openWindow('http://www.lin-magdeburg.de')">
@@ -322,14 +322,14 @@ include("header.inc.php");
             <!-- Captions -->
             <tr class="caption">
                 <td>
-                    <a href="http://www.bsse.ethz.ch"
+                    <a href="https://www.bsse.ethz.ch/scf"
                        onclick="this.target='_blank'; return true;">
                         Single-Cell Facility
                     </a><br/>
                     ETH Zurich
                 </td>
                 <td>
-                    <a href="http://www.biozentrum.unibas.ch"
+                    <a href="https://www.biozentrum.unibas.ch/research/groups-platforms/overview/unit/imcf/"
                        onclick="this.target='_blank'; return true;">
                         Imaging Core Facility
                     </a><br/>
@@ -357,10 +357,10 @@ include("header.inc.php");
                 <!-- Logos -->
                 <tr>
                     <td class="unf"
-                        onclick="javascript:openWindow('http://www3.unifr.ch/bioimage')">
+                        onclick="javascript:openWindow('https://www3.unifr.ch/')">
                     </td>
                     <td class="miap"
-                        onclick="javascript:openWindow('http://miap.uni-freiburg.de')">
+                        onclick="javascript:openWindow('https://miap.uni-freiburg.de')">
                     </td>
                     <td class="blank">
                         &nbsp;
@@ -373,14 +373,14 @@ include("header.inc.php");
                 <!-- Captions -->
                 <tr class="caption">
                     <td>
-                        <a href="http://www3.unifr.ch/bioimage"
+                        <a href="https://www3.unifr.ch/bioimage"
                            onclick="this.target='_blank'; return true;">
                             Bioimage | Light Microscopy Facility
                         </a><br/>
                         University of Fribourg
                     </td>
                     <td>
-                        <a href="http://miap.uni-freiburg.de"
+                        <a href="https://miap.uni-freiburg.de"
                            onclick="this.target='_blank'; return true;">
                             Microscopy and Image Analysis Platform
                         </a><br/>

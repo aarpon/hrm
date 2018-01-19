@@ -118,7 +118,7 @@ class Nav
      *
      * @param bool $wrapInLiElement Wrap the link in a <li></li> element.
      *             Optional, default is true.
-     * @return string HTML code to link to the What's new?.
+     * @return string HTML code to link to the What's new? page.
      */
     public static function linkWhatsNew($wrapInLiElement = true)
     {
@@ -126,6 +126,22 @@ class Nav
             "https://github.com/aarpon/hrm/releases/latest",
             "images/whatsnew.png",
             "What's new?", true,
+            $wrapInLiElement, "");
+    }
+
+    /**
+     * Generate HTML code to link to the Credits page.
+     *
+     * @param bool $wrapInLiElement Wrap the link in a <li></li> element.
+     *             Optional, default is true.
+     * @return string HTML code to link to the Credits page.
+     */
+    public static function linkCredits($wrapInLiElement = true)
+    {
+        return self::buildLinkHTMLElement("Credits",
+            "credits.php",
+            "images/credits.png",
+            "Credits", false,
             $wrapInLiElement, "");
     }
 
@@ -334,6 +350,7 @@ EOT;
         $linkToProjectWebsite = Nav::linkProjectWebsite($wrapInLiElement = false);
         $linkToMailingList = Nav::linkMailingList($wrapInLiElement = false);
         $linkToWhatsNew = Nav::linkWhatsNew($wrapInLiElement = false);
+        $linkToCredits = Nav::linkCredits($wrapInLiElement = false);
 
         $html = <<<EOT
 <li>
@@ -345,6 +362,7 @@ EOT;
             $linkToProjectWebsite
             $linkToMailingList
             $linkToWhatsNew
+            $linkToCredits
         </div>
     </div>
 </li>
