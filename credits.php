@@ -77,53 +77,43 @@ include("header.inc.php");
         <li>
             <b>Aaron Ponti</b>,
             <a href="https://www.bsse.ethz.ch/scf" onclick="this.target='_blank'; return true;">
-                Single Cell Facility
-            </a>,
+                Single Cell Facility</a>,
             <a href="https://www.bsse.ethz.ch" onclick="this.target='_blank'; return true;">
-                Department of Biosystems Science and Engineering
-            </a>,
+                Department of Biosystems Science and Engineering</a>,
             <a href="https://www.ethz.ch" onclick="this.target='_blank'; return true;">
-                ETH Zurich
-            </a>;
+                ETH Zurich</a>;
         </li>
         <li>
             <b>Daniel Sevilla</b>,
             <a href="https://www.svi.nl" onclick="this.target='_blank'; return true;">
-                Scientific Volume Imaging
-            </a>;
+                Scientific Volume Imaging</a>;
         </li>
         <li>
             <b>Niko Ehrenfeuchter</b>,
             <a href="https://www.biozentrum.unibas.ch/research/groups-platforms/overview/unit/imcf/"
                onclick="this.target='_blank'; return true;">
-                Imaging Core Facility
-            </a>,
+                Imaging Core Facility</a>,
             <a href="https://www.biozentrum.unibas.ch" onclick="this.target='_blank'; return true;">
-                Biozentrum
-            </a>;
+                Biozentrum</a>;
         </li>
         <li>
             <b>Torsten Stöter</b>,
             <a href="http://www.lin-magdeburg.de/" onclick="this.target='_blank'; return true;">
-                Leibniz Institute for Neurobiology
-            </a>;
+                Leibniz Institute for Neurobiology</a>;
         </li>
         <li>
             <b>Felix Meyenhofer</b>,
             <a href="https://www3.unifr.ch/bioimage" onclick="this.target='_blank'; return true;">
                 Bioimage | Light Microscopy Facility</a>,
             <a href="https://www3.unifr.ch" onclick="this.target='_blank'; return true;">
-                University of Fribourg
-            </a>;
+                University of Fribourg</a>;
         </li>
         <li>
             <b>Olivier Burri</b>,
             <a href="https://biop.epfl.ch/" onclick="this.target='_blank'; return true;">
-                BioImaging and Optics Platform
-            </a>,
+                BioImaging and Optics Platform</a>,
             <a href="https://www.epfl.ch/" onclick="this.target='_blank'; return true;">
-                EPFL
-            </a>.
+                EPFL</a>.
         </li>
     </ul>
 
@@ -132,36 +122,42 @@ include("header.inc.php");
         <li>
             <b>Asheesh Gulati</b>,
             <a href="https://biop.epfl.ch/" onclick="this.target='_blank'; return true;">
-                BioImaging and Optics Platform
-            </a>,
+                BioImaging and Optics Platform</a>,
             <a href="https://www.epfl.ch/" onclick="this.target='_blank'; return true;">
-                EPFL
-            </a>;
+                EPFL</a>;
         </li>
         <li>
             <b>Alessandra Griffa</b>,
             <a href="https://biop.epfl.ch/" onclick="this.target='_blank'; return true;">
-                BioImaging and Optics Platform
-            </a>,
+                BioImaging and Optics Platform</a>,
             <a href="https://www.epfl.ch/" onclick="this.target='_blank'; return true;">
-                EPFL
-            </a>;
+                EPFL</a>;
         </li>
         <li>
             <b>José Viña</b>,
             <a href="https://www.svi.nl" onclick="this.target='_blank'; return true;">
-                Scientific Volume Imaging
-            </a>;
+                Scientific Volume Imaging</a>;
         </li>
         <li>
             <b>Frederik Grüll</b>,
             <a href="https://www.biozentrum.unibas.ch/research/groups-platforms/overview/unit/imcf/"
                onclick="this.target='_blank'; return true;">
-                Imaging Core Facility
-            </a>,
+                Imaging Core Facility</a>,
             <a href="https://www.biozentrum.unibas.ch" onclick="this.target='_blank'; return true;">
-                Biozentrum
-            </a>.
+                Biozentrum</a>.
+        </li>
+    </ul>
+
+    <h2>Other contributors</h2>
+
+    <ul>
+        <li>
+            <b>Roland Nitschke</b>,
+            <a href="https://miap.eu/" onclick="this.target='_blank'; return true;">
+                Microscopy and Image Analysis Platform</a>,
+            <a href="https://www.uni-freiburg.de/" onclick="this.target='_blank'; return true;">
+                University of Freiburg</a>,<br />
+            for organizing and hosting several <b>HRM Hackathons</b>.
         </li>
     </ul>
 
