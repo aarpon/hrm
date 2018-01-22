@@ -36,11 +36,6 @@ include("header.inc.php");
 
 <div id="nav">
     <div id="navleft">
-        <ul>
-            <?php
-            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpSystemSummary'));
-            ?>
-        </ul>
     </div>
     <div id="navright">
         <ul>
@@ -64,8 +59,8 @@ $activeLicenses = System::getActiveLicenses();
 
 <div id="content">
 
-    <h3><img alt="License summary" src="./images/licenses_title.png" width="40"/>&nbsp;License
-        summary</h3>
+    <h3><img alt="License summary" src="./images/licenses_title.png"
+             width="40"/>&nbsp;License summary</h3>
 
     <div id="licenses">
 
@@ -87,7 +82,7 @@ $activeLicenses = System::getActiveLicenses();
                 foreach ($allLicenses[$category] as $key => $value) {
 
                     // Is the license active?
-                    if (array_search($key, $activeLicenses)) {
+                    if (array_search($key, $activeLicenses) !== false) {
                         $nameClass = "present";
                         $iconClass = "checked";
                     } else {
