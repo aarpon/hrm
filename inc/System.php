@@ -304,6 +304,75 @@ class System
     }
 
     /**
+     * Return a dictionary (array) with all known licenses.
+     *
+     * The key is the hucore license name, the value is the human-friendly module name.
+     *
+     * Notice that the option 'maxGBIndexed-{value}' is omitted.
+     *
+     * @return array with all known licenses.
+     */
+    public static function getAllLicenses()
+    {
+        $allLicenses = array(
+            "microscopes" => array(
+                "confocal" => "Confocal",
+                "multi-photon" => "Multi-photon",
+                "nipkow-disk" => "Spinning-disk",
+                "spim" => "SPIM",
+                "sted" => "STED",
+                "sted3D" => "STED 3D",
+                "widefield" => "Widefield"
+            ),
+            "file_formats" => array(
+                "all-formats-reader" => "Additional file readers"
+            ),
+            "computing" => array(
+                "gpuMaxCores-1024" => "GPU max cores: 1024",
+                "gpuMaxCores-3072" => "GPU max cores: 3072",
+                "gpuMaxCores-8192" => "GPU max cores: 8192",
+                "gpuMaxMemory-2048" => "GPU max memory: 2GB",
+                "gpuMaxMemory-4096" => "GPU max memory: 4GB",
+                "gpuMaxMemory-24576" => "GPU max memory: 24GB",
+                "server=desktop" => "Server type: desktop",
+                "server=small" => "Server type: small",
+                "server=medium" => "Server type: medium",
+                "server=large" => "Server type: large",
+                "server=extreme" => "Server type: extreme"
+            ),
+            "options" => array(
+                "analysis" => "Analysis",
+                "coloc" => "Colocalization analysis",
+                "chromaticS" => "Chromatic aberration correction",
+                "floating-license" => "Floating license",
+                "fusion" => "Light-sheet fusion",
+                "movie" => "Movie",
+                "psf" => "PSF distilller",
+                "stabilizer" => "Object stabilizer",
+                "stitcher" => "Stitcher",
+                "time" => "Time",
+                "tracker" => "Tracker",
+                "unmixing" => "Unmixing",
+                "visu" => "Visualization"
+            )
+        );
+
+        return $allLicenses;
+    }
+
+    /**
+     * Return an array with the active licenses (hucore names) on this system.
+     *
+     * @return array with all active licenses.
+     */
+    public static function getActiveLicenses()
+    {
+        $db = new DatabaseConnection();
+        $activeLicenses = $db->getActiveLicenses();
+        return $activeLicenses;
+    }
+
+    /**
      * Checks whether Huygens Core has a valid license.
      * @return bool True if the license is valid, false otherwise.
      */

@@ -298,12 +298,16 @@ include("header.inc.php");
 
 
                 <td class="icon">
-                    &nbsp;
+                    <a href="./licenses.php">
+                        <img alt="LICENSES" src="./images/licenses.png"/>
+                    </a>&nbsp;
                 </td>
 
                 <td class="text">
                     <div class="cell">
-                        &nbsp;
+                        <a href="./licenses.php">HuCore licenses</a>
+                        <br/>
+                        <p>Display HuCore license information.</p>&nbsp;
                     </div>
                 </td>
 

@@ -1815,6 +1815,47 @@ option.default {
     background: #ff9;
 }
 
+#licenses {
+    text-align: left;
+}
+
+#licenses .category {
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    text-color: black;
+}
+
+#licenses .row {
+    white-space: nowrap
+}
+
+#licenses .present {
+    font-weight: normal;
+    text-decoration: none;
+    display: inline-block;
+}
+
+#licenses .absent {
+    font-style: italic;
+    color: lightslategrey;
+    display: inline-block;
+}
+
+#licenses .checked {
+    background: url("../images/accept.png") no-repeat center;
+    background-size: 22px;
+    width: 50px;
+    display: inline-block;
+}
+
+#licenses .unchecked {
+    width: 22px;
+    height: 22px;
+    width: 50px;
+    display: inline-block;
+}
+
 #system {
     width: 100%;
     text-align: left;
