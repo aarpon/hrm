@@ -2044,7 +2044,7 @@ class Fileserver
 
         echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(" .
             "'https://svi.nl/HRMHelp#Result_comparison')\" " .
-            "onmouseover=\"Tip('Open a pop up with help about this window')\" onmouseout=\"UnTip()\">" .
+            "onmouseover=\"Tip('Display help about the detailed result page')\" onmouseout=\"UnTip()\">" .
             "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" />" .
             "</a></div>";
 

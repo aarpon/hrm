@@ -968,7 +968,6 @@ table#Servers td {
 
 #jobParameters {
     margin-top: 2em;
-    margin-left: 180px;
 }
 
 #jobParameters table {
@@ -1809,6 +1808,7 @@ option.default {
 
 #logFile {
     text-align: left;
+    margin-left: 180px;
 }
 
 #report {
