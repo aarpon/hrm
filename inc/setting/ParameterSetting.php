@@ -1648,9 +1648,12 @@ class ParameterSetting extends Setting {
      * Displays the setting as a text containing Parameter names and their values.
      * @param int $numberOfChannels Number of channels (ignored).
      * @param string|null $micrType Microscope type (ignored).
+     * @param float|null $timeInterval Sample T (ignored).
      * @return string Parameter names and their values as a string.
      */
-    public function displayString($numberOfChannels = 0, $micrType = NULL) {
+    public function displayString($numberOfChannels = 0,
+                                  $micrType         = NULL,
+                                  $timeInterval     = 0) {
         /**
          * Please notice: the input arguments $numberOfChannels and $micrType
          * are ignored.

@@ -640,8 +640,11 @@ class JobDescription
     {
         $numChannels = $this->parameterSetting->numberOfChannels();
         $micrType = $this->parameterSetting->microscopeType();
+        $timeInterval = $this->parameterSetting->sampleSizeT();
 
-        return $this->taskSetting()->displayString($numChannels, $micrType);
+        return $this->taskSetting()->displayString($numChannels,
+                                                   $micrType,
+                                                   $timeInterval);
     }
 
 

@@ -424,9 +424,12 @@ class TaskSetting extends Setting
      * @param int $numberOfChannels Number of channels (optional, default
      * value is 0)
      * @param string|null $micrType Microscope type (optional).
+     * @param float|null $timeInterval Sample T (optional).
      * @return string Parameter names and their values as a string.
      */
-    public function displayString($numberOfChannels = 0, $micrType = NULL)
+    public function displayString($numberOfChannels = 0,
+                                  $micrType         = NULL,
+                                  $timeInterval     = 0)
     {
         $result = '';
 
@@ -449,14 +452,20 @@ class TaskSetting extends Setting
             ) {
                 continue;
             }
+            if ($parameter->name() == 'TStabilization'
+              && $timeInterval == 0)
+                continue;
             if ($parameter->name() == 'TStabilizationMethod'
-              && $TStabilization == 0)
+              && ($TStabilization == 0 || $timeInterval == 0))
                 continue;
             if ($parameter->name() == 'TStabilizationRotation'
-              && $TStabilization == 0)
+              && ($TStabilization == 0 || $timeInterval == 0))
                 continue;
             if ($parameter->name() == 'TStabilizationCropping'
-              && $TStabilization == 0)
+              && ($TStabilization == 0 || $timeInterval == 0))
+                continue;
+            if ($parameter->name() == 'ChromaticAberration'
+              && $numberOfChannels == 1)
                 continue;
             $result = $result .
                 $parameter->displayString($numberOfChannels);
@@ -465,12 +474,12 @@ class TaskSetting extends Setting
     }
 
     /**
-     * Checks whether the restoration should allow for stabilization.
+     * Checks whether the restoration should allow for Z stabilization.
      * @param ParameterSetting $paramSetting An instance of the ParameterSetting
      * class.
      * @return bool True to enable stabilization option, false otherwise.
      */
-    public function isEligibleForStabilization(ParameterSetting $paramSetting)
+    public function isEligibleForZStabilization(ParameterSetting $paramSetting)
     {
 
         if (!$paramSetting->isSted() && !$paramSetting->isSted3D()) {
@@ -490,6 +499,26 @@ class TaskSetting extends Setting
         }
         return TRUE;
     }
+
+
+    /**
+     * Checks whether the restoration should allow for T stabilization.
+     * @param ParameterSetting $paramSetting An instance of the ParameterSetting
+     * class.
+     * @return bool True to enable stabilization option, false otherwise.
+     */
+    public function isEligibleForTStabilization(ParameterSetting $paramSetting)
+    {
+
+        if ($paramSetting->parameter("TimeInterval")->value() === '0') {
+            return FALSE;
+        }
+        if (!System::hasLicense("stabilizer")) {
+            return FALSE;
+        }
+        return TRUE;
+    }
+
 
     /**
      * Checks whether the restoration should allow for CAC.

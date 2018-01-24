@@ -41,8 +41,19 @@ ksort($chromaticArray);
  * PROCESS THE POSTED PARAMETERS
  *
  **************************************************************************** */
-if ($_SESSION['task_setting']->checkPostedChromaticAberrationParameters($_POST)
-    && $_SESSION['task_setting']->checkPostedTStabilizationParameters($_POST)) {
+$postErrors = 0;
+if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
+   if (!$_SESSION['task_setting']->checkPostedChromaticAberrationParameters($_POST)) {
+     $postErrors++;
+   }
+}
+if ($_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+   if (!$_SESSION['task_setting']->checkPostedTStabilizationParameters($_POST)) {
+     $postErrors++;
+   }
+}
+
+if ($postErrors == 0) {
     $saved = $_SESSION['task_setting']->save();
     if ($saved) {
         header("Location: " . "select_task_settings.php");
@@ -106,7 +117,9 @@ include("header.inc.php");
     <h3>Restoration - Post Deconvolution</h3>
     
     <form method="post" action="" id="select">
-
+<?php
+if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
+?>
     <div id="ChromaticAberration">
         <fieldset class="setting provided"
                   onmouseover="changeQuickHelp( 'chromatic' );">
@@ -188,14 +201,17 @@ include("header.inc.php");
                     skipping.</p>
 
     </div> <!-- ChromaticAberrationCorrector -->
-    
+<?php
+}
+?>
 
         <?php
 
         /*
               TIME STABILIZATION
         */
-        
+
+if ($_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
         ?>
 
     <div id="TimeStabilization">
@@ -398,6 +414,9 @@ include("header.inc.php");
 
     </div> <!-- TimeStabilization -->
 
+<?php
+}
+?>
 
     <div><input name="OK" type="hidden"/></div>
 

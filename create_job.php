@@ -295,7 +295,8 @@ echo $_SESSION['setting']->displayString();
 
 $numberOfChannels = $_SESSION['setting']->numberOfChannels();
 $micrType = $_SESSION['setting']->microscopeType();
-echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType);
+$timeInterval = $_SESSION['setting']->sampleSizeT();
+echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType, $timeInterval);
 
 ?>
             </textarea>

@@ -23,7 +23,7 @@ require_once dirname(__FILE__) . '/../inc/bootstrap.php';
  * @param string $micrType Microscope type.
  * @return string parameter dump
  */
-function getParameters($editor, $setName, $numChannels, $micrType)
+function getParameters($editor, $setName, $numChannels, $micrType, $timeInterval)
 {
     if ($setName == '') {
         // In Chrome, the onclick event is fired even if one clicks on an empty
@@ -33,7 +33,7 @@ function getParameters($editor, $setName, $numChannels, $micrType)
     }
     /** @var \hrm\setting\ParameterSetting|\hrm\setting\TaskSetting|\hrm\setting\AnalysisSetting $setting */
     $setting = $editor->setting($setName);
-    $data = $setting->displayString($numChannels, $micrType);
+    $data = $setting->displayString($numChannels, $micrType, $timeInterval);
 
     return $data;
 }
@@ -350,7 +350,13 @@ function act($action, &$data)
             } else {
                 $micrType = null;
             }
-            $data = getParameters($editor, $setName, $numChannels, $micrType);
+            if (isset($_SESSION['setting'])) {
+                $timeInterval = $_SESSION['setting']->sampleSizeT();
+            } else {
+                $timeInterval = null;
+            }
+
+            $data = getParameters($editor, $setName, $numChannels, $micrType, $timeInterval);
 
             /* Make a distinction between the parameter name and its value. */
             $data = "<small><b>" . str_replace("\n", "\n<b>", $data);

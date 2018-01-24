@@ -62,8 +62,20 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
  **************************************************************************** */
 
 if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
+    if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])
+    || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
         header("Location: " . "post_processing.php");
         exit();
+    } else {
+
+        $saved = $_SESSION['task_setting']->save();
+        if ($saved) {
+            header("Location: " . "select_task_settings.php");
+            exit();
+        } else {
+            $message = $_SESSION['task_setting']->message();
+        }
+    }
 } else {
     $message = $_SESSION['task_setting']->message();
 }
@@ -671,7 +683,7 @@ for ($j = 1; $j <= 4; $j++) {
         <div id="ZStabilization">
             <?php
             if ($_SESSION['user']->isAdmin()
-            || $_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
+            || $_SESSION['task_setting']->isEligibleForZStabilization($_SESSION['setting'])) {
 
             ?>
 
@@ -683,7 +695,7 @@ for ($j = 1; $j <= 4; $j++) {
                         'http://www.svi.nl/ObjectStabilizer')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    stabilize data sets in the Z direction?
+                    Stabilize data sets in the Z direction?
                 </legend>
 
                 <p>STED images often need to be stabilized in the Z direction
@@ -747,10 +759,29 @@ for ($j = 1; $j <= 4; $j++) {
                    onmouseover="TagToTip('ttSpanCancel' )"
                    onmouseout="UnTip()"
                    onclick="deleteValuesAndRedirect('select_task_settings.php' );"/>
+
+            <?php
+            /* Don't proceed to the post processing page. */
+            if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])
+            || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+                ?>
                 <input type="submit" value="" class="icon next"
                        onmouseover="TagToTip('ttSpanForward' )"
                        onmouseout="UnTip()"
                        onclick="process()"/>
+                <?php
+            } else {
+                ?>
+                <input type="submit" value=""
+                       class="icon save"
+                       onmouseover="TagToTip('ttSpanSave')"
+                       onmouseout="UnTip()"
+                       onclick="process()"/>
+
+                <?php
+            }
+            ?>
+
         </div>
 
     </form>
