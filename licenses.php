@@ -64,6 +64,8 @@ $activeLicenses = System::getActiveLicenses();
 
     <div id="licenses">
 
+        <p>This is the complete list of Huygens licenses.</p>
+
         <?php
 
             // Get the categories
@@ -109,7 +111,11 @@ $activeLicenses = System::getActiveLicenses();
 
         <h3>Quick help</h3>
 
-        <p>This page displays information about your currently licensed modules.</p>
+        <p>For your reference, this page shows the complete list of Huygens
+            licenses, with the ones currently active on your system marked
+            with <img src="images/accept.png" />.</p>
+
+        <p>Please notice that some <b>options</b> might not apply to HRM.</p>
 
     </div>
 

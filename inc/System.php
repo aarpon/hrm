@@ -341,7 +341,7 @@ class System
                 "server=extreme" => "Server type: extreme"
             ),
             "options" => array(
-                "analysis" => "Analysis",
+                "analysis" => "Object analyzer",
                 "coloc" => "Colocalization analysis",
                 "chromaticS" => "Chromatic aberration correction",
                 "floating-license" => "Floating license",
