@@ -3005,7 +3005,7 @@ class HuygensTemplate
      can handle. If the image is larger than this, we won't be able to
      generate a slicer preview. */
         $maxPixelsPerDim = 65000;
-
+        
         if ($slicerPixelsX >= $maxPixelsPerDim) {
             $this->compareZviews = FALSE;
             $this->compareTviews = FALSE;
@@ -3019,6 +3019,16 @@ class HuygensTemplate
         if ($slicerPixelsYT >= $maxPixelsPerDim) {
             $this->compareTviews = FALSE;
         }
+
+        /* The dimensions of the raw and restored data will be different
+           if the time stabilization is on with a cropping scheme other than
+           'original'. In that case disable the T comparison. */
+        $TStabilizeParam = $this->deconSetting->parameter('TStabilization');
+        $TStabilizeCroppingParam = $this->deconSetting->parameter('TStabilizationCropping');
+
+        if ($TStabilizeParam->value() && $TStabilizeCroppingParam->value() != "original") {
+            $this->compareTviews = FALSE;
+        }        
     }
 
     /**
