@@ -50,11 +50,13 @@ if (!$_SESSION['user']->isAdmin()) {
 /* These checks should be removed when the analysis stage includes steps
  for single channel images. */
 if (!$analysisEnabled) {
-    $message = "Analysis only available for multichannel images.\n\n";
+    $message = "Analysis only available for multichannel images.<br />";
     $message .= "Please continue.";
 
     $widgetState = "disabled=\"disabled\"";
     $divState = "_disabled";
+} else {
+    $message  = "Optional step.<br />Leave selection empty to skip analysis.";
 }
 
 // add public setting support
@@ -126,15 +128,22 @@ if (isset($_POST['copy_public'])) {
         $_SESSION['analysis_setting'] = new AnalysisSetting();
         header("Location: " . "create_job.php");
         exit();
-    }
-
-    if (!isset($_POST['analysis_setting'])) {
-        $message = "Please select some analysis parameters";
     } else {
-        $_SESSION['analysis_setting'] =
-            $_SESSION['analysiseditor']->loadSelectedSetting();
-        $_SESSION['analysis_setting']->setNumberOfChannels(
-            $_SESSION['setting']->numberOfChannels());
+        if (isset($_POST['analysis_setting'])) {
+
+           /* Proceed to process the selected template. */
+           $_SESSION['analysis_setting'] =
+               $_SESSION['analysiseditor']->loadSelectedSetting();
+           $_SESSION['analysis_setting']->setNumberOfChannels(
+                $_SESSION['setting']->numberOfChannels());
+
+        } else {
+
+           $message = "Please continue to skip coloc.";
+           
+            /* Set a default temlate for skipping analysis. */
+            $_SESSION['analysis_setting'] = new AnalysisSetting();
+        }
 
         header("Location: " . "create_job.php");
         exit();
