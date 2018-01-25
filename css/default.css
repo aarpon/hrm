@@ -1029,11 +1029,12 @@ table#Servers td {
 #colocTab {
     float: left;
     width: 150px;
-    font-size: 0.7em;
+    height: 40px;
+    font-size: 1.1em;
     border: #fff 1px solid;
-    padding: 10px;
+    padding: 10px 10px 10px 10px;
     margin-right: 1em;
-    margin-bottom: 0.6em;
+    margin-bottom: 1em;
 }
 
 #colocTab.normal {
