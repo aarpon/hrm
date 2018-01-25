@@ -2254,11 +2254,14 @@ class ParameterSetting extends Setting {
             $micrVal = $hrmMicrType->translateHucore($huMicrType[0]);
 
             // If there is STED, just make sure that it's the right one.
-            if(array_search('sted', $huMicrType)) {
-                $micrVal = $hrmMicrType->translateHucore('sted');
-            }
-            if(array_search('sted3d', $huMicrType)) {
-                $micrVal = $hrmMicrType->translateHucore('sted3d');
+            if (strpos($huMicrType[0], "sted") !== FALSE) {
+                $sted3d = array_map('floatval', explode(' ', $huArray['sted3D']));
+                if (strpos($huArray['parState,sted3D'], "default") !== FALSE
+                || $sted3d[0] == 0) {
+                     $micrVal = $hrmMicrType->translateHucore('sted');
+                } else {
+                     $micrVal = $hrmMicrType->translateHucore('sted3d');
+                }
             }
 
             $hrmMicrType->setValue($micrVal);
