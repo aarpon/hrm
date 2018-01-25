@@ -971,7 +971,7 @@ class Job
 
         /* Insert a title and an explanation. */
         $title = "<b><u>COLOCALIZATION RESULTS</u></b><br /><br /><b>";
-        $text = "<a href='http://www.svi.nl/ColocalizationCoefficientsInBrief'";
+        $text = "<a href='http://www.svi.nl/ColocalizationCoefficientsInBrief' ";
         $text .= "target='_blank'>Colocalization analysis</a></b> is used ";
         $text .= "to characterize the degree of overlap between any two ";
         $text .= "channels of an image.";

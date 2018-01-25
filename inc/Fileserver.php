@@ -3728,7 +3728,7 @@ class Fileserver
         $form .= "<input type='hidden' name='tab' value='coefficients' />   ";
         $form .= "<button name='submit' type='submit' ";
         $form .= "onmouseover=\"Tip('Highlight all values above the set ";
-        $form .= "threshold.')\ onmouseout=\"UnTip()\" > Highlight </button>";
+        $form .= "threshold.');\" onmouseout=\"UnTip()\" > Highlight </button>";
         $form .= "<br /><br /></form>";
 
         /* Insert the form before the output of the first coloc run. */

@@ -1021,7 +1021,7 @@ table#Servers td {
 }
 
 #colocTabs {
-    width: 1500px;
+    width: 100%;
     border-bottom: 1px solid;
     overflow: hidden;
 }
@@ -1054,18 +1054,19 @@ table#Servers td {
 }
 
 #colocResults {
-    width: 1600px;
+    width: 100%;
 }
 
 #colocRun {
     float: left;
-    width: 1600px;
+    width: 100%;
 }
 
 #colocHist {
     float: left;
     padding-right: 18px;
     text-align: center;
+    margin-bottom: 10px;
 }
 
 #ColocCoefficientSelectionDiv table {
@@ -1082,7 +1083,6 @@ table#Servers td {
 
 #colocCoefficients table {
     font-size: 100%;
-    width: 1200px;
     float: left;
 }
 
@@ -1097,9 +1097,10 @@ table#Servers td {
 }
 
 #colocCoefficients td.header {
-    width: 80px;
+    width: 60px;
     font-weight: bold;
     background-color: #CFD7F2;
+    border: solid thin #B6ECFF;
 }
 
 #colocCoefficients td.coefficient {
@@ -1120,7 +1121,6 @@ table#Servers td {
 
 #colocMap table {
     font-size: 100%;
-    width: 800px;
     float: left;
 }
 
