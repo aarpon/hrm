@@ -163,33 +163,31 @@ echo $message;
         <h3>Quick help</h3>
 
         <p>
-            <b>To enable a </b>new processing machine just add an
-            entry to the table on the left and restart the HRM daemon
+            On this page you can configure any number of <b>processing servers</b>
+            with or without <b>GPU acceleration</b>. The <b>Huygens Core path</b>
+            relative to each server must be provided.
+        </p>
+
+        <p>To take advantage of GPU acceleration you will need the appropriate
+            <a href="licenses.php">GPU license</a>.
+        </p>
+
+        <p>Each server can use <b>one or more GPUs</b> for deconvolution: if more than
+            one GPU is configured for a given server, HRM will run as many deconvolution
+            jobs in parallel as there are GPUs configured on that server.</p>
+
+        <p>
+            A GPU is configured and enabled by adding its <b>GPU ID</b> to the
+            server configuration. The list of GPU IDs can be retrieved by starting
+            HuCore on each processing machine and executing 'huOpt gpu -query devices'.
+        </p>
+
+        <p>Please notice that if the GPU ID is omitted, or does not match any of
+            the IDs returned by HuCore, HRM will fall back to CPU processing.</p>
+
+        <p>For changes to have effect, you will need to restart the HRM daemon
             (Queue Manager).
        </p>
-
-       <p>
-            <b>To add</b> a processing machine <b>without GPU's</b> any number
-            in the GPU ID field will do.
-       </p>
-
-       <p>
-            <b>To disable</b> a GPU card simply remove the corresponding entry
-            from the table.
-       </p>
-
-        <p>
-            If a machine has multiple GPUs each GPU can be registered
-            independently. Each GPU will be used for the deconvolution of
-            one image. Therefore, the HRM queue will run as many images in
-            parallel as the total number of GPUs: <b>number of entries in
-            this table.</b>
-       </p>
-                    
-        <p>
-            The list of GPU IDs can be retrieved by starting HuCore on
-            each processing machine and executing 'huOpt gpu -query devices'.
-       </p>        
 
         <p>
             Please visit <a href="https://svi.nl/HuygensGPU">Huygens GPU</a>
