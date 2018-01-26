@@ -293,7 +293,7 @@ class JobDescription
     {
         // =========================================================================
         //
-        // In previous versions of the HRM, the web interface would create compound
+        // In previous versions of HRM, the web interface would create compound
         // jobs that the queue manager would then process. Now, this task has become
         // responsibility of the web interface.
         //

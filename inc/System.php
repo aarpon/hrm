@@ -51,28 +51,28 @@ class System
     const DB_LAST_REVISION = 16;
 
     /**
-     * Minimum HuCore (major) version number to be compatible with the HRM.
+     * Minimum HuCore (major) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
     const MIN_HUCORE_VERSION_MAJOR = 14;
 
     /**
-     * Minimum HuCore (minor) version number to be compatible with the HRM.
+     * Minimum HuCore (minor) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
     const MIN_HUCORE_VERSION_MINOR = 6;
 
     /**
-     * Minimum HuCore (maintenance) version number to be compatible with the HRM.
+     * Minimum HuCore (maintenance) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
     const MIN_HUCORE_VERSION_MAINTENANCE = 1;
 
     /**
-     * Minimum HuCore (patch) version number to be compatible with the HRM.
+     * Minimum HuCore (patch) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
@@ -170,7 +170,7 @@ class System
     }
 
     /**
-     * Returns the DB revision expected by this version of the HRM.
+     * Returns the DB revision expected by this version of HRM.
      * @return int DB_LAST_REVISION expected DB revision (e.g. 14).
      */
     public static function getDBLastRevision()
@@ -249,7 +249,7 @@ class System
 
     /**
      * Checks whether the HuCore version is recent enough.
-     * @return bool True if HuCore is recent enough to run the HRM, false
+     * @return bool True if HuCore is recent enough to run HRM, false
      * otherwise.
      */
     public static function isMinHuCoreVersion()
@@ -485,7 +485,7 @@ class System
 
     /**
      * Returns the database type as reported by ADOdb. To be compatible
-     * with the HRM it should be one of 'mysql' or 'postgresql'.
+     * with HRM it should be one of 'mysql' or 'postgresql'.
      * @return string Database type (e.g. postgresql).
      */
     public static function getDatabaseType()

@@ -163,7 +163,7 @@ if (isset($generatedScript)) {
         @import "css/default.css";
     </style>
     <!--[if lt IE 9]>
-    <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
+    <h3>This browser is OBSOLETE and is known to have important issues with HRM.
         Please upgrade to a later version of Internet Explorer or to a new
         browser altogether.</h3>
     <link rel="stylesheet" href="css/default.css">

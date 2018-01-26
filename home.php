@@ -520,7 +520,7 @@ include("footer.inc.php");
                     updateDiv.html("<p class='noUpdateNotification'>" +
                         "<img src=\"images/check_for_update.png\" alt=\"Latest version\" />" +
                         "&nbsp;&nbspCongratulations! You are running the " +
-                        "latest version of the HRM!</p>");
+                        "latest version of HRM!</p>");
                     updateDiv.show();
                     return;
                 }
@@ -528,7 +528,7 @@ include("footer.inc.php");
                     "<p class='updateNotification'>" +
                     "<a href='#'>" +
                     "<img src=\"images/check_for_update.png\" alt=\"New version\" />" +
-                    "&nbsp;&nbspA newer version of the HRM (" +
+                    "&nbsp;&nbspA newer version of HRM (" +
                     response.newVersion +
                     ") is available!</a></p>");
                 updateDiv.on("click", function () {

@@ -1625,7 +1625,7 @@ class DatabaseConnection
                 $result = False;
                 Log::warning("$query; returned '$answer'");
                 Util::notifyRuntimeError("hrmd stopped",
-                    "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
+                    "$query; returned '$answer'\n\nThe HRM queue manager will stop.");
             }
         } else {
             $query = "select switch from queuemanager";
@@ -1635,7 +1635,7 @@ class DatabaseConnection
                 $result = False;
                 Log::warning("$query; returned '$answer'");
                 Util::notifyRuntimeError("hrmd stopped",
-                    "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
+                    "$query; returned '$answer'\n\nThe HRM queue manager will stop.");
             }
         }
 
@@ -1993,8 +1993,7 @@ class DatabaseConnection
                 }
 
                 // The wavelength and voxel size parameters have a common
-                // confidence in the HRM but two independent confidences
-                // in hucore
+                // confidence in HRM but two independent confidences in hucore
                 if (($parameterName == "ExcitationWavelength") ||
                     ($parameterName == "EmissionWavelength")
                 ) {

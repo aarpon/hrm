@@ -192,7 +192,7 @@ include("header.inc.php");
         include("footer.inc.php");
         return;
     }
-    // Check that hucore is recent enough to run this version of the HRM
+    // Check that hucore is recent enough to run this version of HRM
     if (System::isMinHuCoreVersion() == false) {
         echo "<div class=\"dbOutDated\">Warning: your HuCore version is " .
             System::getHucoreVersionAsString() . ", you need at least HuCore " .

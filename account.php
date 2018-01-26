@@ -335,7 +335,7 @@ include("header.inc.php");
             <?php
         } else {
             ?>
-            <p>The authentication backend does not allow the HRM to make any change!</p>
+            <p>The authentication backend does not allow HRM to make any change!</p>
             <div id="controls">
                 <input type="button" name="cancel" value=""
                        class="icon cancel"

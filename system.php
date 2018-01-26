@@ -73,7 +73,7 @@ include("header.inc.php");
                 'http://huygens-rm.org/home/?q=node/4')">
                     <img src="images/check_for_update.png" alt="Version check"/>
                     &nbsp;&nbsp
-                    A newer version of the HRM
+                    A newer version of HRM
                     <?php
                     echo "(" . System::getHRMVersionAsString($latestVersion) . ")";
                     ?>

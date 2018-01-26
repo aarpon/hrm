@@ -996,7 +996,7 @@ class Fileserver
                 $bareName = reset(explode('.', $baseName));
                 $extension = str_replace($bareName, "", $baseName);
 
-                // If the php.ini upload variables are overriden in the HRM
+                // If the php.ini upload variables are overriden in HRM
                 // config files, PHP does not rise this error.
                 if (($files['size'][$i] / 1024 / 1024) > $max) {
                     $files['error'][$i] = UPLOAD_ERR_INI_SIZE;
