@@ -1812,7 +1812,7 @@ class Fileserver
         echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
         echo '          <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
-              @import "css/default.css";
+              @import "css/default.css?v=3.5";
           </style>
           </head>
           <body>

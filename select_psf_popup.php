@@ -52,7 +52,7 @@ $emSetting = $emSettingArr[$chan];
         //-->
     </script>
     <style type="text/css">
-        @import "css/default.css";
+        @import "css/default.css?v=3.5";
     </style>
 </head>
 
