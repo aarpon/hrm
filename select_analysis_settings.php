@@ -56,7 +56,11 @@ if (!$analysisEnabled) {
     $widgetState = "disabled=\"disabled\"";
     $divState = "_disabled";
 } else {
-    $message  = "Optional step.<br />Leave selection empty to skip analysis.";
+    if (!$_SESSION['user']->isAdmin()) {
+        $message  = "Optional step.<br />Leave selection empty to skip analysis.";
+    } else {
+        $message = "";
+    }
 }
 
 // add public setting support
