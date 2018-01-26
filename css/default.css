@@ -493,6 +493,11 @@ table {
     resize: both;
 }
 
+#users_isadmin_label input[type=checkbox] {
+    position: relative;
+    vertical-align: middle;
+}
+
 #userfiles select {
     width: 100%;
     text-align: left;
