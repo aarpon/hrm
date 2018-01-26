@@ -147,6 +147,16 @@ include("header.inc.php");
             </tr>
             <tr>
                 <td class="key">
+                    <a href="licenses.php">
+                        <img src="images/note.png" alt="License details"/>
+                        Detailed license information</a>
+                </td>
+                <td class="value">
+                    &nbsp;&nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td class="key">
                     HuCore license file
                 </td>
                 <td class="value">
@@ -156,61 +166,6 @@ include("header.inc.php");
                     } else {
                         echo "missing or invalid";
                     }
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td class="key">
-                    Server type
-                </td>
-                <td class="value">
-                    <?php echo System::getHucoreServerType(); ?>
-                </td>
-            </tr>
-            <tr>
-                <td class="key">
-                    Microscope types
-                </td>
-                <td class="value">
-                    <?php
-                    $micro = array();
-                    if (System::hasLicense("widefield")) {
-                        $micro[] = "widefield";
-                    }
-                    if (System::hasLicense("confocal")) {
-                        $micro[] = "single-point confocal";
-                    }
-                    if (System::hasLicense("nipkow-disk")) {
-                        $micro[] = "multi-point confocal";
-                    }
-                    if (System::hasLicense("multi-photon")) {
-                        $micro[] = "two photon";
-                    }
-                    if (count($micro) == 0) {
-                        $microStrg = "no microscope licenses.";
-                    } else {
-                        $microStrg = implode("<br />", $micro);
-                    }
-                    echo $microStrg;
-                    ?>
-                </td>
-            </tr>
-            <tr>
-                <td class="key">
-                    Analysis modules
-                </td>
-                <td class="value">
-                    <?php
-                    $analysis = array();
-                    if (System::hasLicense("coloc")) {
-                        $analysis[] = "colocalization";
-                    }
-                    if (count($analysis) == 0) {
-                        $analysisStrg = "no analysis licenses.";
-                    } else {
-                        $analysisStrg = implode("<br />", $analysis);
-                    }
-                    echo $analysisStrg;
                     ?>
                 </td>
             </tr>
@@ -425,7 +380,7 @@ include("header.inc.php");
                 </td>
             </tr>
             <tr>
-                <td class="subkey">
+                <td class="key">
                     <a href="./phpinfo.php">
                         <img src="images/note.png" alt="PHP info"/>
                         Display PHP info
