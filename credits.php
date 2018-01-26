@@ -60,15 +60,13 @@ include("header.inc.php");
         <li>
             <b>Pierre Travo</b> and <b>Volker Bäcker</b>,
             <a href="https://www.mri.cnrs.fr/" onclick="this.target='_blank'; return true;">
-                Montpellier RIO Imaging (CNRS)
-            </a>;
+                Montpellier RIO Imaging (CNRS)</a>;
         </li>
         <li>
             <b>Patrick Schwarb</b>
             brought the original version of HRM to the
             <a href="https://www.fmi.ch" onclick="this.target='_blank'; return true;">
-                Friedrich Miescher Institute
-            </a>.
+                Friedrich Miescher Institute</a>.
         </li>
     </ul>
 
@@ -80,7 +78,7 @@ include("header.inc.php");
                 Single Cell Facility</a>,
             <a href="https://www.bsse.ethz.ch" onclick="this.target='_blank'; return true;">
                 Department of Biosystems Science and Engineering</a>,
-            <a href="https://www.ethz.ch" onclick="this.target='_blank'; return true;">
+            <a href="https://www.ethz.ch/en.html" onclick="this.target='_blank'; return true;">
                 ETH Zurich</a>;
         </li>
         <li>
@@ -94,7 +92,9 @@ include("header.inc.php");
                onclick="this.target='_blank'; return true;">
                 Imaging Core Facility</a>,
             <a href="https://www.biozentrum.unibas.ch" onclick="this.target='_blank'; return true;">
-                Biozentrum</a>;
+                Biozentrum</a>,
+            <a href="https://www.unibas.ch/en" onclick="this.target='_blank'; return true;">
+                University of Basel</a>;
         </li>
         <li>
             <b>Torsten Stöter</b>,
@@ -144,7 +144,9 @@ include("header.inc.php");
                onclick="this.target='_blank'; return true;">
                 Imaging Core Facility</a>,
             <a href="https://www.biozentrum.unibas.ch" onclick="this.target='_blank'; return true;">
-                Biozentrum</a>.
+                Biozentrum</a>,
+            <a href="https://www.unibas.ch/en" onclick="this.target='_blank'; return true;">
+                University of Basel</a>.
         </li>
     </ul>
 
@@ -165,16 +167,14 @@ include("header.inc.php");
 
     <p>A list of third-party tools and libraries used in HRM can be found on the
         <a href="http://www.huygens-rm.org/wp/?page_id=84" onclick="this.target='_blank'; return true;">
-            HRM project page
-        </a>.
+            HRM project page</a>.
     </p>
 
     <h2>License</h2>
 
     <p>The Huygens Remote Manager is open-source software, released under the conditions of the
         <a href="http://www.huygens-rm.org/wp/?page_id=81" onclick="this.target='_blank'; return true;">
-            CeCILL license
-        </a>.
+            CeCILL license</a>.
     </p>
 
 </div> <!-- home -->
