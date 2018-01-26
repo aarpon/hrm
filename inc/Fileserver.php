@@ -2079,7 +2079,11 @@ class Fileserver
         } else if ($mode == "log" || $mode == "history"
             || $mode == "remarks" || $mode == "parameters"
         ) {
-            echo "<div id=\"logFile\">\n";
+            if ($mode == "parameters") {
+                echo "<div id=\"parameterFile\">\n";
+            } else {
+                echo "<div id=\"logFile\">\n";
+            }
             print "<pre>";
             readfile($path[$mode]);
             print "</pre>";

@@ -1809,6 +1809,10 @@ option.default {
 
 #logFile {
     text-align: left;
+}
+
+#parameterFile {
+    text-align: left;
     margin-left: 180px;
 }
 
