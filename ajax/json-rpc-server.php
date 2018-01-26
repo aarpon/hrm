@@ -328,7 +328,7 @@ function jsonGetUserAndTotalNumberOfJobsInQueue() {
 
 
 /**
- * Check whether there is an update for the HRM.
+ * Check whether there is an update for HRM.
  * @return string JSON-encoded array with key 'newerVersionExist' and 'newVersion'
  */
 function jsonCheckForUpdates() {

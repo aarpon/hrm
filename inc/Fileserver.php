@@ -360,6 +360,25 @@ class Fileserver
     }
 
     /**
+     * Searches the source folder recursively, stores and returns all
+     * found files. Currently stored files are replaced.
+     *
+     * @param bool $expand If true, names of subimages (as in the case of
+     * lif files) are expanded and returned in the list of file names.
+     *
+     * @return array Sorted array of file names.
+     */
+    public function scanAndStoreFiles($expand)
+    {
+        // Process
+        $this->setDefaultImageExtensions();
+        $this->expandSubImages($expand);
+        $this->getFiles();
+
+        return $this->files();
+    }
+
+    /**
      * Searches the destination folder recursively and returns all found files.
      * @param string $extension Extension to be considered to scan the folder. Omit to get all files.
      * @return array|bool Sorted array of file names or false if the destination folder does not exist.
@@ -977,7 +996,7 @@ class Fileserver
                 $bareName = reset(explode('.', $baseName));
                 $extension = str_replace($bareName, "", $baseName);
 
-                // If the php.ini upload variables are overriden in the HRM
+                // If the php.ini upload variables are overriden in HRM
                 // config files, PHP does not rise this error.
                 if (($files['size'][$i] / 1024 / 1024) > $max) {
                     $files['error'][$i] = UPLOAD_ERR_INI_SIZE;
@@ -1793,7 +1812,7 @@ class Fileserver
         echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
         echo '          <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
-              @import "css/default.css";
+              @import "css/default.css?v=3.5";
           </style>
           </head>
           <body>
@@ -1807,11 +1826,9 @@ class Fileserver
 
 
         echo '
-      <div id="prevBasket"> <!--basket-->
+      <div id="basket"> <!--basket-->
       <div id="title">
-      <h2>HRM image preview</h2>
-      <h3>' . $file . '</h3>
-      <div id="logo"></div>
+      <h1>HRM image preview</h1>
       </div>';
 
         $pdest = $this->destinationFolder();
@@ -1932,17 +1949,17 @@ class Fileserver
 
         // Define some arrays
         $desc = array('MIP' => "MIP",
-            'parameters' => "parameters",
-            'log' => "log",
+            'parameters' => "Parameters",
+            'log' => "Log",
             'SFP' => "SFP",
-            'stack' => "slicer",
-            'tSeries' => "series",
-            'stackMovie' => "stack movie",
-            'tSeriesMovie' => "series movie",
-            'tSeriesSfpMovie' => "series SFP movie",
-            'colocalization' => "colocalization",
-            'history' => "history",
-            'remarks' => "remarks");
+            'stack' => "Slicer",
+            'tSeries' => "Series",
+            'stackMovie' => "Stack movie",
+            'tSeriesMovie' => "Series movie",
+            'tSeriesSfpMovie' => "Series SFP movie",
+            'colocalization' => "Colocalization",
+            'history' => "History",
+            'remarks' => "Remarks");
 
         $tip = array('MIP' => "Compare Maximum Intensity Projections",
             'parameters' => "List the image parameters used (useful to check the runtime parameters that were used if the template was incomplete)",
@@ -2027,7 +2044,7 @@ class Fileserver
 
         echo "\n<div class=\"menuEntry\" onclick=\"javascript:openWindow(" .
             "'https://svi.nl/HRMHelp#Result_comparison')\" " .
-            "onmouseover=\"Tip('Open a pop up with help about this window')\" onmouseout=\"UnTip()\">" .
+            "onmouseover=\"Tip('Display help about the detailed result page')\" onmouseout=\"UnTip()\">" .
             "<a href=\"#\"><img src=\"images/help.png\" alt=\"help\" />" .
             "</a></div>";
 
@@ -2053,7 +2070,7 @@ class Fileserver
         }
         echo "</div>\n";
         echo "</div>\n";
-        echo "<div id=\"previewContents\">\n";
+        echo "<div id=\"previewContents\">\n<h3>$file</h3>";
 
         if ($mode == "stack" || $mode == "tSeries") {
             $this->viewStrip($file, "$mode.compare", "dest", true);
@@ -2062,7 +2079,11 @@ class Fileserver
         } else if ($mode == "log" || $mode == "history"
             || $mode == "remarks" || $mode == "parameters"
         ) {
-            echo "<div id=\"logFile\">\n";
+            if ($mode == "parameters") {
+                echo "<div id=\"parameterFile\">\n";
+            } else {
+                echo "<div id=\"logFile\">\n";
+            }
             print "<pre>";
             readfile($path[$mode]);
             print "</pre>";
@@ -2922,12 +2943,14 @@ class Fileserver
      * represented by their first image file.
      *
      * The list is stored!
+     *
+     * TODO: That is a confusing function name; sounds like a getter, but it it's not!!!
      */
     private function getFiles()
     {
         $this->files = array();
         if (!file_exists($this->sourceFolder())) return False;
-        $this->getFilesFrom($this->sourceFolder(), "");
+        $this->getFilesFrom2($this->sourceFolder(), "");
         if (count($this->files) == 0) return False;
         $extArr = $this->imageExtensions();
 
@@ -3308,6 +3331,77 @@ class Fileserver
     }
 
     /**
+     * Another way to scan the file system and retrieve a file list
+     *
+     * @param $iniDir
+     * @param $prefix
+     */
+    private function getFilesFrom2($iniDir, $prefix)
+    {
+        foreach ($this->scanRecursive($iniDir, $prefix) as $entry) {
+            if ($this->isValidImage($entry) and $this->isImage($entry)) {
+                $this->files[] = $entry;
+            }
+        }
+    }
+
+    /**
+     * Recursive scan
+     * (optimized)
+     *
+     * @param $input_dir
+     * @param string $prefix
+     * @param array $nonos
+     * @return array
+     */
+    private function scanRecursive($input_dir, $prefix = "", $nonos = [".", "..", "hrm_previews"])
+    {
+        if ($prefix != "") {
+            $prefix = $prefix . DIRECTORY_SEPARATOR;
+        }
+
+        $files = array();
+        $items = array_slice(scandir($input_dir), 2);
+        foreach ($items as $item) {
+            $subdir = $input_dir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($subdir)) {
+                if (in_array($item, $nonos)) {
+                    continue;
+                } else {
+                    $prepend = $prefix . $item;
+                    $files = array_merge($files, $this->scanRecursive($subdir, $prepend, $nonos));
+                }
+            } else {
+                $files[] = $prefix . $item;
+            }
+        }
+        return $files;
+    }
+
+    /**
+     * Check if there are files in the file list
+     *
+     * @return bool
+     */
+    public function hasFiles()
+    {
+        return !($this->files == NULL);
+    }
+
+    /**
+     * Return current file list.
+     *
+     * The function does not scan the file system but exclusively return currently stored list.
+     * Use getFiles() or getFilesFrom() to first scan and rebuild the file list.
+     *
+     * @return array|null
+     */
+    public function getCurrentFileList()
+    {
+        return $this->files;
+    }
+
+    /**
      * The recursive function that collects the  image files from the
      * user's destination folder and its subfolders.
      * @param string $startDir The folder to start from.
@@ -3638,7 +3732,7 @@ class Fileserver
         $form .= "<input type='hidden' name='tab' value='coefficients' />   ";
         $form .= "<button name='submit' type='submit' ";
         $form .= "onmouseover=\"Tip('Highlight all values above the set ";
-        $form .= "threshold.')\ onmouseout=\"UnTip()\" > Highlight </button>";
+        $form .= "threshold.');\" onmouseout=\"UnTip()\" > Highlight </button>";
         $form .= "<br /><br /></form>";
 
         /* Insert the form before the output of the first coloc run. */

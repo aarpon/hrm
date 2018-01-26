@@ -149,20 +149,25 @@ include("header.inc.php");
         <ul>
             <?php
             echo(Nav::linkWikiPage('HuygensRemoteManagerHelpLogin'));
-            echo(Nav::linkMailingList());
+            echo(Nav::externalSupportLinks());
             ?>
         </ul>
     </div>
     <div id="navright">
         <ul>
             <?php
-            echo(Nav::linkWhatsNew());
-            echo(Nav::linkProjectWebsite());
-            echo(Nav::linkSVIWiki());
+            echo(Nav::linkLogIn(true,
+                ProxyFactory::getDefaultAuthenticationMode() == "integrated",
+                $req));
             ?>
         </ul>
     </div>
     <div class="clear"></div>
+</div>
+
+<!-- Error messages -->
+<div id="message">
+    <?php echo "<p>$message</p>"; ?>
 </div>
 
 <div id="welcome"><?php
@@ -187,7 +192,7 @@ include("header.inc.php");
         include("footer.inc.php");
         return;
     }
-    // Check that hucore is recent enough to run this version of the HRM
+    // Check that hucore is recent enough to run this version of HRM
     if (System::isMinHuCoreVersion() == false) {
         echo "<div class=\"dbOutDated\">Warning: your HuCore version is " .
             System::getHucoreVersionAsString() . ", you need at least HuCore " .
@@ -219,14 +224,12 @@ include("header.inc.php");
     }
 
     ?>
-    <h2>Welcome</h2>
-
-    <p class="intro">
+    <div id="welcome_intro">
         The <a href="javascript:openWindow('http://hrm.sourceforge.net')">
-        Huygens Remote Manager</a> is an easy to use interface to the Huygens
-        Software by <a href="javascript:openWindow('http://www.svi.nl')">
-        Scientific Volume Imaging B.V.</a> that allows for multi-user,
-        large-scale deconvolution and analysis.</p>
+            Huygens Remote Manager</a> is an easy to use interface to the<br/>
+        Huygens Software by <a href="javascript:openWindow('http://www.svi.nl')">
+            Scientific Volume Imaging B.V.</a> that allows for</br>
+        multi-user, large-scale deconvolution and analysis.</div>
 
     <?php
     /*
@@ -241,58 +244,57 @@ include("header.inc.php");
     }
     ?>
 
-    <h2>Collaborators</h2>
-
     <div id="logos">
-
+        A <a href="credits.php">collaboration</a> of:
         <!-- First row -->
         <table class="firstRow">
-
             <!-- Logos -->
             <tr>
-                <td class="epfl"
-                    onclick="javascript:openWindow('http://biop.epfl.ch')">
+                <td class="mri"
+                    onclick="javascript:openWindow('https://www.mri.cnrs.fr')">
                 </td>
                 <td class="fmi"
-                    onclick="javascript:openWindow('http://www.fmi.ch')">
+                    onclick="javascript:openWindow('https://www.fmi.ch')">
                 </td>
-                <td class="mri"
-                    onclick="javascript:openWindow('http://www.mri.cnrs.fr')">
+                <td class="epfl"
+                    onclick="javascript:openWindow('https://biop.epfl.ch')">
                 </td>
-                <td class="bsse"
-                    onclick="javascript:openWindow('http://www.bsse.ethz.ch')">
+                <td class="svi"
+                    onclick="javascript:openWindow('https://www.svi.nl')">
                 </td>
             </tr>
 
             <!-- Captions -->
             <tr class="caption">
                 <td>
-                    EPF Lausanne<br/>
-                    <a href="http://biop.epfl.ch"
-                       onclick="this.target='_blank'; return true;">
-                        BioImaging and Optics platform
-                    </a>
-                </td>
-                <td>
-                    Friedrich Miescher Institute<br/>
-                    <a href="http://www.fmi.ch/faim"
-                       onclick="this.target='_blank'; return true;">
-                        Facility for Advanced<br/>
-                        Imaging and Microscopy
-                    </a>
-                </td>
-                <td>
-                    <a href="http://www.mri.cnrs.fr"
+                    <a href="https://www.mri.cnrs.fr"
                        onclick="this.target='_blank'; return true;">
                         Montpellier RIO Imaging
-                    </a>
+                    </a><br/>
+                    National Center for Scientific<br />Research Montpellier
+
                 </td>
                 <td>
-                    <a href="http://www.bsse.ethz.ch"
+                    <a href="https://www.fmi.ch/faim"
                        onclick="this.target='_blank'; return true;">
-                        ETH Zurich<br/>
-                        Single-Cell Unit
-                    </a>
+                        Facility for Advanced Imaging<br/>
+                        and Microscopy
+                    </a><br/>
+                    Friedrich Miescher Institute
+                </td>
+                <td>
+                    <a href="https://biop.epfl.ch"
+                       onclick="this.target='_blank'; return true;">
+                        BioImaging and Optics platform
+                    </a><br/>
+                    EPF Lausanne
+                </td>
+                <td>
+                    <a href="https://svi.nl"
+                       onclick="this.target='_blank'; return true;">
+                        Scientific Volume Imaging
+                    </a><br/>
+                    Hilversum
                 </td>
             </tr>
 
@@ -303,14 +305,14 @@ include("header.inc.php");
 
             <!-- Logos -->
             <tr>
-                <td class="svi"
-                    onclick="javascript:openWindow('http://www.svi.nl')">
+                <td class="bsse"
+                    onclick="javascript:openWindow('https://www.bsse.ethz.ch')">
+                </td>
+                <td class="bio-basel"
+                    onclick="javascript:openWindow('https://www.biozentrum.unibas.ch')">
                 </td>
                 <td class="lin"
                     onclick="javascript:openWindow('http://www.lin-magdeburg.de')">
-                </td>
-                <td class="bio-basel"
-                    onclick="javascript:openWindow('http://www.biozentrum.unibas.ch')">
                 </td>
                 <td class="cni"
                     onclick="javascript:openWindow('http://cni.ifn-magdeburg.de')">
@@ -320,116 +322,87 @@ include("header.inc.php");
             <!-- Captions -->
             <tr class="caption">
                 <td>
-                    <a href="http://svi.nl"
+                    <a href="https://www.bsse.ethz.ch/scf"
                        onclick="this.target='_blank'; return true;">
-                        Scientific Volume Imaging
-                    </a>
+                        Single-Cell Facility
+                    </a><br/>
+                    ETH Zurich
+                </td>
+                <td>
+                    <a href="https://www.biozentrum.unibas.ch/research/groups-platforms/overview/unit/imcf/"
+                       onclick="this.target='_blank'; return true;">
+                        Imaging Core Facility
+                    </a><br/>
+                    Biozentrum University of Basel
                 </td>
                 <td>
                     <a href="http://www.lin-magdeburg.de"
                        onclick="this.target='_blank'; return true;">
-                        Leibniz Institute for Neurobiology<br/>
-                        Magdeburg
-                    </a>
-                </td>
-                <td>
-                    <a href="http://www.biozentrum.unibas.ch"
-                       onclick="this.target='_blank'; return true;">
-                        Biozentrum Basel<br/>
-                        University of Basel<br/>
-                        The Center for<br/>
-                        Molecular Life Sciences
-                    </a>
+                        Leibniz Institute for Neurobiology
+                    </a><br/>
+                    Magdeburg
                 </td>
                 <td>
                     <a href="http://cni.ifn-magdeburg.de"
                        onclick="this.target='_blank'; return true;">
-                        Combinatorial Neuroimaging<br/>
-                        Magdeburg
-                    </a>
+                        Combinatorial Neuroimaging
+                    </a><br/>
+                    Magdeburg
                 </td>
             </tr>
 
-        </table>
+            <!-- Third row -->
+            <table class="thirdRow">
+
+                <!-- Logos -->
+                <tr>
+                    <td class="unf"
+                        onclick="javascript:openWindow('https://www3.unifr.ch/')">
+                    </td>
+                    <td class="miap"
+                        onclick="javascript:openWindow('https://miap.uni-freiburg.de')">
+                    </td>
+                    <td class="blank">
+                        &nbsp;
+                    </td>
+                    <td class="blank">
+                        &nbsp;
+                    </td>
+                </tr>
+
+                <!-- Captions -->
+                <tr class="caption">
+                    <td>
+                        <a href="https://www3.unifr.ch/bioimage"
+                           onclick="this.target='_blank'; return true;">
+                            Bioimage | Light Microscopy Facility
+                        </a><br/>
+                        University of Fribourg
+                    </td>
+                    <td>
+                        <a href="https://miap.uni-freiburg.de"
+                           onclick="this.target='_blank'; return true;">
+                            Microscopy and Image Analysis Platform
+                        </a><br/>
+                        University of Freiburg
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+
+            </table>
 
     </div>
 </div>
 <!-- welcome -->
-
-<div id="rightpanel">
-    <p>&nbsp;</p>
-    <div id="login">
-        <form method="post" action="">
-            <fieldset>
-                <legend>
-                    <a href="javascript:openWindow(
-               'http://www.svi.nl/HuygensRemoteManagerHelpLogin')">
-                        <img src="images/help.png" alt="?"/></a> Login
-                </legend>
-
-                <p class="expl">Please enter your credentials.</p>
-
-                <label for="username">Username</label><br/>
-                <input id="username" name="username" type="text"
-                       class="textfield"
-                       tabindex="1"/> <br/>
-                <label for="password">Password</label><br/>
-                <input id="password" name="password" type="password"
-                       class="textfield"
-                       tabindex="2"/> <br/>
-                <a href="reset_password.php"><img src="images/forgot_pwd.png"
-                                                  width="24"/>
-                    &nbsp;Forgot my password</a>
-                <input type="hidden" name="request" value="<?php echo $req ?>"/>
-                <input type="submit" class="button" value="login"/>
-            </fieldset>
-
-            <?php
-            if (ProxyFactory::getDefaultAuthenticationMode() == "integrated") {
-                ?>
-
-                <fieldset>
-                    <legend>
-                        <a href="javascript:openWindow(
-               'http://www.svi.nl/HuygensRemoteManagerHelpRegistrationPage')">
-                            <img src="images/help.png" alt="?"/></a>
-                        Registration
-                    </legend>
-
-                    <div id="login_registration">
-                        <table>
-                            <tr>
-                                <td class="icon"
-                                    onclick="document.location.href='registration.php'">
-                                </td>
-                                <td class="text">
-                                    <b>No HRM account yet?</b><br/>
-                                    Please register <a href="registration.php">here</a>.
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-
-                </fieldset>
-                <?php
-            }
-            ?>
-
-
-        </form>
-    </div>
-
-    <div id="message"><?php
-
-        echo "<p>$message</p>";
-
-        ?></div>
-
-</div>
-<!-- rightpanel -->
 
 <?php
 
 include("footer.inc.php");
 
 ?>
+

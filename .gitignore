@@ -12,7 +12,8 @@ css/custom.css
 
 # IDE project settings
 /nbproject/
-/.idea/
+.idea/
+*.iml
 
 # Python bytecode
 *.py[cod]
@@ -25,3 +26,6 @@ css/custom.css
 
 # Composer's vendor folder 
 /vendor/
+
+# macOS finder files 
+*.DS_Store

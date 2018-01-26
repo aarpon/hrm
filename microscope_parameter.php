@@ -159,11 +159,9 @@ $nParamRequiringReset = 0;
 
 <div id="content">
 
-    <h2>Optical parameters / 1</h2>
+    <h3>Optical Parameters</h3>
 
     <form method="post" action="" id="select">
-
-        <h4>How did you set up your microscope?</h4>
 
         <?php
 
@@ -185,8 +183,11 @@ $nParamRequiringReset = 0;
                        'http://www.svi.nl/MicroscopeType')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                microscope type
+                Microscope Type
             </legend>
+            <h4>How did you set up your microscope?</h4>
+
+            <p class="message_confidence_<?php echo $parameterMicroscopeType->confidenceLevel(); ?>"></p>
 
             <div class="values">
                 <?php
@@ -231,11 +232,6 @@ $nParamRequiringReset = 0;
 
                 ?>
             </div> <!-- values -->
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterMicroscopeType->confidenceLevel(); ?>">&nbsp;
-                </p>
-            </div>
         </fieldset>
 
         <?php
@@ -259,8 +255,9 @@ $nParamRequiringReset = 0;
                     'http://www.svi.nl/NumericalAperture')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                numerical aperture
+                Numerical Aperture
             </legend>
+            <p class="message_confidence_<?php echo $parameterNumericalAperture->confidenceLevel(); ?>"></p>
             <ul>
                 <li>NA:
                     <input name="NumericalAperture"
@@ -272,10 +269,7 @@ $nParamRequiringReset = 0;
 
                 </li>
             </ul>
-            <p class="message_confidence_<?php
-            echo $parameterNumericalAperture->confidenceLevel(); ?>">
-                &nbsp;
-            </p>
+
         </fieldset>
 
         <?php
@@ -300,8 +294,11 @@ $nParamRequiringReset = 0;
                        'http://www.svi.nl/WaveLength')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                wavelengths
+                Wavelengths
             </legend>
+
+            <p class="message_confidence_<?php echo $parameterEmissionWavelength->confidenceLevel(); ?>"></p>
+
             <ul>
                 <li>excitation (nm):
 
@@ -385,10 +382,6 @@ $nParamRequiringReset = 0;
                 </li>
             </ul>
 
-            <p class="message_confidence_<?php
-            echo $parameterEmissionWavelength->confidenceLevel(); ?>">
-                &nbsp;
-            </p>
         </fieldset>
 
         <?php
@@ -412,8 +405,10 @@ $nParamRequiringReset = 0;
                        'http://www.svi.nl/LensImmersionMedium')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                objective type
+                Objective Type
             </legend>
+
+            <p class="message_confidence_<?php echo $parameterObjectiveType->confidenceLevel(); ?>"></p>
 
             <div class="values">
                 <?php
@@ -483,12 +478,7 @@ $nParamRequiringReset = 0;
                        onclick="this.form.ObjectiveType[5].checked=true"/>
 
             </div> <!-- values -->
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterObjectiveType->confidenceLevel(); ?>">
-                    &nbsp;
-                </p>
-            </div>
+
         </fieldset>
 
         <?php
@@ -512,8 +502,10 @@ $nParamRequiringReset = 0;
                        'http://www.svi.nl/SpecimenEmbeddingMedium')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                sample medium
+                Sample Medium
             </legend>
+
+            <p class="message_confidence_<?php echo $parameterSampleMedium->confidenceLevel(); ?>"></p>
 
             <div class="values">
                 <?php
@@ -583,12 +575,7 @@ $nParamRequiringReset = 0;
                        onclick="this.form.SampleMedium[3].checked=true"/>
 
             </div> <!-- values -->
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterSampleMedium->confidenceLevel(); ?>">
-                    &nbsp;
-                </p>
-            </div>
+
         </fieldset>
 
         <div><input name="OK" type="hidden"/></div>

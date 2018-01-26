@@ -165,10 +165,16 @@ class HuygensTemplate
     private $chromaticArray;
 
     /**
-     * Array with information on the image cmle/qmle subtask.
+     * Array with information on the image cmle/qmle/gmle subtask.
      * @var array
      */
     private $algArray;
+
+    /**
+     * Array with information on the time series stabilize subtask.
+     * @var array
+     */
+    private $TStabilizeArray;
 
     /**
      * Array with information on the colocalization analysis subtask.
@@ -434,6 +440,7 @@ class HuygensTemplate
                 'adjustBaseline'          => 'adjbl',
                 'ZStabilization'          => 'stabilize',
                 'algorithms'              => '',
+                'TStabilization'          => 'stabilize:post',
                 'colocalization'          => 'coloc',
                 'chromatic'               => 'shift',
                 '2Dhistogram'             => 'hist',
@@ -548,6 +555,7 @@ class HuygensTemplate
         $this->algArray =
             array('q'       => '',
                   'brMode'  => '',
+                  'varPsf'  => '',
                   'it'      => '',
                   'bgMode'  => '',
                   'bg'      => '',
@@ -570,6 +578,14 @@ class HuygensTemplate
         $this->ZStabilizeArray =
             array('enabled' => '0',
                   'listID'  => 'stabilize');
+
+        /* Options for the 'TStabilization' action. */
+        $this->TStabilizeArray =
+            array('enabled' => '0',
+                  'mode'    => '',
+                  'rot'     => '',
+                  'crop'    => '',
+                  'listID'  => 'stabilize:post');
 
         /* Options for the 'colocalization analysis' action. */
         $this->colocArray =
@@ -817,6 +833,7 @@ class HuygensTemplate
                 case 'ZStabilization':
                 case 'algorithms':
                 case 'chromatic':
+                case 'TStabilization':
                 case 'colocalization':
                 case '2Dhistogram':
                 case 'XYXZRawAtSrcDir':
@@ -885,6 +902,9 @@ class HuygensTemplate
                     break;
                 case 'chromatic':
                     $tasksDescr .= $this->getImgTaskDescrChromatic();
+                    break;
+                case 'TStabilization':
+                    $tasksDescr .= $this->getImgTaskDescrTStabilize();
                     break;
                 case 'colocalization':
                     $tasksDescr .= $this->getImgTaskDescrColocs();
@@ -1115,6 +1135,52 @@ class HuygensTemplate
 
         return $allTasksDescr;
     }
+
+    /**
+     * Get options for the 'TStabilize' task.
+     * @return string Tcl list with the 'TStabilize' task and its options.
+     */
+    private function getImgTaskDescrTStabilize()
+    {
+
+        $taskDescr = "";
+
+        $TStabilizeParam = $this->deconSetting->parameter('TStabilization');
+        $TStabilizeMethodParam = $this->deconSetting->parameter('TStabilizationMethod');
+        $TStabilizeRotationParam = $this->deconSetting->parameter('TStabilizationRotation');
+        $TStabilizeCroppingParam = $this->deconSetting->parameter('TStabilizationCropping');
+
+        foreach ($this->TStabilizeArray as $key => $value) {
+
+            if ($key != "listID") {
+                $taskDescr .= " " . $key . " ";
+            }
+
+            switch ($key) {
+                case 'enabled':               
+                    $taskDescr .= $TStabilizeParam->value();
+                    break;
+                case 'mode':               
+                    $taskDescr .= $TStabilizeMethodParam->value();
+                    break;
+                case 'rot':               
+                    $taskDescr .= $TStabilizeRotationParam->value();
+                    break;
+                case 'crop':               
+                    $taskDescr .= $TStabilizeCroppingParam->value();
+                    break;
+                case 'listID':
+                    $taskDescr = $this->string2tcllist($taskDescr);
+                    $taskDescr = $value . " " . $taskDescr;
+                    break;
+                default:
+                    Log::error("Image T stabilize option $key not yet implemented.");
+            }
+        }
+
+        return $taskDescr;
+    }
+
 
     /**
      * Get options for the 'Autocrop' task.
@@ -1824,6 +1890,9 @@ class HuygensTemplate
                 case 'brMode':
                     $taskDescr .= $this->getBrMode();
                     break;
+                case 'varPsf':
+                    $taskDescr .= $this->getVarPsf();
+                    break;
                 case 'it':
                     $taskDescr .= $this->getIterations();
                     break;
@@ -1874,20 +1943,40 @@ class HuygensTemplate
 
         $brMode = "auto";
 
-        if ($SAcorr['AberrationCorrectionNecessary'] == 1
-            && $SAcorr['PerformAberrationCorrection'] != 0
-        ) {
-
+        if ($SAcorr['AberrationCorrectionNecessary'] == 1) {
             if ($SAcorr['AberrationCorrectionMode'] != 'automatic') {
                 if ($SAcorr['AdvancedCorrectionOptions'] == 'slice') {
                     $brMode = 'sliceBySlice';
                 } elseif ($SAcorr['AdvancedCorrectionOptions'] == 'few') {
                     $brMode = 'few';
+                } elseif ($SAcorr['AdvancedCorrectionOptions'] == 'few-slabs') {
+                    $brMode = 'one';
                 }
             }
         }
 
         return $brMode;
+    }
+
+    /**
+     * Gets the varPsf mode.
+     * @return string varPsf mode.
+     */
+    private function getVarPsf()
+    {
+        $SAcorr = $this->getSAcorr();
+
+        $varPsf = "off";
+
+        if ($SAcorr['AberrationCorrectionNecessary'] == 1) {
+            if ($SAcorr['AberrationCorrectionMode'] != 'automatic') {
+                if ($SAcorr['AdvancedCorrectionOptions'] == 'few-slabs') {
+                    $varPsf = 'few';
+                }
+            }
+        }
+
+        return $varPsf;
     }
 
     /**
@@ -2696,7 +2785,7 @@ class HuygensTemplate
                 $parameterValue = "";
         }
 
-        if ($parameterValue != 0
+        if ($parameterValue !== 0
             && ($parameterValue == "" || $parameterValue == "{}")
         ) {
             $parameterValue = "*";
@@ -2723,6 +2812,7 @@ class HuygensTemplate
             case 'adjbl':
             case 'imgSave':
             case 'stabilize':
+            case 'stabilize:post':   
                 break;
             case 'coloc':
             case 'hist':
@@ -2915,7 +3005,7 @@ class HuygensTemplate
      can handle. If the image is larger than this, we won't be able to
      generate a slicer preview. */
         $maxPixelsPerDim = 65000;
-
+        
         if ($slicerPixelsX >= $maxPixelsPerDim) {
             $this->compareZviews = FALSE;
             $this->compareTviews = FALSE;
@@ -2929,6 +3019,16 @@ class HuygensTemplate
         if ($slicerPixelsYT >= $maxPixelsPerDim) {
             $this->compareTviews = FALSE;
         }
+
+        /* The dimensions of the raw and restored data will be different
+           if the time stabilization is on with a cropping scheme other than
+           'original'. In that case disable the T comparison. */
+        $TStabilizeParam = $this->deconSetting->parameter('TStabilization');
+        $TStabilizeCroppingParam = $this->deconSetting->parameter('TStabilizationCropping');
+
+        if ($TStabilizeParam->value() && $TStabilizeCroppingParam->value() != "original") {
+            $this->compareTviews = FALSE;
+        }        
     }
 
     /**

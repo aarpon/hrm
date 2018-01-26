@@ -151,7 +151,7 @@ include("header.inc.php");
             </a>
             binning:
 
-            <select style="width:20%;" title="Binning" name="Binning" size="1">
+            <select class="selection" title="Binning" name="Binning" size="1">
                 <?php
 
 
@@ -213,7 +213,7 @@ include("header.inc.php");
             </a>
             objective magnification:
 
-            <select style="width:20%;" title="Objective magnification"
+            <select class="selection" title="Objective magnification"
                     name="ObjectiveMagnification" size="1">
                 <?php
 

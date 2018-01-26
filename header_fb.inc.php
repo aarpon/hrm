@@ -160,13 +160,13 @@ if (isset($generatedScript)) {
 ?>
 
     <style type="text/css">
-        @import "css/default.css";
+        @import "css/default.css?v=3.5";
     </style>
     <!--[if lt IE 9]>
-    <h3>This browser is OBSOLETE and is known to have important issues with the HRM.
+    <h3>This browser is OBSOLETE and is known to have important issues with HRM.
         Please upgrade to a later version of Internet Explorer or to a new
-        broswer altogether.</h3>
-    <link rel="stylesheet" href="css/default_ie.css">
+        browser altogether.</h3>
+    <link rel="stylesheet" href="css/default.css?v=3.5">
     <![endif]-->
 
 <?php
@@ -188,20 +188,9 @@ if (isset($generatedScript)) {
 <div id="basket">
 
 <?php if (!isset($excludeTitle)) { ?>
-	  <div id="title">
-	  <h1>
-          Huygens Remote Manager
-            <span id="about">
-            <?php
-            $devel = '.hrm_devel_version';
-            if (file_exists($devel)) {
-                echo file_get_contents($devel);
-            } else {
-                echo "v" . System::getHRMVersionAsString();
-            }
-            ?></span>
-      </h1>
-  	  <div id="logo"></div>
-	  </div>
+    <div id="title">
+        <h1>
+            Huygens Remote Manager
+        </h1>
+    </div>
 <?php } ?>
-

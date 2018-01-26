@@ -470,10 +470,12 @@ include("header.inc.php");
                                         <input type="hidden"
                                                name="role_change"
                                                value="<?php echo $name ?>">
-                                        <input type="checkbox"
-                                               name="is_admin"
-                                               value="1" <?php echo($checked); ?>
-                                               onChange="this.form.submit()"> admin
+                                        <label id="users_isadmin_label">
+                                            <input type="checkbox"
+                                                   name="is_admin"
+                                                   value="1" <?php echo($checked); ?>
+                                                   onChange="this.form.submit()"> admin
+                                        </label>
                                     </form>
                                 </td>
                                 </tr>

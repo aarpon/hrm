@@ -181,8 +181,6 @@ if ($PSF == 'measured') {
     // Make sure to turn off the correction
     $_SESSION['setting']->parameter(
         'AberrationCorrectionNecessary')->setValue('0');
-    $_SESSION['setting']->parameter(
-        'PerformAberrationCorrection')->setValue('0');
 } else {
     // Get the refractive indices: if they are not set, the floatval conversion
     // will change them into 0s
@@ -213,8 +211,6 @@ if ($PSF == 'measured') {
             // Make sure to turn off the correction
             $_SESSION['setting']->parameter(
                 'AberrationCorrectionNecessary')->setValue('0');
-            $_SESSION['setting']->parameter(
-                'PerformAberrationCorrection')->setValue('0');
         } else {
             $pageToGo = 'aberration_correction.php';
             $_SESSION['setting']->parameter(
@@ -297,7 +293,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h2>STED parameters </h2>
+    <h3>STED Parameters </h3>
 
     <form method="post" action="" id="select">
 
@@ -325,6 +321,8 @@ include("header.inc.php");
                 </a>
                 STED Depletion Mode
             </legend>
+
+            <p class="message_confidence_<?php echo $parameterStedDeplMode->confidenceLevel(); ?>"></p>
 
             <div class="StedDeplModeValues">
                 <table class="StedDeplModeValues">
@@ -387,12 +385,6 @@ include("header.inc.php");
                 </table> <!-- StedDeplModeValues -->
             </div> <!-- StedDeplModeValues -->
 
-
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterStedDeplMode->confidenceLevel(); ?>">&nbsp;
-                </p>
-            </div>
         </fieldset>
 
 
@@ -418,6 +410,7 @@ include("header.inc.php");
                 STED Saturation Factor
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterStedSatFact->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -455,11 +448,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterStedSatFact->confidenceLevel(); ?>">&nbsp;
-                    </p>
-                </div>
         </fieldset>
 
         <?php
@@ -484,6 +472,7 @@ include("header.inc.php");
                 STED Wavelength (nm)
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterStedLambda->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -521,11 +510,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterStedLambda->confidenceLevel(); ?>">&nbsp;
-                    </p>
-                </div>
         </fieldset>
 
 
@@ -551,6 +535,7 @@ include("header.inc.php");
                 STED Immunity Fraction (%)
             </legend>
 
+            <p class="message_confidence_<?php echo $parameterStedImmunity->confidenceLevel(); ?>"></p>
 
             <div class="multichannel">
                 <?php
@@ -588,11 +573,6 @@ include("header.inc.php");
                 }
                 ?>
 
-                <div class="bottom">
-                    <p class="message_confidence_<?php
-                    echo $parameterStedImmunity->confidenceLevel(); ?>">&nbsp;
-                    </p>
-                </div>
         </fieldset>
 
 
@@ -619,6 +599,7 @@ include("header.inc.php");
                     STED 3D (%)
                 </legend>
 
+                <p class="message_confidence_<?php echo $parameterSted3D->confidenceLevel(); ?>"></p>
 
                 <div class="multichannel">
                     <?php
@@ -656,11 +637,6 @@ include("header.inc.php");
                     }
                     ?>
 
-                    <div class="bottom">
-                        <p class="message_confidence_<?php
-                        echo $parameterSted3D->confidenceLevel(); ?>">&nbsp;
-                        </p>
-                    </div>
             </fieldset>
             <?php
         }

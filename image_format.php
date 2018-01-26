@@ -126,11 +126,9 @@ $nParamRequiringReset = 0;
 
 <div id="content">
 
-    <h2>Number of channels and PSF modality</h2>
+    <h3>Channels and PSF</h3>
 
     <form method="post" action="" id="select">
-
-        <h4>How many channels (wavelengths) in your datasets?</h4>
 
         <?php
 
@@ -153,8 +151,12 @@ $nParamRequiringReset = 0;
                        'http://www.svi.nl/NumberOfChannels')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                number of channels
+                Number Of Channels
             </legend>
+
+            <h4>How many channels (wavelengths) in your datasets?</h4>
+
+            <p class="message_confidence_<?php echo $parameterNumberOfChannels->confidenceLevel(); ?>"></p>
 
             <?php
 
@@ -203,14 +205,6 @@ $nParamRequiringReset = 0;
 
             </div> <!-- values -->
 
-
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterNumberOfChannels->confidenceLevel(); ?>">
-                    &nbsp;
-                </p>
-            </div>
-
         </fieldset>
 
         <?php
@@ -225,10 +219,6 @@ $nParamRequiringReset = 0;
 
         ?>
 
-        <h4>Would you like to use an existing measured PSF obtained from
-            bead images or a theoretical PSF generated from explicitly
-            specified parameters?</h4>
-
         <fieldset class="setting <?php
         echo $parameterPointSpreadFunction->confidenceLevel(); ?>"
                   onmouseover="changeQuickHelp( 'PSF' );">
@@ -240,6 +230,12 @@ $nParamRequiringReset = 0;
                 </a>
                 PSF
             </legend>
+            <h4>Would you like to use an existing measured PSF obtained from
+                bead images or a theoretical PSF generated from explicitly
+                specified parameters?
+            </h4>
+
+            <p class="message_confidence_<?php echo $parameterPointSpreadFunction->confidenceLevel(); ?>"></p>
 
             <div class="values">
                 <?php
@@ -291,13 +287,6 @@ $nParamRequiringReset = 0;
                 Measured
             </div> <!-- values -->
 
-            <div class="bottom">
-                <p class="message_confidence_<?php
-                echo $parameterPointSpreadFunction->confidenceLevel(); ?>">
-                    &nbsp;
-                </p>
-
-            </div>
         </fieldset>
 
         <div id="controls"

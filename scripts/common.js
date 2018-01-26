@@ -767,9 +767,9 @@ function downloadImages() {
     changeDiv('selection', 'Selected files will be packed for downloading '
        +  '(that may take a while).<br /><br />Please confirm and wait:'
        + '<br /><input name="download" type="submit" value="" '
-       + 'class="icon download" '
+       + 'class="icon apply" '
        +     'onmouseover="Tip(\'Confirm download\')" onmouseout="UnTip()"/>'
-       + '<input type="button" class="icon abort" onclick="UnTip(); cancelSelection()" '
+       + '<input type="button" class="icon cancel" onclick="UnTip(); cancelSelection()" '
        +        'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>');
 
 }
@@ -934,6 +934,8 @@ function showPreview() {
 function changeVisibility(id) {
     blockElement = document.getElementById(id);
     if (blockElement.style.display == "none")
+        blockElement.style.display = "block";
+    else if (blockElement.style.display == "")
         blockElement.style.display = "block";
     else if (blockElement.style.display == "block")
         blockElement.style.display = "none";

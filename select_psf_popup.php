@@ -52,7 +52,7 @@ $emSetting = $emSettingArr[$chan];
         //-->
     </script>
     <style type="text/css">
-        @import "css/default.css";
+        @import "css/default.css?v=3.5";
     </style>
 </head>
 
@@ -72,8 +72,11 @@ $emSetting = $emSettingArr[$chan];
                 ?>
 
                 <div id="userfiles">
-                    <select name="userfiles[]" title="Available PSF files"
-                            size="10" onchange="lock(this)">
+                    <select name="userfiles[]"
+                            title="Available PSF files"
+                            class="selection"
+                            size="10"
+                            onchange="lock(this)">
                         <?php
 
                         $showWarning = false;
@@ -162,10 +165,10 @@ $emSetting = $emSettingArr[$chan];
                     $emSettingDisplay = "Emission wavelength: $emSetting nm";
                 }
 
-                echo("<p>&nbsp;<br />" .
-                    "Files with parameters very different than current ones (" .
+                echo("<p class=\"message_small\">&nbsp;<br />" .
+                    "Files with parameters very different than current ones (<b>" .
                     "$mTypeDisplay, $NADisplay, $emSettingDisplay" .
-                    ") are <i class=\"highlightedPSF\">highligthed</i>
+                    "</b>) are <i class=\"highlightedPSF\">highligthed</i>
                      since they could produce wrong or unexpected results.</p>");
             }
 

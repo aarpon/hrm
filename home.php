@@ -73,7 +73,7 @@ include("header.inc.php");
         $_SESSION['BEEN_HOME'] = 1;
     }
     ?>
-    <h3><img src="images/home.png" alt="Home"/>&nbsp;
+    <h3><img src="images/home_large.png" alt="Home"/>&nbsp;
         <?php echo $textHome; ?></h3>
 
     <!-- Here we display update information. This div is initially hidden -->
@@ -298,12 +298,16 @@ include("header.inc.php");
 
 
                 <td class="icon">
-                    &nbsp;
+                    <a href="./licenses.php">
+                        <img alt="LICENSES" src="./images/licenses.png"/>
+                    </a>&nbsp;
                 </td>
 
                 <td class="text">
                     <div class="cell">
-                        &nbsp;
+                        <a href="./licenses.php">HuCore licenses</a>
+                        <br/>
+                        <p>Display HuCore license information.</p>&nbsp;
                     </div>
                 </td>
 
@@ -330,7 +334,7 @@ include("header.inc.php");
 
                 <td class="text">
                     <div class="cell">
-                        <a href="./select_images.php">Start a job</a>
+                        <a href="./select_images.php">Launch jobs</a>
                         <br/>
                         <p>Create and start restoration and analysis jobs.</p>
                     </div>
@@ -516,7 +520,7 @@ include("footer.inc.php");
                     updateDiv.html("<p class='noUpdateNotification'>" +
                         "<img src=\"images/check_for_update.png\" alt=\"Latest version\" />" +
                         "&nbsp;&nbspCongratulations! You are running the " +
-                        "latest version of the HRM!</p>");
+                        "latest version of HRM!</p>");
                     updateDiv.show();
                     return;
                 }
@@ -524,7 +528,7 @@ include("footer.inc.php");
                     "<p class='updateNotification'>" +
                     "<a href='#'>" +
                     "<img src=\"images/check_for_update.png\" alt=\"New version\" />" +
-                    "&nbsp;&nbspA newer version of the HRM (" +
+                    "&nbsp;&nbspA newer version of HRM (" +
                     response.newVersion +
                     ") is available!</a></p>");
                 updateDiv.on("click", function () {

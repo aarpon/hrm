@@ -32,7 +32,7 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
  *
  * A User relies on a proxy to authenticate and to query information from the
  * underlying user management system. Some user management systems are read-only
- * for the HRM.
+ * for HRM.
  *
  * Supported proxies are:
  *

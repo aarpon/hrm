@@ -50,11 +50,17 @@ if (!$_SESSION['user']->isAdmin()) {
 /* These checks should be removed when the analysis stage includes steps
  for single channel images. */
 if (!$analysisEnabled) {
-    $message = "Analysis only available for multichannel images.\n\n";
+    $message = "Analysis only available for multichannel images.<br />";
     $message .= "Please continue.";
 
     $widgetState = "disabled=\"disabled\"";
     $divState = "_disabled";
+} else {
+    if (!$_SESSION['user']->isAdmin()) {
+        $message  = "Optional step.<br />Leave selection empty to skip analysis.";
+    } else {
+        $message = "";
+    }
 }
 
 // add public setting support
@@ -83,17 +89,17 @@ if (isset($_POST['copy_public'])) {
             $message = $_SESSION['editor']->message();
         }
     } else $message = "Please select a setting to copy";
-} else if (isset($_POST['create'])) {
+} else if (!empty($_POST['new_setting_create'])) {
     $analysis_setting = $_SESSION['analysiseditor']->createNewSetting(
-        $_POST['new_setting']);
+        $_POST['new_setting_create']);
     if ($analysis_setting != NULL) {
         $_SESSION['analysis_setting'] = $analysis_setting;
         header("Location: " . "coloc_analysis.php");
         exit();
     }
     $message = $_SESSION['analysiseditor']->message();
-} else if (isset($_POST['copy'])) {
-    $_SESSION['analysiseditor']->copySelectedSetting($_POST['new_setting']);
+} else if (!empty($_POST['new_setting_copy'])) {
+    $_SESSION['analysiseditor']->copySelectedSetting($_POST['new_setting_copy']);
     $message = $_SESSION['analysiseditor']->message();
 } else if (isset($_POST['edit'])) {
     $analysis_setting = $_SESSION['analysiseditor']->loadSelectedSetting();
@@ -126,15 +132,22 @@ if (isset($_POST['copy_public'])) {
         $_SESSION['analysis_setting'] = new AnalysisSetting();
         header("Location: " . "create_job.php");
         exit();
-    }
-
-    if (!isset($_POST['analysis_setting'])) {
-        $message = "Please select some analysis parameters";
     } else {
-        $_SESSION['analysis_setting'] =
-            $_SESSION['analysiseditor']->loadSelectedSetting();
-        $_SESSION['analysis_setting']->setNumberOfChannels(
-            $_SESSION['setting']->numberOfChannels());
+        if (isset($_POST['analysis_setting'])) {
+
+           /* Proceed to process the selected template. */
+           $_SESSION['analysis_setting'] =
+               $_SESSION['analysiseditor']->loadSelectedSetting();
+           $_SESSION['analysis_setting']->setNumberOfChannels(
+                $_SESSION['setting']->numberOfChannels());
+
+        } else {
+
+           $message = "Please continue to skip coloc.";
+           
+            /* Set a default temlate for skipping analysis. */
+            $_SESSION['analysis_setting'] = new AnalysisSetting();
+        }
 
         header("Location: " . "create_job.php");
         exit();
@@ -302,6 +315,7 @@ if (!$_SESSION['user']->isAdmin()) {
                     ?>
                     <select name="public_setting"
                             title="Admin templates"
+                            class="selection"
                             onclick="ajaxGetParameterListForSet('analysis_setting', $(this).val(), true);"
                             onchange="ajaxGetParameterListForSet('analysis_setting', $(this).val(), true);"
                             size="5"<?php echo $flag ?>>
@@ -370,6 +384,7 @@ if (!$_SESSION['user']->isAdmin()) {
                 ?>
                 <select name="analysis_setting" id="setting"
                         title="Your templates"
+                        class="selection"
                         onclick="ajaxGetParameterListForSet('analysis_setting', $(this).val(), false);"
                         onchange="ajaxGetParameterListForSet('analysis_setting', $(this).val(), false);"
                         size="<?php echo $size ?>"
@@ -399,74 +414,126 @@ if (!$_SESSION['user']->isAdmin()) {
 
         <div id="<?php echo "actions" . $divState; ?>"
              class="taskselection">
-            <input name="create"
-                <?php echo $widgetState ?>
-                   type="submit"
+          <table id="actions">
+             <tr>
+                <td class="button">
+                  <input name="create" <?php echo $widgetState ?>
+                   type="button"
                    value=""
                    class="icon create"
                    onmouseover="TagToTip('ttSpanCreate' )"
-                   onmouseout="UnTip()"/>
-            <input name="edit"
-                <?php echo $widgetState ?>
+                   onmouseout="UnTip()"
+                   onclick="hide('copyTemplateDiv'); changeVisibility('newTemplateDiv')"/>
+                </td>
+                <td class="button">
+                  <input name="edit" <?php echo $widgetState ?>
                    type="submit"
                    value=""
                    class="icon edit"
                    onmouseover="TagToTip('ttSpanEdit' )"
                    onmouseout="UnTip()"/>
-            <input name="copy"
-                <?php echo $widgetState ?>
-                   type="submit"
+                </td>
+                <td class="button">
+                  <input name="copy" <?php echo $widgetState ?>
+                   type="button"
                    value=""
                    class="icon clone"
                    onmouseover="TagToTip('ttSpanClone' )"
-                   onmouseout="UnTip()"/>
-
-            <?php
-
-            if (!$_SESSION['user']->isAdmin()) {
-
-                ?>
-
-                <input name="share"
-                    <?php echo $widgetState ?>
+                   onmouseout="UnTip()"
+                   onclick="hide('newTemplateDiv'); changeVisibility('copyTemplateDiv')"/>
+                </td>
+<?php
+  if (!$_SESSION['user']->isAdmin()) {
+?>
+                <td class="button">
+                  <input name="share" <?php echo $widgetState ?>
                        type="button"
                        onclick="prepareUserSelectionForSharing('<?php echo $_SESSION['user']->name() ?>');"
                        value=""
                        class="icon share"
                        onmouseover="TagToTip('ttSpanShare' )"
                        onmouseout="UnTip()"/>
-
-                <input name="make_default"
-                    <?php echo $widgetState ?>
+                  </td>
+                  <td class="button">
+                    <input name="make_default" <?php echo $widgetState ?>
                        type="submit"
                        value=""
                        class="icon mark"
                        onmouseover="TagToTip('ttSpanDefault' )"
                        onmouseout="UnTip()"/>
-                <?php
-
-            }
-
-            ?>
-            <input type="hidden" name="annihilate"/>
-            <input name="delete"
-                <?php echo $widgetState ?>
-                   type="button"
-                   value=""
-                   class="icon delete"
-                   onclick="warn(this.form,
+                  </td>
+<?php
+ }
+?>
+                  <td class="button">
+                    <input type="hidden" name="annihilate"/>
+                    <input name="delete" <?php echo $widgetState ?>
+                     type="button"
+                     value=""
+                    class="icon delete"
+                    onclick="warn(this.form,
                          'Do you really want to delete this analysis template?',
                          this.form['analysis_setting'].selectedIndex )"
-                   onmouseover="TagToTip('ttSpanDelete' )"
-                   onmouseout="UnTip()"/>
-            <label>New/clone analysis template set name:
-                <input name="new_setting"
-                       type="text"
-                       class="textfield"/>
-            </label>
+                    onmouseover="TagToTip('ttSpanDelete' )"
+                    onmouseout="UnTip()"/>
+                  </td>
+                </tr>
+                <tr>
+                    <td class="label">
+                     New
+                    </td>
+                    <td class="label">
+                     Edit
+                    </td>
+                    <td class="label">
+                     Duplicate
+                    </td>
+<?php
+if (!$_SESSION['user']->isAdmin()) {
+?>       
+                    <td class="label">
+                     Share
+                    </td>
+                    <td class="label">
+                     Mark as<br />favorite
+                    </td>
+<?php
+}
+?>      
+                    <td class="label">
+                     Remove
+                    </td>
+                </tr>
+              </table>
             <input name="OK" type="hidden"/>
-
         </div>
+        
+        <div id="newTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_create"
+                     type="text"
+                     size="30"
+                     class="textfield_30"/>
+              <input name="input_submit"
+                     type="submit"
+                     value="Create"
+                     class="submit_btn"/>
+           </label>
+        </div>
+        <div id="copyTemplateDiv">
+           <label>Enter a name for the new template:
+              <input name="new_setting_copy"
+                     type="text"
+                     size="30"
+                     class="textfield_30"/>
+              <input name="input_submit"
+                     type="submit"
+                     value="Create"
+                     class="submit_btn"/>
+           </label>
+        </div>
+
+
         <?php
 
         if (!$_SESSION['user']->isAdmin()) {
@@ -505,6 +572,7 @@ if (!$_SESSION['user']->isAdmin()) {
             <div id="users">
 
                 <select id="usernameselect" name="usernameselect[]"
+                        class="selection"
                         title="Users"
                         size="5" multiple="multiple">
                     <option>&nbsp;</option>
