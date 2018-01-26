@@ -2276,7 +2276,7 @@ class DatabaseConnection
         return intval($result);
     }
 
-    public function getAllServers($server)
+    public function getAllServers()
     {
         $query = "SELECT * FROM server;";
 

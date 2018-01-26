@@ -36,7 +36,7 @@ if (isset($_GET["add"]["name"]) && !empty($_GET["add"]["name"])) {
         $serverName = $_GET["add"]["name"];
         $huPath     = $_GET["add"]["path"];
         $gpuId      = $_GET["add"]["gpuId"];
-        if ($db->addServer($serverName, $huPath, $gpuId)) {
+        if (! $db->addServer($serverName, $huPath, $gpuId)) {
             $message .= "Server could not be added.\n";
         } else {
             $message .= "Server '$serverName' added successfully.\n\n";
@@ -103,7 +103,7 @@ include("header.inc.php");
                    foreach ($server as $key => $value) {
                       if (strpos($key, 'name') !== false) {
                           $serverName = $value;
-                          $name = split(" ", $serverName);
+                          $name = explode(" ", $serverName);
                           $name = $name[0];
                       }
                       if (strpos($key, 'huscript_path') !== false) {
