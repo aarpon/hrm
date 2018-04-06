@@ -60,15 +60,9 @@ if (System::isUploadEnabled() == "enabled") {
 
 if (isset($_POST['delete'])) {
     if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-        if ($browse_folder == "dest") {
-            $message =
-                $_SESSION['fileserver']->deleteFiles($_POST['userfiles'],
-                    "dest");
-        } else {
             $message =
                 $_SESSION['fileserver']->deleteFiles($_POST['userfiles'],
                     "src");
-        }
     }
 } else if (isset($_GET['delete'])) {
     # This method is only for result files.
@@ -76,11 +70,7 @@ if (isset($_POST['delete'])) {
     $message = $_SESSION['fileserver']->deleteFiles($deleteArr);
     exit;
 } else if (isset($_POST['update'])) {
-    if ($browse_folder == "dest") {
-        $_SESSION['fileserver']->resetDestFiles();
-    } else {
-        $_SESSION['fileserver']->resetFiles();
-    }
+    $_SESSION['fileserver']->resetFiles();
 } else if (!isset($_POST['update']) && isset($_GET) && isset($_GET['folder'])) {
     // Force an update in the file browser
     $_POST['update'] = "1";
@@ -203,12 +193,25 @@ if (System::isUploadEnabled() == "enabled") {
                         onkeyup="this.blur();this.focus();"
                         size="15" multiple="multiple">
                     <?php
-                    // Populate the select field with the list of available images:
 
+                    // Populate the select field with the list of available images:
                     if ($files != null) {
                         foreach ($files as $key => $file) {
-                            echo $_SESSION['fileserver']->getImageOptionLine($file,
-                                $key, "dest", "preview", 1, 0);
+
+                            $path = explode("/", $file);
+                            if (count($path) > 2)
+                                $filename = $path[0] . "/.../" . $path[count($path) - 1];
+                            else
+                                $filename = $file;
+
+                            // Consecutive spaces are collapsed into one space in HTML.
+                            // Hence '&nbsp;' to correct this when the file has more spaces.
+                            $filename = str_replace(' ', '&nbsp;', $filename);
+                     ?>
+                            <option value="<?php echo($file);?>">
+                                <?php echo($filename);?>
+                            </option>
+                    <?php
                         }
                     }
                     else echo "<option>&nbsp;</option>\n";
@@ -321,9 +324,7 @@ include("footer.inc.php");
 if (System::isUploadEnabled() == "enabled") {
 
 ?>
-<!--
-Fine
-Uploader -->
+<!-- Fine Uploader -->
 $(document).ready(function () {
 
     var totalSizeOfSelectedFiles = 0;
@@ -519,7 +520,7 @@ $(document).ready(function () {
             case "<?php echo($file);?>":
 
                 <?php echo($_SESSION['fileserver']->getImageAction($file, $key,
-                    $browse_folder, "preview", 1, 0));?>;
+                    "src", "preview", 1, 0));?>;
                 break;
 
         <?php
