@@ -1976,6 +1976,11 @@ class HuygensTemplate
             }
         }
 
+          /* Special case for GMLE where varPsf is always on. */
+        if ($this->getAlgorithm() == "gmle" && $varPsf == "off") {
+            $varPsf = "one";
+        }
+
         return $varPsf;
     }
 
