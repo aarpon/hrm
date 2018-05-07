@@ -22,7 +22,7 @@ $db_host = "localhost";
 $db_name = "hrm";
 
 // The name of the user with which the database is accessed
-$db_user = "dbuser";
+$db_user = "hrm";
 
 // The password of the account with which the database is accessed
 $db_password = "dbpasswd";
