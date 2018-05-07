@@ -9,7 +9,7 @@
 HRM_HOME="/var/www/html/hrm"
 
 # HRM image share
-HRM_DATA="/scratch/hrm_data"
+HRM_DATA="/data/hrm_data"
 
 # Source and destination folder names
 HRM_SOURCE="src"
