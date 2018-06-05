@@ -382,7 +382,7 @@ class Job
 
         // Server name without proc number
         $server = $this->server;
-        $s = preg_split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
 
         $desc = $this->description();
@@ -469,7 +469,7 @@ class Job
 
         // Server name without proc number
         $server = $this->server;
-        $s = preg_split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
 
         $desc = $this->description();
