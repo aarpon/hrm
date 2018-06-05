@@ -220,14 +220,14 @@ include("header.inc.php");
                     </div>
                 </td>
                 <td class="icon">
-                    <a href="./file_management.php?folder=src">
+                    <a href="./raw_images.php">
                         <img alt="FileManager" src="./images/rawdata.png"/>
                     </a>
                 </td>
 
                 <td class="text">
                     <div class="cell">
-                        <a href="./file_management.php?folder=src">Raw
+                        <a href="./raw_images.php">Raw
                             images</a>
                         <br/>
                         <p>Upload your raw images.</p>
@@ -406,14 +406,14 @@ include("header.inc.php");
             <tr>
 
                 <td class="icon">
-                    <a href="./file_management.php?folder=src">
+                    <a href="./raw_images.php">
                         <img alt="Raw images" src="./images/rawdata.png"/>
                     </a>
                 </td>
 
                 <td class="text">
                     <div class="cell">
-                        <a href="./file_management.php?folder=src">Raw
+                        <a href="./raw_images.php">Raw
                             images</a>
                         <br/>
                         <p>Upload raw images to deconvolve.</p>
