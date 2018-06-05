@@ -65,8 +65,6 @@ if (count($_POST) > 0) {
         // Make sure to turn off the aberration correction since we use a measured PSF
         $_SESSION['setting']->parameter(
             'AberrationCorrectionNecessary')->setValue('0');
-        $_SESSION['setting']->parameter(
-            'PerformAberrationCorrection')->setValue('0');
         $saved = $_SESSION['setting']->save();
         $message = $_SESSION['setting']->message();
         if ($saved) {
@@ -120,6 +118,8 @@ include("header.inc.php");
 
     <h3><img alt="SelectPSF" src="./images/psf.png"
              width="40"/>&nbsp;Distilled PSF file selection</h3>
+
+    <p class="message_confidence_<?php echo $_SESSION['setting']->parameter("PointSpreadFunction")->confidenceLevel(); ?>"></p>
 
     <form method="post" action="select_psf.php" id="select">
 
@@ -184,7 +184,6 @@ include("header.inc.php");
         </div>
 
         <div><input name="OK" type="hidden"/></div>
-        <p class="message_confidence_Provide">&nbsp;</p>
 
         <div id="controls">
             <input type="button" value="" class="icon previous"

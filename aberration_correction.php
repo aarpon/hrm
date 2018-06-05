@@ -9,8 +9,6 @@ use hrm\param\AdvancedCorrectionOptions;
 use hrm\param\base\Parameter;
 use hrm\param\CoverslipRelativePosition;
 use hrm\param\ImageFileFormat;
-use hrm\param\PerformAberrationCorrection;
-use hrm\param\PSFGenerationDepth;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -105,6 +103,9 @@ include("header.inc.php");
 <span class="toolTip" id="ttSpanSave">
         Save and return to the image parameters selection page.
     </span>
+<span class="toolTip" id="ttCoverslip">
+        Use a sample raw image to find the coverslip position.
+    </span>
 
 <div id="nav">
     <div id="navleft">
@@ -127,107 +128,36 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h2>Spherical aberration correction</h2>
+    <h3>Spherical Aberration Correction</h3>
 
     <form method="post" action="" id="select">
+    
+       <?php
+        $parameterObjectiveType =
+            $_SESSION['setting']->parameter("ObjectiveType")->value();
+        $parameterSampleMedium =
+            $_SESSION['setting']->parameter("SampleMedium")->value();
+        if (!isset($parameterObjectiveType) || !isset($parameterSampleMedium)) {
+           $explain = "The selected combination of objective and sample medium " .
+                      "can lead to spherical aberration in the image.";
+        } else if ($parameterObjectiveType != $parameterSampleMedium) {
+           $explain = "The selected objective type and sample medium produce " .
+                      "spherical aberration in the image (refractive index " .
+                      "mismatch).";
+        }
+       ?>
+           <h4><?php echo $explain; ?></h4>
 
-        <!-- (1) PERFORM SPHERICAL ABERRATION CORRECTION? -->
-
-        <h4>Do you want to enable depth-specific PSF correction?
-            This will try to compensate for spherical aberrations introduced
-            by refractive index mismatches.
-        </h4>
-
-
-        <?php
-
-        /***************************************************************************
-         *
-         * PerformAberrationCorrection
-         ***************************************************************************/
-
-        /** @var PerformAberrationCorrection $parameterPerformAberrationCorrection */
-        $parameterPerformAberrationCorrection =
-            $_SESSION['setting']->parameter("PerformAberrationCorrection");
-
-        ?>
-
-        <fieldset class="setting <?php
-        echo $parameterPerformAberrationCorrection->confidenceLevel();
-        ?>"
-                  onmouseover="changeQuickHelp( 'enable' );">
-
-            <legend>
-                <a href="javascript:openWindow(
-                   'http://www.svi.nl/HuygensRemoteManagerHelpDepthDependentPsf')">
-                    <img src="images/help.png" alt="?"/>
-                </a>
-                enable depth-dependent PSF correction?
-            </legend>
-
-            <select id="PerformAberrationCorrection"
-                    title="Enable depth-dependent PSF correction?"
-                    name="PerformAberrationCorrection"
-                    onchange="switchCorrection();">
-
-                <?php
-
-                $possibleValues =
-                    $parameterPerformAberrationCorrection->possibleValues();
-                $selectedValue =
-                    $parameterPerformAberrationCorrection->value();
-                // The javascript expects option values to match their indexes:
-                sort($possibleValues);
-
-                foreach ($possibleValues as $possibleValue) {
-                    $translation =
-                        $parameterPerformAberrationCorrection->
-                        translatedValueFor($possibleValue);
-                    if ($possibleValue == "0" && $selectedValue == "") {
-                        $option = "selected=\"selected\"";
-                    } else if ($possibleValue == $selectedValue) {
-                        $option = "selected=\"selected\"";
-                    } else {
-                        $option = "";
-                    }
-
-                    ?>
-
-                    <option <?php echo $option ?>
-                        value="<?php echo $possibleValue ?>">
-                        <?php echo $translation ?>
-                    </option>
-
-                    <?php
-                }
-                ?>
-
-            </select>
-
-            <p class="message_confidence_<?php
-            echo $parameterPerformAberrationCorrection->confidenceLevel(); ?>">
-                &nbsp;
-            </p>
-
-        </fieldset>
+      <?php 
+        /*******************************************************************
+         * PerformAberrationCorrection (deprecated parameter, always on)
+         *******************************************************************/
+      ?>
 
         <!-- (2) SPECIFY SAMPLE ORIENTATION -->
 
-        <?php
 
-        $visibility = " style=\"display: none\"";
-        if ($parameterPerformAberrationCorrection->value() == 1)
-            $visibility = " style=\"display: block\"";
-
-        ?>
-
-        <div id="CoverslipRelativePositionDiv"<?php echo $visibility ?>>
-
-            <h4>For depth-dependent correction to work properly, you have to
-                specify
-                the relative position of the coverslip with respect to the first
-                acquired plane of the dataset.
-            </h4>
+        <div id="CoverslipRelativePositionDiv">
 
             <?php
 
@@ -251,11 +181,27 @@ include("header.inc.php");
                    'http://www.svi.nl/HuygensRemoteManagerHelpSpecifySampleOrientation')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    specify sample orientation
+                    Sample Orientation
                 </legend>
+                <h4>To remove the aberration please specify the relative
+                    position of the coverslip with respect to the first
+                    acquired plane of the dataset.
+                </h4>
+
+                <p class="message_confidence_<?php echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>"></p>
+
+                <p><a href="#"
+                      onmouseover="TagToTip('ttCoverslip' )"
+                      onmouseout="UnTip()"
+                      onclick="storeValuesAndRedirect(
+                            'coverslip_viewer.php');">
+                        <img src="images/preview.png" alt=""/>
+                        Visualize the image</a>
+                </p>
 
                 <select name="CoverslipRelativePosition"
-                        title="Specify sample orientation">
+                        title="Specify sample orientation"
+                        class="selection">
 
                     <?php
 
@@ -286,28 +232,16 @@ include("header.inc.php");
 
                 </select>
 
-                <p class="message_confidence_<?php
-                echo $parameterCoverslipRelativePosition->confidenceLevel(); ?>">
-                    &nbsp;
-                </p>
-
             </fieldset>
 
         </div> <!-- CoverslipRelativePositionDiv -->
 
         <!-- (3) CHOOSE ADVANCED CORRECTION MODE -->
 
+
+        <div id="AberrationCorrectionModeDiv">
+
         <?php
-
-        $visibility = " style=\"display: none\"";
-        if ($parameterPerformAberrationCorrection->value() == 1)
-            $visibility = " style=\"display: block\"";
-
-        ?>
-
-        <div id="AberrationCorrectionModeDiv"<?php echo $visibility ?>>
-
-            <?php
 
             /***************************************************************************
              *
@@ -320,14 +254,6 @@ include("header.inc.php");
 
             ?>
 
-            <h4>At this point the HRM has enough information to perform
-                depth-dependent
-                aberration correction. Please notice that in certain
-                circumstances,
-                the automatic correction scheme might generate artifacts in the
-                result.
-                If this is the case, please choose the advanced correction mode.
-            </h4>
 
             <fieldset class="setting <?php
             echo $parameterAberrationCorrectionMode->confidenceLevel(); ?>"
@@ -338,12 +264,18 @@ include("header.inc.php");
                'http://www.svi.nl/HuygensRemoteManagerHelpSaCorrectionMode')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    correction mode
+                    Correction Mode
                 </legend>
+                <h4>Please notice that in certain circumstances, the
+                    automatic correction might generate artifacts in the
+                    result. If this is the case, please choose the advanced
+                    correction mode.
+                </h4>
 
                 <select id="AberrationCorrectionMode"
                         title="Correction mode"
                         name="AberrationCorrectionMode"
+                        class="selection"
                         onchange="switchAdvancedCorrection();">
 
                     <?php
@@ -389,10 +321,9 @@ include("header.inc.php");
         <?php
 
         $visibility = " style=\"display: none\"";
-        if (($parameterPerformAberrationCorrection->value() == 1) &&
-            ($parameterAberrationCorrectionMode->value() == "advanced")
-        )
+        if ($parameterAberrationCorrectionMode->value() == "advanced") {
             $visibility = " style=\"display: block\"";
+        }
 
         ?>
 
@@ -411,8 +342,6 @@ include("header.inc.php");
 
             ?>
 
-            <h4>Here you can choose an advanced correction scheme.</h4>
-
             <fieldset class="setting <?php echo
             $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>"
                       onmouseover="changeQuickHelp( 'advanced' );">
@@ -422,12 +351,17 @@ include("header.inc.php");
            'http://www.svi.nl/HuygensRemoteManagerHelpAdvancedSaCorrection')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    advanced correction scheme
+                    Advanced Correction
                 </legend>
+               <h4>Most aberrations can be removed by using bricks or slice by
+                   slice. Slabs work better to restore images with extreme
+                   aberrations (e.g. very thick widefield data sets).
+               </h4>
 
                 <select id="AdvancedCorrectionOptions"
                         title="Advanced correction scheme"
                         name="AdvancedCorrectionOptions"
+                        class="selection"
                         onchange="switchAdvancedCorrectionScheme();">
 
                     <?php
@@ -456,42 +390,6 @@ include("header.inc.php");
                     ?>
 
                 </select>
-
-                <?php
-
-                $visibility = " style=\"display: none\"";
-                if (($parameterPerformAberrationCorrection->value() == 1) &&
-                    ($parameterAberrationCorrectionMode->value() == "advanced") &&
-                    ($parameterAdvancedCorrectionOptions->value() == "user")
-                )
-                    $visibility = " style=\"display: block\"";
-
-                /***************************************************************************
-                 *
-                 * PSFGenerationDepth
-                 ***************************************************************************/
-
-                /** @var PSFGenerationDepth $parameterPSFGenerationDepth */
-                $parameterPSFGenerationDepth =
-                    $_SESSION['setting']->parameter("PSFGenerationDepth");
-                $selectedValue = $parameterPSFGenerationDepth->value();
-
-                ?>
-
-                <div id="PSFGenerationDepthDiv"<?php echo $visibility ?> >
-                    <p>Depth for PSF generation (&micro;m):
-                        <input name="PSFGenerationDepth"
-                               title="Depth for PSF generation"
-                               type="text"
-                               style="width:100px;"
-                               value="<?php echo $selectedValue; ?>"/>
-                    </p>
-                </div>
-
-                <p class="message_confidence_<?php
-                echo $parameterAdvancedCorrectionOptions->confidenceLevel(); ?>">
-                    &nbsp;
-                </p>
 
             </fieldset>
 
@@ -529,8 +427,8 @@ include("header.inc.php");
                 the refractive index of the lens immersion medium and specimen
                 embedding medium and causes the PSF to become asymmetric at
                 depths of already a few &micro;m. SA is especially harmful for
-                widefield microscope deconvolution. The HRM can correct for SA
-                automatically, but in case of very large refractive index
+                widefield microscope deconvolution. HRM can correct the image
+                for SA automatically, but in case of very large refractive index
                 mismatches some artifacts can be generated. Advanced parameters
                 allow for fine-tuning of the correction.</p>
         </div>

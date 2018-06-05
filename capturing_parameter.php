@@ -96,8 +96,6 @@ if ($MICR == "STED" || $MICR == 'STED 3D') {
     // Make sure to turn off the correction
     $_SESSION['setting']->parameter(
         'AberrationCorrectionNecessary')->setValue('0');
-    $_SESSION['setting']->parameter(
-        'PerformAberrationCorrection')->setValue('0');
 } else {
     // Get the refractive indices: if they are not set, the floatval conversion
     // will change them into 0s
@@ -128,8 +126,6 @@ if ($MICR == "STED" || $MICR == 'STED 3D') {
             // Make sure to turn off the correction
             $_SESSION['setting']->parameter(
                 'AberrationCorrectionNecessary')->setValue('0');
-            $_SESSION['setting']->parameter(
-                'PerformAberrationCorrection')->setValue('0');
         } else {
             $pageToGo = 'aberration_correction.php';
             $_SESSION['setting']->parameter(
@@ -266,11 +262,9 @@ if ($saveToDB == true) {
 
 <div id="content">
 
-    <h2>Optical parameters / 2</h2>
+    <h3>Optical Parameters (2)</h3>
 
     <form method="post" action="capturing_parameter.php" id="select">
-
-        <h4>How were these images captured?</h4>
 
         <?php
 
@@ -293,27 +287,32 @@ if ($saveToDB == true) {
                        'http://www.svi.nl/SampleSize')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                voxel size
+                Voxel Size
             </legend>
+            <h4>How were these images captured?</h4>
 
-            <p class="message_small"><?php echo $NyquistMessage; ?></p>
+            <p class="message_confidence_<?php echo $parameterCCDCaptorSizeX->confidenceLevel(); ?>"></p>
+
             <?php
 
             $value = $parameterCCDCaptorSizeX->value();
             $textForCaptorSize = "pixel size (nm)";
 
             ?>
-            <ul>
-
-                <li>
+            <table id="table_nyquist">
+              <tr>
+                <td>
                     <?php echo $textForCaptorSize ?>:
+                </td>
+                <td>
                     <input id="CCDCaptorSizeX"
                            title="Pixel size"
                            name="CCDCaptorSizeX"
                            type="text"
                            size="5"
                            value="<?php echo $value ?>"/>
-                    <br/>
+                </td>
+                <td>
                     <?php
                     // The calculation of pixel size from CCD chip makes sense
                     // only for widefield microscopes
@@ -322,22 +321,25 @@ if ($saveToDB == true) {
                     ) {
                         ?>
 
-                        <a href="#"
-                           onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
-                           onmouseout="UnTip()"
-                           onclick="storeValuesAndRedirect( 'calculate_pixel_size.php');">
-                            <img src="images/calc_small.png" alt=""/>
-                            Calculate from CCD pixel size
-                        </a>
+                        <p>
+                            <a href="#"
+                               onmouseover="TagToTip('ttSpanPixelSizeFromCCD' )"
+                               onmouseout="UnTip()"
+                               onclick="storeValuesAndRedirect( 'calculate_pixel_size.php');">
+                                <img src="images/calc_small.png" alt=""/>
+                                Calculate from CCD pixel size
+                            </a>
+                        </p>
 
                         <?php
                     }
                     ?>
-                </li>
-
-                <li>
+                    </td>
+                </tr>
+                <tr>
+                <td>
                     z-step (nm):
-
+                </td>
                     <?php
 
                     /***************************************************************************
@@ -349,19 +351,24 @@ if ($saveToDB == true) {
                     $parameterZStepSize = $_SESSION['setting']->parameter("ZStepSize");
 
                     ?>
+                <td>
                     <input id="ZStepSize"
                            title="Z step size"
                            name="ZStepSize"
                            type="text"
                            size="5"
                            value="<?php echo $parameterZStepSize->value() ?>"/>
-                        <span class="message_small">&nbsp;
-                            Set to <b>Nyquist rate in Z</b> for 2D datasets.
-                        </span>
-                </li>
+                </td>
+                <td>
+                    <span class="message_small">
+                        Set to <b>Nyquist rate in Z</b> for 2D datasets.
+                    </span>
+                </td>
+              </tr>
+            </table>
+            <p class="message_small"><?php echo $NyquistMessage; ?></p>
 
-            </ul>
-
+            <p></p>
             <a href="#"
                onmouseover="TagToTip('ttSpanNyquist')"
                onmouseout="UnTip()"
@@ -372,13 +379,6 @@ if ($saveToDB == true) {
                 &nbsp;<img src="images/web.png" alt="external link"/>
             </a>
 
-            <?php
-            $cl = "message_confidence_" .
-                $parameterCCDCaptorSizeX->confidenceLevel();
-            ?>
-            <p class="<?php echo $cl; ?>">
-                &nbsp;
-            </p>
         </fieldset>
 
         <?php
@@ -400,8 +400,9 @@ if ($saveToDB == true) {
                     'http://www.svi.nl/TimeSeries')">
                     <img src="images/help.png" alt="?"/>
                 </a>
-                time interval
+                Time Interval
             </legend>
+            <p class="message_confidence_<?php echo $parameterTimeInterval->confidenceLevel(); ?>"></p>
             <ul>
                 <li>Time interval (s):
                     <input id="TimeInterval"
@@ -415,14 +416,6 @@ if ($saveToDB == true) {
                 </span>
                 </li>
             </ul>
-
-            <?php
-            $cl = "message_confidence_" .
-                $parameterTimeInterval->confidenceLevel();
-            ?>
-            <p class="<?php echo $cl; ?>">
-                &nbsp;
-            </p>
 
         </fieldset>
 
@@ -448,15 +441,18 @@ if ($saveToDB == true) {
                         'http://www.svi.nl/PinholeRadius')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    pinhole radius
+                    Backprojected Pinhole Radius
                 </legend>
+
+                <p class="message_confidence_<?php echo $parameterPinholeSize->confidenceLevel(); ?>"></p>
+
                 <ul>
                     <li>backprojected pinhole radius (nm):</li>
                 </ul>
 
                 <?php
                 if ($_SESSION['setting']->numberOfChannels() > 1) {
-                    ?>  <p>&nbsp;</p> <?php
+                    ?>  <p></p> <?php
                 }
                 ?>
                 <div class="multichannel">
@@ -493,7 +489,7 @@ if ($saveToDB == true) {
                     }
 
                     ?></div>
-                <p>&nbsp;</p>
+                <p></p>
 
                 <?php
                 /** @var NumericalAperture $parameterNA */
@@ -508,14 +504,6 @@ if ($saveToDB == true) {
                     <img src="images/calc_small.png" alt=""/>
                     Backprojected pinhole calculator
                 </a>
-
-                <?php
-                $cl = "message_confidence_" .
-                    $parameterPinholeSize->confidenceLevel();
-                ?>
-                <p class="<?php echo $cl; ?>">
-                    &nbsp;
-                </p>
 
             </fieldset>
             <?php
@@ -545,10 +533,13 @@ if ($saveToDB == true) {
                         'http://www.svi.nl/PinholeSpacing')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    backprojected pinhole spacing
+                    Backprojected Pinhole Spacing
                 </legend>
+
+                <p class="message_confidence_<?php echo $parameterPinholeSpacing->confidenceLevel(); ?>"></p>
+
                 <ul>
-                    <li>pinhole spacing (micron):
+                    <li>backprojected pinhole spacing (micron):
                         <input id="PinholeSpacing"
                                title="Pinhole spacing"
                                name="PinholeSpacing"
@@ -557,7 +548,7 @@ if ($saveToDB == true) {
                                value="<?php echo $parameterPinholeSpacing->value() ?>"/>
                     </li>
                 </ul>
-                <p>&nbsp;</p>
+                <p></p>
 
                 <a href="#"
                    onmouseover="TagToTip('ttSpanPinholeSpacing' )"
@@ -567,14 +558,6 @@ if ($saveToDB == true) {
                     <img src="images/calc_small.png" alt=""/>
                     Backprojected pinhole calculator
                 </a>
-
-                <?php
-                $cl = "message_confidence_" .
-                    $parameterPinholeSpacing->confidenceLevel();
-                ?>
-                <p class="<?php echo $cl; ?>">
-                    &nbsp;
-                </p>
 
             </fieldset>
             <?php

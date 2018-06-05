@@ -1625,7 +1625,7 @@ class DatabaseConnection
                 $result = False;
                 Log::warning("$query; returned '$answer'");
                 Util::notifyRuntimeError("hrmd stopped",
-                    "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
+                    "$query; returned '$answer'\n\nThe HRM queue manager will stop.");
             }
         } else {
             $query = "select switch from queuemanager";
@@ -1635,7 +1635,7 @@ class DatabaseConnection
                 $result = False;
                 Log::warning("$query; returned '$answer'");
                 Util::notifyRuntimeError("hrmd stopped",
-                    "$query; returned '$answer'\n\nThe HRM queue manage will stop.");
+                    "$query; returned '$answer'\n\nThe HRM queue manager will stop.");
             }
         }
 
@@ -1993,8 +1993,7 @@ class DatabaseConnection
                 }
 
                 // The wavelength and voxel size parameters have a common
-                // confidence in the HRM but two independent confidences
-                // in hucore
+                // confidence in HRM but two independent confidences in hucore
                 if (($parameterName == "ExcitationWavelength") ||
                     ($parameterName == "EmissionWavelength")
                 ) {
@@ -2075,6 +2074,18 @@ class DatabaseConnection
             return "no server information";
         }
         return substr($server, 7);
+    }
+
+    /**
+     * Gets the (active) licenses store in the hucore_license table.
+     * @return array of licenses.
+     */
+    public function getActiveLicenses()
+    {
+        $query = "SELECT feature FROM hucore_license;";
+        $licenses = $this->query($query);
+        $licenses = $this->flatten($licenses);
+        return $licenses;
     }
 
     /**
@@ -2264,9 +2275,8 @@ class DatabaseConnection
 
         return intval($result);
     }
-    
 
-    public function getAllServers($server)
+    public function getAllServers()
     {
         $query = "SELECT * FROM server;";
 

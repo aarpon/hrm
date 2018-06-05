@@ -59,7 +59,7 @@ function showFileBrowser()
                        SNR estimation algorithm
                  </legend>
 
-                 <select name=\"SNREstimationAlgorithm\" >
+                 <select name=\"SNREstimationAlgorithm\" class=\"selection\" >
                  ";
 
     $algorithm = "";

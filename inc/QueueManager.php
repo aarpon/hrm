@@ -795,7 +795,7 @@ class QueueManager
 
         $mailContent .= "\n\n- USER PARAMETERS -----------------------------";
         $mailContent .= "------\n\n";
-        $mailContent .= "These are the parameters you set in the HRM:\n\n";
+        $mailContent .= "These are the parameters you set in HRM:\n\n";
         $mailContent .= $this->parameterText($job);
 
         $mailContent .= "\n\n-TEMPLATE -------------------------------------";

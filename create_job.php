@@ -175,6 +175,7 @@ include("header.inc.php");
             ?>
             <select name="OutputFileFormat"
                     id="OutputFileFormat"
+                    class="selection"
                     title="Output file format"
                     size="1">
                 <?php
@@ -262,6 +263,7 @@ include("header.inc.php");
         </legend>
             <textarea name="parameter_settings_report"
                       title="Summary"
+                      class="selection"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -284,7 +286,8 @@ echo $_SESSION['setting']->displayString();
             </a>: <?php echo $_SESSION['task_setting']->name() ?>
         </legend>
             <textarea name="task_settings_report"
-                      title="Summary"
+                      title="Summary"                      
+                      class="selection"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -292,7 +295,8 @@ echo $_SESSION['setting']->displayString();
 
 $numberOfChannels = $_SESSION['setting']->numberOfChannels();
 $micrType = $_SESSION['setting']->microscopeType();
-echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType);
+$timeInterval = $_SESSION['setting']->sampleSizeT();
+echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType, $timeInterval);
 
 ?>
             </textarea>
@@ -316,6 +320,7 @@ echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType);
         </legend>
             <textarea name="analysis_settings_report"
                       title="Summary"
+                      class="selection"
                       cols="50"
                       rows="5"
                       readonly="readonly">
@@ -341,6 +346,7 @@ echo $_SESSION['analysis_setting']->displayString();
         </legend>
             <textarea name="task_settings_report"
                       title="Summary"
+                      class="selection"
                       cols="50"
                       rows="3"
                       readonly="readonly">
@@ -398,11 +404,15 @@ foreach ($files as $file) {
         <p>As a last step, please choose the output file format for your
             restored images.</p>
 
+        <p>Please notice that some output file formats (specifically all TIFF options)
+            are disabled if you set a time interval larger than 0 or you enabled
+            the "When applicable, load file series automatically" option in Step 1 - Select images.</p>
+
         <p>Also, use this as summary to check your parameters. If you spot
             a mistake, use the links on the left to go back and fix it.</p>
 
         <p>Once you are okay with the parameters, press the
-            <img src="images/launch_start.png" alt="Create job" width="30"
+            <img src="images/launch_start.png" alt="Create job" width="22"
                  height="22"/> <b>launch job</b> button to add the job to the
             queue and go back to
             the home page.</p>

@@ -129,7 +129,10 @@ include("header.inc.php");
 
             <p>Please select the authentication mode for user '<?php echo($edit_user->name()); ?>':</p>
 
-            <select title="Authentication mode" name="authMode" id="authMode">
+            <select title="Authentication mode"
+                    name="authMode"
+                    id="authMode"
+                    class="selection">
 
                 <?php
 

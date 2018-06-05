@@ -159,7 +159,7 @@ if (isset($_POST['add'])) {
         -->
     </script>
     <style type="text/css">
-        @import "css/default.css";
+        @import "css/default.css?v=3.5";
     </style>
 </head>
 
@@ -212,7 +212,10 @@ if (isset($_POST['add'])) {
 
                     <br/>
 
-                    <select title="Authentication mode" name="authMode" id="authMode">
+                    <select name="authMode"
+                            id="authMode"
+                            title="Authentication mode"
+                            class="selection">
 
                         <?php
 

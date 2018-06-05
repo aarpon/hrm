@@ -58,7 +58,7 @@ class SignalNoiseRatio extends NumericalArrayParameter
 
     /**
      * Sets the deconvolution algorithm.
-     * @param string $algorithm Sets the algorithm, either 'cmle' or 'qmle'.
+     * @param string $algorithm Sets the algorithm, 'cmle'/'qmle'/'gmle'.
      */
     public function setAlgorithm($algorithm)
     {
@@ -66,15 +66,14 @@ class SignalNoiseRatio extends NumericalArrayParameter
     }
 
     /**
-     * Returns the string representation of the Parameter for the cmle or qmle
+     * Returns the string representation of the Parameter for the cmle/qmle/gmle
      * algorithm
      *
      * The algorithm is stored internally in the Parameter and is either 'cmle'
      * (default, set when the Parameter is instantiated),or 'qmle'.
      *
      * @param int $numberOfChannels Number of channels (default 0)
-     * @return string String representation of the Parameter for the cmle or
-     * qmle algorithm.
+     * @return string String representation of the Parameter for the cmle/qmle/gmle algorithm.
      */
     public function displayString($numberOfChannels = 0)
     {
@@ -90,6 +89,7 @@ class SignalNoiseRatio extends NumericalArrayParameter
                 $result = $this->formattedName();
                 return $result . $value . "\n";
                 break;
+            case "gmle":
             case "cmle" :
             default:
                 return (parent::displayString($numberOfChannels));

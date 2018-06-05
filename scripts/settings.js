@@ -58,14 +58,20 @@ function seek(channel) {
 
 window.onunload = function() {if (snitch != null) snitch.close()};
 
-function switchSnrMode() {
-    if ( changeVisibility('cmle-snr') != "none" ) {
-        window.restorationMode = 'cmle';
+function switchSnrMode(algorithm) {
+    if (algorithm == 'cmle') {
+        $('#cmle-snr').show();
+        $('#gmle-snr').hide();
+        $('#qmle-snr').hide();
+    } else if (algorithm == 'gmle') {
+        $('#cmle-snr').hide();
+        $('#gmle-snr').show();
+        $('#qmle-snr').hide();
+    } else if (algorithm == 'qmle') {
+        $('#cmle-snr').hide();
+        $('#gmle-snr').hide();
+        $('#qmle-snr').show();
     }
-    if ( changeVisibility('qmle-snr') != "none") {
-        window.restorationMode = 'qmle';
-    }
-    //changeVisibility('cmle-it');
 }
 
 // Requires jQuery
@@ -83,19 +89,16 @@ function switchColocMode() {
     }
 }
 
-function switchCorrection() {
-    var element = document.getElementById('PerformAberrationCorrection');
-    if (element.selectedIndex == 1) {
-        show('CoverslipRelativePositionDiv');
-        show('AberrationCorrectionModeDiv');
-        switchAdvancedCorrection();
+function switchTStabilizationMode() {
+    if ($('#TStabilization').val() == 1) {
+        $('#TStabilizationMethodDiv').show();
+        $('#TStabilizationRotationDiv').show();
+        $('#TStabilizationCroppingDiv').show();
+    } else {
+        $('#TStabilizationMethodDiv').hide();
+        $('#TStabilizationRotationDiv').hide();
+        $('#TStabilizationCroppingDiv').hide();
     }
-    else {
-        hide('CoverslipRelativePositionDiv');
-        hide('AberrationCorrectionModeDiv');
-        hide('AdvancedCorrectionOptionsDiv');
-    }
-    switchAdvancedCorrectionScheme()
 }
 
 function switchAdvancedCorrection() {
@@ -267,10 +270,10 @@ function hu2template(type) {
               + '</div>'
               + '<div id="buttonUpload">'
               + '<input name="huTotemplate" type="submit" value="" '
-              + 'class="icon upload" '
+              + 'class="icon apply" '
               + 'onmouseover="Tip(\'Upload selected files\')" '
               + 'onmouseout="UnTip()"/>'
-              + '<input type="button" class="icon abort" onclick="UnTip(); '
+              + '<input type="button" class="icon cancel" onclick="UnTip(); '
               + 'cancelFileSelection()" '
               + 'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/></div>'
               + ' </form>'
@@ -293,7 +296,7 @@ function image2template(selectedFiles) {
               + '<input name="submit" type="submit" value="" '
               + 'class="icon apply" onclick="UnTip(); '
               + 'onmouseover="Tip(\'Submit\')" onmouseout="UnTip()"/>'
-              + '<input type="button" class="icon abort" onclick="UnTip();'
+              + '<input type="button" class="icon cancel" onclick="UnTip();'
               + 'cancelFileSelection()" '
               + 'onmouseover="Tip(\'Cancel\')" onmouseout="UnTip()"/>'
               + '</div>');
@@ -304,7 +307,7 @@ function image2template(selectedFiles) {
 function createImageSelection(fileList) {
 
     html = '<div><select id="fileselection" name="fileselection" width="253" '
-        + 'style="width: 253px"">'
+        + 'class="selection">'
         + '<option>Choose a file</option>';
 
     for (i = 0; i < fileList.length; i++) {

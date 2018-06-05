@@ -23,13 +23,13 @@ $reportparams = array("micro", "d", "na", "wl", "mo", "msys", "c");
 // Developers adding a new microscope model should see the usage of these
 // parameters at
 // https://svi.nl/index.php?edit=ReportOtherMicroscope
-// It is not easy because originally this was not to be included in the HRM but
+// It is not easy because originally this was not to be included in HRM but
 // online on the SVI server. Popular demand convinced us to include it embedded
-// in the HRM but without much time to make this more programmer-friendly.
+// in HRM but without much time to make this more programmer-friendly.
 // Still it is easier than it looks, so please just read the linked
 // instructions.
 // Or even better, just report the new model to SVI and we will include online
-// and in the HRM, for the benefit of all users:
+// and in HRM, for the benefit of all users:
 // https://svi.nl/ReportOtherMicroscope
 
 $microscopes = array(
@@ -225,7 +225,7 @@ $script = $_SERVER['PHP_SELF'];
 foreach ($microscopes as $m => $data) {
     $extra = "";
     // If na is not defined in the model parameters take the one reported
-    // from the HRM.
+    // from HRM.
     if (!strstr($data[0], "na=") && isset($na) && $na != "") {
         $extra = "&na=$na";
     }
@@ -275,7 +275,7 @@ echo "\n</div> <!-- content -->\n";
         $message = "";
 
         if ($error) print $error . "<br><br>";
-        print "\n<h2>" . str_replace("_", " ", $micro) . "</h2>";
+        print "\n<h3>" . str_replace("_", " ", $micro) . "</h3>";
         print "\n<form action=\"calculate_bp_pinhole.php\" method=\"post\"" .
             " id=\"select\">";
         print "\n<fieldset class=\"setting\">";
@@ -482,7 +482,7 @@ echo "\n</div> <!-- content -->\n";
         }
 
         if ($error) {
-            $out .= "<h2>Error!</h2>\n" . $error;
+            $out .= "<h3>Error!</h3>\n" . $error;
         } else {
             $result = round($phr / $M, 2);
             $out .= "<h4>";

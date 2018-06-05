@@ -179,8 +179,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3><img alt="Analysis" src="./images/registration_title.png" width="40"/>
-        &nbsp;&nbsp;Registration</h3>
+    <h3>Registration</h3>
 
     <?php
 
@@ -241,6 +240,7 @@ include("header.inc.php");
                           placeholder="Request message (optional)..."
                           id="note"
                           rows="3"
+                          class="selection"
                           cols="30"><?php if ($clean["note"] != "") { echo($clean["note"]); } ?>
                 </textarea>
                 </div>

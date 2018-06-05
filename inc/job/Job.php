@@ -158,15 +158,17 @@ class Job
             'spimDir'          => 'SPIM Direction (degrees)'
         );
 
-        $this->restParam = array('algorithm'     => 'Deconvolution algorithm',
-                                 'iterations'    => 'Number of iterations',
-                                 'quality'       => 'Quality stop criterion',
-                                 'format'        => 'Output file format',
-                                 'absolute'      => 'Background absolute value',
-                                 'estimation'    => 'Background estimation',
-                                 'ratio'         => 'Signal/Noise ratio',
-                                 'autocrop'      => 'Autocrop',
-                                 'stabilization' => 'Z Stabilization');
+        $this->restParam = array(
+            'algorithm'        => 'Deconvolution algorithm',
+            'iterations'       => 'Number of iterations',
+            'quality'          => 'Quality stop criterion',
+            'format'           => 'Output file format',
+            'absolute'         => 'Background absolute value',
+            'estimation'       => 'Background estimation',
+            'ratio'            => 'Signal/Noise ratio',
+            'autocrop'         => 'Autocrop',
+            'z stabilization'  => 'Z Stabilization',
+            't stabilization'  => 'T Stabilization');
     }
 
     /**
@@ -969,7 +971,7 @@ class Job
 
         /* Insert a title and an explanation. */
         $title = "<b><u>COLOCALIZATION RESULTS</u></b><br /><br /><b>";
-        $text = "<a href='http://www.svi.nl/ColocalizationCoefficientsInBrief'";
+        $text = "<a href='http://www.svi.nl/ColocalizationCoefficientsInBrief' ";
         $text .= "target='_blank'>Colocalization analysis</a></b> is used ";
         $text .= "to characterize the degree of overlap between any two ";
         $text .= "channels of an image.";

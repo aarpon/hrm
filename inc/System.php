@@ -34,45 +34,45 @@ class System
      * Current HRM minor version. This value has to be set by the developers!
      * @var int
      */
-    const HRM_VERSION_MINOR = 4;
+    const HRM_VERSION_MINOR = 5;
 
     /**
      * Current HRM maintenance (patch) version. This value has to be set by the
      * developers!
      * @var int
      */
-    const HRM_VERSION_MAINTENANCE = 1;
+    const HRM_VERSION_MAINTENANCE = 0;
 
     /**
      * Database revision needed by current HRM version. This value has to be
      * set by the developers!
      * @var int
      */
-    const DB_LAST_REVISION = 15;
+    const DB_LAST_REVISION = 16;
 
     /**
-     * Minimum HuCore (major) version number to be compatible with the HRM.
+     * Minimum HuCore (major) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
     const MIN_HUCORE_VERSION_MAJOR = 14;
 
     /**
-     * Minimum HuCore (minor) version number to be compatible with the HRM.
+     * Minimum HuCore (minor) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
     const MIN_HUCORE_VERSION_MINOR = 6;
 
     /**
-     * Minimum HuCore (maintenance) version number to be compatible with the HRM.
+     * Minimum HuCore (maintenance) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
     const MIN_HUCORE_VERSION_MAINTENANCE = 1;
 
     /**
-     * Minimum HuCore (patch) version number to be compatible with the HRM.
+     * Minimum HuCore (patch) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
@@ -170,7 +170,7 @@ class System
     }
 
     /**
-     * Returns the DB revision expected by this version of the HRM.
+     * Returns the DB revision expected by this version of HRM.
      * @return int DB_LAST_REVISION expected DB revision (e.g. 14).
      */
     public static function getDBLastRevision()
@@ -249,7 +249,7 @@ class System
 
     /**
      * Checks whether the HuCore version is recent enough.
-     * @return bool True if HuCore is recent enough to run the HRM, false
+     * @return bool True if HuCore is recent enough to run HRM, false
      * otherwise.
      */
     public static function isMinHuCoreVersion()
@@ -301,6 +301,75 @@ class System
         }
         $version = self::parseHucoreVersionIntegerToString($version);
         return $version;
+    }
+
+    /**
+     * Return a dictionary (array) with all known licenses.
+     *
+     * The key is the hucore license name, the value is the human-friendly module name.
+     *
+     * Notice that the option 'maxGBIndexed-{value}' is omitted.
+     *
+     * @return array with all known licenses.
+     */
+    public static function getAllLicenses()
+    {
+        $allLicenses = array(
+            "microscopes" => array(
+                "confocal" => "Confocal",
+                "multi-photon" => "Multi-photon",
+                "nipkow-disk" => "Spinning-disk",
+                "spim" => "SPIM",
+                "sted" => "STED",
+                "sted3D" => "STED 3D",
+                "widefield" => "Widefield"
+            ),
+            "file_formats" => array(
+                "all-formats-reader" => "Additional file readers"
+            ),
+            "computing" => array(
+                "gpuMaxCores-1024" => "GPU max cores: 1024",
+                "gpuMaxCores-3072" => "GPU max cores: 3072",
+                "gpuMaxCores-8192" => "GPU max cores: 8192",
+                "gpuMaxMemory-2048" => "GPU max memory: 2GB",
+                "gpuMaxMemory-4096" => "GPU max memory: 4GB",
+                "gpuMaxMemory-24576" => "GPU max memory: 24GB",
+                "server=desktop" => "Server type: desktop",
+                "server=small" => "Server type: small",
+                "server=medium" => "Server type: medium",
+                "server=large" => "Server type: large",
+                "server=extreme" => "Server type: extreme"
+            ),
+            "options" => array(
+                "analysis" => "Object analyzer",
+                "coloc" => "Colocalization analysis",
+                "chromaticS" => "Chromatic aberration correction",
+                "floating-license" => "Floating license",
+                "fusion" => "Light-sheet fusion",
+                "movie" => "Movie",
+                "psf" => "PSF distilller",
+                "stabilizer" => "Object stabilizer",
+                "stitcher" => "Stitcher",
+                "time" => "Time",
+                "tracker" => "Tracker",
+                "unmixing" => "Unmixing",
+                "visu" => "Visualization"
+            )
+        );
+
+        return $allLicenses;
+    }
+
+    /**
+     * Return an array with the active licenses (hucore names) on this system.
+     *
+     * @return array with all active licenses.
+     */
+    public static function getActiveLicenses()
+    {
+        $db = new DatabaseConnection();
+        $activeLicenses = $db->getActiveLicenses();
+        return $activeLicenses;
     }
 
     /**
@@ -416,7 +485,7 @@ class System
 
     /**
      * Returns the database type as reported by ADOdb. To be compatible
-     * with the HRM it should be one of 'mysql' or 'postgresql'.
+     * with HRM it should be one of 'mysql' or 'postgresql'.
      * @return string Database type (e.g. postgresql).
      */
     public static function getDatabaseType()

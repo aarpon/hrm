@@ -61,11 +61,10 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
  *
  **************************************************************************** */
 
-
 if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
-
-    if ($_SESSION['task_setting']->numberOfChannels() > 1) {
-        header("Location: " . "chromatic_aberration.php");
+    if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])
+    || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+        header("Location: " . "post_processing.php");
         exit();
     } else {
 
@@ -105,23 +104,9 @@ include("header.inc.php");
         selection page. All changes will be lost!
     </span>
 
-<?php
-if ($_SESSION['task_setting']->numberOfChannels() == 1) {
-    ?>
-    <span class="toolTip" id="ttSpanSave">
-    Save and return to the processing parameters selection page.
-    </span>
-
-    <?php
-} else {
-
-    ?>
     <span class="toolTip" id="ttSpanForward">
         Continue to next page.
     </span>
-    <?php
-}
-?>
 
 <span class="toolTip" id="ttEstimateSnr">
         Use a sample raw image to find a SNR estimate for each channel.
@@ -156,7 +141,7 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
 
 <div id="content">
 
-    <h2>Restoration - Deconvolution</h2>
+    <h3>Restoration - Deconvolution</h3>
 
     <form method="post" action="" id="select">
 
@@ -170,12 +155,13 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
                 <a href="javascript:openWindow(
                        'https://svi.nl/RestorationMethod')">
                     <img src="images/help.png" alt="?"/></a>
-                deconvolution algorithm
+                Deconvolution Algorithm
             </legend>
 
             <select name="DeconvolutionAlgorithm"
                     title="Deconvolution algorithm"
-                    onchange="switchSnrMode();">
+                    class="selection"   
+                    onchange="switchSnrMode(this.value);">
 
                 <?php
 
@@ -214,7 +200,7 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
                 <a href="javascript:openWindow(
                     'http://www.svi.nl/SignalToNoiseRatio')">
                     <img src="images/help.png" alt="?"/></a>
-                signal/noise ratio
+                Signal/Noise Ratio
             </legend>
 
             <div id="snr"
@@ -295,7 +281,96 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
                     </p>
 
                 </div>
+
+
+
+
+
+
+
+
+
+
+
+
                 <?php
+
+                $visibility = " style=\"display: none\"";
+                if ($selectedMode == "gmle") {
+                    $visibility = " style=\"display: block\"";
+                }
+
+                ?>
+                <div id="gmle-snr"
+                     class="multichannel"<?php echo $visibility ?>>
+                    <ul>
+                        <li>SNR:
+                            <div class="multichannel">
+                                <?php
+
+                                /*
+                                                           SIGNAL-TO-NOISE RATIO
+                                */
+
+                                $signalNoiseRatioParam =
+                                    $_SESSION['task_setting']->parameter("SignalNoiseRatio");
+                                $signalNoiseRatioValue = $signalNoiseRatioParam->value();
+
+
+                                for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+
+                                    $value = "";
+                                    if ($selectedMode == "gmle")
+                                        $value = $signalNoiseRatioValue[$i];
+
+                                    /* Add a line break after a number of entries. */
+                                    if ($_SESSION['task_setting']->numberOfChannels() == 4) {
+                                        if ($i == 2) {
+                                            echo "<br />";
+                                        }
+                                    } else {
+                                        if ($i == 3) {
+                                            echo "<br />";
+                                        }
+                                    }
+
+
+                                    ?>
+                                    <span class="nowrap">Ch<?php echo $i; ?>:
+        &nbsp;&nbsp;&nbsp;
+                              <span class="multichannel">
+                                  <input
+                                      id="SignalNoiseRatioGMLE<?php echo $i; ?>"
+                                      name="SignalNoiseRatioGMLE<?php echo $i; ?>"
+                                      title="Signal-to-noise ratio (GMLE)"
+                                      type="text"
+                                      size="8"
+                                      value="<?php echo $value; ?>"
+                                      class="multichannelinput"/>
+                                        </span>&nbsp;
+                                    </span>
+                                    <?php
+
+                                }
+
+                                ?>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <p><a href="#"
+                          onmouseover="TagToTip('ttEstimateSnr' )"
+                          onmouseout="UnTip()"
+                          onclick="storeValuesAndRedirect(
+                            'estimate_snr_from_image.php');">
+                            <img src="images/calc_small.png" alt=""/>
+                            Estimate SNR from image</a>
+                    </p>
+
+                </div>
+
+
+              <?php
 
                 $visibility = " style=\"display: none\"";
                 if ($selectedMode == "qmle") {
@@ -317,6 +392,7 @@ if ($_SESSION['task_setting']->numberOfChannels() == 1) {
                             Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
                             <select class="snrselect"
                                     title="Signal-to-noise ration (QMLE)"
+                                    class="selection"
                                     name="SignalNoiseRatioQMLE<?php echo $i ?>">
 <?php
 
@@ -375,12 +451,13 @@ for ($j = 1; $j <= 4; $j++) {
                         'http://www.svi.nl/HelpCropper')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    crop surrounding background areas?
+                    Cropping Mode
                 </legend>
 
                 <select id="Autocrop"
                         title="Autocrop"
-                        name="Autocrop">
+                        name="Autocrop"
+                        class="selection">
                     <?php
 
                     /*
@@ -418,7 +495,7 @@ for ($j = 1; $j <= 4; $j++) {
                 <a href="javascript:openWindow(
                     'http://www.svi.nl/BackgroundMode')">
                     <img src="images/help.png" alt="?"/></a>
-                background mode
+                Background Mode
             </legend>
 
             <div id="background">
@@ -524,14 +601,14 @@ for ($j = 1; $j <= 4; $j++) {
                     }
 
                     /*!
-                        \todo	The visibility toggle should be restored but but only the
+                        \todo	The visibility toggle should be restored but only the
                                 quality change should be hidden for qmle, not the whole stopping
                                 criteria div!
                                 Also restore the changeVisibility("cmle-it") call in
                                 scripts/settings.js.
                      */
                     //$visibility = " style=\"display: none\"";
-                    //if ($selectedMode == "cmle") {
+                    //if ($selectedMode == "cmle" || $selectedMode =="gmle") {
                     $visibility = " style=\"display: block\"";
                     //}
 
@@ -550,7 +627,7 @@ for ($j = 1; $j <= 4; $j++) {
                       onmouseover="changeQuickHelp('stopcrit');">
 
                 <legend>
-                    stopping criteria
+                    Stopping Criteria
                 </legend>
 
                 <div id="criteria">
@@ -606,7 +683,7 @@ for ($j = 1; $j <= 4; $j++) {
         <div id="ZStabilization">
             <?php
             if ($_SESSION['user']->isAdmin()
-            || $_SESSION['task_setting']->isEligibleForStabilization($_SESSION['setting'])) {
+            || $_SESSION['task_setting']->isEligibleForZStabilization($_SESSION['setting'])) {
 
             ?>
 
@@ -618,7 +695,7 @@ for ($j = 1; $j <= 4; $j++) {
                         'http://www.svi.nl/ObjectStabilizer')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    stabilize data sets in the Z direction?
+                    Stabilize data sets in the Z direction?
                 </legend>
 
                 <p>STED images often need to be stabilized in the Z direction
@@ -631,7 +708,8 @@ for ($j = 1; $j <= 4; $j++) {
 
                 <select id="ZStabilization"
                         title="Z stabilization"
-                        name="ZStabilization">
+                        name="ZStabilization"
+                        class="selection">
                     <?php
 
                     /*
@@ -683,8 +761,16 @@ for ($j = 1; $j <= 4; $j++) {
                    onclick="deleteValuesAndRedirect('select_task_settings.php' );"/>
 
             <?php
-            /* Don't proceed to the chromatic aberration page. */
-            if ($_SESSION['task_setting']->numberOfChannels() == 1) {
+            /* Don't proceed to the post processing page. */
+            if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])
+            || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+                ?>
+                <input type="submit" value="" class="icon next"
+                       onmouseover="TagToTip('ttSpanForward' )"
+                       onmouseout="UnTip()"
+                       onclick="process()"/>
+                <?php
+            } else {
                 ?>
                 <input type="submit" value=""
                        class="icon save"
@@ -693,16 +779,8 @@ for ($j = 1; $j <= 4; $j++) {
                        onclick="process()"/>
 
                 <?php
-            } else {
-                ?>
-                <input type="submit" value="" class="icon next"
-                       onmouseover="TagToTip('ttSpanForward' )"
-                       onmouseout="UnTip()"
-                       onclick="process()"/>
-                <?php
             }
             ?>
-
 
         </div>
 

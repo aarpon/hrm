@@ -36,5 +36,5 @@ Example:
 
 ```bash
 $ cd $HRM_ROOT
-$ ./setup/package_release.sh /tmp ~/hrm_3.4.0.zip 
+$ ./setup/package_release.sh /tmp ~/hrm_3.5.0.zip
 ```

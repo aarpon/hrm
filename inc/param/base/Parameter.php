@@ -16,7 +16,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 
 /**
- * (Abstract) base class for all Parameter types in the HRM.
+ * (Abstract) base class for all Parameter types in HRM.
  */
 abstract class Parameter {
 

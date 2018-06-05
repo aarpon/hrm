@@ -452,14 +452,15 @@ include("header_fb.inc.php");
             }
         ?>
 
-        <p class="message_small"><?php echo $explanation_text; ?></p>
-
       <fieldset >
 
         <legend><?php echo $form_title; ?></legend>
 
+          <p class="message_small"><?php echo $explanation_text; ?></p>
+
         <div id="userfiles" onmouseover="showPreview()">
           <select name="userfiles[]" id="fileSelection"
+                  class="selection"
                   onchange="imageAction(this)"
                   onkeyup="this.blur();this.focus();"
                   size="<?php echo $size;?>" <?php echo $multiple.$flag ?>>
@@ -515,8 +516,7 @@ include("header_fb.inc.php");
             var totalAllowedSizeOfSingleFile = <?php echo(UtilV2::getMaxUploadFileSize()); ?>;
 
             $("#upMsgError").empty();
-            $("#upMsg").empty().text("Selected " + totalSizeOfSelectedFiles + " of " +
-                totalAllowedSizeOfSelectedFiles + " bytes.");
+            $("#upMsg").empty();
 
             $('#fine-uploader-manual-trigger').fineUploader({
                 template: 'qq-template-manual-trigger',
