@@ -81,7 +81,7 @@ class UserManager
     public static function existsUserWithName($username)
     {
         $db = new DatabaseConnection();
-        $query = "select status from username where name = '$username'";
+        $query = "select status from username where lower(name) = lower('$username')";
         $result = $db->queryLastValue($query);
         if ($result) {
             return true;
