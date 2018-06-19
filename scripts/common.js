@@ -904,7 +904,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                   +    '"'
                   + '><div class="expandedView">'
                   + '<img src="images/eye.png">&nbsp;&nbsp;'
-                  + 'Click on the preview for the fully detailed results:'
+                  + 'Click for detailed results:'
                   + '</div>'
                   + html + '</a>' ;
     }
