@@ -587,7 +587,7 @@ for ($j = 1; $j <= 4; $j++) {
                                 <input
                                     id="BackgroundOffsetPercent<?php echo $i ?>"
                                     name="BackgroundOffsetPercent<?php echo $i ?>"
-                                    title="Background offset percent"
+                                    title="Background offset"
                                     type="text"
                                     size="8"
                                     value="<?php echo $val ?>"
