@@ -49,7 +49,7 @@ class Fileserver
      * Note: To force a rescan of the src folder, please call resetFiles().
      *
      * @var array|null
-     * @see resetFiles
+     * @see resetFiles()
      */
     private $files;
 
@@ -958,10 +958,11 @@ class Fileserver
      * Processes the $_FILES array posted when uploading files,  moving
      * valid one to the specified directory. Compressed files are
      * decompressed.
+     *
+     * See PHP documentation: POST method uploads.
      * @param array $files Array of files to be uploaded.
      * @param string $dir Destination path, one of 'src' or 'dest'.
      * @return string Message with details.
-     * @see See PHP documentation: POST method uploads.
      * @todo This will be replaced soon!
      */
     public function uploadFiles($files, $dir)

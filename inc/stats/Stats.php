@@ -11,9 +11,8 @@
 namespace hrm\stats;
 
 use hrm\DatabaseConnection;
-use hrm\user\mngm\UserManager;
-use hrm\user\UserV2;
 use hrm\Util;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
