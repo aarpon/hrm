@@ -970,17 +970,29 @@ class QueueManager
             return;
         }
 
-        if (!$this->askHuCoreVersionAndStoreIntoDB()) {
+        // Query the database for processing servers
+        $db = new DatabaseConnection();
+        $servers = $db->getAllServers();
+        if (count($servers) == 0) {
+            Log::error("There are no processing servers configured in the database!");
+            return;
+        }
+
+        // We will use the first server for the following queries
+        $server = $servers[0]['name'];
+        $hucorePath = $servers[0]['huscript_path'];
+
+        if (!$this->askHuCoreVersionAndStoreIntoDB($server, $hucorePath)) {
             Log::error("An error occurred while reading HuCore version");
             return;
         }
 
-        if (!$this->storeHuCoreLicenseDetailsIntoDB()) {
+        if (!$this->storeHuCoreLicenseDetailsIntoDB($server, $hucorePath)) {
             Log::error("An error occurred while saving HuCore license details");
             return;
         }
 
-        if (!$this->storeConfidenceLevelsIntoDB()) {
+        if (!$this->storeConfidenceLevelsIntoDB($server, $hucorePath)) {
             Log::error("An error occurred while storing the confidence " .
                 "levels in the database");
             return;
@@ -1085,12 +1097,14 @@ class QueueManager
 
     /**
      * Asks HuCore to provide its version number and store it in the DB
+     * @param string server Server on which hucore is running. Omit for localhost.
+     * @param string server Full path to hucore on the specified server.
      * @return bool True if asking the version and storing it in the database was
      * successful, false otherwise.
      */
-    private function askHuCoreVersionAndStoreIntoDB()
+    private function askHuCoreVersionAndStoreIntoDB($server, $hucorePath)
     {
-        $huversion = HuygensTools::askHuCore("reportVersionNumberAsInteger");
+        $huversion = HuygensTools::askHuCore("reportVersionNumberAsInteger", "", $server, $hucorePath);
         if ($huversion == null) {
             Log::error("Could not retrieve HuCore version!");
             return false;
@@ -1105,11 +1119,13 @@ class QueueManager
 
     /**
      * Gets license details from HuCore and saves them into the db.
+     * @param string server Server on which hucore is running. Omit for localhost.
+     * @param string server Full path to hucore on the specified server.
      * @return bool True if everything went OK, false otherwise.
      */
-    private function storeHuCoreLicenseDetailsIntoDB()
+    private function storeHuCoreLicenseDetailsIntoDB($server, $hucorePath)
     {
-        $licDetails = HuygensTools::askHuCore("reportHuCoreLicense");
+        $licDetails = HuygensTools::askHuCore("reportHuCoreLicense", "", $server, $hucorePath);
         if ($licDetails == null) {
             Log::error("Could not retrieve license details!");
             return false;
@@ -1132,14 +1148,16 @@ class QueueManager
     /**
      * Store the confidence levels returned by huCore into the database
      * for faster retrieval.
+     * @param string server Server on which hucore is running. Omit for localhost.
+     * @param string server Full path to hucore on the specified server.
      * @return bool True if asking the version and storing it in the database was
      * successful, false otherwise.
      */
-    private function storeConfidenceLevelsIntoDB()
+    private function storeConfidenceLevelsIntoDB($server, $hucorePath)
     {
 
         // Get the confidence levels string from HuCore
-        $result = HuygensTools::askHuCore("reportFormatInfo");
+        $result = HuygensTools::askHuCore("reportFormatInfo", "", $server, $hucorePath);
         if ($result == null) {
             Log::error("Could not retrieve confidence levels!");
             return false;
