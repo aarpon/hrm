@@ -272,6 +272,12 @@ function estimateSnrFromFile($file)
         // display them.
 
         $estimation = HuygensTools::askHuCore("estimateSnrFromImage", $opt);
+
+        // If estimation failed, we interrupt.
+        if ($estimation == null) {
+            exit("Error estimating SNR value!");
+        }
+
         // No line-breaks in the output, it is going to be escaped for JavaScript.
         $output =
             "<h3><img alt=\"SNR\" src=\"./images/results_title.png\" " .

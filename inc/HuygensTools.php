@@ -86,7 +86,7 @@ class HuygensTools
         $answer = self::huCoreTools($tool, $options);
 
         if (!$answer)
-            return "(nothing)";
+            return null;
 
         $lines = count($answer);
         $msg = "";

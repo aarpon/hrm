@@ -1091,8 +1091,12 @@ class QueueManager
     private function askHuCoreVersionAndStoreIntoDB()
     {
         $huversion = HuygensTools::askHuCore("reportVersionNumberAsInteger");
+        if ($huversion == null) {
+            Log::error("Could not retrieve HuCore version!");
+            return false;
+        }
         $huversion = $huversion["version"];
-        Log::info("HuCore version = " . $huversion . "\n");
+        Log::info("HuCore version = " . $huversion);
         if (!System::setHuCoreVersion($huversion)) {
             return false;
         }
@@ -1106,13 +1110,18 @@ class QueueManager
     private function storeHuCoreLicenseDetailsIntoDB()
     {
         $licDetails = HuygensTools::askHuCore("reportHuCoreLicense");
+        if ($licDetails == null) {
+            Log::error("Could not retrieve license details!");
+            return false;
+        }
+
 
         Log::info($licDetails);
 
         // Store the license details in the database.
         $db = new DatabaseConnection();
         if (!$db->storeLicenseDetails($licDetails['license'])) {
-            Log::error("Could not store license details in the database!\n");
+            Log::error("Could not store license details in the database!");
             return false;
         }
 
@@ -1131,6 +1140,11 @@ class QueueManager
 
         // Get the confidence levels string from HuCore
         $result = HuygensTools::askHuCore("reportFormatInfo");
+        if ($result == null) {
+            Log::error("Could not retrieve confidence levels!");
+            return false;
+        }
+
         $confidenceLevelString = $result["formatInfo"];
 
         // Parse the confidence levels string
@@ -1140,7 +1154,7 @@ class QueueManager
         // Store the confidence levels in the database
         $db = new DatabaseConnection();
         if (!$db->storeConfidenceLevels($confidenceLevels)) {
-            Log::error("Could not store confidence levels to the database!\n");
+            Log::error("Could not store confidence levels to the database!");
             return false;
         }
         return true;

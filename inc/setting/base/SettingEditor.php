@@ -223,6 +223,11 @@ abstract class SettingEditor
         $opts = "-huTemplate \"" . $huTemplate . "\"";
 
         $data = HuygensTools::askHuCore('getMetaDataFromHuTemplate', $opts);
+        if ($data == null) {
+            $this->message = "Could not create settings from raw HuCore template!";
+            return False;
+        }
+
 
         // @todo Not all settings have this method!
         $setting->parseParamsFromHuCore($data);

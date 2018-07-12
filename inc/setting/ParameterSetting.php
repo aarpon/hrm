@@ -1830,6 +1830,12 @@ class ParameterSetting extends Setting {
         }
         $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt -ril $ril";
         $ideal = HuygensTools::askHuCore("calculateNyquistRate", $opt);
+        if ($ideal == null) {
+            $ideal = array(
+                "xy" => -1,
+                "z" => -1
+            );
+        }
         // print_r($ideal);
         return array($ideal['xy'], $ideal['z']);
     }
