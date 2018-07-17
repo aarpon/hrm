@@ -1566,7 +1566,7 @@ class Fileserver
 
         return
             "imgPrev('" . rawurlencode($file) . "', $mode, " .
-            "$genThumbnails, $compare, $index, '$dir', " .
+            (int)$genThumbnails . ", $compare, $index, '$dir', "   .
             "'$referer', $data)";
     }
 
