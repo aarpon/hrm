@@ -55,6 +55,12 @@ class UserV2 {
     protected $name;
 
     /**
+     * Id of the user (read from the database).
+     * @var int
+     */
+    protected $id;
+
+    /**
      * E-mail address of the user.
      * @var string $emailAddress
      */
@@ -179,7 +185,7 @@ class UserV2 {
         // The default authentication mode is defined in the settings.
         $this->authMode = ProxyFactory::getDefaultAuthenticationMode();
 
-        // Creation and Last access dates are not known
+        // Creation and last access dates are not known
         $this->creationDate = null;
         $this->lastAccessDate = null;
 
@@ -627,7 +633,7 @@ class UserV2 {
     }
 
     /**
-     * Sets the e-last access date of the User (and stores it in the database).
+     * Sets the last access date of the User (and stores it in the database).
      */
     private function setLastAccessDate() {
 
