@@ -708,7 +708,7 @@ class UserManager
     {
         $db = new DatabaseConnection();
         $rows = $db->query("SELECT * FROM username WHERE status = '" .
-            UserConstants::STATUS_ACTIVE . "' AND length(seedid) = 0 ORDER BY name;");
+            UserConstants::STATUS_ACTIVE . "' AND (seedid IS NULL OR length(seedid) = 0) ORDER BY name;");
         return $rows;
     }
 
