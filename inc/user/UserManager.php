@@ -721,7 +721,7 @@ class UserManager
     public static function getAllPendingUserDBRows()
     {
         $db = new DatabaseConnection();
-        $rows = $db->query("SELECT * FROM username WHERE length(seedid) > 0 " .
+        $rows = $db->query("SELECT * FROM username WHERE (seedid IS NOT NULL OR length(seedid) > 0)" .
             " AND status!='" . UserConstants::STATUS_PASSWORD_RESET . "' ORDER BY name;");
         return $rows;
     }
@@ -898,7 +898,7 @@ class UserManager
         // Only the super admin is left untouched
         $db = new DatabaseConnection();
         $role = UserConstants::ROLE_SUPERADMIN;
-        $query = "UPDATE username SET status = '$status', seedid = NULL WHERE role != $role";
+        $query = "UPDATE username SET status = '$status', seedid = '' WHERE role != $role";
         $result = $db->execute($query);
         if ($result) {
             return true;
