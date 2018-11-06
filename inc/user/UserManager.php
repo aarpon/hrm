@@ -722,7 +722,7 @@ class UserManager
     {
         $db = new DatabaseConnection();
         $rows = $db->query("SELECT * FROM username WHERE (seedid IS NOT NULL OR length(seedid) > 0)" .
-            " AND status!='" . UserConstants::STATUS_PASSWORD_RESET . "' ORDER BY name;");
+            " AND status='" . UserConstants::STATUS_PASSWORD_RESET . "' ORDER BY name;");
         return $rows;
     }
 
