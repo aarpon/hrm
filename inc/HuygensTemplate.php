@@ -2306,6 +2306,7 @@ class HuygensTemplate
             return $bgRate[$channel];
         } else {
             Log::error("Unknown colocalization threshold mode.");
+            // @TODO Return something usable!
             return;
         }
     }
@@ -2595,6 +2596,8 @@ class HuygensTemplate
             default:
                 // @todo Return something usable in this case!
                 Log::error("Parameter $paramName not yet implemented");
+
+                // @TODO Set $paramConf to something usable!
         }
 
         return $paramConf;

@@ -336,7 +336,7 @@ EOT;
     {
         return self::buildActionHTMLElement("Check for updates",
             "images/check_for_update.png", "Check for updates",
-            "checkForUpdates();", $wrapInLiElement, "");
+            "checkForUpdates();", $wrapInLiElement);
     }
 
     /**

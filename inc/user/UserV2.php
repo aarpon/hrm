@@ -271,7 +271,7 @@ class UserV2 {
     }
 
     /**
-     * Set the institution Id for ther User.
+     * Set the institution Id for the User.
      * @param $institution_id int Institution Id.
      */
     public function set_institution_id($institution_id) {
