@@ -130,7 +130,7 @@ abstract class AbstractProxy {
     /**
      * Set the User status to outdated (e.g. in need of a password update).
      *
-     * Inheriting classes might need to reimplement this.
+     * Inheriting classes might need to re-implement this.
      *
      * @param string $username User name.
      * @return void.
