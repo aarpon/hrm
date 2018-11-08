@@ -435,7 +435,7 @@ class ExternalProcess
         }
 
         // Kill the parent.
-        $noParent = posix_kill($pid, 15);
+        $noParent = posix_kill($pid, SIGKILL);
 
         if ($noParent == False) {
             Log::error('Failed killing parent process.');
@@ -465,7 +465,7 @@ class ExternalProcess
             if (array_key_exists(0, $child)) {
                 $childPid = $child[0];
                 if ($childPid > 0) {
-                    $dead = posix_kill($childPid, 15);
+                    $dead = posix_kill($childPid, SIGKILL);
                 } else {
                     $dead = true;
                 }
