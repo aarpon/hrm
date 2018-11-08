@@ -195,10 +195,12 @@ class JobQueue
 
         $result = True;
         if (count($ids) == 0) return $result;
+        
         $db = new DatabaseConnection();
-        foreach ($ids as $id) {
-            // Loop through all the jobs selected, which have to be killed and
-            // deleted.
+
+        // Loop through all the jobs selected, which have to be killed and
+        // deleted.
+        foreach ($ids as $id) {            
             $row = $db->getQueueContentsForId($id);
             $pid = $row['process_info'];
             $server = $row['server'];
@@ -206,11 +208,11 @@ class JobQueue
                 $server . "_" . $id . "_out.txt",
                 $server . "_" . $id . "_error.txt");
             $killed = $proc->killHucoreProcess($pid);
-            $result = $result && $killed;
+            $result = $killed && $result;
 
-            // Clean the database and the error file
-            $result = $result && $this->removeJobWithId($id);
-            $result = $result && $db->markServerAsFree($server);
+            // Clean the database and the error file.
+            $result = $this->removeJobWithId($id)    && $result;
+            $result = $db->markServerAsFree($server) && $result;
             $errorFile = $logdir . "/" . $server . "_" . $id . "_error.txt";
             if (file_exists($errorFile)) {
                 unlink($errorFile);
@@ -218,6 +220,7 @@ class JobQueue
 
             $proc->release();
         }
+        
         return $result;
     }
 
