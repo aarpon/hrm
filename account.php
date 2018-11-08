@@ -100,6 +100,14 @@ $message = "";
  *
  **************************************************************************** */
 
+// If updating some other User setting, remove the loaded
+// User from the session and return to the referer page.
+if ((isset($_POST['cancel']))) {
+   unset($_SESSION['account_user']);
+   header("Location: " . $_SESSION['referer']);
+   exit();
+}
+
 if (isset($_POST['modify'])) {
 
     // Initialize the result to True
@@ -321,7 +329,7 @@ include("header.inc.php");
         if ($somethingToChange == true) {
             ?>
             <div id="controls">
-                <input type="button" name="cancel" value=""
+                <input type="submit" name="cancel" value=""
                        class="icon cancel"
                        onmouseover="TagToTip('ttSpanCancel' )"
                        onmouseout="UnTip()"
