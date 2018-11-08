@@ -439,6 +439,10 @@ class ExternalProcess
 
         if ($noParent == False) {
             Log::error('Failed killing parent process.');
+            
+            //Good to report, but does that mean the parent cannot be killed or is already dead?
+            //TODO make a better test
+            $noParent = True;
         }
 
         return ($noParent && $noChild);
