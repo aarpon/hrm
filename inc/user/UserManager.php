@@ -710,8 +710,11 @@ class UserManager
     public static function getAllActiveUserDBRows()
     {
         $db = new DatabaseConnection();
-        $rows = $db->query("SELECT * FROM username WHERE status = '" .
-            UserConstants::STATUS_ACTIVE . "' AND (seedid IS NULL OR length(seedid) = 0) ORDER BY name;");
+        $rows = $db->query("SELECT * FROM username WHERE (status = '" .
+            UserConstants::STATUS_ACTIVE . "' OR status = '" .
+            UserConstants::STATUS_OUTDATED . "' OR status = '" .
+            UserConstants::STATUS_PASSWORD_RESET . "') " .
+        "AND (seedid IS NULL OR length(seedid) = 0) ORDER BY name;");
         return $rows;
     }
 
