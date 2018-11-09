@@ -108,7 +108,7 @@ abstract class AbstractProxy {
      * @param string $username User name.
      * @return bool True if the User must be updated, false otherwise.
      */
-    public function isOutdated($username = "ignored") { return false; }
+    public function isOutdated($username) { return false; }
 
 
     /**
