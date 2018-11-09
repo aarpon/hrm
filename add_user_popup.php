@@ -105,8 +105,7 @@ if (isset($_POST['add'])) {
             $password = UserManager::generateRandomPlainPassword();
             $result = UserManager::createUser($clean["username"],
                 $password, $clean["email"], $clean["group"], $institution_id,
-                ProxyFactory::getDefaultAuthenticationMode(),
-                UserConstants::ROLE_USER, UserConstants::STATUS_ACTIVE);
+                $clean["authMode"],UserConstants::ROLE_USER, UserConstants::STATUS_ACTIVE);
 
             // TODO refactor
             if ($result) {
