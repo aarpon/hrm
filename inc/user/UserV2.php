@@ -79,22 +79,21 @@ class UserV2 {
     protected $institution_id;
 
     /**
-     * User role, one of:
-     *    * 0 : HRM administrator
-     *    * 1 : facility manager
-     *    * 2 : HRM superuser (user with additional rights)
-     *    * 3 : standard HRM user
-     * @var string
+     * User role, see \hrm\user\UserConstants. One of:
+     *    * UserConstants::ROLE_SUPERADMIN : super admin
+     *    * UserConstants::ROLE_ADMIN: admin
+     *    * UserConstants::ROLE_SUPERUSER: user with additional rights
+     *    * UserConstants::ROLE_USER: standard user
+     * @var int
      */
     protected $role;
 
     /**
-     * User status, one of:
-     *
-     *   * UserConstants::STATUS_ACTIVE
-     *   * UserConstants::STATUS_DISABLED
-     *   * UserConstants::STATUS_OUTDATED
-     *
+     * User status, see \hrm\user\UserConstants. One of:
+     *    * UserConstants::STATUS_ACTIVE: active user
+     *    * UserConstants::STATUS_DISABLED: user disabled by an administrator
+     *    * UserConstants::STATUS_OUTDATED: user whose password needs to be upgraded to the new auth system
+     *    * UserConstants::STATUS_PASSWORD_RESET: user who requested a password reset
      * @var string
      */
     protected $status;
@@ -163,6 +162,7 @@ class UserV2 {
      * omitted, an empty User with default authentication mode is created.
      * If the name is specified and the User exists, it is loaded from the
      * database. If the User does not exist, only the name is set.
+     * @throws \Exception
      */
     public function __construct($name = null) {
 
@@ -225,6 +225,7 @@ class UserV2 {
      *
      * If a User with the given name exists in the database, it is loaded.
      * @param string $name The name of the User.
+     * @throws \Exception
      */
     public function setName($name) {
 
