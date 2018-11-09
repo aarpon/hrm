@@ -76,7 +76,7 @@ if (isset($_POST['down'])) {
         header("Location: " . "select_parameter_settings.php");
         exit();
     }
-} else if ($_SESSION['fileserver'] == null) {
+} else if (!isset($_SESSION['fileserver']) || $_SESSION['fileserver'] == null) {
     // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
     $_SESSION['fileserver'] = new Fileserver($name);
     $_SESSION['autoseries'] = "TRUE";
