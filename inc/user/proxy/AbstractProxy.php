@@ -135,7 +135,7 @@ abstract class AbstractProxy {
      * @param string $username User name.
      * @return void.
      */
-    public function setOutdated($username = "ignored") {}
+    public function setOutdated($username) {}
 
     /**
      * Mark password reset.
@@ -146,7 +146,7 @@ abstract class AbstractProxy {
      * @return string string
      * @throws \Exception The base implementation of this method throws an exception.
      */
-    public function markPasswordReset($username = "ignored") {
+    public function markPasswordReset($username) {
         throw new \Exception("Re-implement this method!");
     }
 };
