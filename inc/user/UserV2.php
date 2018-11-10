@@ -580,6 +580,7 @@ class UserV2 {
             $row["creation_date"] = $this->creationDate();
             $row["last_access_date"] = $this->lastAccessDate();
             $row["status"] = $this->status();
+            $row["id"] = -1;
 
         } else {
 
