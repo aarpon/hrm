@@ -225,7 +225,8 @@ class UserV2 {
      *
      * If a User with the given name exists in the database, it is loaded.
      * @param string $name The name of the User.
-     * @throws \Exception
+     * @throws \Exception If the authentication mode is not recognized
+     * for the specified user.
      */
     public function setName($name) {
 
