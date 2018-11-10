@@ -1,7 +1,7 @@
 {
   "name": "hrm/hrm",
   "description": "The Huygens Remote Manager is an easy to use interface to the Huygens Software by Scientific Volume Imaging B.V. that allows for multi-user, large-scale deconvolution and analysis",
-  "license": "GPL-2.0+",
+  "license": "CECILL-1.0",
   "keywords": [
     "deconvolution",
     "batch",
