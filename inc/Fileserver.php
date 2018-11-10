@@ -3087,7 +3087,7 @@ class Fileserver
         if (!file_exists($this->destinationFolder())) return False;
         $this->getDestFilesFrom($this->destinationFolder(), "");
         if (count($this->destFiles) == 0) return False;
-        sort($this->destFiles());
+        sort($this->destFiles);
         // TODO refactor
         //$this->condenseTimeSeries();
         // trim TIFF series to the first file in the sequence
