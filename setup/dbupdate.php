@@ -5611,7 +5611,86 @@ if ($current_revision < $n) {
     // Update revision
     if(!update_dbrevision($n))
         return;
-    
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+// -----------------------------------------------------------------------------
+// Update to revision 17
+// Change : Apply fix for key size also to existing installations
+// -----------------------------------------------------------------------------
+$n = 17;
+if ($current_revision < $n) {
+
+    // Tables to update
+    $tablesToUpdate = array(
+        "analysis_parameter" => array("owner", "setting"),
+        "analysis_setting" => array("owner", "name"),
+        "boundary_values" => array("parameter"),
+        "job_analysis_parameter" => array("owner", "setting"),
+        "job_analysis_setting" => array("owner", "name"),
+        "job_files" => array("file"),
+        "job_parameter" => array("owner", "setting"),
+        "job_parameter_setting" => array("owner", "name"),
+        "job_task_parameter" => array("owner", "setting"),
+        "job_task_setting" => array("owner", "name"),
+        "parameter" => array("owner", "setting"),
+        "parameter_setting" => array("name", "owner"),
+        "possible_values" => array("value"),
+        "server" => array("name"),
+        "task_parameter" => array("setting", "owner"),
+        "task_setting" => array("name", "owner")
+    );
+
+    foreach ($tablesToUpdate as $table => $columns) {
+        // Update table boundary_values
+        foreach($columns as $column) {
+            $alterColumnSQL = $datadict->AlterColumnSQL($table, $column . ' VARCHAR(191)');
+            $rs = $db->Execute($alterColumnSQL[0]);
+            if (!$rs) {
+                $msg = "Could not change size of column $column in table $table.";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // Tables to revert
+    $tablesToRevert = array(
+        "institution" => array("name"),
+        "job_files" => array("owner"),
+        "shared_analysis_parameter" => array("owner", "setting"),
+        "shared_analysis_setting" => array("owner", "previous_owner"),
+        "shared_parameter" => array("owner", "setting"),
+        "shared_parameter_setting" => array("owner", "previous_owner"),
+        "shared_task_parameter" => array("owner", "setting"),
+        "shared_task_setting" => array("owner", "previous_owner"),
+        "statistics" => array("owner"),
+        "username" => array("name")
+    );
+
+    foreach ($tablesToRevert as $table => $columns) {
+        // Update table boundary_values
+        foreach($columns as $column) {
+            $alterColumnSQL = $datadict->AlterColumnSQL($table, $column . ' VARCHAR(255)');
+            $rs = $db->Execute($alterColumnSQL[0]);
+            if (!$rs) {
+                $msg = "Could not change size of column $column in table $table.";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
