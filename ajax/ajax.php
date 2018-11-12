@@ -105,7 +105,8 @@ function getJobQueueTable()
           <td class="files">file(s)</td>
           <td class="created">created</td>
           <td class="status">status</td>
-          <td class="started">started</td>';
+          <td class="started">started</td>
+          <td class="progress">progress</td>';
 
     if ($showStopTime == true) {
         $data .= '<td class="stop">estimated end</td>';
@@ -176,24 +177,26 @@ function getJobQueueTable()
 
             // Fill job row
             $username = $row['username'];
-            $jobFiles = implode(';', $queue->getJobFilesFor($row['id']));
+            $jobFiles = $row['file'];
             $queued = $row['queued'];
             $status = $row['status'];
             $start = $row['start'];
+            $progress = $row['progress'];
             $data .= "
       <td>$index</td>
       <td>$username</td>
       <td>$jobFiles</td>
       <td>$queued</td>
       <td>$status</td>
-      <td>$start</td>";
+      <td>$start</td>
+      <td>$progress</td>";
 
             if ($showStopTime) {
                 $stop = $row['stop'];
                 $data .= "<td>$stop</td>";
             }
 
-            $process_info = $row['process_info'];
+            $process_info = $row['pid'];
             $server = $row['server'];
             $data .= "
       <td>$process_info</td>

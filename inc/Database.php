@@ -1727,9 +1727,6 @@ class DatabaseConnection
             $desc->setId($row['id']);
             $desc->load();
             $job = new Job($desc);
-            $job->setServer($row['server']);
-            $job->setPid($row['process_info']);
-            $job->setStatus('started');
             $result[] = $job;
         }
         return $result;

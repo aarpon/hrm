@@ -99,6 +99,11 @@ class JobDescription
      */
     private $group;
 
+    /**
+     * Name of the task to use: decon, snr, etc.
+     * @var $taskType
+     */
+  private $taskType;
 
     /**
      * JobDescription constructor.
@@ -285,47 +290,46 @@ class JobDescription
         return ".hrm_" . $this->id() . ".hgsb";
     }
 
-    /**
-     * Add a Job to the queue
-     * @return bool True if the Job could be added to the queue, false otherwise.
-     */
-    public function addJob()
-    {
-        // =========================================================================
-        //
-        // In previous versions of HRM, the web interface would create compound
-        // jobs that the queue manager would then process. Now, this task has become
-        // responsibility of the web interface.
-        //
-        // =========================================================================
+   /**
+    * Returns the name of the job controller to be used by GC3Pie
+    * @return string The controller name with a unique HRM id 
+    */
+  public function getGC3PieControllerName() {
+    return "gc3_" . $this->id() . ".cfg";
+  }
 
-        $result = True;
+   /**
+    *
+    *
+    */
+  public function setJobID( $jobID ) {
+      $this->jobID = $jobID;
+  }
 
-        $lqueue = new JobQueue();
-        $lqueue->lock();
+   /**
+    *
+    *
+    */
+  public function getJobID( ) {
+      return $this->jobID;
+  }
+  
+   /**
+    * Sets the task type as an object property.
+    * @var $taskType The name of the job task: decon, snr, etc.
+    */
+  public function setTaskType( $taskType ) {
+      switch( $taskType )  {
+      case 'decon':
+      case 'deletejobs':
+          $this->taskType =  $taskType;
+          break;
+      default:
+          error_log("Unimplemented task type $taskType.");       
+      }
+  }
 
-        // createJob() function was originally called directly
-        $result = $result && $this->createJob();
-
-        if ($result) {
-
-            // Process compound jobs
-            $this->processCompoundJobs();
-
-            // Assign priorities
-            $db = new DatabaseConnection();
-            $result = $db->setJobPriorities();
-            if (!$result) {
-                Log::error("Could not set job priorities!");
-            }
-        }
-
-        $lqueue->unlock();
-
-        return $result;
-    }
-
-    /**
+     /**
      * Create a Job from this JobDescription.
      * @return bool True if the Job could be created, false otherwise.
      */
@@ -364,20 +368,6 @@ class JobDescription
         return $result;
     }
 
-    /**
-     * Processes compound Jobs to deliver elementary Jobs.
-     *
-     * A compound job contains multiple files.
-     */
-    public function processCompoundJobs()
-    {
-        $queue = new JobQueue();
-        $compoundJobs = $queue->getCompoundJobs();
-        foreach ($compoundJobs as $jobDescription) {
-            $job = new Job($jobDescription);
-            $job->createSubJobsOrHuTemplate();
-        }
-    }
 
     /**
      * Loads a JobDescription from the database for the user set in

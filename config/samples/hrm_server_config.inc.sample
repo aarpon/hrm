@@ -67,8 +67,13 @@ $image_source = "src";
 // File server image destination folder
 $image_destination = "dst";
 
+<<<<<<< HEAD
+// File server base folder as seen from the Huygens server machines (with trailing /)
+$huygens_server_image_folder = "/path/to/hrm_data/";
+=======
 // File server base folder as seen from the Huygens server machines
 $huygens_server_image_folder = "/data/hrm_data";
+>>>>>>> origin/devel
 
 // Allow HTTP transfer of the restored (download) images
 $allowHttpTransfer = true;

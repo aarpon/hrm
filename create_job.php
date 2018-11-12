@@ -4,6 +4,7 @@
 
 use hrm\Fileserver;
 use hrm\job\JobDescription;
+use hrm\job\Job;
 use hrm\Nav;
 use hrm\System;
 use hrm\Util;
@@ -51,20 +52,21 @@ if (isset($_POST['create'])) {
     // save preferred output file format
     if ($_SESSION['task_setting']->save()) {
         // TODO source/destination folder names should be given to JobDescription
-        $job = new JobDescription();
-        $job->setParameterSetting($_SESSION['setting']);
-        $job->setTaskSetting($_SESSION['task_setting']);
-        $job->setAnalysisSetting($_SESSION['analysis_setting']);
-        $job->setFiles($_SESSION['fileserver']->selectedFiles(), $_SESSION['autoseries']);
+        $jobDescription = new JobDescription();
+        $jobDescription->setParameterSetting($_SESSION['setting']);
+        $jobDescription->setTaskSetting($_SESSION['task_setting']);
+        $jobDescription->setAnalysisSetting($_SESSION['analysis_setting']);
+        $jobDescription->setFiles($_SESSION['fileserver']->selectedFiles(), 
+                                  $_SESSION['autoseries']);
 
-        if ($job->addJob()) {
-            $_SESSION['jobcreated'] = True;
-            $_SESSION['numberjobadded'] = count($job->files());
-            header("Location: " . "home.php");
-            exit();
-        } else {
-            $message = $job->message();
-        }
+        $_SESSION['jobcreated'] = True;
+        $_SESSION['numberjobadded'] = count($jobDescription->files());
+
+        $job = new Job($jobDescription);
+        $job->process();
+
+        header("Location: " . "home.php");
+        exit();
     } else $message = "An unknown error has occurred. " .
         "Please inform the administrator";
 } else if (isset($_POST['OK'])) {
