@@ -329,6 +329,14 @@ class JobDescription
       }
   }
 
+   /**
+    * The task type to write in the GC3Pie config  file.
+    * @return The task type.
+    */
+    public function getTaskType( ) {
+        return $this->taskType;
+    }
+
      /**
      * Create a Job from this JobDescription.
      * @return bool True if the Job could be created, false otherwise.
