@@ -5756,6 +5756,20 @@ if ($current_revision < $n) {
         }
     }
 
+    // Update the for the SVI HDF5 file format
+    $tabname = "possible_values";
+    $record = array(
+        "parameter" => "ImageFileFormat",
+        "value" => "hdf5",
+        "translation" => "SVI HDF5 (*.h5)",
+        "isDefault" => "f"
+    );
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter='ImageFileFormat' and value='hdf5'")) {
+        $msg = "Could not correct translation for ImageFileFormat HDF5 in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
 
     // Update revision
     if(!update_dbrevision($n))
