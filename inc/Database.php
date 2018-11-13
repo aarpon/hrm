@@ -804,9 +804,16 @@ class DatabaseConnection
             return False;
         }
 
-        // Now we can delete the records from the source tables. Even if it
-        // if it fails we do not roll back, since the parameters were copied
-        // successfully.
+        // Now we can delete the records from the source tables.
+
+        $this->connection->BeginTrans();
+
+        // Delete parameter entries
+        $query = "delete from $sourceParameterTable where setting_id=$id";
+        $status = $this->connection->Execute($query);
+        if (false === $status) {
+            return False;
+        }
 
         // Delete setting entry
         $query = "delete from $sourceSettingTable where id=$id";
@@ -815,12 +822,8 @@ class DatabaseConnection
             return False;
         }
 
-        // Delete parameter entries
-        $query = "delete from $sourceParameterTable where setting_id=$id";
-        $status = $this->connection->Execute($query);
-        if (false === $status) {
-            return False;
-        }
+        // Commit transaction
+        $this->connection->CommitTrans();
 
         return True;
     }
@@ -856,15 +859,20 @@ class DatabaseConnection
             }
         }
 
-        // Delete setting entry
-        $query = "delete from $sourceSettingTable where id=$id";
-        $status = $this->connection->Execute($query);
-        $ok &= !(false === $status);
+        $this->connection->BeginTrans();
 
         // Delete parameter entries
         $query = "delete from $sourceParameterTable where setting_id=$id";
         $status = $this->connection->Execute($query);
         $ok &= !(false === $status);
+
+        // Delete setting entry
+        $query = "delete from $sourceSettingTable where id=$id";
+        $status = $this->connection->Execute($query);
+        $ok &= !(false === $status);
+
+        // Commit transaction
+        $this->connection->CommitTrans();
 
         return $ok;
     }
