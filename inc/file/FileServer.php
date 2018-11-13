@@ -42,6 +42,12 @@ class FileServer
     static $SESSION_KEY = "file-server";
 
     /**
+     * Extension for the file holding the multi-series files's list
+     * @var string
+     */
+    static $CACHE_FILE_EXTENSION = ".ls.json";
+
+    /**
      * Root from which the file system is scanned recursively
      * @var string
      */
@@ -54,17 +60,23 @@ class FileServer
     private $ignored_dirs;
 
     /**
+     * Flag weather or not to ignore files starting with at '.'
+     * @var bool
+     */
+    private $ignore_hidden_files;
+
+    /**
      * Imploding time-series results in an additional nested array containing the
      * image files of the time-series, having the image file name trunk ans key.
      * @var bool
      */
-    private $imploded_time_series;
+    private $is_imploded_time_series;
 
     /**
      * Get the number of images series contained in an image file from the file metadata.
      * @var bool
      */
-    private $image_series;
+    private $is_showing_image_series;
 
     /**
      * Encapsulated array containing the directory tree
@@ -100,22 +112,25 @@ class FileServer
     /**
      * FileServer constructor.
      * @param string $root directory
-     * @param bool $get_image_series if true, the metadata of the image file is accessed to retrieve image series
      * @param bool $implode_time_series if true, an additional level in the @link FileServer::dict is created
      *                                  members of the time-series are encapsulated in an sub-array.
      *                                  This is can be changed after scanning with $link FileServer::implodeImageTimeSeries
      *                                  and @link FileServer::explodeImageTimeSeries
+     * @param bool $show_image_series if true, the metadata of the image file is accessed to retrieve image series
+     * @param bool $ignore_hidden
      * @param array $ignored_directories list of directories excluded from the @link FileServer::scan
      */
     function __construct($root,
                          $implode_time_series = true,
-                         $get_image_series = false,
+                         $show_image_series = false,
+                         $ignore_hidden = true,
                          $ignored_directories = [".", "..", "hrm_previews"])
     {
         $this->root = $root;
         $this->ignored_dirs = $ignored_directories;
-        $this->image_series = $get_image_series;
-        $this->imploded_time_series = $implode_time_series;
+        $this->ignore_hidden_files = $ignore_hidden;
+        $this->is_showing_image_series = null;
+        $this->is_imploded_time_series = null;
 
         $this->tree = null;
         $this->dict = null;
@@ -123,7 +138,7 @@ class FileServer
         $this->n_files = null;
         $this->scan_time = null;
 
-        $this->scan();
+        $this->scan($show_image_series, $implode_time_series);
     }
 
     /**
@@ -132,13 +147,15 @@ class FileServer
      * To re-scan a new @link FileServer has to be instantiated.
      *
      * @todo things can be sped up a lot if not all image series were queried here, but only upon asking the files on a particular directory @link FileServer::getFileList.
+     * @param $show_multi_series
+     * @param $implode_time_series
      */
-    private function scan()
+    private function scan($show_multi_series, $implode_time_series)
     {
         list($this->tree, $this->dict, $this->n_dirs, $this->n_files) =
-            FileServer::scan_recursive($this->root, "/", $this->ignored_dirs);
+            FileServer::scan_recursive($this->root, "/", $this->ignored_dirs, $this->ignore_hidden_files);
 
-        if ($this->image_series) {
+        if ($show_multi_series) {
             foreach ($this->dict as $dir => $files) {
                 if ($files != null) {
                     $new = ImageFiles::getImageFileSeries($dir, $files);
@@ -147,7 +164,7 @@ class FileServer
             }
         }
 
-        if ($this->imploded_time_series) {
+        if ($implode_time_series) {
             $this->implodeImageTimeSeries();
         }
 
@@ -208,7 +225,7 @@ class FileServer
             $mtime = filemtime($dir . '/' . $fileName);
             $files["{$i}"] = array('name' => $entryName,
                 'mtime' => "{$mtime}",
-                'multi' => "{$isMulti}",
+                'multi-series' => "{$isMulti}",
                 'time-series' => "{$isTimeSeries}",
                 'count' => "{$fileCount}");
 
@@ -216,7 +233,10 @@ class FileServer
         }
 
         if ($extension != null) {
-            $files = FileServer::filter_file_extension($files, $extension);
+            $reg = "/.*(" . strtolower($extension) . "$|" . strtolower($extension) . " \(.+\)$)/";
+            $files = array_filter($files, function ($str) use($reg) {
+                return (preg_match($reg, strtolower($str["name"])) == 1);
+            });
         }
         return $files;
     }
@@ -286,6 +306,88 @@ class FileServer
     }
 
     /**
+     * Get the list of images beloning to a image time series
+     * the path is /user/path/sub-dir/time-series-name
+     *
+     * @param $filepath
+     * @return mixed|null
+     */
+    public function getImageTimeSeries($filepath)
+    {
+        $wasExploded = !$this->is_imploded_time_series;
+        $this->implodeImageTimeSeries();
+
+        $dirname = dirname($filepath);
+        $filename = basename($filepath);
+        $dircontent = $this->dict[$dirname];
+
+        $filelist = null;
+        foreach ($dircontent as $index => $item) {
+            if (is_array($item)) {
+                $tsname = array_keys($item)[0];
+                if ($tsname == $filename) {
+                    $filelist = array_values($item)[0];
+                }
+            }
+        }
+
+        if ($wasExploded) {
+            $this->explodeImageTimeSeries();
+        }
+
+        return $filelist;
+    }
+
+    /**
+     * Get the series contained by a multi-series image.
+     * (from a file cache or by using hucore)
+     *
+     * @param $filepath
+     * @return array
+     */
+    public function getImageFileSeries($filepath)
+    {
+        $dirname = dirname($filepath);
+        $filenname = basename($filepath);
+        $cachpath = $dirname . "/." . $filenname . self::$CACHE_FILE_EXTENSION;
+
+        if (file_exists($cachpath)) {
+            $series = $this->loadFileSeriesCache($cachpath);
+        } else {
+            $series = ImageFiles::getImageFileSeries($dirname, array($filenname));
+            $this->saveFileSeriesCache($cachpath, $series);
+        }
+
+        return $series;
+    }
+
+    /**
+     * Save a hidden files containing the list of image series next to a given image file
+     *
+     * @param $cachepath
+     * @param $list
+     */
+    public function saveFileSeriesCache($cachepath, $list)
+    {
+        $str = json_encode($list, JSON_FORCE_OBJECT);
+        $handle = fopen($cachepath, 'w');
+        fwrite($handle, $str);
+        fclose($handle);
+    }
+
+    /**
+     * Load the file with the image-series of a given image file
+     *
+     * @param $cachepath
+     * @return mixed
+     */
+    public function loadFileSeriesCache($cachepath)
+    {
+        $str = readfile($cachepath);
+        return json_decode($str);
+    }
+
+    /**
      * Check if the input directory is the root directory
      *
      * @param string $dir input directory
@@ -306,7 +408,7 @@ class FileServer
     {
         $stat = stat($this->root);
         if (!$stat['mtime'] > $this->scan_time) {
-            $this->scan();
+            $this->scan($this->is_showing_image_series, $this->is_imploded_time_series);
         }
     }
 
@@ -317,7 +419,7 @@ class FileServer
      */
     public function hasImplodedTimeSeries()
     {
-        return $this->imploded_time_series;
+        return $this->is_imploded_time_series;
     }
 
     /**
@@ -327,7 +429,7 @@ class FileServer
      */
     public function hasImageSeries()
     {
-        return $this->image_series;
+        return $this->is_showing_image_series;
     }
 
     /**
@@ -336,6 +438,10 @@ class FileServer
      */
     public function explodeImageTimeSeries()
     {
+        if (($this->is_imploded_time_series != null) && (!$this->is_imploded_time_series)) {
+            return;
+        }
+
         foreach ($this->dict as $dir => $content) {
             $exploded = array();
             $i = 0;
@@ -355,7 +461,7 @@ class FileServer
             $this->dict[$dir] = $exploded;
         }
 
-        $this->imploded_time_series = false;
+        $this->is_imploded_time_series = false;
     }
 
     /**
@@ -364,6 +470,10 @@ class FileServer
      */
     public function implodeImageTimeSeries()
     {
+        if (($this->is_imploded_time_series != null) && ($this->is_imploded_time_series)) {
+            return;
+        }
+
         foreach ($this->dict as $dir => $content) {
             if ($content != null) {
                 $seriesList = ImageFiles::collapseTimeSeries($content);
@@ -383,7 +493,7 @@ class FileServer
             }
         }
 
-        $this->imploded_time_series = true;
+        $this->is_imploded_time_series = true;
     }
 
     /**
@@ -392,9 +502,10 @@ class FileServer
      * @param string $dir input directory
      * @param string $dirname name used in the root directory
      * @param array $ignore list subdirectories to ignore
+     * @param $no_hidden
      * @return array ($tree, $ndirs, $nfiles)
      */
-    private static function scan_recursive($dir, $dirname = "/", array $ignore)
+    private static function scan_recursive($dir, $dirname = "/", array $ignore, $no_hidden)
     {
         $tree = [$dir => [$dirname => []] ];
         $dict = array();
@@ -405,11 +516,14 @@ class FileServer
         foreach (scandir($dir) as $item) {
             if (in_array($item, $ignore)) {
                 continue;
+            } else if (($no_hidden) && (substr($item, 0, 1) === '.')) {
+                continue;
             }
 
             $path = $dir . DIRECTORY_SEPARATOR . $item;
             if (is_dir($path)) {
-                list($subtree, $subdict, $subndirs, $subnfiles) = FileServer::scan_recursive($path, $item, $ignore);
+                list($subtree, $subdict, $subndirs, $subnfiles) =
+                    FileServer::scan_recursive($path, $item, $ignore, $no_hidden);
                 $tree[$dir][$dirname] = array_merge($tree[$dir][$dirname], $subtree);
                 $dict = array_merge($dict, $subdict);
                 $ndirs += $subndirs;
@@ -451,12 +565,9 @@ class FileServer
      */
     static function array2html($obj)
     {
-//        echo "<br/><br/>";
-//        echo var_dump($obj);
         return str_replace("\n", "<br/>",
                            str_replace(" ", "&nbsp;",
                                        str_replace("\\", "",
                                                     json_encode($obj, JSON_PRETTY_PRINT | JSON_FORCE_OBJECT))));
     }
-
 }

@@ -11,6 +11,7 @@
  *      'ajax/FileServer.php?dir=/some/dir/on/fs/&ext=tif&collapse=true
  *      return the file list of the given directory
  *
+ * TODO: delete before merging to devel
  *
  * @package hrm
  *
