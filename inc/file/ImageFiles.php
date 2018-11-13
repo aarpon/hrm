@@ -124,6 +124,10 @@ class ImageFiles
         return $db->allFileExtensions();
     }
 
+    /**
+     * Return all extensions for all the file formats that
+     * contain sub-series.
+     */
     public static function getMultiImageExtensions()
     {
         $db = new DatabaseConnection();
@@ -192,6 +196,20 @@ class ImageFiles
         return $status;
     }
 
+    /**
+     * Check if $filename is of a file format that contains multiple
+     * image series.
+     *
+     * @param $filename
+     * @return bool
+     */
+    public static function isMultiImage($filename)
+    {
+        $ext = self::getExtension($filename);
+        $multiexts = self::getMultiImageExtensions();
+
+        return in_array($ext, $multiexts);
+    }
 
     /**
      * Collapse all files with known file name pattern into a time series:
