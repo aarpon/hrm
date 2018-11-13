@@ -151,8 +151,6 @@ class Job
         $this->createGC3PieController();
         $this->controller->write2Spool();
         Log::info("Created GC3Pie controller", 1);
-
-        return $result;
     }
 
     /**
