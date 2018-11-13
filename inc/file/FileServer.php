@@ -109,7 +109,7 @@ class FileServer
      */
     function __construct($root,
                          $implode_time_series = true,
-                         $get_image_series = true,
+                         $get_image_series = false,
                          $ignored_directories = [".", "..", "hrm_previews"])
     {
         $this->root = $root;
@@ -162,21 +162,23 @@ class FileServer
      */
     public function getDirectoryTree()
     {
+        $this->synchronize();
         return $this->tree;
     }
 
     /**
-     * Get the file dictionary mapping directories to file lists
+     * Get the file dictionary that is mapping directories to file lists
      *
      * @return array|mixed|null file dictionary
      */
     public function getFileDictionary()
     {
+        $this->synchronize();
         return $this->dict;
     }
 
     /**
-     * Get the list of files of a directory
+     * Get the list of files of a directory or null if the directory does not exist
      *
      * @param string $dir directory to list files from
      * @param null $extension filter by file extension
@@ -184,18 +186,38 @@ class FileServer
      */
     public function getFileList($dir, $extension = null)
     {
-        $files = $this->dict[$dir];
+        $this->synchronize();
+        $files = array();
 
-        foreach  ($files as $index => $name) {
+        $i = 0;
+        foreach ($this->dict[$dir] as $index => $name) {
+            $fileCount = NAN;
+            $isMulti = ImageFiles::isMultiImage($name);
+            $isTimeSeries = false;
+            $entryName = $name;
+            $fileName = $name;
+
             if (is_array($name)) {
-                $files[$index] = $index . " (" . count($name) . " files)";
+                $isTimeSeries = true;
+                $entryName = array_keys($name)[0];
+                $seriesFiles = array_values($name)[0];
+                $fileCount = count($seriesFiles);
+                $fileName = $seriesFiles[0];
             }
+
+            $mtime = filemtime($dir . '/' . $fileName);
+            $files["{$i}"] = array('name' => $entryName,
+                'mtime' => "{$mtime}",
+                'multi' => "{$isMulti}",
+                'time-series' => "{$isTimeSeries}",
+                'count' => "{$fileCount}");
+
+            $i++;
         }
 
         if ($extension != null) {
             $files = FileServer::filter_file_extension($files, $extension);
         }
-
         return $files;
     }
 
@@ -209,12 +231,11 @@ class FileServer
      *                         [dir1=>[], dir2=>[ind1, time-series-name, ind2, ...]]
      * @param string $file_extension allowed file extension (needed for directory selection)
      * @return array
-     *
-     * @todo it would probably good if this method would require a scan time, to make sure the selection from the client corresponds with the server side.
      */
     public function getFilePaths(array $selection, $file_extension)
     {
         $paths = array();
+
         foreach ($selection as $dir => $indices) {
             if (isset($indices)) {
                 foreach ($indices as $index) {
@@ -238,6 +259,7 @@ class FileServer
      */
     public function getDirectories()
     {
+        $this->synchronize();
         return array_keys($this->dict);
     }
 
@@ -248,6 +270,7 @@ class FileServer
      */
     public function getNumberOfFiles()
     {
+        $this->synchronize();
         return $this->n_files;
     }
 
@@ -258,6 +281,7 @@ class FileServer
      */
     public function getNumberOfDirectories()
     {
+        $this->synchronize();
         return $this->n_dirs;
     }
 
@@ -273,16 +297,17 @@ class FileServer
     }
 
     /**
-     * Check if the root directory was modified since the scan.
+     * Check if the root directory was modified since the scan, if so rescan to refresh the memory copy.
+     *
      * @link FileServer::$root
      * @link FileServer::scan
-     *
-     * @return bool
      */
-    public function isSynchronised()
+    public function synchronize()
     {
         $stat = stat($this->root);
-        return $stat['mtime'] < $this->scan_time;
+        if (!$stat['mtime'] > $this->scan_time) {
+            $this->scan();
+        }
     }
 
     /**
@@ -311,13 +336,19 @@ class FileServer
      */
     public function explodeImageTimeSeries()
     {
-        foreach ($this->dict as $dir => $files) {
+        foreach ($this->dict as $dir => $content) {
             $exploded = array();
-            foreach ($files as $file) {
-                if (is_array($file)) {
-                    $exploded = array_merge($exploded, $file);
+            $i = 0;
+            foreach ($content as $index => $entry) {
+                if (is_array($entry)) {
+                    $seriesFiles = array_values($entry)[0];
+                    foreach ($seriesFiles as $file) {
+                        $exploded["{$i}"] = $file;
+                        $i++;
+                    }
                 } else {
-                    $exploded[] = $file;
+                    $exploded["{$i}"] = $entry;
+                    $i++;
                 }
             }
 
@@ -333,9 +364,22 @@ class FileServer
      */
     public function implodeImageTimeSeries()
     {
-        foreach ($this->dict as $dir => $files) {
-            if ($files != null) {
-                $this->dict[$dir] = ImageFiles::collapseTimeSeries($files);
+        foreach ($this->dict as $dir => $content) {
+            if ($content != null) {
+                $seriesList = ImageFiles::collapseTimeSeries($content);
+                $i = -1;
+                $collapsed = array();
+                foreach ($seriesList as $series => $files) {
+                    if (is_int($series)) {
+                        $i = $series;
+                        $collapsed[$series] = $files;
+                    } else {
+                        $i++;
+                        $collapsed["{$i}"] = [$series => $files];
+                    }
+                }
+
+                $this->dict[$dir] = $collapsed;
             }
         }
 
@@ -407,6 +451,8 @@ class FileServer
      */
     static function array2html($obj)
     {
+//        echo "<br/><br/>";
+//        echo var_dump($obj);
         return str_replace("\n", "<br/>",
                            str_replace(" ", "&nbsp;",
                                        str_replace("\\", "",

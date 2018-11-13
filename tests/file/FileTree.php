@@ -17,14 +17,23 @@ if (isset($_REQUEST['dir'])) {
 }
 
 $server = new FileServer($dir, false, false);
-$dict1 = $server->getFileDictionary();
+$tree = $server->getDirectoryTree();
+$dir1 = $server->getFileDictionary();
 
-$server = new FileServer($dir);
-$dict2 = $server->getFileDictionary();
+$server = new FileServer($dir, true, true);
+$dir3 = $server->getFileDictionary();
+$fl1 = $server->getFileList($dir . '/real');
+$fl2 = $server->getFileList($dir . '/time-series');
+
+$server->explodeImageTimeSeries();
+$fl3 = $server->getFileDictionary();
+
 
 echo "<html><body>";
-echo "<h1>Directory tree</h1>" . FileServer::array2html($server->getDirectoryTree());
-echo "<h1>File dictionary</h1>" . FileServer::array2html($dict1);
-echo "<h1>File dictionary including image file series and with imploded time series </h1>" . FileServer::array2html($dict2);
-echo "<h1>File list of the root directory</h1>" . FileServer::array2html($server->getFileList($dir));
+echo "<h1>Directory tree</h1>" . FileServer::array2html($tree);
+echo "<h1>File dictionary</h1>" . FileServer::array2html($dir1);
+echo "<h1>File dictionary including imploded time series </h1>" . FileServer::array2html($dir3);
+echo "<h1>File list of the real directory</h1>" . FileServer::array2html($fl1);
+echo "<h1>File list of the time-series directory</h1>" . FileServer::array2html($fl2);
+echo "<h1>Directory tree (re-)exploded</h1>" . FileServer::array2html($fl3);
 echo "</body></html>";
