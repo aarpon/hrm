@@ -53,9 +53,10 @@ class ColocCoefficient extends AnyTypeArrayParameter
 
     /**
      * Dummy function to override the parent 'setNumberOfChannels'.
+     * @param int $number Number of channels.
      * @todo This can be dealt with better!
      */
-    public function setNumberOfChannels()
+    public function setNumberOfChannels($number)
     {
         /* The parent function links the number of channels and the
          allowed number of values for a parameter. This is clearly

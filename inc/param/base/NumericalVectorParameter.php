@@ -33,17 +33,16 @@ class NumericalVectorParameter extends NumericalParameter
     public function __construct($name, $componentCnt)
     {
         parent::__construct($name);
-        $this->reset($componentCnt);
+        $this->componentCnt = $componentCnt;
+        $this->reset();
     }
 
     /**
      * Sets the NumericalVectorParameter value(s) to null.
-     * @param int $componentCnt Number of components for the NumericalVectorParameter.
      */
-    public function reset($componentCnt)
-    {
-        $this->componentCnt = $componentCnt;
-        for ($i = 1; $i <= $componentCnt; $i++) {
+    public function reset()
+    {        
+        for ($i = 1; $i <= $this->componentCnt; $i++) {
             $this->value[$i] = NULL;
         }
     }
@@ -126,7 +125,7 @@ class NumericalVectorParameter extends NumericalParameter
      * Returns the string representation of the NumericalVectorParameter.
      * @return string String representation of the NumericalVectorParameter.
      */
-    public function displayString()
+    public function displayString($chanCnt = 0)
     {
         ksort($this->value);
         $value = array_slice($this->value, 0, $this->componentCnt);
