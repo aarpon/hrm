@@ -39,10 +39,10 @@ use hrm\System;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserConstants;
 
-require_once  dirname( __FILE__ ) . '/../inc/bootstrap.php';
+require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 
 // Database last revision
-$LAST_REVISION = System::getDBLastRevision( );
+$LAST_REVISION = System::getDBLastRevision();
 
 // For test purposes
 //$db_name = "hrm-test";
@@ -53,48 +53,51 @@ $LAST_REVISION = System::getDBLastRevision( );
 // =============================================================================
 
 // Returns a timestamp
-function timestamp() {
+function timestamp()
+{
     return date('l jS \of F Y h:i:s A');
 }
 
 
 // Return a timestamp for a T field in a database
-function timestampADODB() {
+function timestampADODB()
+{
     return date('Y-m-d H:i:s');
 }
 
 
 // Write a message into the log file
-function write_to_log($msg) {
+function write_to_log($msg)
+{
     global $fh;
     fwrite($fh, $msg . "\n");
 }
 
 
 // Write a message into the error log file
-function write_to_error($msg) {
+function write_to_error($msg)
+{
     global $efh;
     fwrite($efh, $msg . "\n");
 }
 
 
 // Write a message to the standard output
-function write_message($msg) {
+function write_message($msg)
+{
     global $interface;
     global $message;
     if (isset($interface)) {
         $message .= $msg . "\n";
-    }
-    else echo $msg . "\n";
+    } else echo $msg . "\n";
 }
 
 
 // Return an error message
-function error_message($table) {
+function error_message($table)
+{
     return "An error occurred while updating table " . $table . ".";
 }
-
-
 
 
 // =============================================================================
@@ -102,15 +105,16 @@ function error_message($table) {
 // =============================================================================
 
 // Create a table with the specified name and fields
-function create_table($name, $fields) {
+function create_table($name, $fields)
+{
     global $datadict;
     $sqlarray = $datadict->CreateTableSQL($name, $fields);
     $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully
-    if($rs != 2) {
-       $msg = error_message($name);
-       write_message($msg);
-       write_to_error($msg);
-       return False;
+    if ($rs != 2) {
+        $msg = error_message($name);
+        write_message($msg);
+        write_to_error($msg);
+        return False;
     }
     $msg = $name . ": has been created\n";
     write_to_log($msg);
@@ -119,34 +123,36 @@ function create_table($name, $fields) {
 
 
 // Drop the table with the specified name
-function drop_table($tabname) {
-   global $datadict, $db;
+function drop_table($tabname)
+{
+    global $datadict, $db;
 
-   $sqlarray = $datadict->DropTableSQL($tabname);
-   $rs = $datadict->ExecuteSQLArray($sqlarray);
-   if($rs != 2) {
+    $sqlarray = $datadict->DropTableSQL($tabname);
+    $rs = $datadict->ExecuteSQLArray($sqlarray);
+    if ($rs != 2) {
         $msg = error_message($tabname);
         write_message($msg);
         write_to_error($msg);
         return False;
-   }
-   $msg = $tabname . ": has been dropped\n";
-   write_to_log($msg);
-   return True;
+    }
+    $msg = $tabname . ": has been dropped\n";
+    write_to_log($msg);
+    return True;
 }
 
 
 // Insert a set of records ($records is a multidimensional associative array) into the table $tabname
-function insert_records($records,$tabname) {
+function insert_records($records, $tabname)
+{
     global $db;
 
     $keys = array_keys($records);
-    for($i=0; $i<count($records[$keys[0]]); $i++) {
+    for ($i = 0; $i < count($records[$keys[0]]); $i++) {
         $record = array();
-        foreach($keys as $key)
+        foreach ($keys as $key)
             $record[$key] = $records[$key][$i];
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->execute($insertSQL)) {
+        if (!$db->execute($insertSQL)) {
             $msg = error_message($tabname);
             write_message($msg);
             write_to_error($msg);
@@ -162,14 +168,15 @@ function insert_records($records,$tabname) {
 // Insert a single record in the table $tabname.
 // $array id the record to be insert, $colnames contains the names of the columns of the table.
 // $array and $colnames are simple 1D arrays.
-function insert_record($tabname, $array, $colnames) {
+function insert_record($tabname, $array, $colnames)
+{
     global $db;
 
-    for($i=0; $i<count($colnames); $i++)
+    for ($i = 0; $i < count($colnames); $i++)
         $record[$colnames[$i]] = $array[$i];
 
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->execute($insertSQL)) {
+    if (!$db->execute($insertSQL)) {
         $msg = error_message($tabname);
         write_message($msg);
         write_to_error($msg);
@@ -180,7 +187,8 @@ function insert_record($tabname, $array, $colnames) {
 
 
 // Insert a column into the table $tabname
-function insert_column($tabname,$fields) {
+function insert_column($tabname, $fields)
+{
     global $datadict;
 
     // NOTE: ADOdb AddColumnSQL, not guaranteed to work under all situations.
@@ -190,7 +198,7 @@ function insert_column($tabname,$fields) {
     // return 0 if failed, 1 if executed all but with errors,
     // 2 if executed successfully
     $rs = $datadict->ExecuteSQLArray($sqlarray);
-    if($rs != 2) {
+    if ($rs != 2) {
         $msg = error_message($tabname);
         write_message($msg);
         write_to_log($msg);
@@ -205,12 +213,13 @@ function insert_column($tabname,$fields) {
 // If the table does not exist, it is created;
 // if a field is not correct, it is altered;
 // if a field does not exist, it is added and the default value for that field is put in the record.
-function check_table_existence_and_structure($tabname,$flds) {
+function check_table_existence_and_structure($tabname, $flds)
+{
     global $datadict;
 
     $sqlarray = $datadict->ChangeTableSQL($tabname, $flds);
     $rs = $datadict->ExecuteSQLArray($sqlarray);    // return 0 if failed, 1 if executed all but with errors, 2 if executed successfully
-    if($rs != 2) {
+    if ($rs != 2) {
         $msg = error_message($tabname);
         write_message($msg);
         write_to_error($msg);
@@ -223,7 +232,8 @@ function check_table_existence_and_structure($tabname,$flds) {
 
 
 // Update field dbrevision in table global_variables to $n)
-function update_dbrevision($n) {
+function update_dbrevision($n)
+{
     global $db, $current_revision;
     $tabname = "global_variables";
     $record = array();
@@ -241,38 +251,37 @@ function update_dbrevision($n) {
 
 // Verify the number of # in the field value, when name = $value.
 // This function has been thought to check the content of tables parameter and task_parameter.
-function check_number_gates($tabname, $value, $fields_set, $primary_key) {
+function check_number_gates($tabname, $value, $fields_set, $primary_key)
+{
     global $db;
 
     $rs = $db->execute("SELECT * FROM " . $tabname . " WHERE name = '" . $value . "'");
-    if($rs) {
+    if ($rs) {
         while ($row = $rs->FetchRow()) {
             $test = substr_count($row[3], '#');
-            if($test < 5) {
+            if ($test < 5) {
                 $msg = $tabname . ": value '" . $row[3];
-                if(strlen($row[3]) != $test) { // in this case there are characters in the field different from #
-                    if(strpos($row[3],'#') != 0) {  // the # is not the first character in the field (it should be)
-                        $row[3] = str_pad($row[3],strlen($row[3])+1,'#',STR_PAD_LEFT);
-                        $row[3] = str_pad($row[3],strlen($row[3])+5-$test-1,'#',STR_PAD_RIGHT);
+                if (strlen($row[3]) != $test) { // in this case there are characters in the field different from #
+                    if (strpos($row[3], '#') != 0) {  // the # is not the first character in the field (it should be)
+                        $row[3] = str_pad($row[3], strlen($row[3]) + 1, '#', STR_PAD_LEFT);
+                        $row[3] = str_pad($row[3], strlen($row[3]) + 5 - $test - 1, '#', STR_PAD_RIGHT);
+                    } else {
+                        $row[3] = str_pad($row[3], strlen($row[3]) + 5 - $test, '#', STR_PAD_RIGHT);
                     }
-                    else {
-                        $row[3] = str_pad($row[3],strlen($row[3])+5-$test,'#',STR_PAD_RIGHT);
-                    }
+                } else {  // in the field there are only #, but less then 5
+                    $row[3] = str_pad($row[3], 5, '#', STR_PAD_RIGHT);
                 }
-                else {  // in the field there are only #, but less then 5
-                    $row[3] = str_pad($row[3],5,'#',STR_PAD_RIGHT);
-                }
-                for($i = 0; $i < count($fields_set); $i++) {
+                for ($i = 0; $i < count($fields_set); $i++) {
                     $temp[$fields_set[$i]] = $row[$i];
                 }
-                if(!$ret = $db->Replace($tabname,$temp,$primary_key,$autoquote=true)) {
+                if (!$ret = $db->Replace($tabname, $temp, $primary_key, $autoquote = true)) {
                     $msg = error_message($tabname);
                     write_message($msg);
                     write_to_error($msg);
                     return False;
                 }
-            $msg .= "' has be changed in '" . $row[3] . "'\n";
-            write_to_log($msg);
+                $msg .= "' has be changed in '" . $row[3] . "'\n";
+                write_to_log($msg);
             }
         }
     }
@@ -283,15 +292,16 @@ function check_number_gates($tabname, $value, $fields_set, $primary_key) {
 // Manage ENUM problem derived from ADODataDictionary
 // (temporary function; next step: change hrm code concerning ENUM variables /
 // waiting for ADODataDictionary correction)
-function manage_enum($tabname, $field, $values_string, $default) {
+function manage_enum($tabname, $field, $values_string, $default)
+{
     global $db;
 
     if (strcmp($default, 'NULL') != 0)
-        $SQLquery = "ALTER TABLE " . $tabname ." CHANGE " . $field . " " . $field . " ENUM(" . $values_string . ") DEFAULT '" . $default . "'";
+        $SQLquery = "ALTER TABLE " . $tabname . " CHANGE " . $field . " " . $field . " ENUM(" . $values_string . ") DEFAULT '" . $default . "'";
     else
-        $SQLquery = "ALTER TABLE " . $tabname ." CHANGE " . $field . " " . $field . " ENUM(" . $values_string . ")";
+        $SQLquery = "ALTER TABLE " . $tabname . " CHANGE " . $field . " " . $field . " ENUM(" . $values_string . ")";
 
-    if(!$db->execute($SQLquery)) {
+    if (!$db->execute($SQLquery)) {
         $msg = "An error occurred while updating the table " . $tabname . ".";
         write_message($msg);
         write_to_error($msg);
@@ -303,16 +313,16 @@ function manage_enum($tabname, $field, $values_string, $default) {
 
 
 // Search a value into a multidimensional array. Return true if the value has been found, false otherwise
-function in_array_multi($needle,$haystack) {
+function in_array_multi($needle, $haystack)
+{
     $found = false;
-    foreach($haystack as $value) {
-        if((is_array($value) && in_array_multi($needle,$value)) || $value == $needle) {
+    foreach ($haystack as $value) {
+        if ((is_array($value) && in_array_multi($needle, $value)) || $value == $needle) {
             $found = true;
         }
     }
     return $found;
 }
-
 
 
 // =============================================================================
@@ -324,12 +334,12 @@ function in_array_multi($needle,$haystack) {
 // -----------------------------------------------------------------------------
 
 // Open log file
-if (isset($logdir)==false) {
+if (isset($logdir) == false) {
     echo "<strong>Error: the log directory was not set in the configuration!
        Please do it and try again!</strong>";
     return;
 }
-if ( file_exists($logdir)==false) {
+if (file_exists($logdir) == false) {
     echo "<strong>Error: the log directory specified in the configuration does
        not exist! Please create it and make sure that the web server uses
        has read/write access to it!</strong>";
@@ -337,12 +347,12 @@ if ( file_exists($logdir)==false) {
 }
 
 // Define the log and error_log file names
-$log_file   = $logdir . "/dbupdate.log";
+$log_file = $logdir . "/dbupdate.log";
 $error_file = $logdir . "/dbupdate_error.log";
 
 // If the log files do not exist, we create them and set the correct file mode
-foreach ( array( $log_file, $error_file ) as $currentFile ) {
-    if ( file_exists($currentFile)==false) {
+foreach (array($log_file, $error_file) as $currentFile) {
+    if (file_exists($currentFile) == false) {
         if (!($fh = @fopen($currentFile, 'a'))) {
             echo "<strong>Cannot create file " . $currentFile . ".</strong>";
             return;
@@ -369,9 +379,9 @@ if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is c
 write_to_error(timestamp());
 
 //  Check if the database exists; if it does not exist, create it
-$dsn = $db_type."://".$db_user.":".$db_password."@".$db_host;
+$dsn = $db_type . "://" . $db_user . ":" . $db_password . "@" . $db_host;
 $db = ADONewConnection($dsn);
-if(!$db) {
+if (!$db) {
     $msg = "Cannot connect to database host.";
     write_message($msg);
     write_to_error($msg);
@@ -382,7 +392,7 @@ $databases = $db->MetaDatabases();
 if (!in_array($db_name, $databases)) {
     $createDb = $datadict->CreateDatabase($db_name);
     $ret = $datadict->ExecuteSQLArray($createDb);
-    if(!$ret) {
+    if (!$ret) {
         $msg = "An error occurred in the creation of the HRM database.";
         write_message($msg);
         write_to_error($msg);
@@ -394,12 +404,12 @@ if (!in_array($db_name, $databases)) {
 }
 
 // Connect to the database
-$dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
+$dsn = $db_type . "://" . $db_user . ":" . $db_password . "@" . $db_host . "/" . $db_name;
 $db = ADONewConnection($dsn);
-if(!$db) {
-    $msg = "Cannot connect to the database, probably creation failed.\n".
-    "Please check that database user '$db_user' exists\n".
-    "and has privileges to administrate databases.";
+if (!$db) {
+    $msg = "Cannot connect to the database, probably creation failed.\n" .
+        "Please check that database user '$db_user' exists\n" .
+        "and has privileges to administrate databases.";
     write_message($msg);
     write_to_error($msg);
     return;
@@ -410,7 +420,6 @@ $datadict = NewDataDictionary($db);
 
 // Extract the list of existing tables
 $tables = $db->MetaTables("TABLES");
-
 
 
 // -----------------------------------------------------------------------------
@@ -439,7 +448,7 @@ if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set 
     $record["name"] = "dbrevision";
     $record["value"] = "0";
     $insertSQL = $db->GetInsertSQL($rs, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the table \"global_variables\".";
         write_message($msg);
         write_to_error($msg);
@@ -449,8 +458,7 @@ if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set 
     $msg = "Initialized database revision to 0.\n";
     write_message($msg);
     write_to_log($msg);
-}
-else {
+} else {
     $o = $rs->FetchObj();
     $current_revision = $o->value;
 }
@@ -493,15 +501,15 @@ if ($current_revision == 0) {
         return;
 
     // Insert records in table
-    $records = array("parameter"=>array("PinholeSize","RemoveBackgroundPercent","BackgroundOffsetPercent","ExcitationWavelength",
-                        "EmissionWavelength","CMount","TubeFactor","CCDCaptorSizeX","CCDCaptorSizeY","ZStepSize","TimeInterval",
-                        "SignalNoiseRatio","NumberOfIterations","QualityChangeStoppingCriterion"),
-                     "min"=>array("0","0","0","0","0","0.4","1","1","1","50","0.001","0","1","0"),
-                     "max"=>array(NULL,"100","",NULL,NULL,"1","2","25000","25000","600000",NULL,"100","100",NULL),
-                     "min_included"=>array("f","f","t","f","f","t","t","t","t","t","f","f","t","t"),
-                     "max_included"=>array("t","t","f","t","t","t","t","t","t","t","t","t","t","t"),
-                     "standard"=>array(NULL,NULL,NULL,NULL,NULL,"1","1",NULL,NULL,NULL,NULL,NULL,NULL,NULL));
-    if(!insert_records($records,$tabname))
+    $records = array("parameter" => array("PinholeSize", "RemoveBackgroundPercent", "BackgroundOffsetPercent", "ExcitationWavelength",
+        "EmissionWavelength", "CMount", "TubeFactor", "CCDCaptorSizeX", "CCDCaptorSizeY", "ZStepSize", "TimeInterval",
+        "SignalNoiseRatio", "NumberOfIterations", "QualityChangeStoppingCriterion"),
+        "min" => array("0", "0", "0", "0", "0", "0.4", "1", "1", "1", "50", "0.001", "0", "1", "0"),
+        "max" => array(NULL, "100", "", NULL, NULL, "1", "2", "25000", "25000", "600000", NULL, "100", "100", NULL),
+        "min_included" => array("f", "f", "t", "f", "f", "t", "t", "t", "t", "t", "f", "f", "t", "t"),
+        "max_included" => array("t", "t", "f", "t", "t", "t", "t", "t", "t", "t", "t", "t", "t", "t"),
+        "standard" => array(NULL, NULL, NULL, NULL, NULL, "1", "1", NULL, NULL, NULL, NULL, NULL, NULL, NULL));
+    if (!insert_records($records, $tabname))
         return;
 
 
@@ -525,442 +533,442 @@ if ($current_revision == 0) {
 
     // Insert records in table
     $records = array(
-             "parameter"=>array(
-                        "IsMultiChannel",
-                        "IsMultiChannel",
-
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-
-                        "NumberOfChannels",
-                        "NumberOfChannels",
-                        "NumberOfChannels",
-                        "NumberOfChannels",
-
-                        "ImageGeometry",
-                        "ImageGeometry",
-                        "ImageGeometry",
-
-                        "MicroscopeType",
-                        "MicroscopeType",
-                        "MicroscopeType",
-                        "MicroscopeType",
-
-                        "ObjectiveMagnification",
-                        "ObjectiveMagnification",
-                        "ObjectiveMagnification",
-                        "ObjectiveMagnification",
-
-                        "ObjectiveType",
-                        "ObjectiveType",
-                        "ObjectiveType",
-
-                        "SampleMedium",
-                        "SampleMedium",
-
-                        "Binning",
-                        "Binning",
-                        "Binning",
-                        "Binning",
-                        "Binning",
-
-                        "MicroscopeName",
-                        "MicroscopeName",
-                        "MicroscopeName",
-                        "MicroscopeName",
-                        "MicroscopeName",
-                        "MicroscopeName",
-                        "MicroscopeName",
-                        "MicroscopeName",
-
-                        "Resolution",
-                        "Resolution",
-                        "Resolution",
-                        "Resolution",
-                        "Resolution",
-
-                        "RemoveNoiseEffectiveness",
-                        "RemoveNoiseEffectiveness",
-                        "RemoveNoiseEffectiveness",
-
-                        "OutputFileFormat",
-                        "OutputFileFormat",
-                        "OutputFileFormat",
-                        "OutputFileFormat",
-                        "OutputFileFormat",
-
-                        "ObjectiveMagnification",
-                        "ObjectiveMagnification",
-
-                        "PointSpreadFunction",
-                        "PointSpreadFunction",
-
-                        "HasAdaptedValues",
-                        "HasAdaptedValues",
-
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-                        "ImageFileFormat",
-
-                        "ObjectiveType"),
-             "value"=>array(
-                    "True",      /* IsMultiChannel */
-                    "False",
-
-                    "dv",        /* ImageFileFormat */
-                    "stk",
-                    "tiff-series",
-                    "tiff-single",
-                    "ims",
-                    "lsm",
-                    "lsm-single",
-                    "pic",
-
-                    "1",         /* NumberOfChannels */
-                    "2",
-                    "3",
-                    "4",
-
-                    "XYZ",       /* ImageGeometry */
-                    "XY - time",
-                    "XYZ - time",
-
-                    "widefield", /* MicroscopeType */
-                    "multipoint confocal (spinning disk)",
-                    "single point confocal",
-                    "two photon",
-
-                    "10",        /* ObjectiveMagnification */
-                    "20",
-                    "25",
-                    "40",
-
-                    "oil",       /* ObjectiveType */
-                    "water",
-                    "air",
-
-                    "water / buffer",  /* SampleMedium */
-                    "liquid vectashield / 90-10 (v:v) glycerol - PBS ph 7.4",
-
-                    "1",         /* Binning */
-                    "2",
-                    "3",
-                    "4",
-                    "5",
-
-                    "Zeiss 510", /* MicroscopeName */
-                    "Zeiss 410",
-                    "Zeiss Two Photon 1",
-                    "Zeiss Two Photon 2",
-                    "Leica DMRA",
-                    "Leica DMRB",
-                    "Leica Two Photon 1",
-                    "Leica Two Photon 2",
-
-                    "128",       /* Resolution */
-                    "256",
-                    "512",
-                    "1024",
-                    "2048",
-
-                    "1",         /* RemoveNoiseEffectiveness */
-                    "2",
-                    "3",
-
-                    "TIFF 8-bit", /* OutputFileFormat */
-                    "TIFF 16-bit",
-                    "IMS (Imaris Classic)",
-                    "ICS (Image Cytometry Standard)",
-                    "OME-XML",
-
-                    "63",          /* ObjectiveMagnification */
-                    "100",
-
-                    "theoretical", /* PointSpreadFunction */
-                    "measured",
-
-                    "True",        /* HasAdaptedValues */
-                    "False",
-
-                    "ome-xml",     /* ImageFileFormat */
-                    "tiff",
-                    "lif",
-                    "tiff-leica",
-                    "ics",
-
-                    "glycerol"     /* ObjectiveType */
-                    ),
-             "translation"=>array(
-                          "",                       /* IsMultiChannel */
-                          "",
-
-                          "Delta Vision (*.dv)",    /* ImageFileFormat */
-                          "Metamorph (*.stk)",
-                          "Numbered series",
-                          "single XY plane",
-                          "Imaris Classic (*.ims)",
-                          "Zeiss (*.lsm)",
-                          "Zeiss (*.lsm) single XY plane",
-                          "Biorad (*.pic)",
-
-                          "",                       /* NumberOfChannels */
-                          "",
-                          "",
-                          "",
-
-                          "",                       /* ImageGeometry */
-                          "",
-                          "",
-
-                          "widefield",              /* MicroscopeType */
-                          "nipkow",
-                          "confocal",
-                          "widefield",
-
-                          "",                       /* ObjectiveMagnification */
-                          "",
-                          "",
-                          "",
-
-                          "1.515",                  /* ObjectiveType */
-                          "1.3381",
-                          "1.0",
-
-                          "1.339",                  /* SampleMedium */
-                          "1.47",
-
-                          "",                       /* Binning */
-                          "",
-                          "",
-                          "",
-                          "",
-
-                          "",                       /* MicroscopeName */
-                          "",
-                          "",
-                          "",
-                          "",
-                          "",
-                          "",
-                          "",
-
-                          "",                       /* Resolution */
-                          "",
-                          "",
-                          "",
-                          "",
-
-                          "",                    /* RemoveNoiseEffectiveness */
-                          "",
-                          "",
-
-                          "tiff",                /* OutputFileFormat */
-                          "tiff16",
-                          "imaris",
-                          "ics",
-                          "ome",
-
-                          "",                    /* ObjectiveMagnification */
-                          "",
-
-                          "",                    /* PointSpreadFunction */
-                          "",
-
-                          "",                    /* HasAdaptedValues */
-                          "",
-
-                          "OME-XML (*.ome)",      /* ImageFileFormat */
-                          "Olympus FluoView",
-                          "Leica (*.lif)",
-                          "Leica series",
-                          "Image Cytometry Standard (*.ics/*.ids)",
-
-                          "1.4729"                /* ObjectiveType */
-                          ),
-             "isDefault"=>array(
-                        "f",                   /* IsMultiChannel */
-                        "f",
-
-                        "f",                   /* ImageFileFormat */
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-
-                        "f",                    /* NumberOfChannels */
-                        "f",
-                        "f",
-                        "f",
-
-                        "f",                    /* ImageGeometry */
-                        "f",
-                        "f",
-
-                        "f",                    /* MicroscopeType */
-                        "f",
-                        "f",
-                        "f",
-
-                        "f",                     /* ObjectiveMagnification */
-                        "f",
-                        "f",
-                        "f",
-
-                        "f",                     /* ObjectiveType */
-                        "f",
-                        "f",
-
-                        "f",                     /* SampleMedium */
-                        "f",
-
-                        "f",                     /* Binning */
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-
-                        "f",                     /* MicroscopeName */
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-
-                        "f",                     /* Resolution */
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-
-                        "f",                /* RemoveNoiseEffectiveness */
-                        "f",
-                        "f",
-
-                        "f",                     /* OutputFileFormat */
-                        "f",
-                        "t",
-                        "f",
-                        "f",
-
-                        "f",                   /* ObjectiveMagnification */
-                        "f",
-
-                        "f",                    /* PointSpreadFunction */
-                        "f",
-
-                        "f",                    /* HasAdaptedValues */
-                        "f",
-
-                        "f",                    /* ImageFileFormat */
-                        "f",
-                        "f",
-                        "f",
-                        "f",
-
-                        "f"                     /* ObjectiveType */
-                        ),
-             "parameter_key"=>array(
-                    "IsMultiChannel1",          /* IsMultiChannel */
-                    "IsMultiChannel2",
-
-                    "ImageFileFormat1",          /* ImageFileFormat */
-                    "ImageFileFormat2",
-                    "ImageFileFormat3",
-                    "ImageFileFormat4",
-                    "ImageFileFormat5",
-                    "ImageFileFormat6",
-                    "ImageFileFormat7",
-                    "ImageFileFormat8",
-
-                    "NumberOfChannels1",         /* NumberOfChannels */
-                    "NumberOfChannels2",
-                    "NumberOfChannels3",
-                    "NumberOfChannels4",
-
-                    "ImageGeometry1",            /* ImageGeometry */
-                    "ImageGeometry2",
-                    "ImageGeometry3",
-
-                    "MicroscopeType1",           /* MicroscopeType */
-                    "MicroscopeType2",
-                    "MicroscopeType3",
-                    "MicroscopeType4",
-
-                    "ObjectiveMagnification1",   /* ObjectiveMagnification */
-                    "ObjectiveMagnification2",
-                    "ObjectiveMagnification3",
-                    "ObjectiveMagnification4",
-
-                    "ObjectiveType1",                /* ObjectiveType */
-                    "ObjectiveType2",
-                    "ObjectiveType3",
-
-                    "SampleMedium1",                 /* SampleMedium */
-                    "SampleMedium2",
-
-                    "Binning1",                      /* Binning */
-                    "Binning2",
-                    "Binning3",
-                    "Binning4",
-                    "Binning5",
-
-                    "MicroscopeName1",               /* MicroscopeName */
-                    "MicroscopeName2",
-                    "MicroscopeName3",
-                    "MicroscopeName4",
-                    "MicroscopeName5",
-                    "MicroscopeName6",
-                    "MicroscopeName7",
-                    "MicroscopeName8",
-
-                    "Resolution1",                   /* Resolution */
-                    "Resolution2",
-                    "Resolution3",
-                    "Resolution4",
-                    "Resolution5",
-
-                    "RemoveNoiseEffectiveness1",  /* RemoveNoiseEffectiveness */
-                    "RemoveNoiseEffectiveness2",
-                    "RemoveNoiseEffectiveness3",
-
-                    "OutputFileFormat1",            /* OutputFileFormat */
-                    "OutputFileFormat2",
-                    "OutputFileFormat3",
-                    "OutputFileFormat4",
-                    "OutputFileFormat5",
-
-                    "ObjectiveMagnification1",      /* ObjectiveMagnification */
-                    "ObjectiveMagnification2",
-
-                    "PointSpreadFunction1",       /* PointSpreadFunction */
-                    "PointSpreadFunction2",
-
-                    "HasAdaptedValues1",          /* HasAdaptedValues */
-                    "HasAdaptedValues2",
-
-                    "ImageFileFormat1",           /* ImageFileFormat */
-                    "ImageFileFormat2",
-                    "ImageFileFormat3",
-                    "ImageFileFormat4",
-                    "ImageFileFormat5",
-
-                    "ObjectiveType"               /* Objective Type */
-                    )
-                 );
-    if(!insert_records($records,$tabname))
+        "parameter" => array(
+            "IsMultiChannel",
+            "IsMultiChannel",
+
+            "ImageFileFormat",
+            "ImageFileFormat",
+            "ImageFileFormat",
+            "ImageFileFormat",
+            "ImageFileFormat",
+            "ImageFileFormat",
+            "ImageFileFormat",
+            "ImageFileFormat",
+
+            "NumberOfChannels",
+            "NumberOfChannels",
+            "NumberOfChannels",
+            "NumberOfChannels",
+
+            "ImageGeometry",
+            "ImageGeometry",
+            "ImageGeometry",
+
+            "MicroscopeType",
+            "MicroscopeType",
+            "MicroscopeType",
+            "MicroscopeType",
+
+            "ObjectiveMagnification",
+            "ObjectiveMagnification",
+            "ObjectiveMagnification",
+            "ObjectiveMagnification",
+
+            "ObjectiveType",
+            "ObjectiveType",
+            "ObjectiveType",
+
+            "SampleMedium",
+            "SampleMedium",
+
+            "Binning",
+            "Binning",
+            "Binning",
+            "Binning",
+            "Binning",
+
+            "MicroscopeName",
+            "MicroscopeName",
+            "MicroscopeName",
+            "MicroscopeName",
+            "MicroscopeName",
+            "MicroscopeName",
+            "MicroscopeName",
+            "MicroscopeName",
+
+            "Resolution",
+            "Resolution",
+            "Resolution",
+            "Resolution",
+            "Resolution",
+
+            "RemoveNoiseEffectiveness",
+            "RemoveNoiseEffectiveness",
+            "RemoveNoiseEffectiveness",
+
+            "OutputFileFormat",
+            "OutputFileFormat",
+            "OutputFileFormat",
+            "OutputFileFormat",
+            "OutputFileFormat",
+
+            "ObjectiveMagnification",
+            "ObjectiveMagnification",
+
+            "PointSpreadFunction",
+            "PointSpreadFunction",
+
+            "HasAdaptedValues",
+            "HasAdaptedValues",
+
+            "ImageFileFormat",
+            "ImageFileFormat",
+            "ImageFileFormat",
+            "ImageFileFormat",
+            "ImageFileFormat",
+
+            "ObjectiveType"),
+        "value" => array(
+            "True",      /* IsMultiChannel */
+            "False",
+
+            "dv",        /* ImageFileFormat */
+            "stk",
+            "tiff-series",
+            "tiff-single",
+            "ims",
+            "lsm",
+            "lsm-single",
+            "pic",
+
+            "1",         /* NumberOfChannels */
+            "2",
+            "3",
+            "4",
+
+            "XYZ",       /* ImageGeometry */
+            "XY - time",
+            "XYZ - time",
+
+            "widefield", /* MicroscopeType */
+            "multipoint confocal (spinning disk)",
+            "single point confocal",
+            "two photon",
+
+            "10",        /* ObjectiveMagnification */
+            "20",
+            "25",
+            "40",
+
+            "oil",       /* ObjectiveType */
+            "water",
+            "air",
+
+            "water / buffer",  /* SampleMedium */
+            "liquid vectashield / 90-10 (v:v) glycerol - PBS ph 7.4",
+
+            "1",         /* Binning */
+            "2",
+            "3",
+            "4",
+            "5",
+
+            "Zeiss 510", /* MicroscopeName */
+            "Zeiss 410",
+            "Zeiss Two Photon 1",
+            "Zeiss Two Photon 2",
+            "Leica DMRA",
+            "Leica DMRB",
+            "Leica Two Photon 1",
+            "Leica Two Photon 2",
+
+            "128",       /* Resolution */
+            "256",
+            "512",
+            "1024",
+            "2048",
+
+            "1",         /* RemoveNoiseEffectiveness */
+            "2",
+            "3",
+
+            "TIFF 8-bit", /* OutputFileFormat */
+            "TIFF 16-bit",
+            "IMS (Imaris Classic)",
+            "ICS (Image Cytometry Standard)",
+            "OME-XML",
+
+            "63",          /* ObjectiveMagnification */
+            "100",
+
+            "theoretical", /* PointSpreadFunction */
+            "measured",
+
+            "True",        /* HasAdaptedValues */
+            "False",
+
+            "ome-xml",     /* ImageFileFormat */
+            "tiff",
+            "lif",
+            "tiff-leica",
+            "ics",
+
+            "glycerol"     /* ObjectiveType */
+        ),
+        "translation" => array(
+            "",                       /* IsMultiChannel */
+            "",
+
+            "Delta Vision (*.dv)",    /* ImageFileFormat */
+            "Metamorph (*.stk)",
+            "Numbered series",
+            "single XY plane",
+            "Imaris Classic (*.ims)",
+            "Zeiss (*.lsm)",
+            "Zeiss (*.lsm) single XY plane",
+            "Biorad (*.pic)",
+
+            "",                       /* NumberOfChannels */
+            "",
+            "",
+            "",
+
+            "",                       /* ImageGeometry */
+            "",
+            "",
+
+            "widefield",              /* MicroscopeType */
+            "nipkow",
+            "confocal",
+            "widefield",
+
+            "",                       /* ObjectiveMagnification */
+            "",
+            "",
+            "",
+
+            "1.515",                  /* ObjectiveType */
+            "1.3381",
+            "1.0",
+
+            "1.339",                  /* SampleMedium */
+            "1.47",
+
+            "",                       /* Binning */
+            "",
+            "",
+            "",
+            "",
+
+            "",                       /* MicroscopeName */
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+
+            "",                       /* Resolution */
+            "",
+            "",
+            "",
+            "",
+
+            "",                    /* RemoveNoiseEffectiveness */
+            "",
+            "",
+
+            "tiff",                /* OutputFileFormat */
+            "tiff16",
+            "imaris",
+            "ics",
+            "ome",
+
+            "",                    /* ObjectiveMagnification */
+            "",
+
+            "",                    /* PointSpreadFunction */
+            "",
+
+            "",                    /* HasAdaptedValues */
+            "",
+
+            "OME-XML (*.ome)",      /* ImageFileFormat */
+            "Olympus FluoView",
+            "Leica (*.lif)",
+            "Leica series",
+            "Image Cytometry Standard (*.ics/*.ids)",
+
+            "1.4729"                /* ObjectiveType */
+        ),
+        "isDefault" => array(
+            "f",                   /* IsMultiChannel */
+            "f",
+
+            "f",                   /* ImageFileFormat */
+            "f",
+            "f",
+            "f",
+            "f",
+            "f",
+            "f",
+            "f",
+
+            "f",                    /* NumberOfChannels */
+            "f",
+            "f",
+            "f",
+
+            "f",                    /* ImageGeometry */
+            "f",
+            "f",
+
+            "f",                    /* MicroscopeType */
+            "f",
+            "f",
+            "f",
+
+            "f",                     /* ObjectiveMagnification */
+            "f",
+            "f",
+            "f",
+
+            "f",                     /* ObjectiveType */
+            "f",
+            "f",
+
+            "f",                     /* SampleMedium */
+            "f",
+
+            "f",                     /* Binning */
+            "f",
+            "f",
+            "f",
+            "f",
+
+            "f",                     /* MicroscopeName */
+            "f",
+            "f",
+            "f",
+            "f",
+            "f",
+            "f",
+            "f",
+
+            "f",                     /* Resolution */
+            "f",
+            "f",
+            "f",
+            "f",
+
+            "f",                /* RemoveNoiseEffectiveness */
+            "f",
+            "f",
+
+            "f",                     /* OutputFileFormat */
+            "f",
+            "t",
+            "f",
+            "f",
+
+            "f",                   /* ObjectiveMagnification */
+            "f",
+
+            "f",                    /* PointSpreadFunction */
+            "f",
+
+            "f",                    /* HasAdaptedValues */
+            "f",
+
+            "f",                    /* ImageFileFormat */
+            "f",
+            "f",
+            "f",
+            "f",
+
+            "f"                     /* ObjectiveType */
+        ),
+        "parameter_key" => array(
+            "IsMultiChannel1",          /* IsMultiChannel */
+            "IsMultiChannel2",
+
+            "ImageFileFormat1",          /* ImageFileFormat */
+            "ImageFileFormat2",
+            "ImageFileFormat3",
+            "ImageFileFormat4",
+            "ImageFileFormat5",
+            "ImageFileFormat6",
+            "ImageFileFormat7",
+            "ImageFileFormat8",
+
+            "NumberOfChannels1",         /* NumberOfChannels */
+            "NumberOfChannels2",
+            "NumberOfChannels3",
+            "NumberOfChannels4",
+
+            "ImageGeometry1",            /* ImageGeometry */
+            "ImageGeometry2",
+            "ImageGeometry3",
+
+            "MicroscopeType1",           /* MicroscopeType */
+            "MicroscopeType2",
+            "MicroscopeType3",
+            "MicroscopeType4",
+
+            "ObjectiveMagnification1",   /* ObjectiveMagnification */
+            "ObjectiveMagnification2",
+            "ObjectiveMagnification3",
+            "ObjectiveMagnification4",
+
+            "ObjectiveType1",                /* ObjectiveType */
+            "ObjectiveType2",
+            "ObjectiveType3",
+
+            "SampleMedium1",                 /* SampleMedium */
+            "SampleMedium2",
+
+            "Binning1",                      /* Binning */
+            "Binning2",
+            "Binning3",
+            "Binning4",
+            "Binning5",
+
+            "MicroscopeName1",               /* MicroscopeName */
+            "MicroscopeName2",
+            "MicroscopeName3",
+            "MicroscopeName4",
+            "MicroscopeName5",
+            "MicroscopeName6",
+            "MicroscopeName7",
+            "MicroscopeName8",
+
+            "Resolution1",                   /* Resolution */
+            "Resolution2",
+            "Resolution3",
+            "Resolution4",
+            "Resolution5",
+
+            "RemoveNoiseEffectiveness1",  /* RemoveNoiseEffectiveness */
+            "RemoveNoiseEffectiveness2",
+            "RemoveNoiseEffectiveness3",
+
+            "OutputFileFormat1",            /* OutputFileFormat */
+            "OutputFileFormat2",
+            "OutputFileFormat3",
+            "OutputFileFormat4",
+            "OutputFileFormat5",
+
+            "ObjectiveMagnification1",      /* ObjectiveMagnification */
+            "ObjectiveMagnification2",
+
+            "PointSpreadFunction1",       /* PointSpreadFunction */
+            "PointSpreadFunction2",
+
+            "HasAdaptedValues1",          /* HasAdaptedValues */
+            "HasAdaptedValues2",
+
+            "ImageFileFormat1",           /* ImageFileFormat */
+            "ImageFileFormat2",
+            "ImageFileFormat3",
+            "ImageFileFormat4",
+            "ImageFileFormat5",
+
+            "ObjectiveType"               /* Objective Type */
+        )
+    );
+    if (!insert_records($records, $tabname))
         return;
 
 
@@ -982,10 +990,10 @@ if ($current_revision == 0) {
         return;
 
     // Insert records in table
-    $records = array("name"=>array("XYZ","XYZ - time","XY - time"),
-                    "isThreeDimensional"=>array("t","t","f"),
-                    "isTimeSeries"=>array("f","t","t"));
-    if(!insert_records($records,$tabname))
+    $records = array("name" => array("XYZ", "XYZ - time", "XY - time"),
+        "isThreeDimensional" => array("t", "t", "f"),
+        "isTimeSeries" => array("f", "t", "t"));
+    if (!insert_records($records, $tabname))
         return;
 
 
@@ -1008,11 +1016,11 @@ if ($current_revision == 0) {
         return;
 
     // Insert records in table
-    $records = array("name"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single"),
-                    "isFixedGeometry"=>array("f","f","f","f","f","f","t","f","f","f","f","f","f","t"),
-                    "isSingleChannel"=>array("f","f","f","f","f","f","f","f","f","f","f","f","f","f"),
-                    "isVariableChannel"=>array("t","t","t","t","t","t","t","t","t","t","t","t","t","t"));
-    if(!insert_records($records,$tabname))
+    $records = array("name" => array("dv", "ics", "ics2", "ims", "lif", "lsm", "lsm-single", "ome-xml", "pic", "stk", "tiff", "tiff-leica", "tiff-series", "tiff-single"),
+        "isFixedGeometry" => array("f", "f", "f", "f", "f", "f", "t", "f", "f", "f", "f", "f", "f", "t"),
+        "isSingleChannel" => array("f", "f", "f", "f", "f", "f", "f", "f", "f", "f", "f", "f", "f", "f"),
+        "isVariableChannel" => array("t", "t", "t", "t", "t", "t", "t", "t", "t", "t", "t", "t", "t", "t"));
+    if (!insert_records($records, $tabname))
         return;
 
 
@@ -1033,11 +1041,11 @@ if ($current_revision == 0) {
         return;
 
     // Insert records in table
-    $records = array("file_format"=>array("dv","ics","ics2","ims","lif","lsm","lsm-single","ome-xml","pic","stk","tiff","tiff-leica","tiff-series","tiff-single",
-                                            "tiff","tiff-leica","tiff-series","tiff-single"),
-                    "extension"=>array("dv","ics","ics2","ims","lif","lsm","lsm","ome","pic","stk","tif","tif","tif","tif",
-                                            "tiff","tiff","tiff","tiff"));
-    if(!insert_records($records,$tabname))
+    $records = array("file_format" => array("dv", "ics", "ics2", "ims", "lif", "lsm", "lsm-single", "ome-xml", "pic", "stk", "tiff", "tiff-leica", "tiff-series", "tiff-single",
+        "tiff", "tiff-leica", "tiff-series", "tiff-single"),
+        "extension" => array("dv", "ics", "ics2", "ims", "lif", "lsm", "lsm", "ome", "pic", "stk", "tif", "tif", "tif", "tif",
+            "tiff", "tiff", "tiff", "tiff"));
+    if (!insert_records($records, $tabname))
         return;
 
 
@@ -1058,9 +1066,9 @@ if ($current_revision == 0) {
         return;
 
     // Insert records in table
-    $records = array("field"=>array("switch"),
-                    "value"=>array("on"));
-    if(!insert_records($records,$tabname))
+    $records = array("field" => array("switch"),
+        "value" => array("on"));
+    if (!insert_records($records, $tabname))
         return;
 
 
@@ -1242,11 +1250,11 @@ if ($current_revision == 0) {
         if (!create_table($tabname, $flds))
             return;
         // Insert records in table
-        $records = array("name"=>array("localhost"),
-                    "huscript_path"=>array("/usr/local/bin/hucore"),
-                    "status"=>array("free"),
-                    "job"=>array(""));
-        if(!insert_records($records,$tabname))
+        $records = array("name" => array("localhost"),
+            "huscript_path" => array("/usr/local/bin/hucore"),
+            "status" => array("free"),
+            "job" => array(""));
+        if (!insert_records($records, $tabname))
             return;
     }
 
@@ -1260,7 +1268,7 @@ if ($current_revision == 0) {
         password C(255) NOTNULL,
         email C(80) NOTNULL,
         research_group C(30) NOTNULL,
-        creation_date T NOTNULL DEFAULT '" . $defaultTimestamp ."',
+        creation_date T NOTNULL DEFAULT '" . $defaultTimestamp . "',
         last_access_date T NOTNULL DEFAULT '" . $defaultTimestamp . "',
         status C(10) NOTNULL
     ";
@@ -1270,16 +1278,16 @@ if ($current_revision == 0) {
     }
 
     $rs = $db->Execute("SELECT * FROM username WHERE name = 'admin'");
-    if($rs->EOF) {
-        $records = array("name"=>array("admin"),
-                    "password"=>array("e903fece385fd2167780216958310b0d"),
-                    "email"=>array(" "),
-                    "research_group"=>array(" "),
-                    "creation_date"=>array($defaultTimestamp),
-                    "last_access"=>array($defaultTimestamp),
-                    "status"=>array("a")
-                    );
-        if(!insert_records($records,$tabname))
+    if ($rs->EOF) {
+        $records = array("name" => array("admin"),
+            "password" => array("e903fece385fd2167780216958310b0d"),
+            "email" => array(" "),
+            "research_group" => array(" "),
+            "creation_date" => array($defaultTimestamp),
+            "last_access" => array($defaultTimestamp),
+            "status" => array("a")
+        );
+        if (!insert_records($records, $tabname))
             return;
     }
 
@@ -1303,25 +1311,25 @@ if ($current_revision == 0) {
         if (!create_table($tabname, $flds))
             return;
     }
-    $fields_set = array('owner','setting','name','value');
-    $primary_key = array('owner','setting','name');
+    $fields_set = array('owner', 'setting', 'name', 'value');
+    $primary_key = array('owner', 'setting', 'name');
     // Verify fields (number of #) where value = 'NumberOfIterationsRange'
-    if(!check_number_gates($tabname,'NumberOfIterationsRange',$fields_set,$primary_key))
+    if (!check_number_gates($tabname, 'NumberOfIterationsRange', $fields_set, $primary_key))
         return;
     // Verify fields (number of #) where value = 'RemoveBackgroundPercent'
-    if(!check_number_gates($tabname,'RemoveBackgroundPercent',$fields_set,$primary_key))
+    if (!check_number_gates($tabname, 'RemoveBackgroundPercent', $fields_set, $primary_key))
         return;
     // Verify fields (number of #) where value = 'SignalNoiseRatio'
-    if(!check_number_gates($tabname,'SignalNoiseRatio',$fields_set,$primary_key))
+    if (!check_number_gates($tabname, 'SignalNoiseRatio', $fields_set, $primary_key))
         return;
     // Verify fields (number of #) where value = 'SignalNoiseRatioRange'
-    if(!check_number_gates($tabname,'SignalNoiseRatioRange',$fields_set,$primary_key))
+    if (!check_number_gates($tabname, 'SignalNoiseRatioRange', $fields_set, $primary_key))
         return;
     // Verify fields (number of #) where value = 'BackgroundOffsetPercent'
-    if(!check_number_gates($tabname,'BackgroundOffsetPercent',$fields_set,$primary_key))
+    if (!check_number_gates($tabname, 'BackgroundOffsetPercent', $fields_set, $primary_key))
         return;
     // Verify fields (number of #) where value = 'BackgroundOffsetRange'
-    if(!check_number_gates($tabname,'BackgroundOffsetRange',$fields_set,$primary_key))
+    if (!check_number_gates($tabname, 'BackgroundOffsetRange', $fields_set, $primary_key))
         return;
 
 
@@ -1338,31 +1346,30 @@ if ($current_revision == 0) {
         if (!create_table($tabname, $flds))
             return;
     }
-    $fields_set = array('owner','setting','name','value');
-    $primary_key = array('owner','setting','name');
+    $fields_set = array('owner', 'setting', 'name', 'value');
+    $primary_key = array('owner', 'setting', 'name');
     // Verify fields (number of #) where value = 'PSF'
-    if(!check_number_gates($tabname,'PSF',$fields_set,$primary_key))
+    if (!check_number_gates($tabname, 'PSF', $fields_set, $primary_key))
         return;
     // Verify fields (number of #) where value = 'PinholeSize'
-    if(!check_number_gates($tabname,'PinholeSize',$fields_set,$primary_key))
+    if (!check_number_gates($tabname, 'PinholeSize', $fields_set, $primary_key))
         return;
     // Verify fields (number of #) where value = 'EmissionWavelength'
-    if(!check_number_gates($tabname,'EmissionWavelength',$fields_set,$primary_key))
+    if (!check_number_gates($tabname, 'EmissionWavelength', $fields_set, $primary_key))
         return;
     // Verify fields (number of #) where value = 'ExcitationWavelength'
-    if(!check_number_gates($tabname,'ExcitationWavelength',$fields_set,$primary_key))
+    if (!check_number_gates($tabname, 'ExcitationWavelength', $fields_set, $primary_key))
         return;
 }
-
 
 
 // -----------------------------------------------------------------------------
 // Update the database to the last revision
 // -----------------------------------------------------------------------------
-$msg = "Needed database revision for HRM v" .System::getHRMVersionAsString( ) .
+$msg = "Needed database revision for HRM v" . System::getHRMVersionAsString() .
     " is number " . $LAST_REVISION . ".\n";
 $msg .= "Current database revision is number " . $current_revision . ".\n";
-if( $LAST_REVISION == $current_revision ) {
+if ($LAST_REVISION == $current_revision) {
     $msg .= "Nothing to do.\n";
     write_message($msg);
     write_to_log($msg);
@@ -1374,7 +1381,6 @@ if( $LAST_REVISION == $current_revision ) {
 }
 write_message($msg);
 write_to_log($msg);
-
 
 
 // -----------------------------------------------------------------------------
@@ -1390,7 +1396,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Classic Maximum Likelihood Estimation";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -1401,14 +1407,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Quick Maximum Likelihood Estimation";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
     }
 
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -1416,7 +1422,6 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
-
 
 
 // -----------------------------------------------------------------------------
@@ -1432,14 +1437,14 @@ if ($current_revision < $n) {
     $record["translation"] = "ics2";
     $record["isDefault"] = "F";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
     }
 
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -1447,7 +1452,6 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
-
 
 
 // -----------------------------------------------------------------------------
@@ -1458,7 +1462,7 @@ $n = 3;
 if ($current_revision < $n) {
     $tabname = "possible_values";
     $rs = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition'");
-    if(!$rs) {
+    if (!$rs) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -1471,7 +1475,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Plane 0 is closest to the coverslip";
     $record["isDefault"] = "T";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -1482,7 +1486,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Plane 0 is farthest from the coverslip";
     $record["isDefault"] = "F";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -1492,7 +1496,7 @@ if ($current_revision < $n) {
     $record["value"] = "ignore";
     $record["translation"] = "Do not perform depth-dependent correction";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -1501,20 +1505,20 @@ if ($current_revision < $n) {
 
     // Check if the value are correct in parameter (correction respect to the previous version top/bottom/ignore)
     $rs = $db->Execute("SELECT * FROM parameter WHERE name = 'CoverslipRelativePosition'");
-    if($rs) {
+    if ($rs) {
         while ($row = $rs->FetchRow()) {
-            if(strcmp($row[2],'CoverslipRelativePosition') == 0) {
-                if(strcmp($row[3],'top') == 0)
+            if (strcmp($row[2], 'CoverslipRelativePosition') == 0) {
+                if (strcmp($row[3], 'top') == 0)
                     $row[3] = 'closest';
-                elseif(strcmp($row[3],'bottom') == 0)
+                elseif (strcmp($row[3], 'bottom') == 0)
                     $row[3] = 'farthest';
 
-                $fields_set = array('owner','setting','name','value');
-                for($i = 0; $i < count($fields_set); $i++) {
+                $fields_set = array('owner', 'setting', 'name', 'value');
+                for ($i = 0; $i < count($fields_set); $i++) {
                     $temp[$fields_set[$i]] = $row[$i];
                 }
                 $primary_key = array('owner', 'setting', 'name');
-                if(!$ret = $db->Replace('parameter',$temp,$primary_key,$autoquote=true)) {
+                if (!$ret = $db->Replace('parameter', $temp, $primary_key, $autoquote = true)) {
                     $msg = error_message('parameter');
                     write_message($msg);
                     write_to_error($msg);
@@ -1524,7 +1528,7 @@ if ($current_revision < $n) {
         }
     }
 
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -1545,7 +1549,7 @@ if ($current_revision < $n) {
     $record["file_format"] = "zvi";
     $record["extension"] = "zvi";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -1559,7 +1563,7 @@ if ($current_revision < $n) {
     $record["isSingleChannel"] = "f";
     $record["isVariableChannel"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -1573,14 +1577,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Zeiss Vision ZVI (*.zvi)";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
     }
 
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -1601,7 +1605,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
     if (!($rs->EOF)) {
         $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'CoverslipRelativePosition' AND value = 'ignore'");
-        if(!$rss) {
+        if (!$rss) {
             $msg = "An error occurred while updating the database to revision " . $n . ".\n";
             write_message($msg);
             write_to_error($msg);
@@ -1612,7 +1616,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter = 'PerformAberrationCorrection' AND translation = 'Do not perform depth-dependent correction'");
     if (!($rs->EOF)) {
         $rss = $db->Execute("DELETE FROM " . $tabname . " WHERE parameter = 'PerformAberrationCorrection' AND translation = 'Do not perform depth-dependent correction'");
-        if(!$rss) {
+        if (!$rss) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -1628,7 +1632,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -1642,7 +1646,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -1657,7 +1661,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -1672,7 +1676,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -1686,7 +1690,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -1701,7 +1705,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "' AND translation='" . $record["translation"] . "' AND isDefault='" . $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -1721,7 +1725,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -1729,7 +1733,7 @@ if ($current_revision < $n) {
         }
     }
 
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -1737,7 +1741,6 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
-
 
 
 // -----------------------------------------------------------------------------
@@ -1755,14 +1758,14 @@ if ($current_revision < $n) {
         name C(30) NOTNULL DEFAULT 0 PRIMARY,
         value C(255) DEFAULT NULL
     ";
-    $colnames = array("owner","setting","name","value");
+    $colnames = array("owner", "setting", "name", "value");
     $multiarray = $db->GetArray("SELECT * from " . $tabname);
-    if(!drop_table($tabname))
+    if (!drop_table($tabname))
         return;
-    if(!create_table($tabname, $flds))
+    if (!create_table($tabname, $flds))
         return;
-    foreach($multiarray as $array) {
-        if(!insert_record($tabname, $array, $colnames))
+    foreach ($multiarray as $array) {
+        if (!insert_record($tabname, $array, $colnames))
             return;
     }
 
@@ -1772,14 +1775,14 @@ if ($current_revision < $n) {
         name C(191) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
-    $colnames = array("owner","name","standard");
+    $colnames = array("owner", "name", "standard");
     $multiarray = $db->GetArray("SELECT * from " . $tabname);
-    if(!drop_table($tabname))
+    if (!drop_table($tabname))
         return;
-    if(!create_table($tabname, $flds))
+    if (!create_table($tabname, $flds))
         return;
-    foreach($multiarray as $array) {
-        if(!insert_record($tabname, $array, $colnames))
+    foreach ($multiarray as $array) {
+        if (!insert_record($tabname, $array, $colnames))
             return;
     }
 
@@ -1790,14 +1793,14 @@ if ($current_revision < $n) {
         name C(30) NOTNULL PRIMARY,
         value C(255) DEFAULT NULL
     ";
-    $colnames = array("owner","setting","name","value");
+    $colnames = array("owner", "setting", "name", "value");
     $multiarray = $db->GetArray("SELECT * from " . $tabname);
-    if(!drop_table($tabname))
+    if (!drop_table($tabname))
         return;
-    if(!create_table($tabname, $flds))
+    if (!create_table($tabname, $flds))
         return;
-    foreach($multiarray as $array) {
-        if(!insert_record($tabname, $array, $colnames))
+    foreach ($multiarray as $array) {
+        if (!insert_record($tabname, $array, $colnames))
             return;
     }
 
@@ -1807,14 +1810,14 @@ if ($current_revision < $n) {
         name C(191) NOTNULL PRIMARY,
         standard C(1) DEFAULT f
     ";
-    $colnames = array("owner","name","standard");
+    $colnames = array("owner", "name", "standard");
     $multiarray = $db->GetArray("SELECT * from " . $tabname);
-    if(!drop_table($tabname))
+    if (!drop_table($tabname))
         return;
-    if(!create_table($tabname, $flds))
+    if (!create_table($tabname, $flds))
         return;
-    foreach($multiarray as $array) {
-        if(!insert_record($tabname, $array, $colnames))
+    foreach ($multiarray as $array) {
+        if (!insert_record($tabname, $array, $colnames))
             return;
     }
 
@@ -1825,14 +1828,14 @@ if ($current_revision < $n) {
         translation C(255) DEFAULT NULL,
         isDefault C(1) DEFAULT f
     ";
-    $colnames = array("parameter","value","translation","isDefault");
+    $colnames = array("parameter", "value", "translation", "isDefault");
     $multiarray = $db->GetArray("SELECT * from " . $tabname);
-    if(!drop_table($tabname))
+    if (!drop_table($tabname))
         return;
-    if(!create_table($tabname, $flds))
+    if (!create_table($tabname, $flds))
         return;
-    foreach($multiarray as $array) {
-        if(!insert_record($tabname, $array, $colnames))
+    foreach ($multiarray as $array) {
+        if (!insert_record($tabname, $array, $colnames))
             return;
     }
 
@@ -1840,10 +1843,10 @@ if ($current_revision < $n) {
     $record[$colnames[1]] = "0";
     $record[$colnames[2]] = "No, do not perform depth-dependent correction";
     $record[$colnames[3]] = "T";
-    $array = array("PerformAberrationCorrection","0","No, do not perform depth-dependent correction","t");
+    $array = array("PerformAberrationCorrection", "0", "No, do not perform depth-dependent correction", "t");
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if (!($rs->EOF)) {
-        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+        if (!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
@@ -1853,7 +1856,7 @@ if ($current_revision < $n) {
     }
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
-        if(!insert_record($tabname, $array, $colnames))
+        if (!insert_record($tabname, $array, $colnames))
             return;
     }
 
@@ -1861,10 +1864,10 @@ if ($current_revision < $n) {
     $record[$colnames[1]] = "user";
     $record[$colnames[2]] = "Deconvolution with PSF generated at user-defined depth";
     $record[$colnames[3]] = "T";
-    $array = array("AdvancedCorrectionOptions","user","Deconvolution with PSF generated at user-defined depth","T");
+    $array = array("AdvancedCorrectionOptions", "user", "Deconvolution with PSF generated at user-defined depth", "T");
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record[$colnames[0]] . "' AND value='" . $record[$colnames[1]] . "'");
     if (!($rs->EOF)) {
-        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record[$colnames[0]] . "' AND value='" . $record[$colnames[1]] . "'")) {
+        if (!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record[$colnames[0]] . "' AND value='" . $record[$colnames[1]] . "'")) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
@@ -1874,17 +1877,17 @@ if ($current_revision < $n) {
     }
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
-        if(!insert_record($tabname, $array, $colnames))
+        if (!insert_record($tabname, $array, $colnames))
             return;
     }
 
     $record[$colnames[1]] = "slice";
     $record[$colnames[2]] = "Depth-dependent correction performed slice by slice";
     $record[$colnames[3]] = "F";
-    $array = array("AdvancedCorrectionOptions","slice","Depth-dependent correction performed slice by slice","F");
+    $array = array("AdvancedCorrectionOptions", "slice", "Depth-dependent correction performed slice by slice", "F");
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if (!($rs->EOF)) {
-        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+        if (!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
@@ -1894,17 +1897,17 @@ if ($current_revision < $n) {
     }
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
-        if(!insert_record($tabname, $array, $colnames))
+        if (!insert_record($tabname, $array, $colnames))
             return;
     }
 
     $record[$colnames[1]] = "few";
     $record[$colnames[2]] = "Depth-dependent correction performed on few bricks";
     $record[$colnames[3]] = "F";
-    $array = array("AdvancedCorrectionOptions","few","Depth-dependent correction performed on few bricks","F");
+    $array = array("AdvancedCorrectionOptions", "few", "Depth-dependent correction performed on few bricks", "F");
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if (!($rs->EOF)) {
-        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+        if (!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
@@ -1914,11 +1917,11 @@ if ($current_revision < $n) {
     }
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
-        if(!insert_record($tabname, $array, $colnames))
+        if (!insert_record($tabname, $array, $colnames))
             return;
     }
 
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -2014,7 +2017,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" . $record["file_format"] . "' AND extension='" . $record["extension"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2031,7 +2034,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" . $record["name"] . "' AND isFixedGeometry='" . $record["isFixedGeometry"] . "' AND isSingleChannel='" . $record["isSingleChannel"] . "'AND isVariableChannel='" . $record["isVariableChannel"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2048,7 +2051,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2064,7 +2067,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2079,7 +2082,7 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if (!($rs->EOF)) {
-        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+        if (!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
@@ -2096,7 +2099,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2111,12 +2114,12 @@ if ($current_revision < $n) {
         $rs = $db->Execute("SELECT * FROM " . $tabname);
         $temp = $rs->RecordCount();
         //write_message("Record count = " . $temp);
-        if($temp == 0) {
-            $records = array("name"=>array("localhost"),
-                    "huscript_path"=>array("/usr/local/bin/hucore"),
-                    "status"=>array("free"),
-                    "job"=>array(""));
-            if(!insert_records($records,$tabname)) {
+        if ($temp == 0) {
+            $records = array("name" => array("localhost"),
+                "huscript_path" => array("/usr/local/bin/hucore"),
+                "status" => array("free"),
+                "job" => array(""));
+            if (!insert_records($records, $tabname)) {
                 $msg = "An error occurred while updating the database to revision " . $n . ".";
                 write_message($msg);
                 write_to_error($msg);
@@ -2125,7 +2128,7 @@ if ($current_revision < $n) {
         }
     }
 
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
@@ -2153,7 +2156,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2170,7 +2173,7 @@ if ($current_revision < $n) {
     $record["min_included"] = "t";
     $record["max_included"] = "t";
     $record["standard"] = "0";
-    if ( !$db->AutoExecute($tabname,$record, 'UPDATE', "parameter like '" . $record["parameter"] ."'") ) {
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] . "'")) {
         $msg = "An error occurred while updating the database to revision " . $n . ", update PSFGenerationDepth boundary values.";
         write_message($msg);
         write_to_error($msg);
@@ -2181,11 +2184,11 @@ if ($current_revision < $n) {
     // Update tables array
     $tables = $db->MetaTables("TABLES");
 
-	// Does the confidence_levels table exist?
-	if ( !in_array( "confidence_levels", $tables ) ) {
+    // Does the confidence_levels table exist?
+    if (!in_array("confidence_levels", $tables)) {
 
-	  // Define the fields for the confidence_levels table
-      $fields = "
+        // Define the fields for the confidence_levels table
+        $fields = "
         fileFormat C(16) NOTNULL UNIQUE PRIMARY,
         sampleSizesX C(16) NOTNULL,
 		sampleSizesY C(16) NOTNULL,
@@ -2208,55 +2211,55 @@ if ($current_revision < $n) {
 		exBeamFill C(16) NOTNULL
       ";
 
-      if ( !create_table( "confidence_levels", $fields ) ) {
-        $msg = "An error occurred while updating the database to revision " . $n . ", confidence_levels table creation.";
-        write_message($msg);
-        write_to_log($msg);
-        write_to_error($msg);
-        return;
-      }
+        if (!create_table("confidence_levels", $fields)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ", confidence_levels table creation.";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
 
     }
 
     // Add a translation for the file formats to match them to the file formats
     // returned by hucore
 
-	// Does the column exist already?
-    $columns = $db->MetaColumnNames( 'file_format' );
-    if ( !array_key_exists( strtoupper( "hucoreName"), $columns ) ) {
+    // Does the column exist already?
+    $columns = $db->MetaColumnNames('file_format');
+    if (!array_key_exists(strtoupper("hucoreName"), $columns)) {
         $fields = "hucoreName C(30)";
-        if ( !insert_column( "file_format", $fields ) ) {
-          $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
-          write_message($msg);
-          write_to_log($msg);
-          write_to_error($msg);
-          return;
+        if (!insert_column("file_format", $fields)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
         }
     }
-    $ok  = $db->AutoExecute( "file_format", array( "hucoreName" => "r3d"),   "UPDATE", "name = 'dv'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ics"),   "UPDATE", "name = 'ics'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ics"),   "UPDATE", "name = 'ics2'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ims"),   "UPDATE", "name = 'ims'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "lif"),   "UPDATE", "name = 'lif'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "lsm"),   "UPDATE", "name = 'lsm'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "lsm"),   "UPDATE", "name = 'lsm-single'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "ome"),   "UPDATE", "name = 'ome-xml'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "pic"),   "UPDATE", "name = 'pic'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "stk"),   "UPDATE", "name = 'stk'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "tiff"),  "UPDATE", "name = 'tiff'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "tiff"),  "UPDATE", "name = 'tiff-series'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "tiff"),  "UPDATE", "name = 'tiff-single'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "leica"), "UPDATE", "name = 'tiff-leica'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "zvi"),   "UPDATE", "name = 'zvi'" );
-    $ok &= $db->AutoExecute( "file_format", array( "hucoreName" => "hdf5"),  "UPDATE", "name = 'hdf5'" );
+    $ok = $db->AutoExecute("file_format", array("hucoreName" => "r3d"), "UPDATE", "name = 'dv'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "ics"), "UPDATE", "name = 'ics'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "ics"), "UPDATE", "name = 'ics2'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "ims"), "UPDATE", "name = 'ims'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "lif"), "UPDATE", "name = 'lif'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "lsm"), "UPDATE", "name = 'lsm'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "lsm"), "UPDATE", "name = 'lsm-single'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "ome"), "UPDATE", "name = 'ome-xml'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "pic"), "UPDATE", "name = 'pic'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "stk"), "UPDATE", "name = 'stk'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "tiff"), "UPDATE", "name = 'tiff'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "tiff"), "UPDATE", "name = 'tiff-series'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "tiff"), "UPDATE", "name = 'tiff-single'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "leica"), "UPDATE", "name = 'tiff-leica'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "zvi"), "UPDATE", "name = 'zvi'");
+    $ok &= $db->AutoExecute("file_format", array("hucoreName" => "hdf5"), "UPDATE", "name = 'hdf5'");
 
-    if ( !$ok ) {
-          $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
-          write_message($msg);
-          write_to_log($msg);
-          write_to_error($msg);
-          return;
-        }
+    if (!$ok) {
+        $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
+        write_message($msg);
+        write_to_log($msg);
+        write_to_error($msg);
+        return;
+    }
 
     // Add new parameter OverrideConfidence possible values
     $tabname = "possible_values";
@@ -2265,16 +2268,16 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $parameter . "' AND value='" . $value . "'");
     if ($rs->EOF) {
         $records = array(
-            "parameter"=>array( "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence" ),
-            "value"=>array( "1", "2", "3", "4", "5" ),
-            "translation"=>array(   "Do not override any of my parameters",
-                                    "Override parameters with confidence default and better",
-                                    "Override parameters with confidence estimated and better",
-                                    "Override parameters with confidence reported and better",
-                                    "Override parameters with confidence verified" ),
-            "isDefault"=>array( "t","f", "f", "f", "f" ),
-            "parameter_key"=>array("OverrideConfidence1","OverrideConfidence2","OverrideConfidence3", "OverrideConfidence4", "OverrideConfidence5" ) );
-        if(!insert_records($records,"possible_values")) {
+            "parameter" => array("OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence", "OverrideConfidence"),
+            "value" => array("1", "2", "3", "4", "5"),
+            "translation" => array("Do not override any of my parameters",
+                "Override parameters with confidence default and better",
+                "Override parameters with confidence estimated and better",
+                "Override parameters with confidence reported and better",
+                "Override parameters with confidence verified"),
+            "isDefault" => array("t", "f", "f", "f", "f"),
+            "parameter_key" => array("OverrideConfidence1", "OverrideConfidence2", "OverrideConfidence3", "OverrideConfidence4", "OverrideConfidence5"));
+        if (!insert_records($records, "possible_values")) {
             return;
         }
     }
@@ -2289,7 +2292,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2305,7 +2308,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE file_format='" . $record["file_format"] . "' AND extension='" . $record["extension"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2324,7 +2327,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" . $record["name"] . "' AND hucoreName='" . $record["hucoreName"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2333,7 +2336,7 @@ if ($current_revision < $n) {
     }
 
     // Update revision
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
@@ -2352,16 +2355,16 @@ if ($current_revision < $n) {
 $n = 9;
 if ($current_revision < $n) {
     // Does the column exist already?
-    $columns = $db->MetaColumnNames( 'file_format' );
-    if ( !array_key_exists( strtoupper( "ismultifile"), $columns ) ) {
+    $columns = $db->MetaColumnNames('file_format');
+    if (!array_key_exists(strtoupper("ismultifile"), $columns)) {
 
         $fields = "ismultifile C(1) NOTNULL DEFAULT 'f'";
-        if ( !insert_column( "file_format", $fields ) ) {
-          $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
-          write_message($msg);
-          write_to_log($msg);
-          write_to_error($msg);
-          return;
+        if (!insert_column("file_format", $fields)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ", file_format table update.";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
         }
         // Set lif to multi file
         $tabname = "global_variables";
@@ -2379,9 +2382,9 @@ if ($current_revision < $n) {
     // Correct ics2 description
     $tabname = 'possible_values';
     $record = array();
-    $record["parameter"]   = 'ImageFileFormat';
+    $record["parameter"] = 'ImageFileFormat';
     $record["translation"] = 'Image Cytometry Standard 2 (*.ics)';
-    $record["isDefault"]   = 'f';
+    $record["isDefault"] = 'f';
     if (!$db->AutoExecute($tabname, $record, 'UPDATE', "value like 'ics2'")) {
         $msg = error_message($tabname);
         write_message($msg);
@@ -2392,9 +2395,9 @@ if ($current_revision < $n) {
     // Make ics the default output file format
     $tabname = 'possible_values';
     $record = array();
-    $record["parameter"]   = 'OutputFileFormat';
+    $record["parameter"] = 'OutputFileFormat';
     $record["translation"] = 'ics';
-    $record["isDefault"]   = 't';
+    $record["isDefault"] = 't';
     if (!$db->AutoExecute($tabname, $record, 'UPDATE', "value like 'ICS (Image Cytometry Standard)'")) {
         $msg = error_message($tabname);
         write_message($msg);
@@ -2405,8 +2408,8 @@ if ($current_revision < $n) {
     // Add Olympus OIF file to possible_values
     $tabname = 'possible_values';
     $record = array();
-    $record["parameter"]   = 'ImageFileFormat';
-    $record["value"]   = 'oif';
+    $record["parameter"] = 'ImageFileFormat';
+    $record["value"] = 'oif';
     $record["translation"] = 'Olympus OIF file (*.oif)';
     $record["isDefault"] = 'f';
     // This is just a hack for developers; it the row is already there, skip
@@ -2414,7 +2417,7 @@ if ($current_revision < $n) {
         $record['parameter'] . "' AND value='" . $record['value'] . "' " .
         " AND translation='" . $record["translation"] . "' AND isDefault='" .
         $record["isDefault"] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
             $msg = error_message($tabname);
             write_message($msg);
@@ -2425,12 +2428,12 @@ if ($current_revision < $n) {
     // Add Olympus OIF file to file_format
     $tabname = 'file_format';
     $record = array();
-    $record["name"]                = 'oif';
-    $record["isFixedGeometry"]     = 'f';
-    $record["isSingleChannel"]     = 'f';
-    $record["isVariableChannel"]   = 't';
-    $record["hucoreName"]          = 'oif';
-    $record["ismultifile"]         = 'f';
+    $record["name"] = 'oif';
+    $record["isFixedGeometry"] = 'f';
+    $record["isSingleChannel"] = 'f';
+    $record["isVariableChannel"] = 't';
+    $record["hucoreName"] = 'oif';
+    $record["ismultifile"] = 'f';
     // This is just a hack for developers; it the row is already there, skip
     $query = "SELECT * FROM " . $tabname . " WHERE name='" .
         $record['name'] . "' AND isFixedGeometry='" .
@@ -2439,7 +2442,7 @@ if ($current_revision < $n) {
         $record["isVariableChannel"] . "' AND hucoreName='" .
         $record["hucoreName"] . "' AND ismultifile='" .
         $record["ismultifile"] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
             $msg = error_message($tabname);
             write_message($msg);
@@ -2452,12 +2455,12 @@ if ($current_revision < $n) {
     $tabname = 'file_extension';
     $record = array();
     $record["file_format"] = 'oif';
-    $record["extension"]   = 'oif';
+    $record["extension"] = 'oif';
     // This is just a hack for developers; it the row is already there, skip
     $query = "SELECT * FROM " . $tabname . " WHERE file_format='" .
         $record['file_format'] . "' AND extension='" .
         $record['extension'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
             $msg = error_message($tabname);
             write_message($msg);
@@ -2469,17 +2472,17 @@ if ($current_revision < $n) {
     // Add Delta Vision (*dv) as output to possible_values
     $tabname = 'possible_values';
     $record = array();
-    $record["parameter"]   = 'OutputFileFormat';
-    $record["value"]       = 'Delta Vision (*.r3d)';
+    $record["parameter"] = 'OutputFileFormat';
+    $record["value"] = 'Delta Vision (*.r3d)';
     $record["translation"] = 'r3d';
-    $record["isDefault"]   = 'f';
+    $record["isDefault"] = 'f';
     // This is just a hack for developers; it the row is already there, skip
     $query = "SELECT * FROM " . $tabname . " WHERE parameter='" .
         $record['parameter'] . "' AND value='" .
         $record['value'] . "' AND translation='" .
         $record['translation'] . "' AND isDefault='" .
         $record['isDefault'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
             $msg = error_message($tabname);
             write_message($msg);
@@ -2491,19 +2494,19 @@ if ($current_revision < $n) {
     // Delete the OverrideConfidence entries from possible_values
     $tabname = 'possible_values';
     $record = array();
-    $record["parameter"]   = 'OverrideConfidence';
-    for ( $i = 0; $i < 6; $i++ ) {
+    $record["parameter"] = 'OverrideConfidence';
+    for ($i = 0; $i < 6; $i++) {
         // This is just a hack for developers; it the row was already deleted,
         // skip
-        $record["value"]       = $i;
+        $record["value"] = $i;
         $baseQuery = " FROM " . $tabname . " WHERE parameter='" .
             $record["parameter"] . "' AND value='" .
-            $record["value"] ."'";
+            $record["value"] . "'";
 
         $query = "SELECT *" . $baseQuery;
-        if ( $db->Execute( $query )->RecordCount( ) == 1 ) {
+        if ($db->Execute($query)->RecordCount() == 1) {
             $query = "DELETE" . $baseQuery;
-            if ( !$db->Execute( $query ) ) {
+            if (!$db->Execute($query)) {
                 $msg = error_message($tabname);
                 write_message($msg);
                 write_to_error($msg);
@@ -2512,8 +2515,8 @@ if ($current_revision < $n) {
         }
     }
 
-        // Update revision
-    if(!update_dbrevision($n))
+    // Update revision
+    if (!update_dbrevision($n))
         return;
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
@@ -2534,25 +2537,25 @@ if ($current_revision < $n) {
 
     $tabname = "hucore_license";
 
-        // Create the hucore_license table
-        // Update tables array
+    // Create the hucore_license table
+    // Update tables array
     $tables = $db->MetaTables("TABLES");
 
-	// Does the hucore_license table exist?
-	if ( !in_array( $tabname, $tables ) ) {
+    // Does the hucore_license table exist?
+    if (!in_array($tabname, $tables)) {
 
-            $flds = "feature C(30) NOTNULL DEFAULT 0 PRIMARY";
+        $flds = "feature C(30) NOTNULL DEFAULT 0 PRIMARY";
 
-            if (!create_table($tabname, $flds)) {
-                $msg = "An error occurred while updating the database to ".
-                       "revision " . $n . ", hucore_license table creation.";
-                write_message($msg);
-                write_to_log($msg);
-                write_to_error($msg);
+        if (!create_table($tabname, $flds)) {
+            $msg = "An error occurred while updating the database to " .
+                "revision " . $n . ", hucore_license table creation.";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
 
-                return;
-            }
+            return;
         }
+    }
 
 // ------------  Add tables for the 'analysis' templates ---------------------
 // analysis_parameter
@@ -2586,7 +2589,7 @@ if ($current_revision < $n) {
         if (!drop_table($tabname))
             return;
     }
-        // Create table
+    // Create table
     $flds = "
         owner C(30) NOTNULL DEFAULT 0 PRIMARY,
         setting C(30) NOTNULL DEFAULT 0 PRIMARY,
@@ -2621,14 +2624,14 @@ if ($current_revision < $n) {
     $record["translation"] = "No, it is not necessary.";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2643,14 +2646,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Yes, perform colocalization analysis.";
     $record["isDefault"] = "F";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2665,14 +2668,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Pearson";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2687,14 +2690,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Object Pearson";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2709,14 +2712,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Spearman";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2731,14 +2734,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Object Spearman";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2753,14 +2756,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Overlap";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2775,14 +2778,14 @@ if ($current_revision < $n) {
     $record["translation"] = "k1,2";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2797,14 +2800,14 @@ if ($current_revision < $n) {
     $record["translation"] = "i1,2";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2819,14 +2822,14 @@ if ($current_revision < $n) {
     $record["translation"] = "M1,2";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2841,14 +2844,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Inters";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2863,14 +2866,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Pearson";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2885,14 +2888,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Object Pearson";
     $record["isDefault"] = "F";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2907,14 +2910,14 @@ if ($current_revision < $n) {
     $record["translation"] = "M1,2";
     $record["isDefault"] = "F";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2929,14 +2932,14 @@ if ($current_revision < $n) {
     $record["translation"] = "Overlap";
     $record["isDefault"] = "F";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating the database to revision ".
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -2945,16 +2948,16 @@ if ($current_revision < $n) {
     }
 
 // ------------------ Add entries to 'statistics' -------------------------
-    $tabname   = "statistics";
+    $tabname = "statistics";
     $newcolumn = "ColocAnalysis";
     $type = "VARCHAR(1)";
 
     // Does the column exist already?
-    $columns = $db->MetaColumnNames( $tabname );
-    if ( !array_key_exists( strtoupper( $newcolumn ), $columns ) ) {
-        $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn .
+    $columns = $db->MetaColumnNames($tabname);
+    if (!array_key_exists(strtoupper($newcolumn), $columns)) {
+        $SQLquery = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn .
             " " . $type;
-        if(!$db->Execute($SQLquery)) {
+        if (!$db->Execute($SQLquery)) {
             $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
@@ -2964,17 +2967,17 @@ if ($current_revision < $n) {
     }
 
 // ------------------ Add entries to 'job_files' -------------------------
-    $tabname   = "job_files";
+    $tabname = "job_files";
     $newcolumn = "autoseries";
     $type = "VARCHAR(1)";
 
     // Does the column exist already?
-    $columns = $db->MetaColumnNames( $tabname );
-    if ( !array_key_exists( strtoupper( $newcolumn ), $columns ) ) {
-        $SQLquery  = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn .
+    $columns = $db->MetaColumnNames($tabname);
+    if (!array_key_exists(strtoupper($newcolumn), $columns)) {
+        $SQLquery = "ALTER TABLE " . $tabname . " ADD COLUMN " . $newcolumn .
             " " . $type . " DEFAULT 'f'";
 
-        if(!$db->Execute($SQLquery)) {
+        if (!$db->Execute($SQLquery)) {
             $msg = "An error occurred while updating the database to revision " .
                 $n . ".";
             write_message($msg);
@@ -2993,14 +2996,14 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     // Check if it already exists
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-            $record["parameter"] . "' AND value='" .
-            $record["value"] . "' AND translation='" .
-            $record["translation"] . "' AND isDefault='" .
-            $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
 
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3018,14 +3021,14 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     // Check if it already exists
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-            $record["parameter"] . "' AND value='" .
-            $record["value"] . "' AND translation='" .
-            $record["translation"] . "' AND isDefault='" .
-            $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
 
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3040,12 +3043,12 @@ if ($current_revision < $n) {
 
     // Check if it already exists
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" .
-            $record["name"] . "' AND hucorename='" .
-            $record["hucorename"] . "'");
+        $record["name"] . "' AND hucorename='" .
+        $record["hucorename"] . "'");
 
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3063,14 +3066,14 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     // Check if it already exists
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-            $record["parameter"] . "' AND value='" .
-            $record["value"] . "' AND translation='" .
-            $record["translation"] . "' AND isDefault='" .
-            $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
 
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3085,12 +3088,12 @@ if ($current_revision < $n) {
 
     // Check if it already exists
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" .
-            $record["name"] . "' AND hucorename='" .
-            $record["hucorename"] . "'");
+        $record["name"] . "' AND hucorename='" .
+        $record["hucorename"] . "'");
 
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3103,9 +3106,9 @@ if ($current_revision < $n) {
     // Correct Olympus FluoView description
     $tabname = 'possible_values';
     $record = array();
-    $record["parameter"]   = 'ImageFileFormat';
+    $record["parameter"] = 'ImageFileFormat';
     $record["translation"] = 'Olympus FluoView (*.tiff, *.tif)';
-    $record["isDefault"]   = 'f';
+    $record["isDefault"] = 'f';
     if (!$db->AutoExecute($tabname, $record, 'UPDATE', "value = 'tiff'")) {
         $msg = error_message($tabname);
         write_message($msg);
@@ -3116,9 +3119,9 @@ if ($current_revision < $n) {
     // Correct Leica series description
     $tabname = 'possible_values';
     $record = array();
-    $record["parameter"]   = 'ImageFileFormat';
+    $record["parameter"] = 'ImageFileFormat';
     $record["translation"] = 'Leica series (*.tiff, *.tif)';
-    $record["isDefault"]   = 'f';
+    $record["isDefault"] = 'f';
     if (!$db->AutoExecute($tabname, $record, 'UPDATE', "value = 'tiff-leica'")) {
         $msg = error_message($tabname);
         write_message($msg);
@@ -3137,13 +3140,13 @@ if ($current_revision < $n) {
 
     // Check if it exists and delete it
     $whereClause = " WHERE parameter='" .
-            $record["parameter"] . "' AND value='" .
-            $record["value"] . "' AND translation='" .
-            $record["translation"] . "' AND isDefault='" .
-            $record["isDefault"] . "'";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause);
     if (!$rs->EOF) {
-        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+        if (!$db->Execute("DELETE FROM " . $tabname . $whereClause)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3158,11 +3161,11 @@ if ($current_revision < $n) {
 
     // Check if it exists and delete it
     $whereClause = " WHERE name='" .
-            $record["name"] . "' AND hucorename='" .
-            $record["hucorename"] . "'";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+        $record["name"] . "' AND hucorename='" .
+        $record["hucorename"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause);
     if (!$rs->EOF) {
-        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+        if (!$db->Execute("DELETE FROM " . $tabname . $whereClause)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3181,13 +3184,13 @@ if ($current_revision < $n) {
 
     // Check if it exists and delete it
     $whereClause = " WHERE parameter='" .
-            $record["parameter"] . "' AND value='" .
-            $record["value"] . "' AND translation='" .
-            $record["translation"] . "' AND isDefault='" .
-            $record["isDefault"] . "'";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause);
     if (!$rs->EOF) {
-        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+        if (!$db->Execute("DELETE FROM " . $tabname . $whereClause)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3202,11 +3205,11 @@ if ($current_revision < $n) {
 
     // Check if it exists and delete it
     $whereClause = " WHERE name='" .
-            $record["name"] . "' AND hucorename='" .
-            $record["hucorename"] . "'";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+        $record["name"] . "' AND hucorename='" .
+        $record["hucorename"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause);
     if (!$rs->EOF) {
-        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+        if (!$db->Execute("DELETE FROM " . $tabname . $whereClause)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3225,13 +3228,13 @@ if ($current_revision < $n) {
 
     // Check if it exists and delete it
     $whereClause = " WHERE parameter='" .
-            $record["parameter"] . "' AND value='" .
-            $record["value"] . "' AND translation='" .
-            $record["translation"] . "' AND isDefault='" .
-            $record["isDefault"] . "'";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause);
     if (!$rs->EOF) {
-        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+        if (!$db->Execute("DELETE FROM " . $tabname . $whereClause)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3246,11 +3249,11 @@ if ($current_revision < $n) {
 
     // Check if it exists and delete it
     $whereClause = " WHERE name='" .
-            $record["name"] . "' AND hucorename='" .
-            $record["hucorename"] . "'";
-    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause );
+        $record["name"] . "' AND hucorename='" .
+        $record["hucorename"] . "'";
+    $rs = $db->Execute("SELECT * FROM " . $tabname . $whereClause);
     if (!$rs->EOF) {
-        if(!$db->Execute("DELETE FROM " . $tabname . $whereClause )) {
+        if (!$db->Execute("DELETE FROM " . $tabname . $whereClause)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3285,22 +3288,22 @@ if ($current_revision < $n) {
 
     // Create the records to be added
     $records = array(
-        "file_format"=>array(
+        "file_format" => array(
             "dv", "ics", "ims", "lif", "lsm", "ome-xml", "pic", "stk",
             "tiff-leica", "tiff-leica", "zvi", "ics2", "hdf5", "r3d",
             "oif", "tiff", "tiff", "tiff-generic", "tiff-generic",
             "ome-tiff", "ome-tiff"),
-        "extension"=>array(
+        "extension" => array(
             "dv", "ics", "ims", "lif", "lsm", "ome", "pic", "stk",
-             "tif", "tiff", "zvi", "ics", "h5", "r3d", "oif", "tif",
-             "tiff", "tif", "tiff", "ome.tif", "ome.tiff "));
+            "tif", "tiff", "zvi", "ics", "h5", "r3d", "oif", "tif",
+            "tiff", "tif", "tiff", "ome.tif", "ome.tiff "));
 
     // Insert the records
-    if(!insert_records($records,$tabname))
+    if (!insert_records($records, $tabname))
         return;
 
-        // Update revision
-    if(!update_dbrevision($n))
+    // Update revision
+    if (!update_dbrevision($n))
         return;
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
@@ -3322,13 +3325,13 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE file_format='" . $record['file_format'] .
-             "' AND extension='" . $record['extension'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -3345,16 +3348,16 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE name='" . $record['name'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        " WHERE name='" . $record['name'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
 
@@ -3367,28 +3370,28 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE value='" . $record['value'] .
-             "' AND parameter='" . $record['parameter'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        " WHERE value='" . $record['value'] .
+        "' AND parameter='" . $record['parameter'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
     // Correct a blank too many.
     $tabname = "file_extension";
     $query = "UPDATE file_extension SET extension = \"ome.tiff\" " .
-             "WHERE extension = \"ome.tiff \"";
+        "WHERE extension = \"ome.tiff \"";
     $rs = $db->Execute($query);
 
 
     // Update revision
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -3406,16 +3409,16 @@ $n = 12;
 if ($current_revision < $n) {
 
     // Fix a blank left in a table by previous revision.
-    $ok = $db->AutoExecute( "file_format",
-                            array( "hucoreName" => "czi"),
-                            "UPDATE", "name = 'czi'" );
-    if ( !$ok ) {
-       $msg = "An error occurred while updating " .
-              "the database to revision " . $n . ", file_format table update.";
-       write_message($msg);
-       write_to_log($msg);
-       write_to_error($msg);
-       return;
+    $ok = $db->AutoExecute("file_format",
+        array("hucoreName" => "czi"),
+        "UPDATE", "name = 'czi'");
+    if (!$ok) {
+        $msg = "An error occurred while updating " .
+            "the database to revision " . $n . ", file_format table update.";
+        write_message($msg);
+        write_to_log($msg);
+        write_to_error($msg);
+        return;
     }
 
 
@@ -3426,17 +3429,17 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE file_format='" . $record['file_format'] .
-             "' AND extension='" . $record['extension'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
 
@@ -3450,16 +3453,16 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE name='" . $record['name'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        " WHERE name='" . $record['name'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
 
@@ -3472,13 +3475,13 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -3495,13 +3498,13 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -3518,13 +3521,13 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -3538,15 +3541,15 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "MicroscopeType5";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -3561,15 +3564,15 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "MicroscopeType6";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -3584,15 +3587,15 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "StedDepletionMode1";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -3607,15 +3610,15 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "StedDepletionMode2";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -3630,15 +3633,15 @@ if ($current_revision < $n) {
     $record["isDefault"] = "t";
     $record["parameter_key"] = "StedDepletionMode3";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -3653,15 +3656,15 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "StedDepletionMode4";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -3670,20 +3673,20 @@ if ($current_revision < $n) {
 
 
 // ------------------ Add columns to 'confidence_levels' ----------------------
-    $tabname   = "confidence_levels";
+    $tabname = "confidence_levels";
     $newcolumns = array("stedMode",
-                        "stedLambda",
-                        "stedSatFact",
-                        "stedImmunity",
-                        "sted3D");
+        "stedLambda",
+        "stedSatFact",
+        "stedImmunity",
+        "sted3D");
     $type = "C(16)";
 
-    $allcolumns = $db->MetaColumnNames( 'confidence_levels' );
+    $allcolumns = $db->MetaColumnNames('confidence_levels');
     foreach ($newcolumns as $newcolumn) {
-        if (array_key_exists( strtoupper($newcolumn), $allcolumns) ) {
+        if (array_key_exists(strtoupper($newcolumn), $allcolumns)) {
             continue;
         }
-        if ( !insert_column($tabname, $newcolumn . " " . $type) ) {
+        if (!insert_column($tabname, $newcolumn . " " . $type)) {
             $msg = "An error occurred while updating " .
                 "the database to revision " . $n . ".";
             write_message($msg);
@@ -3707,7 +3710,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3725,7 +3728,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
@@ -3734,7 +3737,7 @@ if ($current_revision < $n) {
     }
 
     //Update revision
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -3766,7 +3769,7 @@ if ($current_revision < $n) {
     if (count($rows) > 0) {
         $query = "DELETE from possible_values WHERE parameter='ImageGeometry';";
         $rs = $db->Execute($query);
-        if(!$rs) {
+        if (!$rs) {
             $msg = "Could not delete obsolete ImageGeometry entries from possible_values table.";
             write_message($msg);
             write_to_error($msg);
@@ -3776,7 +3779,7 @@ if ($current_revision < $n) {
 
     // Remove the ImageGeometry column from the statistics table
     $columns = $db->MetaColumnNames('statistics');
-    if (in_array("ImageGeometry", $columns) ) {
+    if (in_array("ImageGeometry", $columns)) {
         $dropColumnSQL = $datadict->DropColumnSQL('statistics', 'ImageGeometry');
         $rs = $db->Execute($dropColumnSQL[0]);
         if (!$rs) {
@@ -3796,7 +3799,7 @@ if ($current_revision < $n) {
         id I(11) NOTNULL AUTOINCREMENT PRIMARY,
         owner C(30) NOTNULL DEFAULT 0,
         previous_owner C(30) NOTNULL DEFAULT 0,
-        sharing_date T NOTNULL DEFAULT '" . $defaultTimestamp ."',
+        sharing_date T NOTNULL DEFAULT '" . $defaultTimestamp . "',
         name C(30) NOTNULL
     ";
     if (!in_array($tabname, $tables)) {
@@ -3833,7 +3836,7 @@ if ($current_revision < $n) {
         id I(11) NOTNULL AUTOINCREMENT PRIMARY,
         owner C(30) NOTNULL DEFAULT 0,
         previous_owner C(30) NOTNULL DEFAULT 0,
-        sharing_date T NOTNULL DEFAULT '" . $defaultTimestamp ."',
+        sharing_date T NOTNULL DEFAULT '" . $defaultTimestamp . "',
         name C(30) NOTNULL
     ";
     if (!in_array($tabname, $tables)) {
@@ -3870,7 +3873,7 @@ if ($current_revision < $n) {
         id I(11) NOTNULL AUTOINCREMENT PRIMARY,
         owner C(30) NOTNULL DEFAULT 0,
         previous_owner C(30) NOTNULL DEFAULT 0,
-        sharing_date T NOTNULL DEFAULT '" . $defaultTimestamp ."',
+        sharing_date T NOTNULL DEFAULT '" . $defaultTimestamp . "',
         name C(30) NOTNULL
     ";
     if (!in_array($tabname, $tables)) {
@@ -3913,9 +3916,9 @@ if ($current_revision < $n) {
     $query = "SELECT * FROM " . $tabname .
         " WHERE parameter='" . $record['parameter'] .
         "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
                 "the database to revision " . $n . ".";
             write_message($msg);
@@ -3936,9 +3939,9 @@ if ($current_revision < $n) {
     $query = "SELECT * FROM " . $tabname .
         " WHERE parameter='" . $record['parameter'] .
         "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
                 "the database to revision " . $n . ".";
             write_message($msg);
@@ -3951,7 +3954,7 @@ if ($current_revision < $n) {
     $tabname = "file_format";
     $record = array();
     $record["ismultifile"] = 't';
-    if (!$db->AutoExecute('file_format', $record, 'UPDATE', "name like 'czi'")){
+    if (!$db->AutoExecute('file_format', $record, 'UPDATE', "name like 'czi'")) {
         $msg = error_message($tabname);
         write_message($msg);
         write_to_error($msg);
@@ -3959,7 +3962,7 @@ if ($current_revision < $n) {
     }
 
 //Update revision
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -3984,11 +3987,11 @@ if ($current_revision < $n) {
     $record["name"] = "GPUenabled";
     $record["value"] = "0";
     $rs = $db->Execute("SELECT * FROM " . $tabname .
-                       " WHERE name='" . $record["name"] .
-                       "' AND value='" . $record["value"] . "'");
+        " WHERE name='" . $record["name"] .
+        "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4004,11 +4007,11 @@ if ($current_revision < $n) {
     $record["translation"] = "";
     $record["isDefault"] = "f";
     $rs = $db->Execute("SELECT * FROM " . $tabname .
-                       " WHERE parameter='" . $record["parameter"] .
-                       "' AND value='" . $record["value"] . "'");
+        " WHERE parameter='" . $record["parameter"] .
+        "' AND value='" . $record["value"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4024,13 +4027,13 @@ if ($current_revision < $n) {
     $record["translation"] = "";
     $record["isDefault"] = "T";
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-                       $record["parameter"] . "' AND value='" .
-                       $record["value"] . "' AND translation='" .
-                       $record["translation"] . "' AND isDefault='" .
-                       $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4047,16 +4050,16 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE file_format='" . $record['file_format'] .
-             "' AND extension='" . $record['extension'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
     $tabname = "file_extension";
@@ -4066,16 +4069,16 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE file_format='" . $record['file_format'] .
-             "' AND extension='" . $record['extension'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
 
@@ -4086,16 +4089,16 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE file_format='" . $record['file_format'] .
-             "' AND extension='" . $record['extension'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
 
@@ -4107,14 +4110,14 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     // Check if it already exists
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" .
-            $record["parameter"] . "' AND value='" .
-            $record["value"] . "' AND translation='" .
-            $record["translation"] . "' AND isDefault='" .
-            $record["isDefault"] . "'");
+        $record["parameter"] . "' AND value='" .
+        $record["value"] . "' AND translation='" .
+        $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'");
 
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4130,12 +4133,12 @@ if ($current_revision < $n) {
 
     // Check if it already exists
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE name='" .
-            $record["name"] . "' AND hucorename='" .
-            $record["hucorename"] . "'");
+        $record["name"] . "' AND hucorename='" .
+        $record["hucorename"] . "'");
 
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4147,7 +4150,7 @@ if ($current_revision < $n) {
 
 
     $alterColumnSQL = $datadict->AlterColumnSQL('parameter',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4157,7 +4160,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('parameter_setting',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4167,7 +4170,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('task_parameter',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4177,7 +4180,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('task_setting',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4187,7 +4190,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('analysis_parameter',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4197,7 +4200,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('analysis_parameter',
-                                                'setting VARCHAR(191)');
+        'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4207,7 +4210,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('analysis_setting',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4217,7 +4220,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('analysis_setting',
-                                                'name VARCHAR(191)');
+        'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4227,7 +4230,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4237,7 +4240,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter',
-                                                'setting VARCHAR(191)');
+        'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4247,7 +4250,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter_setting',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4257,7 +4260,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_parameter_setting',
-                                                'name VARCHAR(191)');
+        'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4267,7 +4270,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_task_parameter',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4277,7 +4280,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_task_parameter',
-                                                'setting VARCHAR(191)');
+        'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4287,7 +4290,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_task_setting',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4297,7 +4300,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_task_setting',
-                                                'name VARCHAR(191)');
+        'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4307,7 +4310,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_parameter',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4317,7 +4320,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_parameter',
-                                                'setting VARCHAR(191)');
+        'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4327,7 +4330,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_setting',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4337,7 +4340,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_analysis_setting',
-                                                'name VARCHAR(191)');
+        'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4347,7 +4350,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_files',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4357,7 +4360,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_queue',
-                                                'username VARCHAR(255)');
+        'username VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4367,7 +4370,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4377,7 +4380,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter',
-                                                'setting VARCHAR(191)');
+        'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4387,7 +4390,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
-                                                'name VARCHAR(191)');
+        'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4397,7 +4400,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4407,7 +4410,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_parameter_setting',
-                                                'previous_owner VARCHAR(255)');
+        'previous_owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4417,7 +4420,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4427,7 +4430,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_parameter',
-                                                'setting VARCHAR(191)');
+        'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4437,7 +4440,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4447,7 +4450,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
-                                                'previous_owner VARCHAR(255)');
+        'previous_owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4457,7 +4460,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_task_setting',
-                                                'name VARCHAR(191)');
+        'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4467,7 +4470,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4477,7 +4480,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_parameter',
-                                                'setting VARCHAR(191)');
+        'setting VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4487,7 +4490,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4497,7 +4500,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
-                                                'previous_owner VARCHAR(255)');
+        'previous_owner VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4507,7 +4510,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('shared_analysis_setting',
-                                                'name VARCHAR(191)');
+        'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4517,7 +4520,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('statistics',
-                                                'owner VARCHAR(191)');
+        'owner VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4527,7 +4530,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('username',
-                                                'name VARCHAR(191)');
+        'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4540,7 +4543,7 @@ if ($current_revision < $n) {
     // ------- Enable longer server names in the queue manager. ------
 
     $alterColumnSQL = $datadict->AlterColumnSQL('server',
-                                                'name VARCHAR(191)');
+        'name VARCHAR(191)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4550,7 +4553,7 @@ if ($current_revision < $n) {
     }
 
     $alterColumnSQL = $datadict->AlterColumnSQL('job_queue',
-                                                'server VARCHAR(255)');
+        'server VARCHAR(255)');
     $rs = $db->Execute($alterColumnSQL[0]);
     if (!$rs) {
         $msg = "Could not modify column in table.";
@@ -4570,13 +4573,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "MicroscopeType7";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4591,13 +4594,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimExcMode1";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4612,13 +4615,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimExcMode2";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4633,13 +4636,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "t";
     $record["parameter_key"] = "SpimExcMode3";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4654,13 +4657,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimExcMode4";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4675,13 +4678,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimGaussWidth";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4696,13 +4699,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimFocusOffset";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4717,13 +4720,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimCenterOffset";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4738,13 +4741,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "t";
     $record["parameter_key"] = "SpimDir1";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4759,13 +4762,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimDir2";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4780,13 +4783,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimDir3";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4801,13 +4804,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimDir4";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4822,13 +4825,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimDir5";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4843,13 +4846,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimDir6";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4864,13 +4867,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimNA";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4885,13 +4888,13 @@ if ($current_revision < $n) {
     $record["isDefault"] = "f";
     $record["parameter_key"] = "SpimFill";
 
-        // Skip it if the row is already there.
+    // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4901,20 +4904,20 @@ if ($current_revision < $n) {
 
 
 // ------------------ Add columns to 'confidence_levels' ----------------------
-    $tabname   = "confidence_levels";
+    $tabname = "confidence_levels";
     $newcolumns = array("stedMode",
-                        "stedLambda",
-                        "stedSatFact",
-                        "stedImmunity",
-                        "sted3D");
+        "stedLambda",
+        "stedSatFact",
+        "stedImmunity",
+        "sted3D");
     $type = "C(16)";
 
-    $allcolumns = $db->MetaColumnNames( 'confidence_levels' );
+    $allcolumns = $db->MetaColumnNames('confidence_levels');
     foreach ($newcolumns as $newcolumn) {
-        if (array_key_exists( strtoupper($newcolumn), $allcolumns) ) {
+        if (array_key_exists(strtoupper($newcolumn), $allcolumns)) {
             continue;
         }
-        if ( !insert_column($tabname, $newcolumn . " " . $type) ) {
+        if (!insert_column($tabname, $newcolumn . " " . $type)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_log($msg);
@@ -4937,7 +4940,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4955,7 +4958,7 @@ if ($current_revision < $n) {
     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
     if ($rs->EOF) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
             write_message($msg);
             write_to_error($msg);
@@ -4965,7 +4968,7 @@ if ($current_revision < $n) {
 
 
     //Update revision
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -5009,7 +5012,7 @@ if ($current_revision < $n) {
         }
 
         // Prepared statement
-        $sql="INSERT INTO $tabname (name, address, url) VALUES (?, ?, ?);";
+        $sql = "INSERT INTO $tabname (name, address, url) VALUES (?, ?, ?);";
 
         // Add default institution
         $default_institution = array(
@@ -5020,7 +5023,7 @@ if ($current_revision < $n) {
 
         // Run prepared query
         $rs = $db->Execute($sql, $default_institution);
-        if($rs === false) {
+        if ($rs === false) {
             $err = $db->ErrorMsg();
             trigger_error("Could not add default institution " .
                 ": $err", E_USER_ERROR);
@@ -5039,9 +5042,9 @@ if ($current_revision < $n) {
     // Make sure not to update the username table a second time, or all password
     // will not be recoverable!
     $usernameColumns = $db->MetaColumnNames('username');
-    if (! (array_key_exists("ID", $usernameColumns) &&
+    if (!(array_key_exists("ID", $usernameColumns) &&
         array_key_exists("INSTITUTION_ID", $usernameColumns) &&
-        array_key_exists("ROLE", $usernameColumns)  &&
+        array_key_exists("ROLE", $usernameColumns) &&
         array_key_exists("AUTHENTICATION", $usernameColumns))) {
 
         // All columns above are new in latest username table and
@@ -5179,9 +5182,9 @@ if ($current_revision < $n) {
     $query = "SELECT * FROM " . $tabname .
         " WHERE file_format='" . $record['file_format'] .
         "' AND extension='" . $record['extension'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while adding support for the Leica LOF file format.";
             write_message($msg);
             write_to_error($msg);
@@ -5199,9 +5202,9 @@ if ($current_revision < $n) {
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
         " WHERE name='" . $record['name'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while adding support for the Leica LOF file format.";
             write_message($msg);
             write_to_error($msg);
@@ -5220,9 +5223,9 @@ if ($current_revision < $n) {
     $query = "SELECT * FROM " . $tabname .
         " WHERE value='" . $record['value'] .
         "' AND parameter='" . $record['parameter'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while adding support for the Leica LOF file format.";
             write_message($msg);
             write_to_error($msg);
@@ -5231,16 +5234,16 @@ if ($current_revision < $n) {
     }
 
     // ------------------ Add entries to 'server' -------------------------
-    $tabname   = "server";
+    $tabname = "server";
     $newcolumn = "gpuId";
 
     // Does the column exist already?
     $columns = $db->MetaColumnNames($tabname);
     if (!array_key_exists(strtoupper($newcolumn), $columns)) {
 
-        $sqlarray = $datadict->ChangeTableSQL($tabname, "$newcolumn I", $dropOldFlds=false);
+        $sqlarray = $datadict->ChangeTableSQL($tabname, "$newcolumn I", $dropOldFlds = false);
         $rs = $datadict->ExecuteSQLArray($sqlarray);
-        if($rs != 2) {
+        if ($rs != 2) {
             $msg = "An error occurred while adding support for multi GPU deconvolution.";
             write_message($msg);
             write_to_error($msg);
@@ -5250,7 +5253,7 @@ if ($current_revision < $n) {
     }
 
     // ------------------ Add  support for nd file format ----------------
-    
+
     $tabname = "file_extension";
     $record = array();
     $record["file_format"] = "nd";
@@ -5258,17 +5261,17 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE file_format='" . $record['file_format'] .
-             "' AND extension='" . $record['extension'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
 
@@ -5282,16 +5285,16 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE name='" . $record['name'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        " WHERE name='" . $record['name'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
 
@@ -5304,13 +5307,13 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -5327,7 +5330,7 @@ if ($current_revision < $n) {
     if (count($rows) > 0) {
         $query = "DELETE FROM global_variables WHERE name='GPUenabled';";
         $rs = $db->Execute($query);
-        if(!$rs) {
+        if (!$rs) {
             $msg = "Could not delete obsolete GPUenabled entry from global_variables table.";
             write_message($msg);
             write_to_error($msg);
@@ -5335,11 +5338,11 @@ if ($current_revision < $n) {
         }
     }
 
-  
+
     // Update revision
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
-    
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
@@ -5365,19 +5368,19 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
         }
     }
-    
+
 
     $tabname = "possible_values";
     $record = array();
@@ -5388,13 +5391,13 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
-                   "the database to revision " . $n . ".";
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -5409,7 +5412,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Correlation";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -5420,7 +5423,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Center Of Mass";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -5431,7 +5434,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Model Based";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -5450,9 +5453,9 @@ if ($current_revision < $n) {
     $query = "SELECT * FROM " . $tabname .
         " WHERE parameter='" . $record['parameter'] .
         "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
                 "the database to revision " . $n . ".";
             write_message($msg);
@@ -5469,9 +5472,9 @@ if ($current_revision < $n) {
     $query = "SELECT * FROM " . $tabname .
         " WHERE parameter='" . $record['parameter'] .
         "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+    if ($db->Execute($query)->RecordCount() == 0) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
+        if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating " .
                 "the database to revision " . $n . ".";
             write_message($msg);
@@ -5486,7 +5489,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Original";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -5497,7 +5500,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Tight";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -5508,13 +5511,13 @@ if ($current_revision < $n) {
     $record["translation"] = "Full";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
     }
-    
+
 
     $tabname = "possible_values";
     $record = array();
@@ -5523,7 +5526,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Good's Roughness Maximum Likelihood Estimation";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
-    if(!$db->Execute($insertSQL)) {
+    if (!$db->Execute($insertSQL)) {
         $msg = "An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
@@ -5540,7 +5543,7 @@ if ($current_revision < $n) {
     $record["translation"] = "No, do not perform depth-dependent correction";
     $record["isDefault"] = "f";
 
-    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] ."' AND value like '" . $record["value"] . "'") ) {
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] . "' AND value like '" . $record["value"] . "'")) {
         $msg = "An error occurred while updating the database to revision " . $n . ", update PSFGenerationDepth boundary values.";
         write_message($msg);
         write_to_error($msg);
@@ -5555,7 +5558,7 @@ if ($current_revision < $n) {
     $record["translation"] = "Yes, perform depth-dependent correction";
     $record["isDefault"] = "t";
 
-    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] ."' AND value like '" . $record["value"] . "'") ) {
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter like '" . $record["parameter"] . "' AND value like '" . $record["value"] . "'")) {
         $msg = "An error occurred while updating the database to revision " . $n . ", update PSFGenerationDepth boundary values.";
         write_message($msg);
         write_to_error($msg);
@@ -5570,11 +5573,11 @@ if ($current_revision < $n) {
     $record["value"] = "user";
 
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] .
-             " 'AND value='" . $record['value'] . "'";
+        " WHERE parameter='" . $record['parameter'] .
+        " 'AND value='" . $record['value'] . "'";
 
-    if ($db->Execute( $query )->RecordCount( ) != 0) {
-        if(!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
+    if ($db->Execute($query)->RecordCount() != 0) {
+        if (!$db->Execute("DELETE FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND value='" . $record["value"] . "'")) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
             write_message($msg);
             write_to_log($msg);
@@ -5594,22 +5597,22 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE parameter='" . $record['parameter'] . "'" .
-             " AND value='" . $record['value'] . "'";
-    if ($db->Execute( $query )->RecordCount( ) == 0) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        " WHERE parameter='" . $record['parameter'] . "'" .
+        " AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
 
     // Update revision
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
@@ -5647,7 +5650,7 @@ if ($current_revision < $n) {
 
     foreach ($tablesToUpdate as $table => $columns) {
         // Update table boundary_values
-        foreach($columns as $column) {
+        foreach ($columns as $column) {
             $alterColumnSQL = $datadict->AlterColumnSQL($table, $column . ' VARCHAR(191)');
             $rs = $db->Execute($alterColumnSQL[0]);
             if (!$rs) {
@@ -5675,7 +5678,7 @@ if ($current_revision < $n) {
 
     foreach ($tablesToRevert as $table => $columns) {
         // Update table boundary_values
-        foreach($columns as $column) {
+        foreach ($columns as $column) {
             $alterColumnSQL = $datadict->AlterColumnSQL($table, $column . ' VARCHAR(255)');
             $rs = $db->Execute($alterColumnSQL[0]);
             if (!$rs) {
@@ -5756,7 +5759,7 @@ if ($current_revision < $n) {
         }
     }
 
-    // Update the for the SVI HDF5 file format
+    // Update the 'translation' for the SVI HDF5 file format
     $tabname = "possible_values";
     $record = array(
         "parameter" => "ImageFileFormat",
@@ -5771,8 +5774,159 @@ if ($current_revision < $n) {
         return false;
     }
 
+    // Refresh the table list
+    $tables = $db->MetaTables();
+
+    // Create table instance_settings
+    $tablename = "instance_settings";
+
+    if (!in_array($tablename, $tables)) {
+
+        $fields = "
+            id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+            huygens_user C(30) NOTNULL DEFAULT '',
+            huygens_group C(30) NOTNULL DEFAULT '',
+            local_huygens_core C(255) NOTNULL DEFAULT '',
+            image_host C(255) NOTNULL DEFAULT '',
+            image_user C(255) NOTNULL DEFAULT '',
+            image_group C(255) NOTNULL DEFAULT '',
+            image_folder C(255) NOTNULL DEFAULT '',
+            image_source C(255) NOTNULL DEFAULT '',
+            image_destination C(255) NOTNULL DEFAULT '',
+            huygens_server_image_folder C(255) NOTNULL DEFAULT '',
+            allow_http_download C(1) DEFAULT f,
+            allow_http_upload C(1) DEFAULT f,
+            max_upload_limit I(11) NOTNULL DEFAULT 0,
+            max_post_limit I(11) NOTNULL DEFAULT 0,
+            compress_ext C(30) NOTNULL DEFAULT '',
+            hrm_url C(255) NOTNULL DEFAULT '',
+            hrm_path C(255) NOTNULL DEFAULT '',
+            log_verbosity C(1) DEFAULT f,
+            log_dir C(255) NOTNULL DEFAULT '',
+            log_file C(255) NOTNULL DEFAULT '',
+            log_file_max_size I(11) NOTNULL DEFAULT 0,
+            send_mail C(1) DEFAULT f,
+            email_sender C(255) NOTNULL DEFAULT '',
+            email_admin C(255) NOTNULL DEFAULT '',
+            email_list_separator C(30) NOTNULL DEFAULT '',
+            default_authentication C(30) NOTNULL DEFAULT '',
+            alt_authentication_1 C(30) NOTNULL DEFAULT '',
+            alt_authentication_2 C(30) NOTNULL DEFAULT '',
+            alt_authentication_3 C(30) NOTNULL DEFAULT '',
+            alt_authentication_4 C(30) NOTNULL DEFAULT '',
+            image_processing_is_on_queue_manager C(1) DEFAULT f,
+            copy_images_to_huygens_server C(1) DEFAULT f,
+            use_thumbnails C(1) DEFAULT f,
+            gen_thumbnails C(1) DEFAULT f,
+            movie_max_size I(11) NOTNULL DEFAULT 0,
+            save_sfp_previews C(1) DEFAULT f,
+            max_comparison_size I(11) NOTNULL DEFAULT 0,
+            ping_command C(30) NOTNULL DEFAULT '',
+            ping_parameter C(30) NOTNULL DEFAULT '',
+            omero_transfers C(1) DEFAULT f";
+
+        if (!create_table($tablename, $fields)) {
+            $msg = "Could not create the table '$tablename'.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+
+        require_once dirname(__FILE__) . '/../config/hrm_client_config.inc';
+
+        global $huygens_user, $huygens_group, $local_huygens_core, $image_host,
+               $image_user, $image_group, $image_folder, $image_source,
+               $image_destination, $huygens_server_image_folder, $allowHttpTransfer,
+               $allowHttpUpload, $max_upload_limit, $max_post_limit, $compressExt,
+               $hrm_url, $hrm_path, $log_verbosity, $logdir, $logfile, $logfile_max_size,
+               $send_mail, $email_sender, $email_admin, $email_list_separator, $authenticateAgainst,
+               $imageProcessingIsOnQueueManager, $copy_images_to_huygens_server, $useThumbnails,
+               $genThumbnails, $movieMaxSize, $saveSfpPreviews, $maxComparisonSize, $ping_command,
+               $ping_parameter, $omero_transfers;
+
+        // Prepare some of the parameters
+        $default_authentication = $authenticateAgainst[0];
+        $alt_authentication_1 = "";
+        $alt_authentication_2 = "";
+        $alt_authentication_3 = "";
+        $alt_authentication_4 = "";
+        if (count($authenticateAgainst) > 1) {
+            $alt_authentication_1 = $authenticateAgainst[1];
+        }
+        if (count($authenticateAgainst) > 2) {
+            $alt_authentication_2 = $authenticateAgainst[2];
+        }
+        if (count($authenticateAgainst) > 3) {
+            $alt_authentication_3 = $authenticateAgainst[3];
+        }
+        if (count($authenticateAgainst) > 4) {
+            $alt_authentication_4 = $authenticateAgainst[4];
+        }
+        $allow_http_upload = ($allowHttpUpload == true ? 't' : 'f');
+        $allow_http_download = ($allowHttpTransfer == true ? 't' : 'f');
+        $image_processing_is_on_queue_manager = ($imageProcessingIsOnQueueManager == true ? 't' : 'f');
+        $use_thumbnails = ($useThumbnails == true ? 't' : 'f');
+        $gen_thumbnails = ($genThumbnails == true ? 't' : 'f');
+        $save_sfp_previews = ($saveSfpPreviews == true ? 't' : 'f');
+        $omero_transfers = ($omero_transfers == true ? 't' : 'f');
+        $send_mail = ($send_mail == true ? 't' : 'f');
+        $copy_images_to_huygens_server = ($copy_images_to_huygens_server == true ? 't' : 'f');
+
+        // Import the settings from the configuration file
+        $record = array(
+            "huygens_user" => $huygens_user,
+            "huygens_group" => $huygens_group,
+            "local_huygens_core" => $local_huygens_core,
+            "image_host" => $image_host,
+            "image_user" => $image_user,
+            "image_group" => $image_group,
+            "image_folder" => $image_folder,
+            "image_source" => $image_source,
+            "image_destination" => $image_destination,
+            "huygens_server_image_folder" => $huygens_server_image_folder,
+            "allow_http_download" => $allow_http_download,
+            "allow_http_upload" => $allow_http_upload,
+            "max_upload_limit" => $max_upload_limit,
+            "max_post_limit" => $max_post_limit,
+            "compress_ext" => $compressExt,
+            "hrm_url" => $hrm_url,
+            "hrm_path" => $hrm_path,
+            "log_verbosity" => $log_verbosity,
+            "log_dir" => $logdir,
+            "log_file" => $logfile,
+            "log_file_max_size" => $logfile_max_size,
+            "send_mail" => $send_mail,
+            "email_sender" => $email_sender,
+            "email_admin" => $email_admin,
+            "email_list_separator" => $email_list_separator,
+            "default_authentication" => $default_authentication,
+            "alt_authentication_1" => $alt_authentication_1,
+            "alt_authentication_2" => $alt_authentication_2,
+            "alt_authentication_3" => $alt_authentication_3,
+            "alt_authentication_4" => $alt_authentication_4,
+            "image_processing_is_on_queue_manager" => $image_processing_is_on_queue_manager,
+            "copy_images_to_huygens_server" => $copy_images_to_huygens_server,
+            "use_thumbnails" => $use_thumbnails,
+            "gen_thumbnails" => $gen_thumbnails,
+            "movie_max_size" => $movieMaxSize,
+            "save_sfp_previews" => $save_sfp_previews,
+            "max_comparison_size" => $maxComparisonSize,
+            "ping_command" => $ping_command,
+            "ping_parameter" => $ping_parameter,
+            "omero_transfers" => $omero_transfers
+        );
+
+        $insertSQL = $db->GetInsertSQL($tablename, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "Could not add configuration settings from file into $tablename.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
     // Update revision
-    if(!update_dbrevision($n))
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;
