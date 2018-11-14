@@ -83,7 +83,10 @@ switch ($queryType) {
 
     case 'ls':
         $path = rtrim($_REQUEST['ls'], '/');
-        $ext = $_REQUEST['ext'];
+        $ext = null;
+        if (isset($_REQUEST['ext'])) {
+            $ext = $_REQUEST['ext'];
+        }
         $response = $fs->getFileList($path, $ext);
         break;
 
