@@ -725,7 +725,9 @@ class HuygensTemplate
                     $list .= $this->getExportFormat();
                     break;
                 case 'gpuDevice':
-                    $list .= $this->gpuId;
+                    /* TODO: get the correct GPU ID. */
+                    $list .= $value;
+                    /* $list .= $this->gpuId; */
                     break;
                 case 'listID':
                     $list = $this->string2tcllist($list);
