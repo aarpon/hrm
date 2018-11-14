@@ -1,0 +1,34 @@
+
+/*************************
+ * directory tree design *
+ *************************/
+
+#dirtree input + li + ul { display: none; }
+#dirtree input:checked + li + ul { display: block; }
+#dirtree label, li { cursor: pointer; }
+
+#dirtree ul {
+    list-style-position: inside;
+    list-style-type:none;
+    padding-left:20px;
+}
+
+#dirtree li {
+    background: url(../images/directory.png) left center no-repeat;
+    padding-left: 20px;
+}
+
+#dirtree input:checked + li {
+    background: url(../images/folder_open.png) left center no-repeat;
+}
+
+#dirtree input { display: none; }
+
+/*************************/
+/* custom designs        */
+/*************************/
+
+#dirtree { float: left; width: 200px; }
+#filelist { float: left; }
+#filelist select { width: 350px; }
+
