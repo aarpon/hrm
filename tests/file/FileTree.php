@@ -4,16 +4,16 @@ use hrm\file\FileServer;
 
 require_once dirname(__FILE__) . '/../../inc/bootstrap.php';
 
-
+/*
 // just in case...
 if (!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
     return;
-}
+}*/
 
 if (isset($_REQUEST['dir'])) {
     $dir = $_REQUEST['dir'];
 } else {
-    $dir = '/data/images/felix/src';
+    $dir = '/data/images/user/src';
 }
 
 $server = new FileServer($dir, false, false);

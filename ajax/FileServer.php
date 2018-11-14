@@ -25,12 +25,12 @@ use hrm\file\FileServer;
 
 // Handle session
 session_start();
-
+/*
 if (!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
     if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
         return;
     }
-}
+}*/
 
 if (!isset($_SESSION[FileServer::$SESSION_KEY])) {
     return;
