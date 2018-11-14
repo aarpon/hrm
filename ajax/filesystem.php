@@ -10,15 +10,22 @@
  * Requests:
  *    dirs
  *          -> returns nested array with the directory tree as json
- *    files=/some/dir
+ *
+ *    files=/some/dir&[implode|explode]
  *          -> returns an array containing arrays for each entry in the directory with the following information
- *             (file name, modification time, multi-series flag, time-series flag, series/file count)
- *    files=/some/dir&ext=[file extension]$collapse=[true|false]
+ *
+ *    ls=/some/dir&ext=[file extension]
  *          -> returns an array containing arrays for each entry in the directory with collapsed/imploded time-series
+ *             and without the multi-series displayed. These have to be queried separately using the multi-series and
+ *             the time-series argument.
+ *             Response array content:
+ *             (file name, modification time, multi-series flag, time-series flag, series/file count)
+ *
  *    multi-series=/some/file.tif
  *          -> returns an array of series names
+ *
  *    time-series=/some/file.tif
- *          -> returns an array of series names
+ *          -> returns an array of file names
  *
  *
  * @package hrm
@@ -66,16 +73,16 @@ if (isset($_REQUEST['dirs'])) {
 // Create response
 switch ($queryType) {
     case 'dirs':
-        $path = rtrim($_REQUEST['ls'], '/');
+        $path = rtrim($_REQUEST['dirs'], '/');
         $response = $fs->getDirectoryTree();
         break;
 
     case 'files':
         $path = rtrim($_REQUEST['files'], '/');
-        $collapse = isset($_REQUEST['collapse']) && strtolower($_REQUEST['collapse']) == "true";
-        if ($collapse) {
+        if (isset($_REQUEST['implode']) ||
+            (!isset($_REQUEST['implode']) && !isset($_REQUEST['explode']))) {
             $fs->implodeImageTimeSeries();
-        } else {
+        } else if (isset($_REQUEST['explode'])) {
             $fs->explodeImageTimeSeries();
         }
         $response = $fs->getFileDictionary();

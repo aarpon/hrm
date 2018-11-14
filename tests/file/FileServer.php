@@ -45,7 +45,7 @@ echo "
                            node.appendChild( document.createTextNode( pretty ));
                         }
                     };               
-                    var url = \"../../ajax/FileServer.php?dir=\" + str
+                    var url = \"../../ajax/filesystem.php?dir=\" + str
                     if (!(format === '')){
                         url += \"&ext=\" + format
                     }
