@@ -2,31 +2,20 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
-use hrm\Log;
+use \hrm\Settings;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-global $email_admin;
-global $authenticateAgainst;
-
 session_start();
-
-if (isset($_GET['exited'])) {
-    if (session_id() && isset($_SESSION['user'])) {
-        Log::info("User " . $_SESSION['user']->name() . " logged off.");
-        $_SESSION['user']->logout();
-        $_SESSION = array();
-        session_unset();
-        session_destroy();
-    }
-    header("Location: " . "login.php");
-    exit();
-}
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     header("Location: " . "login.php");
     exit();
 }
+
+// Create the (singleton) Setting class. It will take care to read the settings from
+// the database and keep them in the singleton object.
+$instanceSettings = \hrm\Settings::init();
 
 $message = "";
 
@@ -49,12 +38,121 @@ include("header_cf.inc.php");
     <form id="configuration_form">
 
         <!-- --------------------------------------------------------------------------
-                Huygens settings
+            Web server (HRM web application) parameters
         --------------------------------------------------------------------------- -->
 
-        <p class="section_title">Huygens settings</p>
+        <p class="section_title">Web server settings</p>
 
-        <p class="section_explanation">Explanation.</p>
+        <p class="section_explanation">These options apply the HRM web application
+            (web server).</p>
+
+        <div class="section">
+
+            <!-- Full URL of the HRM web application. -->
+            <label for="hrm_url">HRM web application URL</label>
+            <input type="text"
+                   class="form-control"
+                   name="hrm_url"
+                   placeholder="Example: http://localhost/hrm"
+                   value="<?php echo $instanceSettings->get("hrm_url"); ?>"
+                   required>
+            <p class="param_explanation">Full URL of the HRM web application as seen from
+                the users' browsers.</p>
+
+            <!-- Web application installation directory -->
+            <label for="hrm_path">HRM installation dir</label>
+            <input type="text"
+                   class="form-control"
+                   name="hrm_path"
+                   data-parsley-ispath=""
+                   placeholder="Example: /var/www/html/hrm"
+                   value="<?php echo $instanceSettings->get("hrm_path"); ?>"
+                   required>
+            <p class="param_explanation">Installation directory of the HRM web application.</p>
+
+            <!-- Local (freeware) hucore executable -->
+            <label for="local_hucore_path">Full path to local Huygens Core executable</label>
+            <input type="text"
+                   class="form-control"
+                   name="local_hucore_path"
+                   data-parsley-ispath=""
+                   placeholder="Example: /usr/local/svi/hucore"
+                   value="<?php echo $instanceSettings->get("local_huygens_core"); ?>"
+                   required>
+            <p class="param_explanation">Path to a local Huygens Core executable that is
+                used by the web server to handle image information and thumbnails. This
+                installation of Huygens Core mostly uses freeware functions that do not
+                require a full license. However, support for certain proprietary file
+                formats requires the <i>Additional file readers</i> license.</p>
+        </div>
+
+        <!-- --------------------------------------------------------------------------
+        Logging
+        --------------------------------------------------------------------------- -->
+
+        <p class="section_title">Logging</p>
+
+        <p class="section_explanation">These options apply to logging for both the HRM
+            web application (web server user) and the Queue Manager user.</p>
+
+        <div class="section">
+
+            <!-- HRM log directory -->
+            <label for="log_dir">HRM log directory</label>
+            <input type="text"
+                   class="form-control"
+                   name="log_dir"
+                   data-parsley-ispath=""
+                   placeholder="Example: /var/log/hrm"
+                   value="<?php echo $instanceSettings->get("log_dir"); ?>"
+                   required>
+            <p class="param_explanation">HRM log directory: it must be writable by
+                both the web server and the Queue Manager users.</p>
+
+            <!-- HRM log file name -->
+            <label for="log_file">HRM log file name</label>
+            <input type="text"
+                   class="form-control"
+                   name="log_file"
+                   placeholder="Example: hrm.log"
+                   value="<?php echo $instanceSettings->get("log_file"); ?>"
+                   required>
+            <p class="param_explanation">HRM log file name.</p>
+
+            <!-- Log verbosity -->
+            <label for="log_verbosity">Logging verbosity</label>
+            <select id="log_verbosity" required>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $selected_2 = "";
+                $value = $instanceSettings->get("log_verbosity");
+                if ($value == "0") {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == "1") {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                if ($value == "2") {
+                    $selected_2 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="0" <?php echo($selected_0); ?>>Quiet</option>
+                <option value="1" <?php echo($selected_1); ?>>Normal</option>
+                <option value="2" <?php echo($selected_2); ?>>Debug</option>
+            </select>
+            <p class="param_explanation">Explanation</p>
+
+        </div>
+
+        <!-- --------------------------------------------------------------------------
+                Processing server settings
+        --------------------------------------------------------------------------- -->
+
+        <p class="section_title">Processing server settings</p>
+
+        <p class="section_explanation">These options apply to the machine running
+            Huygens Core.</p>
 
         <div class="section">
 
@@ -64,39 +162,59 @@ include("header_cf.inc.php");
                    class="form-control"
                    name="hucore_path"
                    data-parsley-ispath=""
-                   placeholder="/usr/local/svi/hucore"
+                   placeholder="Example: /usr/local/svi/hucore"
+                   value="THIS IS NOT IN THE CONFIGURATION FILE!"
                    required>
             <p class="param_param_explanation">Explanation</p>
 
-            <!-- Local (freeware) hucore executable -->
-            <label for="local_hucore_path">Full path to local Huygens Core executable</label>
-            <input type="text"
-                   class="form-control"
-                   name="local_hucore_path"
-                   data-parsley-ispath=""
-                   placeholder="/usr/local/svi/hucore"
-                   required>
-            <p class="param_explanation">Path to a local Huygens Core executable, to handle image
-                information and thumbnails. This installation of hucore doesn't require a
-                full license unless this is also the computation server. For image information
-                and thumbnails mostly freeware functions will be used, but support for certain
-                proprietary file formats requires a B flag in the license string.
-                (See http://support.svi.nl/wiki/FileFormats).</p>
-
             <!-- Queue Manager and Huygens Core run on the same machine -->
-            <label for="image_processing_is_on_queuemanager">Queue Manager and Huygens Core run on the same
+            <label for="image_processing_is_on_queue_manager">Queue Manager and Huygens Core run on the same
                 machine</label>
-            <select id="image_processing_is_on_queuemanager" required>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+            <select id="image_processing_is_on_queue_manager" required>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $value = $instanceSettings->get("image_processing_is_on_queue_manager");
+                if ($value == false) {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == true) {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="0" <?php echo($selected_0); ?>>No</option>
+                <option value="1" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Explanation</p>
+
+            <!-- File server image base folder as seen from the server machines -->
+            <label for="huygens_server_image_folder">File server image base folder as seen from the processing
+                machines</label>
+            <input type="text"
+                   class="form-control"
+                   name="huygens_server_image_folder"
+                   data-parsley-ispath=""
+                   placeholder="Example: /scratch/hrm_data"
+                   value="<?php echo $instanceSettings->get("huygens_server_image_folder"); ?>"
+                   required>
+            <p class="param_explanation">Explanation.</p>
 
             <!-- Images must be copied to the Huygens Core machine -->
             <label for="copy_images_to_huygens_server">Images must be copied to the Huygens Core machine</label>
             <select id="copy_images_to_huygens_server" required>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $value = $instanceSettings->get("copy_images_to_huygens_server");
+                if ($value == false) {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == true) {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="0" <?php echo($selected_0); ?>>No</option>
+                <option value="1" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Set to Yes if the images must be copied to the machine running
                 Huygens Core over SSH.</p>
@@ -106,7 +224,8 @@ include("header_cf.inc.php");
             <input type="text"
                    class="form-control"
                    name="huygens_user"
-                   placeholder="huygens"
+                   placeholder="Example: hrm"
+                   value="<?php echo $instanceSettings->get("huygens_user"); ?>"
                    required>
             <p class="param_explanation">Explanation</p>
 
@@ -115,7 +234,8 @@ include("header_cf.inc.php");
             <input type="text"
                    class="form-control"
                    name="huygens_group"
-                   placeholder="huygens"
+                   placeholder="Example: hrm"
+                   value="<?php echo $instanceSettings->get("huygens_group"); ?>"
                    required>
             <p class="param_explanation">Explanation</p>
         </div>
@@ -135,7 +255,8 @@ include("header_cf.inc.php");
             <input type="text"
                    class="form-control"
                    name="image_host"
-                   placeholder="localhost"
+                   placeholder="Example: localhost"
+                   value="<?php echo $instanceSettings->get("image_host"); ?>"
                    required>
             <p class="param_explanation">Explanation</p>
 
@@ -144,7 +265,8 @@ include("header_cf.inc.php");
             <input type="text"
                    class="form-control"
                    name="image_user"
-                   placeholder="hrm"
+                   placeholder="Example: hrm"
+                   value="<?php echo $instanceSettings->get("image_user"); ?>"
                    required>
             <p class="param_explanation">Explanation</p>
 
@@ -153,7 +275,8 @@ include("header_cf.inc.php");
             <input type="text"
                    class="form-control"
                    name="image_group"
-                   placeholder="hrm"
+                   placeholder="Example: hrm"
+                   value="<?php echo $instanceSettings->get("image_group"); ?>"
                    required>
             <p class="param_explanation">Explanation</p>
 
@@ -163,7 +286,8 @@ include("header_cf.inc.php");
                    class="form-control"
                    name="image_folder"
                    data-parsley-ispath=""
-                   placeholder="/scratch/hrm_data"
+                   placeholder="Example: /scratch/hrm_data"
+                   value="<?php echo $instanceSettings->get("image_folder"); ?>"
                    required>
             <p class="param_explanation">Explanation</p>
 
@@ -172,7 +296,8 @@ include("header_cf.inc.php");
             <input type="text"
                    class="form-control"
                    name="image_source"
-                   placeholder="src"
+                   placeholder="Example: src"
+                   value="<?php echo $instanceSettings->get("image_source"); ?>"
                    required>
             <p class="param_explanation">Explanation</p>
 
@@ -181,34 +306,46 @@ include("header_cf.inc.php");
             <input type="text"
                    class="form-control"
                    name="image_destination"
-                   placeholder="dst"
-                   required>
-            <p class="param_explanation">Explanation</p>
-
-            <!-- File server image base folder as seen from the server machines -->
-            <label for="huygens_server_image_folder">File server image base folder as seen from the processing
-                machines</label>
-            <input type="text"
-                   class="form-control"
-                   name="huygens_server_image_folder"
-                   data-parsley-ispath=""
-                   placeholder="/scratch/hrm_data"
+                   placeholder="Example: dst"
+                   value="<?php echo $instanceSettings->get("image_destination"); ?>"
                    required>
             <p class="param_explanation">Explanation</p>
 
             <!-- Allow HTTP transfer (download) of the restored images -->
-            <label for="allow_http_transfer">Allow HTTP transfer (download) of the restored images</label>
-            <select id="allow_http_transfer" required>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+            <label for="allow_http_download">Allow HTTP transfer (download) of the restored images</label>
+            <select id="allow_http_download" required>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $value = $instanceSettings->get("allow_http_download");
+                if ($value == false) {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == true) {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="0" <?php echo($selected_0); ?>>No</option>
+                <option value="1" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Explanation</p>
 
             <!-- Allow HTTP transfer (upload) of the original images to be restored -->
             <label for="allow_http_upload">Allow HTTP transfer (upload) of the original images to be restored</label>
             <select id="allow_http_upload" required>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $value = $instanceSettings->get("allow_http_upload");
+                if ($value == false) {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == true) {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="0" <?php echo($selected_0); ?>>No</option>
+                <option value="1" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Limitations in upload size must be configured in the parameters
                 defined below.</p>
@@ -218,89 +355,22 @@ include("header_cf.inc.php");
             <input type="number"
                    class="form-control"
                    name="max_upload_limit"
-                   placeholder="0"
+                   placeholder="Example: 0"
+                   value="<?php echo $instanceSettings->get("max_upload_limit"); ?>"
                    required>
             <p class="param_explanation">Limits the maximum file size that can be uploaded. Set
                 to zero to have it read from PHP.ini (upload_max_filesize).</p>
 
             <!-- Maximum post size for uploads in MB -->
-            <label for="max_upload_limit">Maximum post size for uploads in MB</label>
+            <label for="max_post_limit">Maximum post size for uploads in MB</label>
             <input type="number"
                    class="form-control"
-                   name="max_upload_limit"
-                   placeholder="0"
+                   name="max_post_limit"
+                   placeholder="Example: 0"
+                   value="<?php echo $instanceSettings->get("max_post_limit"); ?>"
                    required>
             <p class="param_explanation">Limits the maximum post size from the client. Set
                 to zero to have it read from PHP.ini (post_max_size).</p>
-
-            <!-- Archiver for downloading the results via the web browser -->
-            <label for="compress_ext">Archiver for downloading the results via the web browser</label>
-            <select id="compress_ext" required>
-                <option value="zip">.zip</option>
-                <option value="tgz">.tgz|.tar.gz</option>
-                <option value="tar">.tar</option>
-            </select>
-            <p class="param_explanation">Type of the archive that will be served when downloading
-                data from HRM.</p>
-
-        </div>
-
-        <!-- --------------------------------------------------------------------------
-            HRM configuration parameters
-        --------------------------------------------------------------------------- -->
-
-        <p class="section_title">Web application parameters</p>
-
-        <p class="section_explanation">Explanation.</p>
-
-        <div class="section">
-
-            <!-- Full URL of the HRM web application. -->
-            <label for="hrm_url">HRM web application URL</label>
-            <input type="text"
-                   class="form-control"
-                   name="hrm_url"
-                   placeholder="http://localhost/hrm"
-                   required>
-            <p class="param_explanation">Full URL of the HRM web application.</p>
-
-            <!-- Web application installation directory -->
-            <label for="hrm_path">HRM installation dir</label>
-            <input type="text"
-                   class="form-control"
-                   name="image_folder"
-                   data-parsley-ispath=""
-                   placeholder="/var/www/html/hrm"
-                   required>
-            <p class="param_explanation">Installation directory of the HRM web application.</p>
-
-            <!-- HRM log directory -->
-            <label for="log_dir">HRM log directory</label>
-            <input type="text"
-                   class="form-control"
-                   name="log_dir"
-                   data-parsley-ispath=""
-                   placeholder="/var/log/hrm"
-                   required>
-            <p class="param_explanation">HRM log directory.</p>
-
-            <!-- HRM log file name -->
-            <label for="log_file">HRM log file name</label>
-            <input type="text"
-                   class="form-control"
-                   name="log_file"
-                   placeholder="hrm.log"
-                   required>
-            <p class="param_explanation">HRM log file name.</p>
-
-            <!-- Log verbosity -->
-            <label for="log_verbosity">Logging verbosity</label>
-            <select id="log_verbosity" required>
-                <option value="0">Quiet</option>
-                <option value="1">Normal</option>
-                <option value="2">Debug</option>
-            </select>
-            <p class="param_explanation">Explanation</p>
 
         </div>
 
@@ -317,8 +387,19 @@ include("header_cf.inc.php");
             <!-- Send e-mails -->
             <label for="send_mail">Send e-mails</label>
             <select id="send_mail" required>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $value = $instanceSettings->get("send_mail");
+                if ($value == false) {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == true) {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="0" <?php echo($selected_0); ?>>No</option>
+                <option value="1" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Send e-mails to the users.</p>
 
@@ -327,24 +408,37 @@ include("header_cf.inc.php");
             <input type="text"
                    class="form-control"
                    name="email_sender"
-                   placeholder="hrm@localhost"
+                   placeholder="Example: hrm@localhost"
+                   value="<?php echo $instanceSettings->get("email_sender"); ?>"
                    required>
             <p class="param_explanation">E-mails sent by HRM will be associated with this e-mail address.</p>
 
             <!-- Name of the sender of e-mails -->
-            <label for="log_file">Name of the sender of e-mails</label>
+            <label for="email_admin">Name of the sender of e-mails</label>
             <input type="text"
                    class="form-control"
                    name="email_admin"
-                   placeholder="HRM administrator"
+                   placeholder="Example: HRM administrator"
+                   value="<?php echo $instanceSettings->get("email_admin"); ?>"
                    required>
             <p class="param_explanation">E-mails sent by HRM will be associated to this name.</p>
 
             <!-- E-mail list separator -->
             <label for="email_list_separator">E-mail list separator</label>
             <select id="email_list_separator" required>
-                <option value=",">Comma (,)</option>
-                <option value=";">Semicolon (;)</option>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $value = $instanceSettings->get("email_list_separator");
+                if ($value == ',') {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == ';') {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="0" <?php echo($selected_0); ?>>Comma (,)</option>
+                <option value="1" <?php echo($selected_1); ?>>Semicolon (;)</option>
             </select>
             <p class="param_explanation">Comma (',') is the standard separator for lists of email addresses
                 (http://tools.ietf.org/html/rfc2822#section-3.6.3). Unfortunately, Microsoft Outlook
@@ -369,27 +463,80 @@ include("header_cf.inc.php");
 
             <label for="default_authentication">Select the default authentication mechanism</label>
             <select id="default_authentication" required>
-                <option value="integrated">Integrated</option>
-                <option value="active_dir">Active Directory</option>
-                <option value="ldap">Generic LDAP</option>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $selected_2 = "";
+                $value = $instanceSettings->get("default_authentication");
+                if ($value == "integrated") {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == "active_dir") {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                if ($value == "ldap") {
+                    $selected_2 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="integrated" <?php echo($selected_0); ?>>Integrated</option>
+                <option value="active_dir" <?php echo($selected_1); ?>>Active Directory</option>
+                <option value="ldap" <?php echo($selected_2); ?>>Generic LDAP</option>
             </select>
             <p class="param_explanation">This is the default authentication for new users.</p>
 
-            <label for="add_authentication_1">Select an additional authentication mechanism (optional)</label>
-            <select id="add_authentication_1" required>
-                <option value="none">None</option>
-                <option value="integrated">Integrated</option>
-                <option value="active_dir">Active Directory</option>
-                <option value="ldap">Generic LDAP</option>
+            <label for="alt_authentication_1">Select an additional authentication mechanism (optional)</label>
+            <select id="alt_authentication_1" required>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $selected_2 = "";
+                $selected_3 = "";
+                $value = $instanceSettings->get("alt_authentication_1");
+                if ($value == "none") {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == "integrated") {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                if ($value == "active_dir") {
+                    $selected_2 = "selected=\"selected\"";
+                }
+                if ($value == "ldap") {
+                    $selected_3 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="none" <?php echo($selected_1); ?>>None</option>
+                <option value="integrated" <?php echo($selected_1); ?>>Integrated</option>
+                <option value="active_dir" <?php echo($selected_2); ?>>Active Directory</option>
+                <option value="ldap" <?php echo($selected_3); ?>>Generic LDAP</option>
             </select>
             <p class="param_explanation">This is an additional (optional) authentication mechanism.</p>
 
-            <label for="add_authentication_1">Select an additional authentication mechanism (optional)</label>
-            <select id="add_authentication_1" required>
-                <option value="none">None</option>
-                <option value="integrated">Integrated</option>
-                <option value="active_dir">Active Directory</option>
-                <option value="ldap">Generic LDAP</option>
+            <label for="alt_authentication_2">Select an additional authentication mechanism (optional)</label>
+            <select id="alt_authentication_2" required>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $selected_2 = "";
+                $selected_3 = "";
+                $value = $instanceSettings->get("alt_authentication_2");
+                if ($value == "none") {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == "integrated") {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                if ($value == "active_dir") {
+                    $selected_2 = "selected=\"selected\"";
+                }
+                if ($value == "ldap") {
+                    $selected_3 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="none" <?php echo($selected_1); ?>>None</option>
+                <option value="integrated" <?php echo($selected_1); ?>>Integrated</option>
+                <option value="active_dir" <?php echo($selected_2); ?>>Active Directory</option>
+                <option value="ldap" <?php echo($selected_3); ?>>Generic LDAP</option>
             </select>
             <p class="param_explanation">This is an additional (optional) authentication mechanism.</p>
 
@@ -408,8 +555,19 @@ include("header_cf.inc.php");
             <!-- Create thumbnails of source and result files (during deconvolution) -->
             <label for="use_thumbnails">Create thumbnails of source and result files (during deconvolution)</label>
             <select id="use_thumbnails" required>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $value = $instanceSettings->get("use_thumbnails");
+                if ($value == false) {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == true) {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="0" <?php echo($selected_0); ?>>No</option>
+                <option value="1" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Generate thumbnails and previews for both the source
                 and the results images during the deconvolution on the computation servers.
@@ -419,8 +577,19 @@ include("header_cf.inc.php");
             <!-- Create thumbnails of source files (web server) -->
             <label for="gen_thumbnails">Create thumbnails of source files on demand in HRM</label>
             <select id="gen_thumbnails" required>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $value = $instanceSettings->get("gen_thumbnails");
+                if ($value == false) {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == true) {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="0" <?php echo($selected_0); ?>>No</option>
+                <option value="1" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">On-demand generation of a preview of the original
                 images by the web server prior to the deconvolution. For this to work the
@@ -435,7 +604,8 @@ include("header_cf.inc.php");
             <input type="number"
                    class="form-control"
                    name="movie_max_size"
-                   placeholder="300"
+                   placeholder="Example: 300"
+                   value="<?php echo $instanceSettings->get("movie_max_size"); ?>"
                    required>
             <p class="param_explanation">Set the size to 0 to disable the generation of an
                 AVI movie that allows browsing along Z for 3D stacks, and along MIPs in time.
@@ -446,7 +616,8 @@ include("header_cf.inc.php");
             <input type="number"
                    class="form-control"
                    name="max_comparison_size"
-                   placeholder="300"
+                   placeholder="Example: 300"
+                   value="<?php echo $instanceSettings->get("max_comparison_size"); ?>"
                    required>
             <p class="param_explanation">If non-zero, save stack and time series previews of
                 the original and restored data side by side, to allow comparisons. This is the
@@ -455,8 +626,19 @@ include("header_cf.inc.php");
             <!-- Save Simulated Fluorescence Process top-view rendering -->
             <label for="save_sfp_previews">Save Simulated Fluorescence Process top-view rendering</label>
             <select id="save_sfp_previews" required>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
+                <?php
+                $selected_0 = "";
+                $selected_1 = "";
+                $value = $instanceSettings->get("save_sfp_previews");
+                if ($value == false) {
+                    $selected_0 = "selected=\"selected\"";
+                }
+                if ($value == true) {
+                    $selected_1 = "selected=\"selected\"";
+                }
+                ?>
+                <option value="0" <?php echo($selected_0); ?>>No</option>
+                <option value="1" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Generate a Simulated Fluorescence Process top-view rendering
                 of the original and the restored images (http://support.svi.nl/wiki/SFP).</p>
