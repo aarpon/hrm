@@ -32,8 +32,6 @@ require_once dirname(__FILE__) . '/bootstrap.php';
  */
 function fileButton($type) {
 
-  global $decompressBin;
-
   $error = false;
 
   # Some buttons post the form, but other use JavaScript to show some
