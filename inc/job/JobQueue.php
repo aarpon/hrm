@@ -78,4 +78,15 @@ class JobQueue
         
         return $result;
     }
+
+  /**
+   * Adds a Job for a JobDescription to the queue.
+   * @param JobDescription $jobDescription A JobDescription object.
+   * @return bool True if queuing the Job succeeded, false otherwise.
+   */
+    public function queueJob(JobDescription $jobDescription) {
+
+        /* Dummy function. See if it needs to be implemented when the new
+        GC3QM is finished. */
+    }
 }

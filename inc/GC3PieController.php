@@ -29,16 +29,16 @@ class GC3PieController {
     private $sectionsArray;
 
     /*!
-     \brief $hrmJobFileArray
-     \var   Array with fields for the HRM section.
+     \brief $snijderJobFileArray
+     \var   Array with fields for the Snijder section.
     */
-    private $hrmJobFileArray;
+    private $snijderJobFileArray;
 
     /*!
-     \brief $hrmJobFileList 
-     \var   HRM section of the controller sorted for GC3Pie.
+     \brief $snijderJobFileList 
+     \var   Snijder section of the controller sorted for GC3Pie.
     */
-    private $hrmJobFileList;
+    private $snijderJobFileList;
 
     /*!
      \brief $hucoreArray
@@ -86,7 +86,7 @@ class GC3PieController {
     public function __construct( $jobDescription ) {
         $this->jobDescription  = $jobDescription;
         $this->initializeSections();
-        $this->setHrmJobFileSectionList();
+        $this->setSnijderJobFileSectionList();
         $this->setHuCoreSectionList();
         $this->setInputFilesSectionList();
         $this->setDeleteJobsSectionList();
@@ -101,19 +101,17 @@ class GC3PieController {
     private function initializeSections() {
         
         $this->sectionsArray = array (
-            'hrmjobfile'  ,
+            'snijderjob'  ,
             'hucore',
             'deletejobs',
             'inputfiles'
         );        
         
-        $this->hrmJobFileArray = array (
-            'version'       =>  '6',
+        $this->snijderJobFileArray = array (
+            'version'       =>  '7',
             'username'      =>  '',
             'useremail'     =>  '',
-            'queuetype'     =>  '',
             'jobtype'       =>  '',
-            'priority'      =>  '',
             'timestamp'     =>  ''
         );
         
@@ -122,6 +120,7 @@ class GC3PieController {
         );
 
         $this->hucoreArray = array (
+            'tasktype'    =>   '',
             'executable'    =>   '',
             'template'      =>   ''
         );
@@ -141,29 +140,6 @@ class GC3PieController {
     
     
     /* ----------------------------- Utils ------------------------------ */
-
-    /*!
-      \brief    Assigns a queue type to a task type (decon, previewgen, etc).
-      \return   The queue type.
-    */
-    private function taskType2queueType() {
-        $taskType = $this->jobDescription->getTaskType();
-        
-        switch ( $taskType ) {
-        case "deletejobs":
-        case "decon":
-            $queueType = "primary";
-            break;
-        case "snr": 
-        case "previewgen":
-            $queueType = "secondary";
-            break;
-        default:
-            error_log("Impossible to set queue type for job type $taskType");
-        }
-        
-        return $queueType;
-    }
 
     /*!
       \brief   Assigns a job type to a task type (decon, previewgen, etc).
@@ -191,47 +167,40 @@ class GC3PieController {
     /* ----------------------------------------------------------------- */
     
     /*!
-     \brief  Sets the HRM job file section field.
+     \brief  Sets the Snijder job file section field.
     */
-    private function setHrmJobFileSectionList() {
-        $this->hrmJobFileList = "";
+    private function setSnijderJobFileSectionList() {
+        $this->snijderJobFileList = "";
         
         $user = $this->jobDescription->owner();
         
-        foreach ($this->hrmJobFileArray as $key => $value) {
-            $this->hrmJobFileList .= $key;
+        foreach ($this->snijderJobFileArray as $key => $value) {
+            $this->snijderJobFileList .= $key;
             switch ( $key ) {
             case "version":
-                $this->hrmJobFileList .= " = " . $value;
+                $this->snijderJobFileList .= " = " . $value;
                 break;
             case "username":
-                $this->hrmJobFileList .= " = ";
-                $this->hrmJobFileList .= $user->name();
+                $this->snijderJobFileList .= " = ";
+                $this->snijderJobFileList .= $user->name();
                 break;
             case "useremail":
-                $this->hrmJobFileList .= " = ";
-                $this->hrmJobFileList .= $user->emailAddress();
-                break;
-            case "queuetype":
-                $this->hrmJobFileList .= " = ";
-                $this->hrmJobFileList .= $this->taskType2queueType();
-                break;
+                $this->snijderJobFileList .= " = ";
+                $this->snijderJobFileList .= $user->emailAddress();
+                break;            
             case "jobtype":
-                $this->hrmJobFileList .= " = " . $this->taskType2JobType();
-                break;
-            case "priority":
-                $this->hrmJobFileList .= " = " . $this->getTaskPriority();
-                break;
+                $this->snijderJobFileList .= " = " . $this->taskType2JobType();
+                break;            
             case "id":
-                $this->hrmJobFileList .=  " = " . $this->jobDescription->getJobID();
+                $this->snijderJobFileList .=  " = " . $this->jobDescription->getJobID();
                 break;
             case "timestamp":
-                $this->hrmJobFileList .= " = " . microtime(true);
+                $this->snijderJobFileList .= " = " . microtime(true);
                 break;
             default:
-                error_log("Unimplemented HRM job file section field: $key");
+                error_log("Unimplemented Snijder job file section field: $key");
             }
-            $this->hrmJobFileList .= "\n";
+            $this->snijderJobFileList .= "\n";
         }
     }
 
@@ -257,37 +226,7 @@ class GC3PieController {
             $this->idList .= "\n";
         }
     }
-    
-    /*!
-    \brief   Returns the priority of a task.
-    \return  The task priority
-    */
-    private function getTaskPriority( ) {
-        $priority = "";
-        $taskType = $this->jobDescription->getTaskType();
-;
-        foreach ($this->tasksPriorityArray as $key => $value) {
-            switch( $key ) {
-                case "decon":
-                case "snr":
-                case "previewgen":
-                case "deletejobs":
-                if ($key == $taskType) {
-                        $priority = $value;
-                }
-                break;
-                default:
-                    error_log("Unknown task type: $key");
-
-            }
-        }
-
-        if ($priority == "") {
-            error_log("No priority found for task $taskType");
-        }
-
-        return $priority;
-    }
+      
 
     /*!
      \brief  Sets the hucore section field.
@@ -305,20 +244,24 @@ class GC3PieController {
         foreach ($this->hucoreArray as $key => $value) {
             $this->hucoreList .= $key;
             switch ( $key ) {
-            case "executable":
-                if (isset($local_huygens_core)) {
-                    $this->hucoreList .= " = " . $local_huygens_core;
-                } else {
-                    error_log("Unreachable hucore binary.");
-                }
+                case "tasktype":
+                    $this->hucoreList .= " = ";
+                    $this->hucoreList .= $this->jobDescription->getTaskType();
+                break;
+                case "executable":
+                    if (isset($local_huygens_core)) {
+                        $this->hucoreList .= " = " . $local_huygens_core;
+                    } else {
+                        error_log("Unreachable hucore binary.");
+                    }
                 break;
                 case "template":
                     $this->hucoreList .= " = ";
                     $this->hucoreList .= $templatePath;
                     $this->hucoreList .= $templateName;
-                    break;
-                default:
-                    error_log("Unimplemented Hucore section field: $key");
+                break;
+            default:
+                error_log("Unimplemented Hucore section field: $key");
             }
             $this->hucoreList .= "\n";
         }
@@ -378,8 +321,8 @@ class GC3PieController {
             $this->controller .= "[" . $section . "]" . "\n";
             
             switch ($section) {
-            case "hrmjobfile":
-                $this->controller .= $this->hrmJobFileList;
+            case "snijderjob":
+                $this->controller .= $this->snijderJobFileList;
                 break;
             case "hucore":
                 $this->controller .= $this->hucoreList;
@@ -404,7 +347,8 @@ class GC3PieController {
      */
     public function write2Spool() {
 
-        $controllerPath = dirname(__FILE__) . "/../run/spool/new";
+        /* TODO: read this path from a configuration variable. */
+        $controllerPath = "/opt/spool/snijder/spool/new";
         $controllerName = tempnam($controllerPath, "gc3_");
         if (!chmod($controllerName, 0664)) {  /*Due to  'tempnam'. */
             return False;
