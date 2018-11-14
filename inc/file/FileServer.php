@@ -222,12 +222,14 @@ class FileServer
                 $fileName = $seriesFiles[0];
             }
 
+            $extension = ImageFiles::getExtension($fileName);
             $mtime = filemtime($dir . '/' . $fileName);
             $files["{$i}"] = array('name' => $entryName,
                 'mtime' => "{$mtime}",
                 'multi-series' => "{$isMulti}",
                 'time-series' => "{$isTimeSeries}",
-                'count' => "{$fileCount}");
+                'count' => "{$fileCount}",
+                'extension' => $extension);
 
             $i++;
         }
