@@ -13,9 +13,6 @@ namespace hrm\file;
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
 /**
- * Class FileServer
- * @package hrm\file
- *
  * Simple interface to the file system.
  * It scans with fast php functions and keeps the directory tree in memory.
  *

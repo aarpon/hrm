@@ -2,7 +2,18 @@
 /**
  * filesystem
  *
- * asynchronous queries on the file system.
+ * @package hrm
+ *
+ * This file is part of the Huygens Remote Manager
+ * Copyright and license notice: see license.txt
+ */
+
+require_once dirname(__FILE__) . '/../inc/bootstrap.php';
+
+use hrm\file\FileServer;
+
+/**
+ * Asynchronous queries on the file system.
  *
  * Base URL
  *    [domain]/hrm/ajax/filesystem.php?
@@ -26,17 +37,7 @@
  *
  *    time-series=/some/file.tif
  *          -> returns an array of file names
- *
- *
- * @package hrm
- *
- * This file is part of the Huygens Remote Manager
- * Copyright and license notice: see license.txt
  */
-
-require_once dirname(__FILE__) . '/../inc/bootstrap.php';
-
-use hrm\file\FileServer;
 
 
 // Handle session
