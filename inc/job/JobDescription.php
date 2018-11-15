@@ -368,8 +368,6 @@ class JobDescription
                 $this->files,
                 $this->autoseries);
 
-        $queue = new JobQueue();
-        $result = $result && $queue->queueJob($this);
         if (!$result) {
             $this->message = "Could not create job!";
         }
