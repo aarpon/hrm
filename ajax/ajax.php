@@ -187,7 +187,7 @@ function getJobQueueTable()
             $data .= "
       <td>$index</td>
       <td>$username</td>
-      <td>$jobFiles</td>
+      <td>$jobFiles[0]</td>
       <td>$queued</td>
       <td>$status</td>
       <td>$start</td>

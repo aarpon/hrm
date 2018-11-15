@@ -12,6 +12,7 @@ namespace hrm\job;
 use hrm\DatabaseConnection;
 use hrm\shell\ExternalProcessFactory;
 use hrm\Log;
+use hrm\GC3PieController;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 

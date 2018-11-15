@@ -30,7 +30,7 @@ if (isset($_SERVER['HTTP_REFERER']) &&
 if (isset($_POST['delete'])) {
     if (isset($_POST['jobs_to_kill'])) {
         $queue->removeJobs($_POST['jobs_to_kill'],
-            $_SESSION['user']->name(), $_SESSION['user']->isAdmin());
+            $_SESSION['user'], $_SESSION['user']->isAdmin());
     }
 } else if (isset($_POST['update']) && $_POST['update'] == 'update') {
     // nothing to do
