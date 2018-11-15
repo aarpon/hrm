@@ -918,6 +918,11 @@ table#Servers td {
     font-weight: bold;
 }
 
+#queue td.progress {
+    width: 8%;
+    font-weight: bold;
+}
+
 #queue td.stop {
     width: 15%;
     font-weight: bold;
