@@ -5,7 +5,7 @@
 var filetree_component = Vue.component('filetree', {
   template: `<div><ul>
                 <li @click="toggleChildren">{{ label }}</li>
-                <filetree v-if="showChildren" v-for="node in nodes" :nodes="node.nodes" :label="node.label"></filetree>
+                <filetree v-if="showChildren" v-for="(item, key, index) in nodes" :nodes="item" :label="key"></filetree>
             </ul></div>`,
     props: [ 'label', 'nodes' ],
     name: 'filetree',
@@ -21,6 +21,12 @@ var filetree_component = Vue.component('filetree', {
   }
 });
 
+var filelist_component = Vue.component('filelist', {
+  template: `<div><ul><li v-for="file in files">{{ file }}</li></ul></div>`,
+    props: [ 'files' ],
+    name: 'filelist',
+});
+
 new Vue({
 
   // We want to target the div with an id of 'events'
@@ -30,40 +36,20 @@ new Vue({
   // for the application
   data: {
     msg: "Hello Vue!",
+    tree: 0,
     files: 0,
-    mytree: {
-  label: 'root',
-  nodes: [
-    {
-      label: 'item1',
-      nodes: [
-        {
-          label: 'item1.1'
-        },
-        {
-          label: 'item1.2',
-          nodes: [
-            {
-              label: 'item1.2.1'
-            }
-          ]
-        }
-      ]
-    }, 
-    {
-      label: 'item2'  
-    }
-  ]
-}
   },
 
-  components: { filetree_component },
+  components: { filetree_component, filelist_component },
 
   // Anything within the ready function will run when the application loads
   mounted: function() {
         var vm = this;
-        $.post( "ajax/filesystem.php?dirs=/", function( data ) {
+        $.get( "ajax/filesystem.php?dirs=/", function( data ) {
             vm.tree = data;
+        });
+        $.get( "ajax/filesystem.php?ls=/data/images/user", function( data ) {
+            vm.files = data;
         });
   },
 
