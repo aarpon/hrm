@@ -45,12 +45,6 @@ class FileServer extends UserFiles
     static $CACHE_FILE_EXTENSION = ".ls.json";
 
     /**
-     * Root from which the file system is scanned recursively
-     * @var string
-     */
-    private $root;
-
-    /**
      * List of directories to ignore during the file system scan.
      * @var array
      */
@@ -110,7 +104,6 @@ class FileServer extends UserFiles
      * FileServer constructor.
      *
      * @param $username
-     * @param string $root directory
      * @param bool $implode_time_series if true, an additional level in the @link FileServer::dict is created
      *                                  members of the time-series are encapsulated in an sub-array.
      *                                  This is can be changed after scanning with $link FileServer::implodeImageTimeSeries
@@ -119,7 +112,7 @@ class FileServer extends UserFiles
      * @param bool $ignore_hidden
      * @param array $ignored_directories list of directories excluded from the @link FileServer::scan
      */
-    function __construct($username, $root,
+    function __construct($username,
                          $implode_time_series = true,
                          $show_image_series = false,
                          $ignore_hidden = true,
@@ -127,7 +120,6 @@ class FileServer extends UserFiles
     {
         parent::__construct($username);
 
-        $this->root = $root;
         $this->ignored_dirs = $ignored_directories;
         $this->ignore_hidden_files = $ignore_hidden;
         $this->is_showing_image_series = null;
@@ -154,7 +146,7 @@ class FileServer extends UserFiles
     private function scan($show_multi_series, $implode_time_series)
     {
         list($this->tree, $this->dict, $this->n_dirs, $this->n_files) =
-            FileServer::scan_recursive($this->root, "/", $this->ignored_dirs, $this->ignore_hidden_files);
+            FileServer::scan_recursive($this->getRootDirecotry(), "/", $this->ignored_dirs, $this->ignore_hidden_files);
 
         if ($show_multi_series) {
             foreach ($this->dict as $dir => $files) {
@@ -193,6 +185,22 @@ class FileServer extends UserFiles
     {
         $this->synchronize();
         return $this->dict;
+    }
+
+    /**
+     * Get the file dicttonary with the relative paths
+     *
+     * @return array
+     */
+    public function getRelativeFileDirectory()
+    {
+        $rel_dict = array();
+        foreach ($this->dict as $dir => $content) {
+            $rel_dir = $this->getRelativePath($dir);
+            $rel_dict[$rel_dir] = $content;
+        }
+
+        return $rel_dict;
     }
 
     /**
@@ -391,17 +399,6 @@ class FileServer extends UserFiles
     }
 
     /**
-     * Check if the input directory is the root directory
-     *
-     * @param string $dir input directory
-     * @return bool
-     */
-    public function isRootDirectory($dir)
-    {
-        return ($dir == $this->root);
-    }
-
-    /**
      * Check if the root directory was modified since the scan, if so rescan to refresh the memory copy.
      *
      * @link FileServer::$root
@@ -409,8 +406,8 @@ class FileServer extends UserFiles
      */
     public function synchronize()
     {
-        $stat = stat($this->root);
-        if (!$stat['mtime'] > $this->scan_time) {
+        $stat = stat($this->getRootDirecotry());
+        if ($stat['mtime'] > $this->scan_time) {
             $this->scan($this->is_showing_image_series, $this->is_imploded_time_series);
         }
     }

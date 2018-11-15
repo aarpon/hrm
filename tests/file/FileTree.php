@@ -23,7 +23,7 @@ if (!isset($_SESSION['user'])) {
 $username = $_SESSION['user']->name();
 $server = new FileServer($username, $dir, false, false);
 $tree = $server->getDirectoryTree();
-$dir1 = $server->getFileDictionary();
+$dir1 = $server->getRelativeFileDirectory();
 
 $server = new FileServer($username, $dir, true, false);
 $dir3 = $server->getFileDictionary();

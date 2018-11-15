@@ -75,6 +75,27 @@ class UserFiles
     }
 
     /**
+     * Check if the input directory is the root directory
+     *
+     * @param string $dir input directory
+     * @return bool
+     */
+    public function isRootDirectory($dir)
+    {
+        return ($dir == $this->root_dir);
+    }
+
+    /**
+     * Getter for the user root directory
+     *
+     * @return string
+     */
+    public function getRootDirecotry()
+    {
+        return $this->root_dir;
+    }
+
+    /**
      * Getter for the input directory
      *
      * @return string
@@ -113,6 +134,6 @@ class UserFiles
      */
     public function getAbsolutePath($path)
     {
-        return stripslashes($this->root_dir . '/' . $path);
+        return rtrim(stripslashes($this->root_dir . '/' . $path), '/');
     }
 }
