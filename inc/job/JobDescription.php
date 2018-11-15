@@ -425,31 +425,7 @@ class JobDescription
         $this->setOwner($aJobDescription->owner());
         $this->setGroup($aJobDescription->group());
     }
-
-    /**
-     * Checks whether the JobDescription describes a compound Job.
-     * @return bool True if the Job is compound (i.e. contains more than one file),
-     * false otherwise.
-     */
-    public function isCompound()
-    {
-        if (count($this->files) > 1) {
-            return True;
-        }
-        return False;
-    }
-
-    /**
-     * Creates elementary Jobs from compound Jobs.
-     * @return bool True if elementary Jobs could be created, false otherwise.
-     */
-    public function createSubJobs()
-    {
-        //$parameterSetting = $this->parameterSetting;
-        //$numberOfChannels = $parameterSetting->numberOfChannels();
-        return $this->createSubJobsforFiles();
-    }
-
+        
     /**
      * Returns the full file name without redundant slashes.
      * @return string Full file name without redundant slashes.
@@ -649,23 +625,6 @@ class JobDescription
     /*
                                   PRIVATE FUNCTIONS
     */
-
-    /**
-     * Create elementary Jobs from multi-file compound Jobs
-     * @return bool True if elementary Jobs could be created, false otherwise.
-     */
-    private function createSubJobsforFiles()
-    {
-        $result = True;
-        foreach ($this->files as $file) {
-            // Log::error("file=".$file);
-            $newJobDescription = new JobDescription();
-            $newJobDescription->copyFrom($this);
-            $newJobDescription->setFiles(array($file), $this->autoseries);
-            $result = $result && $newJobDescription->createJob();
-        }
-        return $result;
-    }
 
     /**
      * Checks whether a string ends with a number.

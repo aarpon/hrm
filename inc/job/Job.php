@@ -59,13 +59,8 @@ class Job
      * If the job cannot be split further, it submits it to the queue.
      */
     public function process () {
-        $jobDescription = $this->description();
-        
-        if ($jobDescription->isCompound()) {
-            $this->createSubJobs();
-        } else {
-            $this->createJobControllers();
-        }
+        $jobDescription = $this->description();        
+        $this->createJobControllers();        
     }
 
     /* ------------------------------------------------------------------------ */
@@ -153,26 +148,7 @@ class Job
         $this->controller->write2Spool();
         Log::info("Created GC3Pie controller", 1);
     }
-
-    /**
-     * Splits  the job into smaller parts.
-     */
-    private function createSubJobs( ) {
-        $jobDescription = $this->description();
-        
-        if ($jobDescription->createSubJobs()) {
-            Log::info("created sub jobs", 1);
-        
-            $queue = new JobQueue();
-            if ($queue->removeJobs(
-                $jobDescription->id(),
-                $jobDescription->owner())) {
-                
-                Log::info("removed compound job\n", 1);
-            }
-        }
-    }
-
+    
     /**
      * Writes the template to the user's source folder
      * true if the template could be written, false otherwise.
