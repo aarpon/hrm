@@ -74,7 +74,7 @@ class JobQueue
         $JobDescription->setTaskType( "deletejobs" );        
         
         $JobDescription->setJobID( implode(', ', $ids) );
-        $snijderJobConfiguation = new SnijderJobConfiguration($JobDescription);
+        $snijderJobConfiguration = new SnijderJobConfiguration($JobDescription);
         $result &= $snijderJobConfiguration->write2Spool();
 
         Log::info("Removing jobs " .  $JobDescription->getJobID(), 1);
