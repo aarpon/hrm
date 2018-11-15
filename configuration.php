@@ -13,11 +13,23 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     exit();
 }
 
-// Create the (singleton) Setting class. It will take care to read the settings from
-// the database and keep them in the singleton object.
-$instanceSettings = \hrm\Settings::init();
+// Create/get the (singleton) Setting class. It is used to read and persist settings in the database.
+$instanceSettings = Settings::getInstance();
 
 $message = "";
+
+// Try storing the posted settings
+$storageWasSuccessful = true;
+if (isset($_POST) && count($_POST) > 0) {
+    // The setAll() method will perform validation
+    if ($instanceSettings->setAll($_POST)) {
+        // If not error, was returned, we can persist the Settings to the database
+        $instanceSettings->save();
+        $storageWasSuccessful = true;
+    } else {
+        $storageWasSuccessful = false;
+    }
+}
 
 include("header_cf.inc.php");
 
@@ -27,6 +39,14 @@ include("header_cf.inc.php");
 
     <h1>HRM configuration</h1>
 
+    <?php
+    if ($storageWasSuccessful == false) {
+        ?>
+        <h2 style="color:red">There was an issue storing your settings. Please check your inputs!</h2>
+        <?php
+    }
+    ?>
+
     <div class="bs-callout bs-callout-warning hidden">
         <p>Please correct the invalid fields!</p>
     </div>
@@ -35,7 +55,7 @@ include("header_cf.inc.php");
         <p>All fields validate correctly!</p>
     </div>
 
-    <form id="configuration_form">
+    <form id="configuration_form" method="post">
 
         <!-- --------------------------------------------------------------------------
             Web server (HRM web application) parameters
@@ -71,10 +91,10 @@ include("header_cf.inc.php");
             <p class="param_explanation">Installation directory of the HRM web application.</p>
 
             <!-- Local (freeware) hucore executable -->
-            <label for="local_hucore_path">Full path to local Huygens Core executable</label>
+            <label for="local_huygens_core">Full path to local Huygens Core executable</label>
             <input type="text"
                    class="form-control"
-                   name="local_hucore_path"
+                   name="local_huygens_core"
                    data-parsley-ispath=""
                    placeholder="Example: /usr/local/svi/hucore"
                    value="<?php echo $instanceSettings->get("local_huygens_core"); ?>"
@@ -121,7 +141,8 @@ include("header_cf.inc.php");
 
             <!-- Log verbosity -->
             <label for="log_verbosity">Logging verbosity</label>
-            <select id="log_verbosity" required>
+            <select id="log_verbosity"
+                    name="log_verbosity" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -157,6 +178,7 @@ include("header_cf.inc.php");
         <div class="section">
 
             <!-- Processing hucore executable -->
+<!--
             <label for="hucore_path">Full path to processing Huygens Core executable</label>
             <input type="text"
                    class="form-control"
@@ -166,11 +188,12 @@ include("header_cf.inc.php");
                    value="THIS IS NOT IN THE CONFIGURATION FILE!"
                    required>
             <p class="param_param_explanation">Explanation</p>
-
+-->
             <!-- Queue Manager and Huygens Core run on the same machine -->
             <label for="image_processing_is_on_queue_manager">Queue Manager and Huygens Core run on the same
                 machine</label>
-            <select id="image_processing_is_on_queue_manager" required>
+            <select id="image_processing_is_on_queue_manager"
+                    name="image_processing_is_on_queue_manager" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -201,7 +224,8 @@ include("header_cf.inc.php");
 
             <!-- Images must be copied to the Huygens Core machine -->
             <label for="copy_images_to_huygens_server">Images must be copied to the Huygens Core machine</label>
-            <select id="copy_images_to_huygens_server" required>
+            <select id="copy_images_to_huygens_server"
+                    name="copy_images_to_huygens_server" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -313,7 +337,8 @@ include("header_cf.inc.php");
 
             <!-- Allow HTTP transfer (download) of the restored images -->
             <label for="allow_http_download">Allow HTTP transfer (download) of the restored images</label>
-            <select id="allow_http_download" required>
+            <select id="allow_http_download"
+                    name="allow_http_download" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -332,7 +357,8 @@ include("header_cf.inc.php");
 
             <!-- Allow HTTP transfer (upload) of the original images to be restored -->
             <label for="allow_http_upload">Allow HTTP transfer (upload) of the original images to be restored</label>
-            <select id="allow_http_upload" required>
+            <select id="allow_http_upload"
+                    name="allow_http_upload" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -386,7 +412,8 @@ include("header_cf.inc.php");
 
             <!-- Send e-mails -->
             <label for="send_mail">Send e-mails</label>
-            <select id="send_mail" required>
+            <select id="send_mail"
+                    name="send_mail" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -425,7 +452,8 @@ include("header_cf.inc.php");
 
             <!-- E-mail list separator -->
             <label for="email_list_separator">E-mail list separator</label>
-            <select id="email_list_separator" required>
+            <select id="email_list_separator"
+                    name="email_list_separator" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -437,8 +465,8 @@ include("header_cf.inc.php");
                     $selected_1 = "selected=\"selected\"";
                 }
                 ?>
-                <option value="0" <?php echo($selected_0); ?>>Comma (,)</option>
-                <option value="1" <?php echo($selected_1); ?>>Semicolon (;)</option>
+                <option value="," <?php echo($selected_0); ?>>Comma (,)</option>
+                <option value=";" <?php echo($selected_1); ?>>Semicolon (;)</option>
             </select>
             <p class="param_explanation">Comma (',') is the standard separator for lists of email addresses
                 (http://tools.ietf.org/html/rfc2822#section-3.6.3). Unfortunately, Microsoft Outlook
@@ -462,7 +490,8 @@ include("header_cf.inc.php");
         <div class="section">
 
             <label for="default_authentication">Select the default authentication mechanism</label>
-            <select id="default_authentication" required>
+            <select id="default_authentication"
+                    name="default_authentication" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -485,7 +514,8 @@ include("header_cf.inc.php");
             <p class="param_explanation">This is the default authentication for new users.</p>
 
             <label for="alt_authentication_1">Select an additional authentication mechanism (optional)</label>
-            <select id="alt_authentication_1" required>
+            <select id="alt_authentication_1"
+                    name="alt_authentication_1" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -513,7 +543,8 @@ include("header_cf.inc.php");
             <p class="param_explanation">This is an additional (optional) authentication mechanism.</p>
 
             <label for="alt_authentication_2">Select an additional authentication mechanism (optional)</label>
-            <select id="alt_authentication_2" required>
+            <select id="alt_authentication_2"
+                    name="alt_authentication_2" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -554,7 +585,8 @@ include("header_cf.inc.php");
 
             <!-- Create thumbnails of source and result files (during deconvolution) -->
             <label for="use_thumbnails">Create thumbnails of source and result files (during deconvolution)</label>
-            <select id="use_thumbnails" required>
+            <select id="use_thumbnails"
+                    name="use_thumbnails" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -576,7 +608,8 @@ include("header_cf.inc.php");
 
             <!-- Create thumbnails of source files (web server) -->
             <label for="gen_thumbnails">Create thumbnails of source files on demand in HRM</label>
-            <select id="gen_thumbnails" required>
+            <select id="gen_thumbnails"
+                    name="gen_thumbnails" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -625,7 +658,8 @@ include("header_cf.inc.php");
 
             <!-- Save Simulated Fluorescence Process top-view rendering -->
             <label for="save_sfp_previews">Save Simulated Fluorescence Process top-view rendering</label>
-            <select id="save_sfp_previews" required>
+            <select id="save_sfp_previews"
+                    name="save_sfp_previews" required>
                 <?php
                 $selected_0 = "";
                 $selected_1 = "";
@@ -646,7 +680,9 @@ include("header_cf.inc.php");
         </div>
 
         <!-- Validate -->
-        <input type="submit" class="btn btn-default" value="validate">
+        <div id="controls">
+            <input type="submit" id="conf_submit" class="icon save" value="validate">
+        </div>
 
     </form>
 
@@ -665,9 +701,12 @@ include("footer.inc.php");
                 var ok = $('.parsley-error').length === 0;
                 $('.bs-callout-info').toggleClass('hidden', !ok);
                 $('.bs-callout-warning').toggleClass('hidden', ok);
+                if (ok === true) {
+                    $('#configuration_form').submit();
+                }
             })
             .on('form:submit', function () {
-                return false; // Don't submit form for this demo
+                return true;
             })
     });
     $(function () {

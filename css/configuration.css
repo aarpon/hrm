@@ -92,6 +92,13 @@ textarea.parsley-error {
     background-color: #EEEEEE;
 }
 
+#fullpage input#conf_submit {
+    background-color: #FFFFFF;
+    color: #FFFFFF;
+    border: solid;
+    border-width: 3px;
+}
+
 #fullpage select {
     display: inline-block;
     width: 325px;
