@@ -1344,66 +1344,7 @@ class DatabaseConnection
         $result = ($status == 'busy');
         return $result;
     }
-
-    /**
-     * Checks whether the switch in the queue manager is 'on'.
-     * @return bool True if switch is on, false otherwise.
-     */
-    public function isSwitchOn()
-    {
-        // Handle some back-compatibility issue
-        if ($this->doGlobalVariablesExist()) {
-            $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
-            $answer = $this->queryLastValue($query);
-            $result = True;
-            if ($answer == 'off') {
-                $result = False;
-                Log::warning("$query; returned '$answer'");
-                Util::notifyRuntimeError("hrmd stopped",
-                    "$query; returned '$answer'\n\nThe HRM queue manager will stop.");
-            }
-        } else {
-            $query = "select switch from queuemanager";
-            $answer = $this->queryLastValue($query);
-            $result = True;
-            if ($answer == 'off') {
-                $result = False;
-                Log::warning("$query; returned '$answer'");
-                Util::notifyRuntimeError("hrmd stopped",
-                    "$query; returned '$answer'\n\nThe HRM queue manager will stop.");
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Gets the status of the queue manager's switch.
-     * @return string 'on' or 'off'
-     */
-    public function getSwitchStatus()
-    {
-        if ($this->doGlobalVariablesExist()) {
-            $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
-            $answer = $this->queryLastValue($query);
-        } else {
-            $query = "select switch from queuemanager";
-            $answer = $this->queryLastValue($query);
-        }
-        return $answer;
-    }
-
-    /**
-     * Sets the status of the queue manager's switch.
-     * @param string $status Either 'on' or 'off'
-     * @return array Query result.
-     */
-    public function setSwitchStatus($status)
-    {
-        $result = $this->execute("UPDATE queuemanager SET value = '$status' WHERE field = 'switch'");
-        return $result;
-    }
-
+    
     /**
      * Sets the state of the server to 'busy' and the pid for a running job.
      * @param string $name Server name.
@@ -1476,18 +1417,6 @@ class DatabaseConnection
         $query = "select name from username where name != '$name' " .
             " and name != 'admin';";
         $result = $this->query($query);
-        return $result;
-    }
-
-    /**
-     * Get the name of the user who owns a job with given id.
-     * @param string $id Job id.
-     * @return string Name of the user who owns the job.
-     */
-    public function getJobOwner($id)
-    {
-        $query = "select username from job_queue where id = '$id'";
-        $result = $this->queryLastValue($query);
         return $result;
     }
 
