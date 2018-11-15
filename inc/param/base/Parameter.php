@@ -345,7 +345,7 @@ abstract class Parameter {
      * @param int $numberOfChannels Number of channels (default 0).
      * @return string String representation of the Parameter.
     */
-    protected function displayString($numberOfChannels = 0) {
+    public function displayString($numberOfChannels = 0) {
         // Reimplement this!
         return "";
     }
