@@ -22,10 +22,12 @@ $message = "";
 $storageWasSuccessful = true;
 if (isset($_POST) && count($_POST) > 0) {
     // The setAll() method will perform validation
-    if ($instanceSettings->setAll($_POST)) {
+    if ($instanceSettings->setAll($_POST,$message)) {
         // If not error, was returned, we can persist the Settings to the database
-        $instanceSettings->save();
-        $storageWasSuccessful = true;
+        $storageWasSuccessful = $instanceSettings->save();
+        if ($storageWasSuccessful == false) {
+            $message = "Could not store the settings in the database.";
+        }
     } else {
         $storageWasSuccessful = false;
     }
@@ -40,15 +42,17 @@ include("header_cf.inc.php");
     <h1>HRM configuration</h1>
 
     <?php
+    $storageWasSuccessful = true;
     if ($storageWasSuccessful == false) {
-        ?>
-        <h2 style="color:red">There was an issue storing your settings. Please check your inputs!</h2>
-        <?php
-    }
+        $hidden = "";
+        $text = $message;
+        } else {
+        $hidden = "hidden";
+        $text = "Please correct the invalid fields!";
+        }
     ?>
-
-    <div class="bs-callout bs-callout-warning hidden">
-        <p>Please correct the invalid fields!</p>
+    <div class="bs-callout bs-callout-warning <?php echo($hidden); ?>">
+        <p><?php echo($text); ?></p>
     </div>
 
     <div class="bs-callout bs-callout-info hidden">
@@ -178,17 +182,17 @@ include("header_cf.inc.php");
         <div class="section">
 
             <!-- Processing hucore executable -->
-<!--
-            <label for="hucore_path">Full path to processing Huygens Core executable</label>
-            <input type="text"
-                   class="form-control"
-                   name="hucore_path"
-                   data-parsley-ispath=""
-                   placeholder="Example: /usr/local/svi/hucore"
-                   value="THIS IS NOT IN THE CONFIGURATION FILE!"
-                   required>
-            <p class="param_param_explanation">Explanation</p>
--->
+            <!--
+                        <label for="hucore_path">Full path to processing Huygens Core executable</label>
+                        <input type="text"
+                               class="form-control"
+                               name="hucore_path"
+                               data-parsley-ispath=""
+                               placeholder="Example: /usr/local/svi/hucore"
+                               value="THIS IS NOT IN THE CONFIGURATION FILE!"
+                               required>
+                        <p class="param_param_explanation">Explanation</p>
+            -->
             <!-- Queue Manager and Huygens Core run on the same machine -->
             <label for="image_processing_is_on_queue_manager">Queue Manager and Huygens Core run on the same
                 machine</label>

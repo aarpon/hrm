@@ -165,23 +165,27 @@ class Settings
      * settings table, no settings are updated; and the function returns false.
      *
      * The Settings are not persisted into the database. Use Settings::store() to persist.
+     * @param string $message Reference to a string that holds possible error messages.
      * @return bool True if all Settings could be stored successfully, false otherwise.
+     * @throws \Exception It the Settings could not be loaded from the database.
      */
-    public function setAll($arrayOfSettings) {
+    public function setAll($arrayOfSettings, &$message) {
 
         // The input argument must be an array
         if (! is_array($arrayOfSettings)) {
+            $message = "The input argument to Settings->setAll() must be an array.";
             return false;
         }
 
         // Did we load the settings already?
-        if (is_null($this->settings_table)) {
-            return false;
+        if (null === $this->settings_table) {
+            $this->load();
         }
 
         // Check that all keys exist
         foreach ($arrayOfSettings as $key => $value) {
             if (! array_key_exists($key, $this->settings_table)) {
+                $message = "Unknown setting $key.";
                 return false;
             }
         }
@@ -193,18 +197,34 @@ class Settings
             switch ($key) {
 
                 case 'image_folder':
-                    $this->set($key, $value);
-                    $this->set("http_download_temp_files_dir", $value . "/.hrm_downloads");
-                    $this->set("http_upload_temp_chunks_dir", $value . "/.hrm_chunks");
-                    $this->set("http_upload_temp_files_dir", $value . "/.hrm_files");
+                    if ($this->set($key, $value) === false) {
+                        $message = "Could not set image_folder setting.";
+                        return false;
+                    }
+                    if ($this->set("http_download_temp_files_dir", $value . "/.hrm_downloads") === false) {
+                        $message = "Could not set http_download_temp_files_dir setting.";
+                        return false;
+                    }
+                    if ($this->set("http_upload_temp_chunks_dir", $value . "/.hrm_chunks") === false) {
+                        $message = "Could not set http_upload_temp_chunks_dir setting.";
+                        return false;
+                    }
+                    if ($this->set("http_upload_temp_files_dir", $value . "/.hrm_files") === false) {
+                        $message = "Could not set http_upload_temp_files_dir setting.";
+                        return false;
+                    }
                     break;
                 default:
-                    $this->set($key, $value);
+                    if ($this->set($key, $value) === false) {
+                        $message = "Could not set $key setting.";
+                        return false;
+                    }
                     break;
             }
         }
 
         // Return success
+        $message = "";
         return true;
     }
 
