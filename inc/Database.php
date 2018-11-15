@@ -11,8 +11,6 @@
 namespace hrm;
 
 use ADODB_mysql;
-use hrm\job\Job;
-use hrm\job\JobDescription;
 use hrm\param\base\Parameter;
 use hrm\setting\AnalysisSetting;
 use hrm\setting\base\Setting;
@@ -649,7 +647,7 @@ class DatabaseConnection
      * @param string $username Name of the user for whom to query for shared
      * templates.
      * @param string $table Name of the shared table to query.
-     * @return array List of shared jobs.
+     * @return array List of shared templates.
      */
     public function getTemplatesSharedWith($username, $table)
     {
@@ -663,7 +661,7 @@ class DatabaseConnection
      * @param string $username Name of the user for whom to query for shared
      * templates.
      * @param string $table Name of the shared table to query.
-     * @return array List of shared jobs.
+     * @return array List of shared templates.
      */
     public function getTemplatesSharedBy($username, $table)
     {
@@ -1005,158 +1003,7 @@ class DatabaseConnection
         }
         return $result;
     }
-
-    /**
-     * Adds all files for a given job id and user to the database.
-     * @param string $id Job id.
-     * @param string $owner Name of the user that owns the job.
-     * @param array $files Array of file names.
-     * @param bool $autoseries True if the series is to be loaded automatically, false otherwise.
-     * @return bool True if the job files could be saved successfully; false
-     * otherwise.
-     */
-    public function saveJobFiles($id, $owner, $files, $autoseries)
-    {
-        $result = True;
-        /** @var UserV2 $owner */
-        $username = $owner->name();
-        $sqlAutoSeries = "";
-        foreach ($files as $file) {
-            if (strcasecmp($autoseries, "TRUE") == 0 || strcasecmp($autoseries, "T") == 0) {
-                $sqlAutoSeries = "T";
-            }
-            $slashesFile = addslashes($file);
-            $query = "insert into job_files values ('$id', '$username', '$slashesFile', '$sqlAutoSeries')";
-            $result = $result && $this->execute($query);
-        }
-        return $result;
-    }
-
-    /**
-     * Adds a job for a given job id and user to the queue.
-     * @param string $id Job id.
-     * @param string $username Name of the user that owns the job.
-     * @return array Query result.
-     */
-    public function queueJob($id, $username)
-    {
-        $query = "insert into job_queue (id, username, queued, status) values ('$id', '$username', NOW(), 'queued')";
-        return $this->execute($query);
-    }
-
-    /**
-     * Assigns priorities to the jobs in the queue.
-     * @return True if assigning priorities was successful.
-     */
-    public function setJobPriorities()
-    {
-
-        $result = True;
-
-        ////////////////////////////////////////////////////////////////////////////
-        //
-        // First we analyze the queue
-        //
-        ////////////////////////////////////////////////////////////////////////////
-
-        // Get the number of users that currently have jobs in the queue
-        $users = $this->execute("SELECT DISTINCT( username ) FROM job_queue;");
-        $row = $this->execute("SELECT COUNT( DISTINCT( username ) ) FROM job_queue;")->FetchRow();
-        $numUsers = $row[0];
-
-        // 'Highest' priority (i.e. lowest value) is 0
-        $currentPriority = 0;
-
-        // First, we make sure to give the highest priorities to paused and
-        // broken jobs
-        $rs = $this->execute("SELECT id FROM job_queue WHERE status = 'broken' OR status = 'paused';");
-        if ($rs) {
-            while ($row = $rs->FetchRow()) {
-
-                // Update the priority for current job id
-                $query = "UPDATE job_queue SET priority = " . $currentPriority++ .
-                    " WHERE id = '" . $row[0] . "';";
-
-                $rs = $this->execute($query);
-                if (!$rs) {
-                    Log::error("Could not update priority for key " . $row[0]);
-                    $result = False;
-                    return $result;
-                }
-
-            }
-        }
-
-        // Then, we go through to running jobs
-        $rs = $this->execute("SELECT id FROM job_queue WHERE status = 'started';");
-        if ($rs) {
-            while ($row = $rs->FetchRow()) {
-
-                // Update the priority for current job id
-                $query = "UPDATE job_queue SET priority = " . $currentPriority++ .
-                    " WHERE id = '" . $row[0] . "';";
-
-                $rs = $this->execute($query);
-                if (!$rs) {
-                    Log::error("Could not update priority for key " . $row[0]);
-                    $result = False;
-                    return $result;
-                }
-            }
-        }
-
-        // Then we organize the queued jobs in a way that lets us then assign
-        // priorities easily in a second pass
-        $numJobsPerUser = array();
-        $userJobs = array();
-        for ($i = 0; $i < $numUsers; $i++) {
-            // Get current username
-            $row = $users->FetchRow();
-            $username = $row[0];
-            $query = "SELECT id
-        FROM job_queue, job_files
-        WHERE job_queue.id = job_files.job AND
-          job_queue.username = job_files.owner AND
-          job_queue.username = '$username' AND
-          status = 'queued'
-        ORDER BY job_queue.queued asc, job_files.file asc";
-            $rs = $this->execute($query);
-            if ($rs) {
-                $userJobs[$i] = array();
-                $counter = 0;
-                while ($row = $rs->FetchRow()) {
-                    $userJobs[$i][$counter++] = $row[0];
-                }
-                $numJobsPerUser[$i] = $counter;
-            }
-        }
-
-        // Now we can assign priorities to the queued jobs -- minimum priority is 1
-        // above the priorities assigned to all other types of jobs
-        $maxNumJobs = max($numJobsPerUser);
-        for ($j = 0; $j < $maxNumJobs; $j++) {
-            for ($i = 0; $i < $numUsers; $i++) {
-                if ($j < count($userJobs[$i])) {
-                    // Update the priority for current job id
-                    $query = "UPDATE job_queue SET priority = " .
-                        $currentPriority . " WHERE id = '" .
-                        $userJobs[$i][$j] . "';";
-
-                    $rs = $this->execute($query);
-                    if (!$rs) {
-                        Log::error("Could not update priority for key " . $userJobs[$i][$j]);
-                        $result = False;
-                        return $result;
-                    }
-                    $currentPriority++;
-                }
-            }
-        }
-
-        // We can now return true
-        return $result;
-    }
-
+        
     /**
      * Logs job information in the statistics table.
      * @param Job $job Job object whose information is to be logged in the
@@ -1433,84 +1280,7 @@ class DatabaseConnection
 
         return $result;
     }
-
-    /**
-     * Returns the id for next job from the queue, sorted by priority.
-     * @return string Job id.
-     */
-    public function getNextIdFromQueue()
-    {
-        // For the query we join job_queue and job_files, since we want to sort also by file name
-        $query = "SELECT id
-    FROM job_queue, job_files
-    WHERE job_queue.id = job_files.job AND job_queue.username = job_files.owner
-    AND job_queue.status = 'queued'
-    ORDER BY job_queue.priority desc, job_queue.status desc, job_files.file desc;";
-        $result = $this->queryLastValue($query);
-        if (!$result) {
-            return NULL;
-        }
-        return $result;
-    }
-
-    /**
-     * Returns all jobs from the queue, both compound and simple, ordered by
-     * priority.
-     * @return array All jobs.
-     */
-    public function getQueueJobs()
-    {
-        // Get jobs as they are in the queue, compound or not, without splitting
-        // them.
-        $query = "SELECT id, username, queued, start, server, process_info, status
-    FROM job_queue
-    ORDER BY job_queue.priority asc, job_queue.queued asc, job_queue.status asc;";
-        $result = $this->query($query);
-        return $result;
-    }
-
-    /**
-     * Returns all jobs from the queue, both compound and simple, and the
-     * associated file names, ordered by priority.
-     * @return array All jobs.
-     */
-    public function getQueueContents()
-    {
-        // For the query we join job_queue and job_files, since we want to sort also by file name
-        $query = "SELECT id, username, queued, start, stop, server, process_info, status, file
-    FROM job_queue, job_files
-    WHERE job_queue.id = job_files.job AND job_queue.username = job_files.owner
-    ORDER BY job_queue.priority asc, job_queue.queued asc, job_queue.status asc, job_files.file asc
-    LIMIT 100";
-        $result = $this->query($query);
-        return $result;
-    }
-
-    /**
-     * Returns all jobs from the queue for a given id (that must be unique!)
-     * @param string $id Id of the job.
-     * @return array All jobs for the id
-     */
-    public function getQueueContentsForId($id)
-    {
-        $query = "select id, username, queued, start, server, process_info, status from job_queue where id='$id';";
-        $result = $this->queryLastRow($query);  // it is supposed that just one job exists with a given id
-        return $result;
-    }
-
-    /**
-     * Returns all file names associated to a job with given id.
-     * @param string $id Job id.
-     * @return array Array of file names.
-     */
-    public function getJobFilesFor($id)
-    {
-        $query = "select file from job_files where job = '" . $id . "'";
-        $result = $this->query($query);
-        $result = $this->flatten($result);
-        return $result;
-    }
-
+    
     /**
      * Returns the file series mode of a job with given id.
      * @param string $id Job id
@@ -1521,49 +1291,6 @@ class DatabaseConnection
         $query = "select autoseries from job_files where job = '$id';";
         $result = $this->queryLastValue($query);
 
-        return $result;
-    }
-
-    /**
-     * Returns the name of the user who created the job with given id.
-     * @param string $id SId of the job.
-     * @return string Name of the user.
-     */
-    public function userWhoCreatedJob($id)
-    {
-        $query = "select username from job_queue where id = '$id';";
-        $result = $this->queryLastValue($query);
-        if (!$result) {
-            return NULL;
-        }
-        return $result;
-    }
-
-    /**
-     * Deletes job with specified ID from all job tables.
-     * @param string $id Id of the job.
-     * @return bool True if success, false otherwise.
-     */
-    public function deleteJobFromTables($id)
-    {
-        // TODO: Use foreign keys in the database!
-        $result = True;
-        $result = $result && $this->execute(
-                "delete from job_analysis_parameter where setting='$id';");
-        $result = $result && $this->execute(
-                "delete from job_analysis_setting where name='$id';");
-        $result = $result && $this->execute(
-                "delete from job_files where job='$id';");
-        $result = $result && $this->execute(
-                "delete from job_parameter where setting='$id';");
-        $result = $result && $this->execute(
-                "delete from job_parameter_setting where name='$id';");
-        $result = $result && $this->execute(
-                "delete from job_queue where id='$id';");
-        $result = $result && $this->execute(
-                "delete from job_task_parameter where setting='$id';");
-        $result = $result && $this->execute(
-                "delete from job_task_setting where name='$id';");
         return $result;
     }
 
@@ -1702,44 +1429,7 @@ class DatabaseConnection
         $result = $this->execute($query);
         return $result;
     }
-
-    /**
-     * Starts a job.
-     * @param Job $job Job object.
-     * @return array Query result.
-     */
-    public function startJob(Job $job)
-    {
-        $desc = $job->description();
-        $id = $desc->id();
-        $server = $job->server();
-        $process_info = $job->pid();
-        $query = "update job_queue set start=NOW(), server='$server', process_info='$process_info', status='started' where id='$id'";
-        $result = $this->execute($query);
-        return $result;
-    }
-
-    /**
-     * Get all running jobs.
-     * @return array Array of Job objects.
-     */
-    public function getRunningJobs()
-    {
-        $result = array();
-        $query = "select id, process_info, server from job_queue where status = 'started'";
-        $rows = $this->query($query);
-        if (!$rows) return $result;
-
-        foreach ($rows as $row) {
-            $desc = new JobDescription();
-            $desc->setId($row['id']);
-            $desc->load();
-            $job = new Job($desc);
-            $result[] = $job;
-        }
-        return $result;
-    }
-
+    
     /**
      * Get names of all processing servers (independent of their status).
      * @return array Array of server names.
@@ -1749,20 +1439,6 @@ class DatabaseConnection
         $query = "select name from server";
         $result = $this->query($query);
         $result = $this->flatten($result);
-        return $result;
-    }
-
-    /**
-     * Get the starting time of given job object.
-     * @param Job $job Job object.
-     * @return string Start time.
-     */
-    public function startTimeOf(Job $job)
-    {
-        $desc = $job->description();
-        $id = $desc->id();
-        $query = "select start from job_queue where id = '$id';";
-        $result = $this->queryLastValue($query);
         return $result;
     }
 
@@ -1777,58 +1453,7 @@ class DatabaseConnection
         $result = $this->queryLastValue($query);
         return $result;
     }
-
-    /**
-     * Pauses a job of given id.
-     * @param string $id Job id
-     * @return array query result.
-     */
-    public function pauseJob($id)
-    {
-        $query = "update job_queue set status='paused' where id='$id';";
-        $result = $this->execute($query);
-        return $result;
-    }
-
-    /**
-     * Sets the end time of a job.
-     * @param string $id Job id.
-     * @param string $date Formatted date: YYYY-MM-DD hh:mm:ss.
-     * @return array Query result.
-     */
-    public function setJobEndTime($id, $date)
-    {
-        $query = "update job_queue set stop='$date' where id='$id'";
-        $result = $this->execute($query);
-        return $result;
-    }
-
-    /**
-     * Changes status of 'paused' jobs to 'queued'.
-     * @return array Query result
-     */
-    public function restartPausedJobs()
-    {
-        $query = "update job_queue set status='queued' where status='paused'";
-        $result = $this->execute($query);
-        return $result;
-    }
-
-    /**
-     * Marks a job with given id as 'broken' (i.e. to be removed).
-     * @param string $id Job id.
-     * @return array Query result.
-     */
-    public function markJobAsRemoved($id)
-    {
-        $query = "update job_queue set status='broken' where (status='queued' or status='paused') and id='$id';";
-        // $query = "update job_queue set status='broken' where id='" . $id . "'";
-        $result = $this->execute($query);
-        $query = "update job_queue set status='kill' where status='started' and id='$id';";
-        $result = $this->execute($query);
-        return $result;
-    }
-
+    
     /**
      * Set the server status to free.
      * @param string $server Server name.
@@ -1839,28 +1464,6 @@ class DatabaseConnection
         $query = "update server set status='free', job=NULL where name='$server'";
         $result = $this->execute($query);
         return $result;
-    }
-
-    /**
-     * Get all jobs with status 'broken'.
-     * @return array Array of ids for broken jobs.
-     */
-    public function getMarkedJobIds()
-    {
-        $conditions['status'] = 'broken';
-        $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
-        return $ids;
-    }
-
-    /**
-     * Get all jobs with status 'kill' to be killed by the Queue Manager.
-     * @return array Array of ids for jobs to be killed.
-     */
-    public function getJobIdsToKill()
-    {
-        $conditions['status'] = 'kill';
-        $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
-        return $ids;
     }
 
     /**
