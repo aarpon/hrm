@@ -8,13 +8,13 @@ use hrm\user\User;
 use hrm\job\JobDescription;
 use hrm\Fileserver;
 
-class GC3PieController {
+class SnijderJobConfiguration {
 
     /*!
-     \brief $controller
-     \var   String containing information for the GC3Pie job.
+     \brief $configuration
+     \var   String containing information for the Snijder job.
     */
-    public $controller;
+    public $configuration;
 
     /*!
      \var    $jobDescription
@@ -24,19 +24,19 @@ class GC3PieController {
 
     /*!
      \brief $sectionsArray
-     \var   Array with the main GC3Pie fields.
+     \var   Array with the main Snijder fields.
     */
     private $sectionsArray;
 
     /*!
      \brief $snijderJobFileArray
-     \var   Array with fields for the Snijder section.
+     \var   Array with the file fields.
     */
     private $snijderJobFileArray;
 
     /*!
      \brief $snijderJobFileList 
-     \var   Snijder section of the controller sorted for GC3Pie.
+     \var   List with the files.
     */
     private $snijderJobFileList;
 
@@ -66,7 +66,7 @@ class GC3PieController {
 
     /*!
      \brief $inputFilesList 
-     \var   Input file section sorted properly for GC3Pie.
+     \var   Input file section sorted properly for Snijder.
     */
     private $inputFilesList;
 
@@ -340,14 +340,14 @@ class GC3PieController {
     
     
     /**
-     * Writes the GC3Pie controller to the GC3Pie spool folder
-     * @return True if the controller could be written, false otherwise
+     * Writes the Snijder configuration to the spool folder
+     * @return True if the configuration could be written, false otherwise
      */
     public function write2Spool() {
 
         /* TODO: read this path from a configuration variable. */
         $controllerPath = "/opt/spool/snijder/spool/new";
-        $controllerName = tempnam($controllerPath, "gc3_");
+        $controllerName = tempnam($controllerPath, "snijder_");
         if (!chmod($controllerName, 0664)) {  /*Due to  'tempnam'. */
             return False;
         }
@@ -362,7 +362,7 @@ class GC3PieController {
         
         $result = (fwrite($controllerHandle, $this->controller) > 0);
         fclose($controllerHandle);
-        Log::info("Wrote gc3 controller $controllerName", 2);        
+        Log::info("Wrote Snijder configuration file $controllerName", 2);        
 
         return $result;
     }

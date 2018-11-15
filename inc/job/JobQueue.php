@@ -12,7 +12,7 @@ namespace hrm\job;
 use hrm\DatabaseConnection;
 use hrm\shell\ExternalProcessFactory;
 use hrm\Log;
-use hrm\GC3PieController;
+use hrm\SnijderJobConfiguration;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
@@ -60,7 +60,7 @@ class JobQueue
     }
 
   /**
-   * Issues a remove operation via GC3 controller files.
+   * Issues a remove operation via Snijder job configuration files.
    * $ids   IDS of jobs to remove from the queue.
    * $owner User who ownes the jobs.
    * Boolean: true upon success, false otherwise.
@@ -74,8 +74,8 @@ class JobQueue
         $JobDescription->setTaskType( "deletejobs" );        
         
         $JobDescription->setJobID( implode(', ', $ids) );
-        $GC3PieController = new GC3PieController( $JobDescription );
-        $result &= $GC3PieController->write2Spool();
+        $snijderJobConfiguation = new SnijderJobConfiguration($JobDescription);
+        $result &= $snijderJobConfiguration->write2Spool();
 
         Log::info("Removing jobs " .  $JobDescription->getJobID(), 1);
         

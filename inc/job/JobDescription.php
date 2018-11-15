@@ -291,11 +291,11 @@ class JobDescription
     }
 
    /**
-    * Returns the name of the job controller to be used by GC3Pie
-    * @return string The controller name with a unique HRM id 
+    * Returns the name of the configuration file to be used by Snijder
+    * @return string The configuration file name with a unique HRM id 
     */
-  public function getGC3PieControllerName() {
-    return "gc3_" . $this->id() . ".cfg";
+  public function getSnijderJobConfigurationName() {
+    return "snijder_" . $this->id() . ".cfg";
   }
 
    /**
@@ -330,7 +330,7 @@ class JobDescription
   }
 
    /**
-    * The task type to write in the GC3Pie config  file.
+    * The task type to write in the Snijder config  file.
     * @return The task type.
     */
     public function getTaskType( ) {

@@ -14,7 +14,7 @@ use hrm\shell\ExternalProcess;
 use hrm\Fileserver;
 use hrm\HuygensTemplate;
 use hrm\Log;
-use hrm\GC3PieController;
+use hrm\SnijderJobConfiguration;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
@@ -25,7 +25,7 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
 class Job
 {
     /**
-     * Contains a GC3Pie controller to run a job.
+     * Contains a Snijder configuration file to run a job.
      * @var string
      */
     private $controller;
@@ -96,12 +96,12 @@ class Job
     }
 
     /**
-     * Returns the GC3Pie controller name containing the unique job id
+     * Returns the Snijder configuration file name containing the unique job id
      * @return string The script name
      */
-    private function gc3ControllerName() {
+    private function snijderControllerName() {
         $jobDescription = $this->description();
-        return $jobDescription->getGC3PieControllerName();
+        return $jobDescription->getSnijderControllerName();
     }
 
     /**
@@ -125,13 +125,13 @@ class Job
     }
 
     /**
-     * Creates a job controller for GC3Pie
+     * Creates a job configuration file for Snijder
      */
-    private function createGC3PieController() {
+    private function createSnijderJobConfiguration() {
         $jobDescription = $this->description();
         $jobDescription->setTaskType("decon");
-        $gc3Pie = new GC3PieController($jobDescription);
-        $this->controller = $gc3Pie;
+        $snijderJobConfiguration = new SnijderJobConfiguration($jobDescription);
+        $this->controller = $snijderJobConfiguration;
     }
 
     /**
@@ -144,9 +144,9 @@ class Job
         $this->writeHuTemplate();
         Log::info("Created Huygens template", 1);
         
-        $this->createGC3PieController();
+        $this->createSnijderJobConfiguration();
         $this->controller->write2Spool();
-        Log::info("Created GC3Pie controller", 1);
+        Log::info("Created Snijder job configuration file", 1);
     }
     
     /**
