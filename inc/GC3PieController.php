@@ -280,12 +280,10 @@ class GC3PieController {
 
         $fileCnt = 0;
         $filePath   = $this->jobDescription->sourceFolder();
-        $inputFiles = $this->jobDescription->files();
-        foreach ($inputFiles as $file) {
-            $fileCnt++;
-            $numberedFiles .= "file" . $fileCnt . " = ";
-            $numberedFiles .= $filePath . $file . "\n";
-        }
+        $file = $this->jobDescription->files();
+        $fileCnt++;
+        $numberedFiles .= "file" . $fileCnt . " = ";
+        $numberedFiles .= $filePath . $file . "\n";        
 
         foreach ($this->inputFilesArray as $key => $value) {
             switch ( $key ) {

@@ -459,7 +459,7 @@ class JobDescription
     {
         $files = $this->files();
         // avoid redundant slashes in path
-        $result = $this->sourceFolder() . preg_replace("#^/#", "", end($files));
+        $result = $this->sourceFolder() . preg_replace("#^/#", "", $files);
         return $result;
     }
 
@@ -488,7 +488,7 @@ class JobDescription
     public function relativeSourcePath()
     {
         $files = $this->files();
-        $inputFile = end($files);
+        $inputFile = $files;
         $inputFile = explode("/", $inputFile);
         array_pop($inputFile);
         $path = implode("/", $inputFile);
@@ -507,7 +507,7 @@ class JobDescription
     public function sourceImageShortName()
     {
         $files = $this->files();
-        $inputFile = end($files);
+        $inputFile = $files;
         $inputFile = explode("/", $inputFile);
         // remove file extension
         //$inputFile = explode(".", end($inputFile));

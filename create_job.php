@@ -51,19 +51,21 @@ if (isset($_POST['create'])) {
     $_SESSION['task_setting']->set($parameter);
     // save preferred output file format
     if ($_SESSION['task_setting']->save()) {
-        // TODO source/destination folder names should be given to JobDescription
-        $jobDescription = new JobDescription();
-        $jobDescription->setParameterSetting($_SESSION['setting']);
-        $jobDescription->setTaskSetting($_SESSION['task_setting']);
-        $jobDescription->setAnalysisSetting($_SESSION['analysis_setting']);
-        $jobDescription->setFiles($_SESSION['fileserver']->selectedFiles(), 
-                                  $_SESSION['autoseries']);
 
-        $_SESSION['jobcreated'] = True;
-        $_SESSION['numberjobadded'] = count($jobDescription->files());
+        foreach($_SESSION['fileserver']->selectedFiles() as $jobFile) {
+           // TODO source/destination folder names should be given to JobDescription
+            $jobDescription = new JobDescription();
+            $jobDescription->setParameterSetting($_SESSION['setting']);
+            $jobDescription->setTaskSetting($_SESSION['task_setting']);
+            $jobDescription->setAnalysisSetting($_SESSION['analysis_setting']);
+            $jobDescription->setFiles($jobFile, $_SESSION['autoseries']);
 
-        $job = new Job($jobDescription);
-        $job->process();
+            $_SESSION['jobcreated'] = True;
+            $_SESSION['numberjobadded'] = 1;
+
+            $job = new Job($jobDescription);
+            $job->process();
+        }
 
         header("Location: " . "home.php");
         exit();
