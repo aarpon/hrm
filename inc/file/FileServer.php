@@ -30,7 +30,7 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
  *      "3"=>"foo.czi"
  *      ...
  */
-class FileServer
+class FileServer extends UserFiles
 {
     /**
      * Key to store the FileServer instance in the session. (This is to render references more transparent).
@@ -108,6 +108,8 @@ class FileServer
 
     /**
      * FileServer constructor.
+     *
+     * @param $username
      * @param string $root directory
      * @param bool $implode_time_series if true, an additional level in the @link FileServer::dict is created
      *                                  members of the time-series are encapsulated in an sub-array.
@@ -117,12 +119,14 @@ class FileServer
      * @param bool $ignore_hidden
      * @param array $ignored_directories list of directories excluded from the @link FileServer::scan
      */
-    function __construct($root,
+    function __construct($username, $root,
                          $implode_time_series = true,
                          $show_image_series = false,
                          $ignore_hidden = true,
                          $ignored_directories = [".", "..", "hrm_previews"])
     {
+        parent::__construct($username);
+
         $this->root = $root;
         $this->ignored_dirs = $ignored_directories;
         $this->ignore_hidden_files = $ignore_hidden;
@@ -506,7 +510,7 @@ class FileServer
      */
     private static function scan_recursive($dir, $dirname = "/", array $ignore, $no_hidden)
     {
-        $tree = [$dir => [$dirname => []] ];
+        $tree = [$dirname => []];
         $dict = array();
         $files = array();
         $ndirs = 1;
@@ -523,7 +527,7 @@ class FileServer
             if (is_dir($path)) {
                 list($subtree, $subdict, $subndirs, $subnfiles) =
                     FileServer::scan_recursive($path, $item, $ignore, $no_hidden);
-                $tree[$dir][$dirname] = array_merge($tree[$dir][$dirname], $subtree);
+                $tree[$dirname] = array_merge($tree[$dirname], $subtree);
                 $dict = array_merge($dict, $subdict);
                 $ndirs += $subndirs;
                 $nfiles += $subnfiles;

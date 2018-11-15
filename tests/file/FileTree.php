@@ -4,7 +4,7 @@ use hrm\file\FileServer;
 
 require_once dirname(__FILE__) . '/../../inc/bootstrap.php';
 
-
+session_start();
 // just in case...
 if (!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
     return;
@@ -16,11 +16,16 @@ if (isset($_REQUEST['dir'])) {
     $dir = '/data/images/felix/src';
 }
 
-$server = new FileServer($dir, false, false);
+if (!isset($_SESSION['user'])) {
+    return;
+}
+
+$username = $_SESSION['user']->name();
+$server = new FileServer($username, $dir, false, false);
 $tree = $server->getDirectoryTree();
 $dir1 = $server->getFileDictionary();
 
-$server = new FileServer($dir, true, false);
+$server = new FileServer($username, $dir, true, false);
 $dir3 = $server->getFileDictionary();
 $fl1 = $server->getFileList($dir . '/real');
 $fl2 = $server->getFileList($dir . '/time-series');
