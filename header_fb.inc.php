@@ -32,6 +32,7 @@ if (Util::using_IE()) {
 ?>
     <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
     <link rel="stylesheet" href="css/jqtree-custom.css">
+    <link rel="stylesheet" href="css/jqueryFileTree.css">
     <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
     <link rel="stylesheet" href="scripts/fineuploader/fine-uploader-new.css">
     <link rel="stylesheet" href="css/custom_fineuploader.css">

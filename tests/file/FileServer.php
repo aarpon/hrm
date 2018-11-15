@@ -4,15 +4,15 @@ require_once dirname(__FILE__) . '/../../inc/bootstrap.php';
 
 use hrm\file\FileServer;
 
-
+/*
 // just in case...
 if (!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
     return;
-}
+}*/
 
 session_start();
 
-$dir = "/data/images/felix/src";
+$dir = "/data/images/user/src";
 
 $_SESSION[FileServer::$SESSION_KEY] = new FileServer($dir);
 
@@ -45,7 +45,7 @@ echo "
                            node.appendChild( document.createTextNode( pretty ));
                         }
                     };               
-                    var url = \"../../ajax/filesystem.php?dir=\" + str
+                    var url = \"../../ajax/FileServer.php?dir=\" + str
                     if (!(format === '')){
                         url += \"&ext=\" + format
                     }
