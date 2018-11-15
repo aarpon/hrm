@@ -67,7 +67,7 @@ if (isset($_POST['create'])) {
             $job->process();
         }
 
-        header("Location: " . "home.php");
+        header("Location: " . "job_queue.php");
         exit();
     } else $message = "An unknown error has occurred. " .
         "Please inform the administrator";
