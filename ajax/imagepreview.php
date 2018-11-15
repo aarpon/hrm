@@ -24,6 +24,11 @@ require_once dirname(__FILE__) . '/../inc/bootstrap.php';
  *          -> send the image preview XY
  *     thumbnail=/path/to/image.file&view=[preview_xy|preview_xz|preview_xy]
  *          -> returns the image preview in the requested perspective
+ *
+ *     result=/path/to/image.file&size=[preview|integer]&$view[xy|xz|yz|...]&orig=[true|false]
+ *          -> To see the possible values of the view argument @see ImagePreviews::getViewConstants()
+ *             potentially all the arguments can be empty, but if no single result file can be identified,
+ *             the default @see ImagePreviews::DEFAULT_OUTPUT will be returned.
  */
 
 
@@ -42,17 +47,19 @@ if (isset($_REQUEST['info'])) {
     $action = 'info';
 } else if (isset($_REQUEST['thumbnail'])) {
     $action = 'thumbnail';
+} else if (isset($_REQUEST['result'])) {
+    $action = 'result';
 } else {
     return;
 }
 
 // Instantiate previews object, get url arguments
 $username = $_SESSION['user']->name();
-
 $previews = new ImagePreviews($username);
 
 
 switch ($action) {
+
     case 'thumbnail':
         $img_path = $_REQUEST['thumbnail'];
         if (isset($_REQUEST['view'])) {
@@ -73,4 +80,31 @@ switch ($action) {
         header("Content-Type: application/json", true, 200);
         echo json_encode($info, JSON_FORCE_OBJECT);
         break;
+
+    case 'result':
+        $img_path = $_REQUEST['result'];
+
+        if (isset($_REQUEST['size'])) {
+            $size = $_REQUEST['size'];
+        } else {
+            $size = '';
+        }
+
+        if (isset($_REQUEST['view'])) {
+            $view = $_REQUEST['view'];
+        } else {
+            $view = $previews::VIEW_XY;
+        }
+
+        if (isset($_REQUEST['orig'])) {
+            $orig = filter_var($_REQUEST['orig'], FILTER_VALIDATE_BOOLEAN);
+        } else {
+            $orig = '';
+        }
+
+        $res_path = $previews->getResultPath($img_path, $size, $view, $orig);
+
+        header("Content-Type: image/jpeg");
+        readfile($res_path);
+//        var_dump($res_path);
 }

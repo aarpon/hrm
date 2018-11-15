@@ -12,6 +12,7 @@ namespace hrm\file;
 
 use hrm\HuygensTools;
 use hrm\Log;
+use ReflectionClass;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
@@ -23,44 +24,34 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
  */
 class ImagePreviews extends UserFiles
 {
-    /**
-     * Sub-directory for the HRM previews. TODO: maybe hide the folder (if this does not cause trouble with the url)
-     */
+    /** Sub-directory for the HRM previews. @todo: maybe hide the folder (if this does not cause trouble with the url) */
     const CACHE_DIR = 'hrm_previews';
 
-    /**
-     * x-y-plane preview name, used in hucore and as suffix for the output file
-     */
-    const VIEW_XY = 'preview_xy';
+    /** x-y-plane preview name, used in hucore and as suffix for the output file */
+    const VIEW_XY = '_xy';
 
-    /**
-     * x-y-plane preview name, used in hucore and as suffix for the output file
-     */
-    const VIEW_XZ = 'preview_xz';
+    /** x-y-plane preview name, used in hucore and as suffix for the output file */
+    const VIEW_XZ = '_xz';
 
-    /**
-     * x-z-plane preview name...
-     */
-    const VIEW_YZ = 'preview_yz';
+    /** x-z-plane preview name... */
+    const VIEW_YZ = '_yz';
 
-    /**
-     * Preview output format
-     */
+    /** SFP view */
+    const VIEW_SFP = 'sfp';
+
+    /** Comparision slider strip */
+    const VIEW_STRIP = 'strip_';
+
+    /** Preview output format */
     const OUTPUT_FORMAT = '.jpg';
 
-    /**
-     * Image to be returned when no preview is available
-     */
+    /** Image to be returned when no preview is available */
     const DEFAULT_OUTPUT = "images/no_preview.jpg";
 
-    /**
-     * 3D flag
-     */
+    /** 3D flag */
     const DIMENSION_3D = 3;
 
-    /**
-     * 2D flag
-     */
+    /** 2D flag */
     const DIMENSION_2D = 2;
 
 
@@ -112,9 +103,60 @@ class ImagePreviews extends UserFiles
             'image file' => $filename,
             'image directory' => $filedir,
             'image dimensions' => $this->getDimensionality($filedir_, $filename),
-            'image previews' => $this->getViews($filedir_, $filename),
+            'image previews' => $this->getAvailableViews($filedir_, $filename),
             'thumbnail path' => $thumb_path,
         ];
+    }
+
+    public function getResultPath($filepath, $size = '', $view = '', $original = '')
+    {
+        list($filedir, $filename) = $this->splitPath($filepath);
+        $filedir_ = $this->getAbsolutePath($filedir) . '/' . self::CACHE_DIR;
+
+        // build the pattern
+        preg_match('([0-9a-z]{10,16}_hrm[.a-z0-9]{2,4})', $filename, $matches);
+        $pattern = '/.*' . preg_quote($matches[0]);
+
+        if (!($original === '')) {
+            $pattern .= '\.';
+            if ($original) {
+                $pattern .= 'original';
+            } else {
+
+                $pattern .= '(?!original)';
+            }
+        }
+
+        if (!empty($size)) {
+            $pattern .= '.*' . $size;
+        }
+
+        $view_ = preg_quote($this->validateView($view));
+        if (empty($view)) {
+            Log::error("No file contains " . $view . 'view parameter in ' . $filedir_);
+            return self::DEFAULT_OUTPUT;
+        } else {
+            $pattern .= '.*' . $view_;
+        }
+
+        $pattern .=  '.*/';
+
+        // get the corresponding file
+        $matches = array();
+        foreach (scandir($filedir_) as $path) {
+            if (preg_match($pattern, $path)) {
+                array_push($matches, $path);
+            }
+        }
+
+        $count = count($matches);
+        if ($count == 1) {
+            return $filedir_ . '/' . $matches[0];
+        }
+
+        Log::error($count . "matches -> no unique result preview match with"
+            . $pattern . " in " . $filedir_ . 'check ajax query.');
+        return self::DEFAULT_OUTPUT;
     }
 
     /**
@@ -187,11 +229,11 @@ class ImagePreviews extends UserFiles
      * @param bool $view @const VIEW_XY (default) or @const VIEW_XZ
      * @return string Absolute path to generated preview
      */
-    private function getHucoreOutputPath($dir, $filename, $view)
+    private function getHucoreOutputPath($dir, $filename, $view, $size = 'preview')
     {
         // Huygens does not support ":" in names of saved files.
         $filename_ = str_replace(":", "_", $filename);
-        $preview_path = $dir . "/" . self::CACHE_DIR . "/" . $filename_ . "." . $view . self::OUTPUT_FORMAT;
+        $preview_path = $dir . "/" . self::CACHE_DIR . "/" . $filename_ . ".". $size . $view . self::OUTPUT_FORMAT;
 
         return stripslashes($preview_path);
     }
@@ -220,10 +262,17 @@ class ImagePreviews extends UserFiles
         return 0;
     }
 
-    private function getViews($dir, $filename)
+    /**
+     * Get all the available previews of a given file
+     *
+     * @param $dir
+     * @param $filename
+     * @return array
+     */
+    private function getAvailableViews($dir, $filename)
     {
         $views = array();
-        foreach (array(self::VIEW_XY, self::VIEW_XZ, self::VIEW_YZ) as $index => $view) {
+        foreach ($this->getViewConstants() as $index => $view) {
             $path = $this->getHucoreOutputPath($dir, $filename, $view);
             if (file_exists($path)) {
                 array_push($views, $view);
@@ -231,5 +280,45 @@ class ImagePreviews extends UserFiles
         }
 
         return $views;
+    }
+
+    /**
+     * Validate thew view parameter (probably retrieved from the url) against the possible views
+     * defined in this class
+     *
+     * @param $view
+     * @return mixed|string
+     */
+    private function validateView($view)
+    {
+        foreach ($this->getViewConstants() as $constant) {
+            if (preg_match('/.*' . $view . '.*/', $constant)) {
+                return $constant;
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Get all the view constanst defined in this class.
+     *
+     * @return array
+     */
+    private function getViewConstants()
+    {
+        $constants = array();
+        try {
+            $clazz = new ReflectionClass(__CLASS__);
+            foreach ($clazz->getConstants() as $name => $value) {
+                if (strpos($name, 'VIEW') !== false) {
+                    array_push($constants, $value);
+                }
+            }
+        } catch (\ReflectionException $e) {
+            Log::error($e);
+        }
+
+        return $constants;
     }
 }
