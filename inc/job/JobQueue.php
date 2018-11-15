@@ -69,15 +69,17 @@ class JobQueue
         $result = True;
         if (count($ids) == 0) return $result;
         
-        $JobDescription = new JobDescription();
-        $JobDescription->setOwner( $owner );
-        $JobDescription->setTaskType( "deletejobs" );        
+        foreach ($ids as $id) {
+            $JobDescription = new JobDescription();
+            $JobDescription->setOwner($owner);
+            $JobDescription->setTaskType("deletejobs");        
         
-        $JobDescription->setJobID( implode(', ', $ids) );
-        $snijderJobConfiguration = new SnijderJobConfiguration($JobDescription);
-        $result &= $snijderJobConfiguration->write2Spool();
+            $JobDescription->setJobID($id);
+            $snijderJobConfiguration = new SnijderJobConfiguration($JobDescription);
+            $result &= $snijderJobConfiguration->write2Spool();
 
-        Log::info("Removing jobs " .  $JobDescription->getJobID(), 1);
+            Log::info("Removing job " .  $JobDescription->getJobID(), 1);
+        }
         
         return $result;
     }
