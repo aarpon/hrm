@@ -31,9 +31,11 @@ class JobQueue
     {
         // TODO: the "run" directory will be configurable eventually, so we
         // have to respect the path to the JSON file here as well:
-        $this->queueFile =  dirname(__FILE__) . "/../run/queue/status/hucore.json";
+        /* TODO: read this file from the configuration. */
+        $this->queueFile =  "/opt/spool/snijder/queue/status/hucore.json";
         
         if (!file_exists($this->queueFile)) {
+            /* TODO: handle error. */
         }
     }
 

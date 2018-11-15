@@ -122,8 +122,9 @@ class Job
      * TODO: pass the correct GPU ID to the template generator.
      */
     private function createHuygensTemplate()
-    {
+    {        
         $jobDescription = $this->description();
+
         $huTemplate = new HuygensTemplate($jobDescription);
         $this->huTemplate = $huTemplate->template;
     }
