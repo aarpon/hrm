@@ -1,63 +1,73 @@
-$( document ).ready(function() {
+// https://scotch.io/tutorials/build-an-app-with-vue-js-a-lightweight-alternative-to-angularjs
+// https://vuejsdevelopers.com/2017/10/23/vue-js-tree-menu-recursive-components/
 
-    count = 0;
 
-    function traverse(obj, str, parent, index, level)
-    {
-        if ( Array.isArray(obj) ) {
-            level++;
-            str += "<ul>";
-            obj.forEach(function(el, i) { str = traverse(el, str, obj, i, level); });
-            str += "</ul>";
-        }
-        else if (Array.isArray(parent[index+1])) {
-            var id = "id" + count++;
-            str +=  '<input type="checkbox" id="' + id + '" /> \
-                     <li><label for="' + id + '">' + obj + '</label></li>';
-        }
-        else {
-            str += "<li>" + obj + "</li>";
-        }
-
-        return str;
+var filetree_component = Vue.component('filetree', {
+  template: `<div><ul>
+                <li @click="toggleChildren">{{ label }}</li>
+                <filetree v-if="showChildren" v-for="node in nodes" :nodes="node.nodes" :label="node.label"></filetree>
+            </ul></div>`,
+    props: [ 'label', 'nodes' ],
+    name: 'filetree',
+    data() {
+     return {
+       showChildren: false
+     }
+  },
+  methods: {
+    toggleChildren() {
+       this.showChildren = !this.showChildren;
     }
+  }
+});
 
-    function update_filelist(data)
+new Vue({
+
+  // We want to target the div with an id of 'events'
+  el: '#filebrowser',
+
+  // Here we can register any values or collections that hold data
+  // for the application
+  data: {
+    msg: "Hello Vue!",
+    files: 0,
+    mytree: {
+  label: 'root',
+  nodes: [
     {
-        var str = "<select size=20 multiple>";
-
-        for (var i=0; i<data.length; i++)
-            str += "<option>" + data[i] + "</option>";
-
-        str += "</select>";
-
-        document.getElementById("filelist").innerHTML = str;
+      label: 'item1',
+      nodes: [
+        {
+          label: 'item1.1'
+        },
+        {
+          label: 'item1.2',
+          nodes: [
+            {
+              label: 'item1.2.1'
+            }
+          ]
+        }
+      ]
+    }, 
+    {
+      label: 'item2'  
     }
+  ]
+}
+  },
 
-    $.getJSON( "php/dirtree.php", function( data ) {
-        var str = traverse(data, "", null, 0, 0, 0);
-        $("#dirtree").html(str);
-    });
+  components: { filetree_component },
 
+  // Anything within the ready function will run when the application loads
+  mounted: function() {
+        var vm = this;
+        $.post( "ajax/filesystem.php?dirs=/", function( data ) {
+            vm.tree = data;
+        });
+  },
 
-    $.getJSON( "php/filelist.php", function( data ) {
-        update_filelist(data);
-    });
-
-    function get_path(li)
-    {
-        var str = "//";
-        var l = $(li.parents("ul").get().reverse()).prev("li").children("label");
-        l.each( function(i) { str += $(this).text() + "/"; });
-        return str + li.text();
-    }
-
-    $("#dirtree").on("click", "li", function()
-    {
-        var path = get_path($(this));
-        $("#path").text(path);
-        $.getJSON( "php/filelist.php?dir=" + path, function( data ) { update_filelist(data); }); 
-    });
-
+  // Methods we want to use in our application are registered here
+  methods: {}
 });
 
