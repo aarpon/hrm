@@ -139,12 +139,14 @@ function getJobQueueTable()
 
         $data .= '
       <tr style="background: #ffffcc">
-        <td colspan="9">The job queue is empty.</td>
+        <td colspan="10">The job queue is empty.</td>
       </tr>';
     } else {
         $index = 1;
+
+        /* TODO: wouldn't it be better to code these colors in the CSS? */
         foreach ($rows as $row) {
-            if ($row['status'] == "started") {
+            if ($row['status'] == "RUNNING") {
                 $color = '#99ffcc';
             } else if ($row['status'] == "broken" || $row['status'] == "kill") {
                 $color = '#ff9999';
