@@ -5839,7 +5839,9 @@ if ($current_revision < $n) {
             max_comparison_size I(11) NOTNULL DEFAULT 0,
             ping_command C(30) NOTNULL DEFAULT '',
             ping_parameter C(30) NOTNULL DEFAULT '',
-            omero_transfers C(1) DEFAULT f";
+            omero_transfers C(1) DEFAULT f,
+            user_manager_script C(255) NOTNULL DEFAULT ''"
+        ;
 
         if (!create_table($tablename, $fields)) {
             $msg = "Could not create the table '$tablename'.";
@@ -5933,7 +5935,8 @@ if ($current_revision < $n) {
             "max_comparison_size" => $maxComparisonSize,
             "ping_command" => $ping_command,
             "ping_parameter" => $ping_parameter,
-            "omero_transfers" => $omero_transfers
+            "omero_transfers" => $omero_transfers,
+            "user_manager_script" => dirname(__FILE__) . '/../bin/hrm_user_manager'
         );
 
         $insertSQL = $db->GetInsertSQL($tablename, $record);

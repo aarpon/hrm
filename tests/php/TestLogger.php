@@ -7,6 +7,7 @@
  */
 
 use hrm\Log;
+use hrm\Settings;
 
 require_once dirname(__FILE__) . '/../../inc/bootstrap.php';
 
@@ -18,8 +19,9 @@ class TestLogger extends PHPUnit_Framework_TestCase
      */
     public function testInfoLogging()
     {
-        global $log_verbosity;
-        $log_verbosity = 2;
+        $instanceSettings = Settings::getInstance();
+        $instanceSettings->set('log_verbosity', 2);
+
         Log::info("This is an INFO log.");
     }
 
@@ -28,8 +30,9 @@ class TestLogger extends PHPUnit_Framework_TestCase
      */
     public function testWarningLogging()
     {
-        global $log_verbosity;
-        $log_verbosity = 2;
+        $instanceSettings = Settings::getInstance();
+        $instanceSettings->set('log_verbosity', 2);
+
         Log::warning("This is a WARNING log.");
     }
 
@@ -38,8 +41,9 @@ class TestLogger extends PHPUnit_Framework_TestCase
      */
     public function testErrorLogging()
     {
-        global $log_verbosity;
-        $log_verbosity = 2;
+        $instanceSettings = Settings::getInstance();
+        $instanceSettings->set('log_verbosity', 2);
+
         Log::error("This is an ERROR log.");
     }
 

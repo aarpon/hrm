@@ -4,6 +4,7 @@
 
 use hrm\Mail;
 use hrm\Nav;
+use hrm\Settings;
 use hrm\user\UserConstants;
 use hrm\user\UserManager;
 use hrm\user\proxy\ProxyFactory;
@@ -13,14 +14,15 @@ use hrm\Validator;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-global $hrm_url;
-global $email_sender;
-global $email_admin;
-global $image_host;
-global $image_folder;
-global $image_source;
-global $userManagerScript;
-global $authenticateAgainst;
+// Get the settings
+$instanceSettings = Settings::getInstance();
+$hrm_url = $instanceSettings->get("hrm_url");
+$email_sender = $instanceSettings->get("email_sender");
+$email_admin = $instanceSettings->get("email_admin");
+$image_host = $instanceSettings->get("image_host");
+$image_folder = $instanceSettings->get("image_folder");
+$image_source = $instanceSettings->get("image_source");
+$user_manager_script = $instanceSettings->get("user_manager_script");
 
 session_start();
 
@@ -152,7 +154,7 @@ if (isset($_POST['accept'])) {
         $mail->setSubject("HRM account activated");
         $mail->setMessage($text);
         $mail->send();
-        shell_exec("$userManagerScript create \"" . $clean['username'] . "\"");
+        shell_exec("$user_manager_script create \"" . $clean['username'] . "\"");
     } else {
         $message = "Could not accept the user! Please inform the administrator.";
     }

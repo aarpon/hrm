@@ -445,8 +445,12 @@ class FileserverV2
      */
     public static function createUpDownloadFolderIfMissing() {
 
-        global $allowHttpTransfer, $allowHttpUpload;
-        global $httpDownloadTempFilesDir, $httpUploadTempChunksDir, $httpUploadTempFilesDir;
+        $instanceSettings = Settings::getInstance();
+        $allowHttpTransfer = $instanceSettings->get('allow_http_download');
+        $allowHttpUpload = $instanceSettings->get('allow_http_upload');
+        $httpDownloadTempFilesDir = $instanceSettings->get('$http_download_temp_files_dir');
+        $httpUploadTempChunksDir = $instanceSettings->get('$http_upload_temp_chunks_dir');
+        $httpUploadTempFilesDir = $instanceSettings->get('$http_upload_temp_files_dir');
 
         // Initialize result
         $result = true;

@@ -4,16 +4,17 @@
 
 use hrm\Mail;
 use hrm\Nav;
+use hrm\Settings;
 use hrm\user\UserConstants;
 use hrm\user\UserManager;
 use hrm\Validator;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-
-global $hrm_url;
-global $email_sender;
-global $email_admin;
+$instanceSettings = Settings::getInstance();
+$hrm_url = $instanceSettings->get('hrm_url');
+$email_sender = $instanceSettings->get('email_sender');
+$email_admin = $instanceSettings->get('email_admin');
 
 $processed = False;
 

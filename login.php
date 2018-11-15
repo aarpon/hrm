@@ -14,8 +14,6 @@ use hrm\DatabaseConnection;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-global $email_admin;
-
 /*
  *
  * SANITIZE INPUT
@@ -228,8 +226,9 @@ include("header.inc.php");
         The <a href="javascript:openWindow('http://hrm.sourceforge.net')">
             Huygens Remote Manager</a> is an easy to use interface to the<br/>
         Huygens Software by <a href="javascript:openWindow('http://www.svi.nl')">
-            Scientific Volume Imaging B.V.</a> that allows for</br>
-        multi-user, large-scale deconvolution and analysis.</div>
+            Scientific Volume Imaging B.V.</a> that allows for<br/>
+        multi-user, large-scale deconvolution and analysis.
+    </div>
 
     <?php
     /*
@@ -251,16 +250,16 @@ include("header.inc.php");
             <!-- Logos -->
             <tr>
                 <td class="mri"
-                    onclick="javascript:openWindow('https://www.mri.cnrs.fr')">
+                    onclick="openWindow('https://www.mri.cnrs.fr')">
                 </td>
                 <td class="fmi"
-                    onclick="javascript:openWindow('https://www.fmi.ch')">
+                    onclick="openWindow('https://www.fmi.ch')">
                 </td>
                 <td class="epfl"
-                    onclick="javascript:openWindow('https://biop.epfl.ch')">
+                    onclick="openWindow('https://biop.epfl.ch')">
                 </td>
                 <td class="svi"
-                    onclick="javascript:openWindow('https://www.svi.nl')">
+                    onclick="openWindow('https://www.svi.nl')">
                 </td>
             </tr>
 
@@ -271,7 +270,7 @@ include("header.inc.php");
                        onclick="this.target='_blank'; return true;">
                         Montpellier RIO Imaging
                     </a><br/>
-                    National Center for Scientific<br />Research Montpellier
+                    National Center for Scientific<br/>Research Montpellier
 
                 </td>
                 <td>
@@ -306,16 +305,16 @@ include("header.inc.php");
             <!-- Logos -->
             <tr>
                 <td class="bsse"
-                    onclick="javascript:openWindow('https://www.bsse.ethz.ch')">
+                    onclick="openWindow('https://www.bsse.ethz.ch')">
                 </td>
                 <td class="bio-basel"
-                    onclick="javascript:openWindow('https://www.biozentrum.unibas.ch')">
+                    onclick="openWindow('https://www.biozentrum.unibas.ch')">
                 </td>
                 <td class="lin"
-                    onclick="javascript:openWindow('http://www.lin-magdeburg.de')">
+                    onclick="openWindow('http://www.lin-magdeburg.de')">
                 </td>
                 <td class="cni"
-                    onclick="javascript:openWindow('http://cni.ifn-magdeburg.de')">
+                    onclick="openWindow('http://cni.ifn-magdeburg.de')">
                 </td>
             </tr>
 
@@ -351,50 +350,52 @@ include("header.inc.php");
                 </td>
             </tr>
 
-            <!-- Third row -->
-            <table class="thirdRow">
+        </table>
 
-                <!-- Logos -->
-                <tr>
-                    <td class="unf"
-                        onclick="javascript:openWindow('https://www3.unifr.ch/')">
-                    </td>
-                    <td class="miap"
-                        onclick="javascript:openWindow('https://miap.uni-freiburg.de')">
-                    </td>
-                    <td class="blank">
-                        &nbsp;
-                    </td>
-                    <td class="blank">
-                        &nbsp;
-                    </td>
-                </tr>
+        <!-- Third row -->
+        <table class="thirdRow">
 
-                <!-- Captions -->
-                <tr class="caption">
-                    <td>
-                        <a href="https://www3.unifr.ch/bioimage"
-                           onclick="this.target='_blank'; return true;">
-                            Bioimage | Light Microscopy Facility
-                        </a><br/>
-                        University of Fribourg
-                    </td>
-                    <td>
-                        <a href="https://miap.uni-freiburg.de"
-                           onclick="this.target='_blank'; return true;">
-                            Microscopy and Image Analysis Platform
-                        </a><br/>
-                        University of Freiburg
-                    </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
+            <!-- Logos -->
+            <tr>
+                <td class="unf"
+                    onclick="openWindow('https://www3.unifr.ch/')">
+                </td>
+                <td class="miap"
+                    onclick="openWindow('https://miap.uni-freiburg.de')">
+                </td>
+                <td class="blank">
+                    &nbsp;
+                </td>
+                <td class="blank">
+                    &nbsp;
+                </td>
+            </tr>
 
-            </table>
+            <!-- Captions -->
+            <tr class="caption">
+                <td>
+                    <a href="https://www3.unifr.ch/bioimage"
+                       onclick="this.target='_blank'; return true;">
+                        Bioimage | Light Microscopy Facility
+                    </a><br/>
+                    University of Fribourg
+                </td>
+                <td>
+                    <a href="https://miap.uni-freiburg.de"
+                       onclick="this.target='_blank'; return true;">
+                        Microscopy and Image Analysis Platform
+                    </a><br/>
+                    University of Freiburg
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+
+        </table>
 
     </div>
 </div>

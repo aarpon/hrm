@@ -22,7 +22,7 @@ $message = "";
 $storageWasSuccessful = true;
 if (isset($_POST) && count($_POST) > 0) {
     // The setAll() method will perform validation
-    if ($instanceSettings->setAll($_POST,$message)) {
+    if ($instanceSettings->setMany($_POST,$message)) {
         // If not error, was returned, we can persist the Settings to the database
         $storageWasSuccessful = $instanceSettings->save();
         if ($storageWasSuccessful == false) {
@@ -209,8 +209,8 @@ include("header_cf.inc.php");
                     $selected_1 = "selected=\"selected\"";
                 }
                 ?>
-                <option value="0" <?php echo($selected_0); ?>>No</option>
-                <option value="1" <?php echo($selected_1); ?>>Yes</option>
+                <option value="f" <?php echo($selected_0); ?>>No</option>
+                <option value="t" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Explanation</p>
 
@@ -241,8 +241,8 @@ include("header_cf.inc.php");
                     $selected_1 = "selected=\"selected\"";
                 }
                 ?>
-                <option value="0" <?php echo($selected_0); ?>>No</option>
-                <option value="1" <?php echo($selected_1); ?>>Yes</option>
+                <option value="f" <?php echo($selected_0); ?>>No</option>
+                <option value="t" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Set to Yes if the images must be copied to the machine running
                 Huygens Core over SSH.</p>
@@ -354,8 +354,8 @@ include("header_cf.inc.php");
                     $selected_1 = "selected=\"selected\"";
                 }
                 ?>
-                <option value="0" <?php echo($selected_0); ?>>No</option>
-                <option value="1" <?php echo($selected_1); ?>>Yes</option>
+                <option value="f" <?php echo($selected_0); ?>>No</option>
+                <option value="t" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Explanation</p>
 
@@ -374,8 +374,8 @@ include("header_cf.inc.php");
                     $selected_1 = "selected=\"selected\"";
                 }
                 ?>
-                <option value="0" <?php echo($selected_0); ?>>No</option>
-                <option value="1" <?php echo($selected_1); ?>>Yes</option>
+                <option value="f" <?php echo($selected_0); ?>>No</option>
+                <option value="t" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Limitations in upload size must be configured in the parameters
                 defined below.</p>
@@ -429,28 +429,28 @@ include("header_cf.inc.php");
                     $selected_1 = "selected=\"selected\"";
                 }
                 ?>
-                <option value="0" <?php echo($selected_0); ?>>No</option>
-                <option value="1" <?php echo($selected_1); ?>>Yes</option>
+                <option value="f" <?php echo($selected_0); ?>>No</option>
+                <option value="t" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Send e-mails to the users.</p>
 
             <!-- E-mail address of the sender of HRM e-mails -->
-            <label for="email_sender">E-mail address of the sender of HRM e-mails</label>
+            <label for="email_admin">E-mail address of the sender of HRM e-mails</label>
             <input type="text"
                    class="form-control"
-                   name="email_sender"
+                   name="email_admin"
                    placeholder="Example: hrm@localhost"
-                   value="<?php echo $instanceSettings->get("email_sender"); ?>"
+                   value="<?php echo $instanceSettings->get("email_admin"); ?>"
                    required>
             <p class="param_explanation">E-mails sent by HRM will be associated with this e-mail address.</p>
 
             <!-- Name of the sender of e-mails -->
-            <label for="email_admin">Name of the sender of e-mails</label>
+            <label for="email_sender">Name of the sender of e-mails</label>
             <input type="text"
                    class="form-control"
-                   name="email_admin"
+                   name="email_sender"
                    placeholder="Example: HRM administrator"
-                   value="<?php echo $instanceSettings->get("email_admin"); ?>"
+                   value="<?php echo $instanceSettings->get("email_sender"); ?>"
                    required>
             <p class="param_explanation">E-mails sent by HRM will be associated to this name.</p>
 
@@ -602,8 +602,8 @@ include("header_cf.inc.php");
                     $selected_1 = "selected=\"selected\"";
                 }
                 ?>
-                <option value="0" <?php echo($selected_0); ?>>No</option>
-                <option value="1" <?php echo($selected_1); ?>>Yes</option>
+                <option value="f" <?php echo($selected_0); ?>>No</option>
+                <option value="t" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Generate thumbnails and previews for both the source
                 and the results images during the deconvolution on the computation servers.
@@ -625,8 +625,8 @@ include("header_cf.inc.php");
                     $selected_1 = "selected=\"selected\"";
                 }
                 ?>
-                <option value="0" <?php echo($selected_0); ?>>No</option>
-                <option value="1" <?php echo($selected_1); ?>>Yes</option>
+                <option value="f" <?php echo($selected_0); ?>>No</option>
+                <option value="t" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">On-demand generation of a preview of the original
                 images by the web server prior to the deconvolution. For this to work the
@@ -675,8 +675,8 @@ include("header_cf.inc.php");
                     $selected_1 = "selected=\"selected\"";
                 }
                 ?>
-                <option value="0" <?php echo($selected_0); ?>>No</option>
-                <option value="1" <?php echo($selected_1); ?>>Yes</option>
+                <option value="f" <?php echo($selected_0); ?>>No</option>
+                <option value="t" <?php echo($selected_1); ?>>Yes</option>
             </select>
             <p class="param_explanation">Generate a Simulated Fluorescence Process top-view rendering
                 of the original and the restored images (http://support.svi.nl/wiki/SFP).</p>

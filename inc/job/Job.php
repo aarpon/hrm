@@ -9,6 +9,7 @@
  */
 namespace hrm\job;
 
+use hrm\Settings;
 use hrm\shell\ExternalProcessFactory;
 use hrm\shell\ExternalProcess;
 use hrm\Fileserver;
@@ -368,15 +369,17 @@ class Job
      * Checks whether the result image is present in the destination directory.
      * @return bool True if the result image could be found, false otherwise
      * @todo Refactor!
+     * @throws \Exception If any of the settings could not be retrieved from the database.
      */
     public function checkResultImage()
     {
-        global $imageProcessingIsOnQueueManager;
-        global $copy_images_to_huygens_server;
-        global $huygens_user;
-        global $huygens_group;
-        global $huygens_server_image_folder;
-        global $image_destination;
+        $instanceSettings = Settings::getInstance();
+        $imageProcessingIsOnQueueManager = $instanceSettings->get("image_processing_is_on_queue_manager");
+        $copy_images_to_huygens_server = $instanceSettings->get("copy_images_to_huygens_server");
+        $huygens_user = $instanceSettings->get("huygens_user");
+        // $huygens_group = $instanceSettings->get("huygens_group");
+        $huygens_server_image_folder = $instanceSettings->get("huygens_server_image_folder");
+        $image_destination = $instanceSettings->get("image_destination");
 
         clearstatcache();
 
@@ -444,13 +447,13 @@ class Job
      * Checks if the process is finished.
      * @return bool True if the process is finished, false otherwise.
      * @todo Refactor!
+     * @throws \Exception If any of the settings could not be retrieved.
      */
     public function checkProcessFinished()
     {
-        global $imageProcessingIsOnQueueManager;
-        global $huygens_user;
-        global $huygens_server_image_folder;
-        global $image_source, $image_destination;
+        $instanceSettings = Settings::getInstance();
+        $imageProcessingIsOnQueueManager = $instanceSettings->get("image_processing_is_on_queue_manager");
+        $huygens_user = $instanceSettings->get("huygens_user");
 
         clearstatcache();
 
@@ -486,19 +489,10 @@ class Job
         // If fileshare is not on the same host as Huygens.
         if (!$imageProcessingIsOnQueueManager) {
 
-            // Old code: to be removed.
-            // $marker = $huygens_server_image_folder . "/" . $user->name() .
-            // "/" . $image_destination . "/" . $finishedMarker;
-
             // Copy the finished marker
             $marker = $dpath . $finishedMarker;
             $remoteFile = exec("ssh " . $huygens_user . "@" .
                 $server_hostname . " ls " . $marker);
-
-            // Old code: to be removed.
-            //Log::error("ssh " . $huygens_user . "@" . $server_hostname . "
-            //ls " . $marker);
-            //Log::error($result);
 
             // TODO: is the queue manager a sudoer?
             if ($remoteFile == $marker) {
@@ -551,7 +545,8 @@ class Job
      */
     private function filterHuygensOutput()
     {
-        global $logdir;
+        $instanceSettings = Settings::getInstance();
+        $logdir = $instanceSettings->get('log_dir');
 
         /* Set file names. */
         $historyFile = $this->destImage . $this->pipeProducts["history"];

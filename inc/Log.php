@@ -49,8 +49,11 @@ class Log
      */
     private function __construct()
     {
-        // Retrieve settings from configuration files
-        global $log_verbosity, $logdir, $logfile;
+        // Retrieve settings
+        $settingsInstance = Settings::getInstance();
+        $log_verbosity = $settingsInstance->get("log_verbosity");
+        $log_dir = $settingsInstance->get("log_dir");
+        $log_file = $settingsInstance->get("log_file");
 
         // Debug level
         switch ($log_verbosity) {
@@ -69,7 +72,7 @@ class Log
         }
 
         // Initialize and configure Monolog::StreamHandler
-        $handler = new StreamHandler($logdir . '/' . $logfile, $level);
+        $handler = new StreamHandler($log_dir . '/' . $log_file, $level);
         $formatter = new LineFormatter(null, null, false, true);
         $handler->setFormatter($formatter);
 

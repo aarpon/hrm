@@ -37,12 +37,16 @@
  */
 
 use hrm\FileserverV2;
+use hrm\Settings;
 use hrm\UtilV2;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 require_once dirname(__FILE__) . '/../vendor/fineuploader/php-traditional-server/handler.php';
 
-global $httpUploadTempChunksDir, $httpUploadTempFilesDir;
+// Get settings
+$instanceSettings = Settings::getInstance();
+$httpUploadTempChunksDir = $instanceSettings->get('http_upload_temp_chunks_dir');
+$httpUploadTempFilesDir = $instanceSettings->get('http_upload_temp_files_dir');
 
 // Required folders. Make sure they exist and have proper permissions.
 // The check is done by the Queue Manager on startup.

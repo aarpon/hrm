@@ -152,8 +152,9 @@ if (isset($_POST['update'])) {
 
 
     /*************** Code for the interaction with OMERO. ***************/
-global $omero_transfers;
-if ($omero_transfers) {
+// Get Settings
+$instanceSettings = Settings::getInstance();
+if ($instanceSettings->get("omero_transfers")) {
     if (isset($_SESSION['omeroConnection'])) {
         $omeroConnection = $_SESSION['omeroConnection'];
     }

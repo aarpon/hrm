@@ -84,7 +84,7 @@ class Settings
     /**
      * Get a specific setting.
      * @param string $settingName Name of the setting to return.
-     * @return string|boolean Setting value.
+     * @return string|boolean|array Setting value.
      * @throws \Exception If the requested setting is not found in the table.
      */
     public function get($settingName) {
@@ -94,6 +94,30 @@ class Settings
 
             // Load them
             $this->load();
+        }
+
+        // We combine the various authentication mechanism options into one
+        // custom setting
+        if ($settingName === "authenticate_against") {
+            $value = array();
+            $value[0] = $this->settings_table["default_authentication"];
+            $alt_authentication_1 = $this->settings_table["alt_authentication_1"];
+            if ($alt_authentication_1 !== "none" || $alt_authentication_1 != "") {
+                array_push($value, $alt_authentication_1);
+            }
+            $alt_authentication_2 = $this->settings_table["alt_authentication_2"];
+            if ($alt_authentication_2 !== "none" || $alt_authentication_2 != "") {
+                array_push($value, $alt_authentication_2);
+            }
+            $alt_authentication_3 = $this->settings_table["alt_authentication_3"];
+            if ($alt_authentication_3 !== "none" || $alt_authentication_3 != "") {
+                array_push($value, $alt_authentication_3);
+            }
+            $alt_authentication_4 = $this->settings_table["alt_authentication_4"];
+            if ($alt_authentication_4 !== "none" || $alt_authentication_4 != "") {
+                array_push($value, $alt_authentication_4);
+            }
+            return $value;
         }
 
         // Does the requested setting exist?
@@ -134,16 +158,6 @@ class Settings
         // Does the requested setting exist?
         if (array_key_exists($settingName, $this->settings_table)) {
 
-            // We convert booleans before we can add them to the database:
-            //     true  -> 't'
-            //     false -> 'f'
-            if  ($settingValue == '0') {
-                $settingValue = 'f';
-            }
-            if ($settingValue == '1') {
-                $settingValue = 't';
-            }
-
             // Store the value
             $this->settings_table[$settingName] = $settingValue;
 
@@ -169,7 +183,7 @@ class Settings
      * @return bool True if all Settings could be stored successfully, false otherwise.
      * @throws \Exception It the Settings could not be loaded from the database.
      */
-    public function setAll($arrayOfSettings, &$message) {
+    public function setMany($arrayOfSettings, &$message) {
 
         // The input argument must be an array
         if (! is_array($arrayOfSettings)) {

@@ -85,11 +85,14 @@ class QueueManager
      * @param JobDescription $desc A JobDescription object.
      * @param string $server_hostname The server where the job will be run.
      * @todo Move to Shell.php.
+     * @throws \Exception If any setting could not be retrieved from the database.
      */
     public function removeHuygensOutputFiles(JobDescription $desc, $server_hostname)
     {
-        global $imageProcessingIsOnQueueManager;
-        global $huygens_user;
+        // Get settings
+        $instanceSettings = Settings::getInstance();
+        $imageProcessingIsOnQueueManager = $instanceSettings->get('image_processing_is_on_queue_manager');
+        $huygens_user = $instanceSettings->get('huygens_user');
 
         // Get the Huygens default output file.
         $user = $desc->owner();

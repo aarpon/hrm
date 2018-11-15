@@ -10,6 +10,7 @@
 namespace hrm\job;
 
 use hrm\DatabaseConnection;
+use hrm\Settings;
 use hrm\shell\ExternalProcessFactory;
 use hrm\Log;
 
@@ -188,10 +189,12 @@ class JobQueue
      * Kills Jobs with given id.
      * @param array|string $ids Job ids (string or array of strings).
      * @return bool True if all Jobs were killed, false otherwise.
+     * @throws \Exception If any setting could not be retrieved from the database.
      */
     function killJobs($ids)
     {
-        global $logdir;
+        $instanceSettings = Settings::getInstance();
+        $logdir = $instanceSettings->get('log_dir');
 
         $result = True;
         if (count($ids) == 0) return $result;

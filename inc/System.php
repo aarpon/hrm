@@ -551,8 +551,14 @@ class System
      */
     public static function getPostMaxSizeFromConfig($unit = 'M')
     {
-        global $max_post_limit;
-        if (isset($max_post_limit)) {
+        $instanceSettings = Settings::getInstance();
+        try {
+            $max_post_limit = $instanceSettings->get("max_post_limit");
+        } catch (\Exception $e) {
+            $max_post_limit = null;
+        }
+
+        if (null !== $max_post_limit) {
             if ($max_post_limit == 0) {
                 return "limited by php.ini.";
             } else {
@@ -582,8 +588,14 @@ class System
      */
     public static function isDownloadEnabledFromConfig()
     {
-        global $allowHttpTransfer;
-        if ($allowHttpTransfer == true) {
+        $instanceSettings = Settings::getInstance();
+        try {
+            $allow_http_download = $instanceSettings->get("allow_http_download");
+        } catch (\Exception $e) {
+            $allow_http_download = false;
+        }
+
+        if ($allow_http_download == true) {
             return "enabled";
         } else {
             return "disabled";
@@ -597,8 +609,14 @@ class System
      */
     public static function isUploadEnabledFromConfig()
     {
-        global $allowHttpUpload;
-        if ($allowHttpUpload == true) {
+        $instanceSettings = Settings::getInstance();
+        try {
+            $allow_http_upload = $instanceSettings->get("allow_http_upload");
+        } catch (\Exception $e) {
+            $allow_http_upload = false;
+        }
+
+        if ($allow_http_upload == true) {
             return "enabled";
         } else {
             return "disabled";
@@ -655,8 +673,14 @@ class System
      */
     public static function isUploadMaxFileSizeFromConfig($unit = 'M')
     {
-        global $max_upload_limit;
-        if (isset($max_upload_limit)) {
+        $instanceSettings = Settings::getInstance();
+        try {
+            $max_upload_limit = $instanceSettings->get("max_upload_limit");
+        } catch (\Exception $e) {
+            $max_upload_limit = null;
+        }
+
+        if (null !== $max_upload_limit) {
             if ($max_upload_limit == 0) {
                 return "limited by php.ini.";
             } else {
@@ -701,7 +725,7 @@ class System
      * Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Memory amount in the requested unit.
      */
-    private function formatMemoryStringByUnit($value, $unit = 'M')
+    private static function formatMemoryStringByUnit($value, $unit = 'M')
     {
         switch ($unit) {
             case 'G' :

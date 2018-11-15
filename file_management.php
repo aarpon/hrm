@@ -7,7 +7,8 @@ namespace hrm;
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 // Settings
-global $allowHttpTransfer;
+$instanceSettings = Settings::getInstance();
+$allowHttpTransfer = $instanceSettings->get('allow_http_download');
 
 session_start();
 

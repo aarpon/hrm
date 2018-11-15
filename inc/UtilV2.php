@@ -9,6 +9,8 @@
  */
 namespace hrm;
 
+use hrm\setting\base\Setting;
+
 require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
@@ -23,11 +25,15 @@ class UtilV2
      */
     public static function getRelativePathToFileUploader()
     {
-
-        global $hrm_url;
+        // Get Settings
+        $instanceSettings = Settings::getInstance();
 
         // Parse the URL to make sure we handle the relative HRM document path
-        $c = parse_url($hrm_url);
+        try {
+            $c = parse_url($instanceSettings->get("hrm_url"));
+        } catch (\Exception $e) {
+            $c = array();
+        }
         if (isset($c["path"])) {
             return ($c["path"] . "/upload/FileUploader.inc.php");
         } else {
@@ -41,15 +47,14 @@ class UtilV2
      */
     public static function getNumberConcurrentUploads()
     {
-
-        global $httpNumberOfConcurrentUploads;
-
-        // Get the number of concurrent uploads from the configuration files
-        if (!isset($httpNumberOfConcurrentUploads)) {
-            $httpNumberOfConcurrentUploads = 4;
+        $instanceSettings = Settings::getInstance();
+        try {
+            $value = $instanceSettings->get("http_upload_number_of_concurrent_uploads");
+        } catch (\Exception $e) {
+            $value = 4;
         }
 
-        return $httpNumberOfConcurrentUploads;
+        return $value;
     }
 
     /**
@@ -71,8 +76,12 @@ class UtilV2
      */
     public static function getMaxConcurrentUploadSize($nConcurrentUploads = 4)
     {
-
-        global $max_post_limit;
+        $instanceSettings = Settings::getInstance();
+        try {
+            $max_post_limit = $instanceSettings->get("max_post_limit");
+        } catch (\Exception $e) {
+            $max_post_limit = null;
+        }
 
         // Get max post size from php.ini
         $post_max_size = self::let_to_num(ini_get('post_max_size'));
@@ -83,7 +92,7 @@ class UtilV2
 
         // Cap it: use $max_post_limit from the configuration files, if set and larger than 0
         $capSize = 16777216;
-        if (isset($max_post_limit) && $max_post_limit > 0) {
+        if (null !== $max_post_limit && $max_post_limit > 0) {
             $capSize = min($max_post_limit * 1024 * 1024, $capSize);
         }
         if ($theoretical_limit > $capSize) {
@@ -147,11 +156,16 @@ class UtilV2
      */
     public static function getMaxUploadFileSize()
     {
-        global $max_upload_limit;
+        $instanceSettings = Settings::getInstance();
+        try {
+            $max_upload_limit = $instanceSettings->get("max_upload_limit");
+        } catch (\Exception $e) {
+            $max_upload_limit = null;
+        }
 
-        // Do not touch the global value of $max_upload_limit!
+        // Do not touch the value of $max_upload_limit we got from the settings!
         $local_max_upload_limit = 0;
-        if (isset($max_upload_limit)) {
+        if (null !== $max_upload_limit) {
             $local_max_upload_limit = $max_upload_limit;
         }
 
@@ -175,9 +189,14 @@ class UtilV2
      */
     public static function getMaxPostSize()
     {
-        global $max_post_limit;
+        $instanceSettings = Settings::getInstance();
+        try {
+            $max_post_limit = $instanceSettings->get("max_post_limit");
+        } catch (\Exception $e) {
+            $max_post_limit = null;
+        }
 
-        // Do not touch the global value of $max_upload_limit!
+        // Do not touch the value of $max_post_limit from the settings!
         $local_max_post_limit = 0;
         if (isset($max_post_limit)) {
             $local_max_post_limit = $max_post_limit;

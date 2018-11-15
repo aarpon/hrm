@@ -13,6 +13,7 @@ namespace hrm\user\proxy;
 // Include the HRM configuration files.
 use hrm\DatabaseConnection;
 use hrm\Log;
+use hrm\Settings;
 use hrm\System;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
@@ -29,10 +30,12 @@ class ProxyFactory {
      * Return the default authentication mode for all users.
      * @return string Default authentication mode (one of 'integrated',
      * 'active_dir', 'ldap', auth0).
+     * @throws \Exception If any setting could not be read from the database.
      */
     public static function getDefaultAuthenticationMode() {
 
-        global $authenticateAgainst;
+        $instanceSettings = Settings::getInstance();
+        $authenticateAgainst = $instanceSettings->get('authenticate_against');
 
         // Fall back
         if (!is_array($authenticateAgainst)) {
@@ -72,6 +75,7 @@ class ProxyFactory {
      *
      * @param string $username name of the User to query.
      * @return string Authentication mechanism.
+     * @throws \Exception
      */
     public static function getAuthenticationModeForUser($username) {
 
@@ -184,10 +188,12 @@ class ProxyFactory {
      * are the human-friendly names (for display purposes).
      *
      * @return array List of configured authentication modes.
+     * @throws \Exception If any setting could not be retrieved from the database.
      */
     public static function getAllConfiguredAuthenticationModes() {
 
-        global $authenticateAgainst;
+        $instanceSettings = Settings::getInstance();
+        $authenticateAgainst = $instanceSettings->get('authenticate_against');
 
         // Do not modify the original variable
 

@@ -4,16 +4,19 @@
 
 use hrm\Log;
 use hrm\Nav;
+use hrm\Settings;
 use hrm\user\UserManager;
 use hrm\user\proxy\ProxyFactory;
 use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-global $email_admin;
-global $authenticateAgainst;
-
 session_start();
+
+// Get settings
+$instanceSettings = Settings::getInstance();
+$email_admin = $instanceSettings->get('email_admin');
+$authenticateAgainst = $instanceSettings->get('authenticate_against');
 
 if (isset($_GET['exited'])) {
     if (session_id() && isset($_SESSION['user'])) {

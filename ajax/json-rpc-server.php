@@ -70,6 +70,7 @@ use hrm\setting\AnalysisSetting;
 use hrm\DatabaseConnection;
 use hrm\Mail;
 use hrm\setting\ParameterSetting;
+use hrm\Settings;
 use hrm\System;
 use hrm\setting\TaskSetting;
 use hrm\user\UserManager;
@@ -364,14 +365,16 @@ function jsonCheckForUpdates() {
  * Send a test email to the administrator to check that the email system is set
  * up properly.
  * @return string JSON-encoded array with key 'success' and 'message'
+ * @throws Exception If any setting could not be retrieved from the database.
  */
 function jsonSendTestEmail() {
 
-    global $email_sender;
-    global $email_admin;
+    $instanceSettings = Settings::getInstance();
+    $email_sender = $instanceSettings->get('email_sender');
+    $email_admin = $instanceSettings->get('email_admin');
 
     // Include configuration file
-    include(dirname(__FILE__) . "/../config/hrm_client_config.inc");
+    //include(dirname(__FILE__) . "/../config/hrm_client_config.inc");
 
     // Prepare the output array
     $json = initJSONArray();

@@ -10,8 +10,6 @@ use hrm\Util;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-global $email_admin;
-global $authenticateAgainst;
 
 session_start();
 

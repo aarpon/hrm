@@ -3,14 +3,16 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\Settings;
 use hrm\Util;
 use hrm\Validator;
 use hrm\user\UserManager;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
-
-global $email_sender;
+// Get settings
+$instanceSettings = Settings::getInstance();
+$email_sender = $instanceSettings->get('email_sender');
 
 /* *****************************************************************************
  *

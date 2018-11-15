@@ -17,6 +17,7 @@ use hrm\setting\JobParameterSetting;
 use hrm\setting\JobTaskSetting;
 use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
+use hrm\Settings;
 use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
@@ -531,11 +532,15 @@ class JobDescription
      * Returns the source folder name.
      * @return string Source folder name.
      * @todo This must go into the Fileserver class!
+     * @throws \Exception If any settings could not be retrieved from the database.
      */
     public function sourceFolder()
     {
-        global $huygens_server_image_folder;
-        global $image_source;
+        $instanceSettings = Settings::getInstance();
+        $instanceSettings->get('');
+        $huygens_server_image_folder = $instanceSettings->get('huygens_server_image_folder');
+        $image_source = $instanceSettings->get('image_source');
+
         $user = $this->owner();
         $result = $huygens_server_image_folder . "/" .
             $user->name() . "/" . $image_source . "/";
@@ -614,11 +619,13 @@ class JobDescription
      * Returns the final destination folder name (also considering
      * sub-folders created by the user in the image destination)
      * @return string Destination folder name.
+     * @throws \Exception If any setting could not be retrieved from the database.
      */
     public function destinationFolder()
     {
-        global $huygens_server_image_folder;
-        global $image_destination;
+        $instanceSettings = Settings::getInstance();
+        $huygens_server_image_folder = $instanceSettings->get('huygens_server_image_folder');
+        $image_destination = $instanceSettings->get('image_destination');
 
         $user = $this->owner();
 

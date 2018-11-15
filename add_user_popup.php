@@ -3,15 +3,21 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Mail;
+use hrm\Settings;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserConstants;
 use hrm\user\UserManager;
 use hrm\Validator;
 
-// Settings
-global $hrm_url, $image_folder, $image_host, $email_sender, $userManagerScript;
-
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
+
+// Get the required settings
+$instanceSettings = Settings::getInstance();
+$hrm_url = $instanceSettings->get("hrm_url");
+$image_folder = $instanceSettings->get("image_folder");
+$image_host = $instanceSettings->get("image_host");
+$email_sender = $instanceSettings->get("email_sender");
+$user_manager_script = $instanceSettings->get("user_manager_script");
 
 session_start();
 
@@ -130,7 +136,7 @@ if (isset($_POST['add'])) {
                     $mail->send();
                 }
                 $message = "New user successfully added to the system.";
-                shell_exec("$userManagerScript create \"" . $clean["username"] . "\"");
+                shell_exec("$user_manager_script create \"" . $clean["username"] . "\"");
                 $added = True;
             } else {
                 $message = "Sorry, the user could not be registered. Please contact your administrator.";

@@ -78,13 +78,15 @@ class Util
      * stops. The message is also automatically reported to log.
      * @param string $subject A string to be appended to the email subject.
      * @param string $message The body of the email.
+     * @throws \Exception
      */
     public static function notifyRuntimeError($subject, $message)
     {
-        global $email_sender;
-        global $email_admin;
-        $mail = new Mail($email_sender);
-        $mail->setReceiver($email_admin);
+        // Get Settings
+        $instanceSettings = Settings::getInstance();
+
+        $mail = new Mail($instanceSettings->get("email_sender"));
+        $mail->setReceiver($instanceSettings->get("email_admin"));
         $mail->setSubject('Huygens Remote Manager - ' . $subject);
         $mail->setMessage($message);
         $mail->send();

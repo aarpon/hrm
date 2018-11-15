@@ -11,6 +11,7 @@
 namespace hrm\shell;
 
 use hrm\Log;
+use hrm\Settings;
 
 require_once dirname(__FILE__) . "/../bootstrap.php";
 
@@ -96,13 +97,15 @@ class ExternalProcess
      * @param string $huscript_path HuCore full executable path on host.
      * @param string $logfileName Name of the process log (relative to the global $logdir)
      * @param string $errfileName Name of the process error log (relative to the global $logdir)
+     * @throws \Exception If any setting could not be retrieved from the database.
      */
     public function __construct($host,
                                 $huscript_path,
                                 $logfileName,
                                 $errfileName)
     {
-        global $logdir;
+        $instanceSettings = Settings::getInstance();
+        $logdir = $instanceSettings->get('log_dir');
 
 
         $this->huscript_path = $huscript_path;
