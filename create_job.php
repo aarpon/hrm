@@ -58,7 +58,7 @@ if (isset($_POST['create'])) {
             $jobDescription->setParameterSetting($_SESSION['setting']);
             $jobDescription->setTaskSetting($_SESSION['task_setting']);
             $jobDescription->setAnalysisSetting($_SESSION['analysis_setting']);
-            $jobDescription->setFiles($jobFile, $_SESSION['autoseries']);
+            $jobDescription->setFile($jobFile, $_SESSION['autoseries']);
 
             $_SESSION['jobcreated'] = True;
             $_SESSION['numberjobadded'] = 1;

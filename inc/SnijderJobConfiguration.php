@@ -280,7 +280,7 @@ class SnijderJobConfiguration {
 
         $fileCnt = 0;
         $filePath   = $this->jobDescription->sourceFolder();
-        $file = $this->jobDescription->files();
+        $file = $this->jobDescription->file();
         $fileCnt++;
         $numberedFiles .= "file" . $fileCnt . " = ";
         $numberedFiles .= $filePath . $file . "\n";        

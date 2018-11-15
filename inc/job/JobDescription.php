@@ -25,7 +25,7 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
  * Collects all information for a deconvolution Job to be created.
  *
  * Description of the job to be processed by HuCore Consisting of owner
- * information, a parameter setting, a task setting and a list of image files.
+ * information, a parameter setting, a task setting and an image file.
  *
  * @package hrm
  */
@@ -63,10 +63,10 @@ class JobDescription
     public $analysisSetting;
 
     /**
-     * The list of files to be processed by the Job.
+     * The image file to be processed by the Job.
      * @var array
      */
-    private $files;
+    private $file;
 
     /**
      * Whether or not to load a series automatically.
@@ -206,12 +206,12 @@ class JobDescription
     }
 
     /**
-     * Returns the files associated with the job.
-     * @return array Array of file names.
+     * Returns the file associated with the job.
+     * @return string The file name.
      */
-    public function files()
+    public function file()
     {
-        return $this->files;
+        return $this->file;
     }
 
     /**
@@ -253,13 +253,13 @@ class JobDescription
     }
 
     /**
-     * Sets the list of files for the job.
-     * @param array $files Array of file names.
+     * Sets the file for the job.
+     * @param string $file The file name.
      * @param bool $autoseries True if the file series should be loaded automatically, false otherwise.
      */
-    public function setFiles($files, $autoseries = FALSE)
+    public function setFile($file, $autoseries = FALSE)
     {
-        $this->files = $files;
+        $this->file = $file;
         $this->autoseries = $autoseries;
     }
 
@@ -337,80 +337,6 @@ class JobDescription
         return $this->taskType;
     }
 
-     /**
-     * Create a Job from this JobDescription.
-     * @return bool True if the Job could be created, false otherwise.
-     */
-    public function createJob()
-    {
-        $result = True;
-        $jobParameterSetting = new JobParameterSetting();
-        $jobParameterSetting->setOwner($this->owner);
-        $jobParameterSetting->setName($this->id);
-        $jobParameterSetting->copyParameterFrom($this->parameterSetting);
-        $result = $result && $jobParameterSetting->save();
-
-        $taskParameterSetting = new JobTaskSetting();
-        $taskParameterSetting->setOwner($this->owner);
-        $taskParameterSetting->setName($this->id);
-        $taskParameterSetting->copyParameterFrom($this->taskSetting);
-        $result = $result && $taskParameterSetting->save();
-
-        $analysisParameterSetting = new JobAnalysisSetting();
-        $analysisParameterSetting->setOwner($this->owner);
-        $analysisParameterSetting->setName($this->id);
-        $analysisParameterSetting->copyParameterFrom($this->analysisSetting);
-        $result = $result && $analysisParameterSetting->save();
-
-        $db = new DatabaseConnection();
-        $result = $result && $db->saveJobFiles($this->id,
-                $this->owner,
-                $this->files,
-                $this->autoseries);
-
-        if (!$result) {
-            $this->message = "Could not create job!";
-        }
-        return $result;
-    }
-
-
-    /**
-     * Loads a JobDescription from the database for the user set in
-     * this JobDescription.
-     * @todo Check that the ParameterSetting->numberOfChannels() exists!
-     */
-    public function load()
-    {
-        $db = new DatabaseConnection();
-
-        $parameterSetting = new JobParameterSetting();
-        $owner = new UserV2();
-        $name = $db->userWhoCreatedJob($this->id);
-        $owner->setName($name);
-        $parameterSetting->setOwner($owner);
-        $parameterSetting->setName($this->id);
-        $parameterSetting = $parameterSetting->load();
-        $this->setParameterSetting($parameterSetting);
-
-        $taskSetting = new JobTaskSetting();
-        $taskSetting->setNumberOfChannels($parameterSetting->numberOfChannels());
-        $taskSetting->setName($this->id);
-        $taskSetting->setOwner($owner);
-        $taskSetting = $taskSetting->load();
-        $this->setTaskSetting($taskSetting);
-
-        $analysisSetting = new JobAnalysisSetting();
-        $analysisSetting->setNumberOfChannels($parameterSetting->numberOfChannels());
-        $analysisSetting->setName($this->id);
-        $analysisSetting->setOwner($owner);
-        $analysisSetting = $analysisSetting->load();
-        $this->setAnalysisSetting($analysisSetting);
-
-        $this->setFiles($db->getJobFilesFor($this->id()),
-            $db->getSeriesModeForId($this->id()));
-    }
-
     /**
      * Copies from another JobDescription into this JobDescription
      * @param JobDescription $aJobDescription Another JobDescription.
@@ -431,9 +357,9 @@ class JobDescription
      */
     public function sourceImageName()
     {
-        $files = $this->files();
+        $file = $this->file();
         // avoid redundant slashes in path
-        $result = $this->sourceFolder() . preg_replace("#^/#", "", $files);
+        $result = $this->sourceFolder() . preg_replace("#^/#", "", $file);
         return $result;
     }
 
@@ -461,8 +387,8 @@ class JobDescription
      */
     public function relativeSourcePath()
     {
-        $files = $this->files();
-        $inputFile = $files;
+        $file = $this->file();
+        $inputFile = $file;
         $inputFile = explode("/", $inputFile);
         array_pop($inputFile);
         $path = implode("/", $inputFile);
@@ -480,8 +406,8 @@ class JobDescription
      */
     public function sourceImageShortName()
     {
-        $files = $this->files();
-        $inputFile = $files;
+        $file = $this->file();
+        $inputFile = $file;
         $inputFile = explode("/", $inputFile);
         // remove file extension
         //$inputFile = explode(".", end($inputFile));
@@ -523,15 +449,14 @@ class JobDescription
     public function destinationImageName()
     {
         $taskSetting = $this->taskSetting();
-        //$files = $this->files();
-        //$outputFile = $this->sourceImageShortName();
+        
         // work around the fact that end() requires a reference, but the result of
         // explode() cannot be turned into one, so use a temporary variable instead
         // (see http://stackoverflow.com/questions/4636166/ for more details)
         $tmp = explode($taskSetting->name(), $this->sourceImageShortName());
         $outputFile = end($tmp);
         $outputFile = str_replace(" ", "_", $outputFile);
-        $result = $outputFile . "_" . $taskSetting->name() . "_hrm";
+        $result = $outputFile . "_" . uniqid() . "_hrm";
         # Add a non-numeric string at the end: if the task name ends with a
         # number, that will be removed when saving using some file formats that
         # use numbers to identify Z planes. Therefore the result file won't
