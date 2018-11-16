@@ -42,6 +42,9 @@ class ImagePreviews extends UserFiles
     /** Comparision slider strip */
     const VIEW_STRIP = 'strip_';
 
+    /** stack view @todo ambiguous ('stack.compare.strip contains' 'stack' of the avi movie file name) */
+    const VIEW_STACK = 'stack';
+
     /** Preview output format */
     const OUTPUT_FORMAT = '.jpg';
 
@@ -108,14 +111,14 @@ class ImagePreviews extends UserFiles
         ];
     }
 
-    public function getResultPath($filepath, $size = '', $view = '', $original = '')
+    public function getResultPath($filepath, $size = '', $view = '', $original = '', $type = 'jpg')
     {
         list($filedir, $filename) = $this->splitPath($filepath);
         $filedir_ = $this->getAbsolutePath($filedir) . '/' . self::CACHE_DIR;
+        $fileid = $this->getResultId($filename);
 
         // build the pattern
-        preg_match('([0-9a-z]{10,16}_hrm[.a-z0-9]{2,4})', $filename, $matches);
-        $pattern = '/.*' . preg_quote($matches[0]);
+        $pattern = '/.*' . preg_quote($fileid);
 
         if (!($original === '')) {
             $pattern .= '\.';
@@ -139,7 +142,7 @@ class ImagePreviews extends UserFiles
             $pattern .= '.*' . $view_;
         }
 
-        $pattern .=  '.*/';
+        $pattern .=  '.*' . preg_quote($type) . '$/';
 
         // get the corresponding file
         $matches = array();
@@ -157,6 +160,22 @@ class ImagePreviews extends UserFiles
         Log::error($count . "matches -> no unique result preview match with"
             . $pattern . " in " . $filedir_ . 'check ajax query.');
         return self::DEFAULT_OUTPUT;
+    }
+
+    /**
+     * Extract the result id from the file name.
+     *
+     * @param $filename
+     * @return null | string
+     */
+    private function getResultId($filename)
+    {
+        preg_match('/([0-9a-z]{10,16}_hrm[.a-z0-9]{2,4})/', $filename, $matches);
+        if (count($matches) == 0) {
+            return $matches[0];
+        } else {
+            return null;
+        }
     }
 
     /**
