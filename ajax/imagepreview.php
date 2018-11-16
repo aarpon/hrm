@@ -29,6 +29,10 @@ require_once dirname(__FILE__) . '/../inc/bootstrap.php';
  *          -> To see the possible values of the view argument @see ImagePreviews::getViewConstants()
  *             potentially all the arguments can be empty, but if no single result file can be identified,
  *             the default @see ImagePreviews::DEFAULT_OUTPUT will be returned.
+ *
+ *     movie=/path/to/image.file
+ *          -> movie download
+ *             the stack movie is part of the result files. For convenience however, it has its own url
  */
 
 
@@ -49,6 +53,8 @@ if (isset($_REQUEST['info'])) {
     $action = 'thumbnail';
 } else if (isset($_REQUEST['result'])) {
     $action = 'result';
+} else if (isset($_REQUEST['movie'])) {
+    $action = 'movie';
 } else {
     return;
 }
@@ -106,5 +112,28 @@ switch ($action) {
 
         header("Content-Type: image/jpeg");
         readfile($res_path);
-//        var_dump($res_path);
+        break;
+
+    case 'movie':
+        $img_path = $_REQUEST['movie'];
+        $res_path = $previews->getResultPath($img_path, '', 'stack', false, 'avi');
+        $size = filesize($res_path);
+
+        if (preg_match('/.*jpg$/', $res_path)) {
+            header("Content-Type: image/jpeg");
+            readfile($res_path);
+        } else if ($size) {
+            $type = "video/x-msvideo";
+            $avi_filename = basename($res_path);
+
+            header("Accept-Ranges: bytes");
+            header("Connection: close");
+            header("Content-Disposition-type: attachment");
+            header("Content-Disposition: attachment; filename=\"$avi_filename\"");
+            header("Content-Length: $size");
+            header("Content-Type: $type; name=\"$avi_filename\"");
+            readfile($res_path);
+        }
+
+        break;
 }
