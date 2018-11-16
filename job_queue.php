@@ -119,7 +119,7 @@ include("footer.inc.php");
         // Set up timer for the repeated update
         window.setInterval(function () {
             updateAll();
-        }, 10000);
+        }, 1000);
 
         // Function that queries the server via Ajax calls
         function updateAll() {
