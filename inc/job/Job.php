@@ -385,7 +385,7 @@ class Job
 
         // Server name without proc number
         $server = $this->server;
-        $s = split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
 
         $desc = $this->description();
@@ -409,9 +409,9 @@ class Job
             $previews .= $desc->relativeSourcePath() . "hrm_previews/";
             $previews .= "*" . $desc->id() . "_hrm*";
             // escape special characters in image path
-            $image = eregi_replace(" ", "\\ ", $image);
+            $image = preg_replace("/ /", "\\ ", $image);
             $image = str_replace(".ics", ".i*s", $image);
-            $previews = eregi_replace(" ", "\\ ", $previews);
+            $previews = preg_replace("/ /", "\\ ", $previews);
 
             $result = exec("sudo mkdir -p " . escapeshellarg($path));
             $result = exec("sudo mkdir -p " . escapeshellarg($path)
@@ -472,7 +472,7 @@ class Job
 
         // Server name without proc number
         $server = $this->server;
-        $s = split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
 
         $desc = $this->description();

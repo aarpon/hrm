@@ -197,7 +197,7 @@ class ExternalProcess
             $answer = system("ssh $huygens_user" . '@' . $this->host . " '" .
                 "ps -Alfd | sort | grep sshd | grep $huygens_user" . "'",
                 $result);
-            $array = split('[ ]+', $answer);
+            $array = preg_split('/[ ]+/', $answer);
             $pid = $array[3];
             $answer = system("ssh $huygens_user" . '@' . $this->host . " '" .
                 "kill $pid" . "'", $result);

@@ -129,7 +129,7 @@ class QueueManager
 
         $server = $this->freeServer;
         // server name without proc number
-        $s = split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
         $desc = $job->description();
         $clientTemplatePath = $desc->sourceFolder();
@@ -288,7 +288,7 @@ class QueueManager
             $psf = $parameterSetting->parameter('PSF');
             $values = $psf->value();
             foreach ($values as $value) {
-                $path = split("/", $value);
+                $path = explode("/", $value);
                 if (sizeof($path) > 0) {
                     for ($i = 0; $i < sizeof($path) - 1; $i++) {
                         $batch .= "-mkdir \"" . $path[$i] . "\"\n";
@@ -299,7 +299,7 @@ class QueueManager
                     $image_source . "/" . $value;
                 if (stristr($filename, ".ics")) {
                     $batch .= "put \"" . $filename . "\"\n";
-                    $filename = eregi_replace(".ics", ".ids", $filename);
+                    $filename = preg_replace("/.ics/", ".ids", $filename);
                     $batch .= "put \"" . $filename . "\"\n";
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
@@ -335,7 +335,7 @@ class QueueManager
 
         // Now copy the files
         foreach ($files as $file) {
-            $path = split("/", $file);
+            $path = explode("/", $file);
             if (sizeof($path) > 0) {
                 for ($i = 0; $i < sizeof($path) - 1; $i++) {
                     $batch .= "-mkdir \"" . $path[$i] . "\"\n";
@@ -450,7 +450,7 @@ class QueueManager
         Log::warning("cleaning up file server");
         $server = $job->server();
         // server name without proc number
-        $s = split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
         $desc = $job->description();
         $user = $desc->owner();
