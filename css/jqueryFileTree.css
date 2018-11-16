@@ -1,3 +1,28 @@
+#filebrowser {
+
+}
+
+#filebrowser .tree {
+    float: left;
+    width: 30%;
+}
+
+#filebrowser .list {
+    float: right;
+    width: 70%;
+}
+
+.tree ul {
+    list-style-position: inside;
+    list-style-type:none;
+    padding-left:20px;
+}
+
+.tree li {
+    background: url(../images/directory.png) left center no-repeat;
+    padding-left: 20px;
+}
+
 
 /*************************
  * directory tree design *

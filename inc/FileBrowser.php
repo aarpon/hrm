@@ -66,14 +66,13 @@ include("header_fb.inc.php");
     <div id="content" >
 
     <div id="filebrowser">
-            <div class="example">{{ msg }}</div>
 
             <div class="tree">
                 <filetree :nodes="tree"></filetree>
             </div>
 
             <div class="list">
-                <filelist></filetree>
+                <filelist :files="files"></filetree>
             </div>
     </div>
 
