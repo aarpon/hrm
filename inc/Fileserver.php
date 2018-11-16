@@ -115,7 +115,11 @@ class Fileserver
      */
     function __construct($name)
     {
-        global $decompressBin;
+        // Replace the array of decompression options from the
+        // (deprecated) configuration files with the only supported
+        // option: zip.
+        $decompressBin['zip'] = "cd %DEST% \n /usr/bin/unzip -o ";
+
         $this->username = $name;
         $this->files = NULL;
         $this->selectedFiles = NULL;
@@ -723,7 +727,14 @@ class Fileserver
      */
     public function downloadResults(array $files)
     {
-        global $compressBin, $compressExt, $dlMimeType, $packExcludePath, $httpDownloadTempFilesDir;
+        global $httpDownloadTempFilesDir;
+
+        // Replace the global variables from the configuration files with the following
+        // hard-coded values.
+        $compressBin = "cd %DEST% \n /usr/bin/zip -0 ";
+        $dlMimeType = "application/x-force-download";
+        $packExcludePath = true;
+        $compressExt = ".zip";
 
         // Make sure that the script doesn't timeout before zipping and
         // reading the file to serve is completed.
@@ -913,7 +924,11 @@ class Fileserver
                                       $subdir = "", $imagesOnly = true)
     {
 
-        global $decompressBin;
+        // Replace the array of decompression options from the
+        // (deprecated) configuration files with the only supported
+        // option: zip.
+        $type = "zip";
+        $decompressBin['zip'] = "cd %DEST% \n /usr/bin/unzip -o ";
 
         if ($imagesOnly && $subdir == "") {
             $errMsg .= "Can't decompress: filtering valid images requires " .

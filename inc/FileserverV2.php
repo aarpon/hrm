@@ -23,6 +23,36 @@ class FileserverV2
 {
 
     /**
+     * Get the compression command (with %DEST% placeholder for the source)
+     *
+     * Note: when serving a compressed file for download, remember to set the
+     * MIME type to "application/x-force-download".
+     * 
+     * @return array Array with the command for each supported compressor (currently only zip).
+     */
+    private static function getCompressor()
+    {
+        // Replace the array of compression options from the
+        // (deprecated) configuration files with the only supported
+        // option: zip.
+        $compressBin['zip'] = "cd %DEST% \n /usr/bin/zip -0 ";
+        return $compressBin;
+    }
+
+    /**
+     * Get the decompression command (with %DEST% placeholder for the target)
+     * @return array Array with the command for each supported decompressor (currently only zip).
+     */
+    private static function getDecompressor()
+    {
+        // Replace the array of decompression options from the
+        // (deprecated) configuration files with the only supported
+        // option: zip.
+        $decompressBin['zip'] = "cd %DEST% \n /usr/bin/unzip -o ";
+        return $decompressBin;
+    }
+
+    /**
      * Move uploaded file to its final destination.
      *
      * If the file is an archive, it will also be decompressed.
@@ -113,7 +143,11 @@ class FileserverV2
      */
     public static function decompressArchive($file, $destDir) {
 
-        global $decompressBin;
+        // Replace the array of decompression options from the
+        // (deprecated) configuration files with the only supported
+        // option: zip.
+        // @TODO: Simplify.
+        $decompressBin = self::getDecompressor();
 
         // Create the output directory
         if (!is_dir($destDir)) {
@@ -138,15 +172,17 @@ class FileserverV2
     /**
      * Check whether the file name has one of the recognized archive extensions.
      *
-     * The recognized extensions are defined in the hrm_{servver}client}_config.inc files as $decompressBin.
-     *
      * @param string $fileName File Full file name of the file to check.
      * @return bool True if the file is an a supported archive, false otherwise.
      */
     public static function isArchiveFile($fileName) {
 
-        // Get the archive file extensions from the configuration files
-        global $decompressBin;
+        // Get the archive file extensions from the configuration files.
+        // Replace the array of decompression options from the
+        // (deprecated) configuration files with the only supported
+        // option: zip.
+        // @TODO: Simplify.
+        $decompressBin = self::getDecompressor();
 
         // Get the file extension
         $extension = FileserverV2::getFileNameExtension($fileName);
@@ -209,7 +245,11 @@ class FileserverV2
      */
     public static function getArchiveExtensions() {
 
-        global $decompressBin;
+        // Replace the array of decompression options from the
+        // (deprecated) configuration files with the only supported
+        // option: zip.
+        // @TODO: Simplify.
+        $decompressBin = self::getDecompressor();
 
         // Archive extensions
         return array_keys($decompressBin);
@@ -506,4 +546,6 @@ class FileserverV2
         // Return global result
         return $result;
     }
+
+
 }
