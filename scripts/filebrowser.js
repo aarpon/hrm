@@ -26,7 +26,13 @@ var filetree_component = Vue.component('filetree', {
 });
 
 var filelist_component = Vue.component('filelist', {
-  template: `<div><ul><li v-for="file in files">{{ file.name }}</li></ul></div>`,
+  template: `<div><table><tr><th>File name</th><th>Last modified</th></tr><tr v-for="file in files"><td>{{ file.name }}</td><td>{{ file.mtime }}</td></tr></table></div>`,
+    props: [ 'files' ],
+    name: 'filelist',
+});
+
+var filepreview_component = Vue.component('filepreview', {
+  template: `<div><table><tr v-for="file in files"><td>{{ file.name }}</td></tr></table></div>`,
     props: [ 'files' ],
     name: 'filelist',
 });
@@ -39,7 +45,6 @@ var vm = new Vue({
   // Here we can register any values or collections that hold data
   // for the application
   data: {
-//    path: 0,
     tree: 0,
     files: 0,
   },
@@ -51,7 +56,7 @@ var vm = new Vue({
         $.getJSON( "ajax/filesystem.php?dirs=/", function( data ) {
             vm.tree = data['/'];
         });
-        $.getJSON( "ajax/filesystem.php?ls=src", function( data ) {
+        $.getJSON( "ajax/filesystem.php?ls", function( data ) {
             vm.files = data;
         });
   },

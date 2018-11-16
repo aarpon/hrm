@@ -12,15 +12,19 @@
     width: 70%;
 }
 
-.tree ul {
+#filebrowser .tree ul {
     list-style-position: inside;
     list-style-type:none;
     padding-left:20px;
 }
 
-.tree li {
+#filebrowser .tree li {
     background: url(../images/directory.png) left center no-repeat;
     padding-left: 20px;
+}
+
+#filebrowser .list td {
+    text-align: left;
 }
 
 
