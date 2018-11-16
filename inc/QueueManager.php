@@ -70,6 +70,12 @@ class QueueManager
     private $nping;
 
     /**
+     * List of running Jobs.
+     * @var array
+     */
+    private $runningJobs;
+
+    /**
      * QueueManager constructor.
      */
     public function __construct()
