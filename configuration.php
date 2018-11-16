@@ -166,7 +166,9 @@ include("header_cf.inc.php");
                 <option value="1" <?php echo($selected_1); ?>>Normal</option>
                 <option value="2" <?php echo($selected_2); ?>>Debug</option>
             </select>
-            <p class="param_explanation">Explanation</p>
+            <p class="param_explanation">Logging verbosity level. <b>Quiet</b>: only errors are logged.
+                <b>Normal</b>: errors and warnings are logged. <b>Debug</b>: errors, warnings and additional
+                control messages are logged.</p>
 
         </div>
 

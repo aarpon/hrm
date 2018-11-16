@@ -34,12 +34,17 @@
 //    in the table global_variables). In this case the database is not checked and
 //    it is simply updated to the last revision.
 
-// Include hrm_config.inc.php
 use hrm\System;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserConstants;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.php';
+
+try {
+    // Required for an *upgrade* to database revision 17.
+    require_once dirname(__FILE__) . '/../config/hrm_client_config.inc';
+} catch (\Exception $e) {
+}
 
 // Database last revision
 $LAST_REVISION = System::getDBLastRevision();
@@ -5840,8 +5845,7 @@ if ($current_revision < $n) {
             ping_command C(30) NOTNULL DEFAULT '',
             ping_parameter C(30) NOTNULL DEFAULT '',
             omero_transfers C(1) DEFAULT f,
-            user_manager_script C(255) NOTNULL DEFAULT ''"
-        ;
+            user_manager_script C(255) NOTNULL DEFAULT ''";
 
         if (!create_table($tablename, $fields)) {
             $msg = "Could not create the table '$tablename'.";
@@ -5850,6 +5854,7 @@ if ($current_revision < $n) {
             return;
         }
 
+        // Load the configuration file
         require_once dirname(__FILE__) . '/../config/hrm_client_config.inc';
 
         global $huygens_user, $huygens_group, $local_huygens_core, $image_host,
@@ -5907,7 +5912,7 @@ if ($current_revision < $n) {
             "allow_http_upload" => $allow_http_upload,
             "http_upload_number_of_concurrent_uploads" => 4,
             "http_upload_temp_chunks_dir" => $image_folder . "/.hrm_chunks",
-            "http_upload_temp_files_dir"=> $image_folder . "/.hrm_files",
+            "http_upload_temp_files_dir" => $image_folder . "/.hrm_files",
             "max_upload_limit" => $max_upload_limit,
             "max_post_limit" => $max_post_limit,
             "compress_ext" => $compressExt,
@@ -5945,6 +5950,191 @@ if ($current_revision < $n) {
             write_message($msg);
             write_to_error($msg);
             return;
+        }
+    }
+
+    //
+    // Create tables for authentication settings
+    //
+
+    // Active Directory
+
+    // Create table instance_settings
+    $tablename = "active_directory_settings";
+
+    if (!in_array($tablename, $tables)) {
+
+        $fields = "
+            id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+            account_suffix C(255) DEFAULT '',
+            base_dn C(255) DEFAULT '',
+            domain_controllers C(255) DEFAULT '',
+            ad_port I(11) DEFAULT 389,
+            ad_username_suffix C(255) DEFAULT '',
+            ad_username_suffix_pattern C(255) DEFAULT '',
+            ad_username_suffix_replace C(255) DEFAULT '',
+            ad_username C(255) DEFAULT '',
+            ad_password C(255) DEFAULT '',
+            real_primary_group C(1) DEFAULT f,
+            use_ssl C(1) DEFAULT f,
+            use_tls C(1) DEFAULT f,
+            recursive_groups C(1) DEFAULT t,
+            valid_groups C(4096) DEFAULT '',
+            authorized_groups  C(4096) DEFAULT ''
+            ";
+
+        if (!create_table($tablename, $fields)) {
+            $msg = "Could not create the table '$tablename'.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Generic LDAP
+
+    // Create table instance_settings
+    $tablename = "generic_ldap_settings";
+
+    if (!in_array($tablename, $tables)) {
+
+        $fields = "
+            id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+            ldap_host C(255) DEFAULT '',
+            ldap_port I(11) DEFAULT 389,
+            ldap_use_ssl C(1) DEFAULT f,
+            ldap_use_tls C(1) DEFAULT f,
+            ldap_root C(255) DEFAULT '',
+            ldap_manager_base_dn C(255) DEFAULT '',
+            ldap_manager C(255) DEFAULT '',
+            ldap_password C(255) DEFAULT '',
+            ldap_manager_ou C(255) DEFAULT '',
+            ldap_user_search_dn C(255) DEFAULT '',
+            ldap_valid_groups C(4096) DEFAULT '',
+            ldap_authorized_groups C(4096) DEFAULT ''
+            ";
+
+        if (!create_table($tablename, $fields)) {
+            $msg = "Could not create the table '$tablename'.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    //
+    // Import authentication settings into authentication settings tables
+    //
+
+    // Active Directory
+    $tablename = "active_directory_settings";
+    if (in_array("active_dir", $authenticateAgainst)) {
+
+        // If we already imported the data (debug), we skip this
+        $res = $db->Execute("SELECT id from $tablename;");
+        if ($res->EOF == true) {
+
+            // Does the configuration file exist?
+            if (file_exists(dirname(__FILE__) . '/../config/active_directory_config.inc')) {
+
+                // Load the configuration file
+                require_once dirname(__FILE__) . '/../config/active_directory_config.inc';
+
+                global $ACCOUNT_SUFFIX, $BASE_DN, $DOMAIN_CONTROLLERS, $AD_USERNAME_SUFFIX,
+                       $AD_USERNAME_SUFFIX_PATTERN, $AD_USERNAME_SUFFIX_REPLACE, $AD_USERNAME,
+                       $AD_PASSWORD, $REAL_PRIMARY_GROUP, $USE_SSL, $USE_TLS, $RECURSIVE_GROUPS,
+                       $VALID_GROUPS, $AUTHORIZED_GROUPS;
+
+                // Prepare some arguments
+                $domain_controllers_str = implode(';', $DOMAIN_CONTROLLERS);
+                $real_primary_group_str = ($REAL_PRIMARY_GROUP == true ? 't' : 'f');
+                $use_ssl_str = ($USE_SSL == true ? 't' : 'f');
+                $use_tls_str = ($USE_TLS == true ? 't' : 'f');
+                $recursive_groups_str = ($RECURSIVE_GROUPS == true ? 't' : 'f');
+                $valid_groups_str = implode(';', $VALID_GROUPS);
+                $authorized_groups_str = implode(';', $AUTHORIZED_GROUPS);
+
+                // Import the settings from the configuration file
+                $record = array(
+                    "account_suffix" => $ACCOUNT_SUFFIX,
+                    "base_dn" => $BASE_DN,
+                    "domain_controllers" => $domain_controllers_str,
+                    "ad_port" => 389,
+                    "ad_username_suffix" => $AD_USERNAME_SUFFIX,
+                    "ad_username_suffix_pattern" => $AD_USERNAME_SUFFIX_PATTERN,
+                    "ad_username_suffix_replace" => $AD_USERNAME_SUFFIX_REPLACE,
+                    "ad_username" => $AD_USERNAME,
+                    "ad_password" => $AD_PASSWORD,
+                    "real_primary_group" => $real_primary_group_str,
+                    "use_ssl" => $use_ssl_str,
+                    "use_tsl" => $use_tls_str,
+                    "recursive_groups" => $recursive_groups_str,
+                    "valid_groups" => $valid_groups_str,
+                    "authorized_groups" => $authorized_groups_str
+                );
+
+                $insertSQL = $db->GetInsertSQL($tablename, $record);
+                if (!$db->Execute($insertSQL)) {
+                    $msg = "Could not add configuration settings from file into $tablename.";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+        }
+    }
+
+    // Generic LDAP
+    $tablename = "generic_ldap_settings";
+    if (in_array("ldap", $authenticateAgainst)) {
+
+        // If we already imported the data (debug), we skip this
+        $res = $db->Execute("SELECT id from $tablename;");
+        if ($res->EOF == true) {
+
+
+            // Does the configuration file exist?
+            if (file_exists(dirname(__FILE__) . '/../config/active_directory_config.inc')) {
+
+                // Load the configuration file
+                require_once dirname(__FILE__) . '/../config/ldap_config.inc';
+
+                global $ldap_host, $ldap_port, $ldap_use_ssl, $ldap_use_tls,
+                       $ldap_root, $ldap_manager_base_DN, $ldap_manager, $ldap_password,
+                       $ldap_manager_ou, $ldap_user_search_DN, $ldap_valid_groups,
+                       $ldap_authorized_groups;
+
+                // Prepare some arguments
+                $ldap_use_ssl_str = ($ldap_use_ssl == true ? 't' : 'f');
+                $ldap_use_tls_str = ($ldap_use_tls == true ? 't' : 'f');
+                $ldap_valid_groups_str = implode(';', $ldap_valid_groups);
+                $ldap_authorized_groups_str = implode(';', $ldap_authorized_groups);
+
+
+                // Import the settings from the configuration file
+                $record = array(
+                    "ldap_host" => $ldap_host,
+                    "ldap_port" => (int)$ldap_port,
+                    "ldap_use_ssl" => $ldap_use_ssl_str,
+                    "ldap_use_tls" => $ldap_use_tls_str,
+                    "ldap_root" => $ldap_root,
+                    "ldap_manager_base_dn" => $ldap_manager_base_DN,
+                    "ldap_manager" => $ldap_manager,
+                    "ldap_password" => $ldap_password,
+                    "ldap_manager_ou" => $ldap_manager_ou,
+                    "ldap_user_search_dn" => $ldap_user_search_DN,
+                    "ldap_valid_groups" => $ldap_valid_groups_str,
+                    "ldap_authorized_groups" => $ldap_authorized_groups_str
+                );
+
+                $insertSQL = $db->GetInsertSQL($tablename, $record);
+                if (!$db->Execute($insertSQL)) {
+                    $msg = "Could not add configuration settings from file into $tablename.";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
         }
     }
 
