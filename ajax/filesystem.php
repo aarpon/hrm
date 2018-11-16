@@ -120,7 +120,7 @@ switch ($queryType) {
 }
 
 // TODO test some more
-if ($response == null) {
+if ($response === null) {
     $code = 500;
 } else {
     $code = 200;
