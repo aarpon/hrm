@@ -127,7 +127,8 @@ class UserFiles
     }
 
     /**
-     * Get the absolute path on the local file system for a relative path in the user space
+     * Get the absolute path on the local file system for a relative path in the user space.
+     * No tailing slash!
      *
      * @param $path
      * @return string
