@@ -18,12 +18,11 @@ use hrm\file\FileServer;
  * Base URL
  *    [domain]/hrm/ajax/filesystem.php?
  *
- * Requests:
- *    dirs
+ * URL Requests with parameters:
+ *    dirs=/root/node
  *          -> returns nested array with the directory tree as json (relative to the user root)
- *
- *    files&[implode|explode]
- *          -> returns an array of directories containing each an array with all the file entries
+ *             If the path is empty, the tree will have the user directory as root node.
+ *             If some directory is set (no tailing slash) and can be found, the tree will start from there.
  *
  *    ls=/some/dir&ext=[file extension]
  *          -> users relative paths to the user content root!
@@ -64,8 +63,6 @@ assert($fs instanceof FileServer);
 // Determine request type
 if (isset($_REQUEST['dirs'])) {
     $queryType = 'dirs';
-} else if (isset($_REQUEST['files'])) {
-    $queryType = 'files';
 } else if (isset($_REQUEST['multi-series'])) {
     $queryType = 'multi-series';
 } else if (isset($_REQUEST['time-series'])) {
@@ -79,17 +76,10 @@ if (isset($_REQUEST['dirs'])) {
 switch ($queryType) {
     case 'dirs':
         $path = rtrim($_REQUEST['dirs'], '/');
-        $response = $fs->getDirectoryTree();
-        break;
-
-    case 'files':
-        if (isset($_REQUEST['implode']) ||
-            (!isset($_REQUEST['implode']) && !isset($_REQUEST['explode']))) {
-            $fs->implodeImageTimeSeries();
-        } else if (isset($_REQUEST['explode'])) {
-            $fs->explodeImageTimeSeries();
+        if ($path === null || empty($path)) {
+            $path = '/';
         }
-        $response = $fs->getRelativeFileDirectory();
+        $response = $fs->getDirectoryTree($path);
         break;
 
     case 'ls':
@@ -105,7 +95,7 @@ switch ($queryType) {
     case 'multi-series':
         $path = rtrim($_REQUEST['multi-series'], '/');
         $path_abs = $fs->getAbsolutePath($path);
-        $response = $fs->getImageFileSeries($path_abs);
+        $response = $fs->getImageMultiSeries($path_abs);
         break;
 
     case 'time-series':
