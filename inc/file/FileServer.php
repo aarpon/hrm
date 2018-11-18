@@ -43,13 +43,13 @@ class FileServer extends UserFiles
      * (This is to render references more transparent and easier to find).
      * @var string
      */
-    static $SESSION_KEY = "file-server";
+    const SESSION_KEY = "file-server";
 
     /**
      * Extension for the file holding the multi-series files's list
      * @var string
      */
-    static $CACHE_FILE_EXTENSION = ".ls.json";
+    const CACHE_FILE_EXTENSION = ".ls.json";
 
     /**
      * List of directories to ignore during the file system scan.
@@ -371,7 +371,7 @@ class FileServer extends UserFiles
 //            echo 'memory<br>';
             return $this->dict[$dirname][$key];
         } else {
-            $cachepath = $dirname . "/." . $filename . self::$CACHE_FILE_EXTENSION;
+            $cachepath = $dirname . "/." . $filename . self::CACHE_FILE_EXTENSION;
 
             $read_from_image = true;
             if (file_exists($cachepath)) {
@@ -487,6 +487,86 @@ class FileServer extends UserFiles
         }
 
         $this->is_imploded_time_series = true;
+    }
+
+    /**
+     * Delete a list of files with all their associated data.
+     * @todo: finish implementing and test thoroughly
+     *
+     * @param $file_list
+     * @param bool $is_relative_path
+     * @return array
+     */
+    public function deleteFiles($file_list, $is_relative_path = true)
+    {
+        $response = array();
+
+        if ($is_relative_path === true) {
+            $files = array();
+            foreach ($file_list as $file) {
+                array_push($files, $this->getAbsolutePath($file));
+            }
+        } else {
+            $files = $file_list;
+        }
+
+        $previews = new ImagePreviews($this->getUserName());
+
+        foreach ($files as $file) {
+            file_put_contents('php://stderr', print_r($file, TRUE)."\n");
+
+            $messages = array();
+            $to_trash = array();
+            list($dirname, $filename) = $this->splitPath($file);
+
+            // Check if it is a time-series
+            $key = self::get_file_index($this->dict[$dirname], $filename);
+            if (is_array($this->dict[$dirname][$key]) && !ImageFiles::isMultiImage($filename)) {
+                foreach ($this->dict[$dirname][$key] as $name) {
+                    array_push($to_trash, $dirname . '/' . $name);
+                }
+            } else {
+                array_push($to_trash, $file);
+            }
+
+            // Caches
+            array_push($to_trash, $dirname . '/.' . $filename . self::CACHE_FILE_EXTENSION);
+
+            // Previews
+            $preview_files = $previews->getAvailableViews($dirname, $filename);
+//            var_dump($preview_files);
+            $preview_files_count = count($preview_files);
+            $to_trash = array_merge($to_trash, $preview_files);
+
+            // Results @todo
+
+            // Delete the stuff
+            $success_count = 0;
+            $error_count = 0;
+            foreach ($to_trash as $trash) {
+                $status = true;//unlink($trash);@todo
+                if ($status === true) {
+                    array_push($messages, 'deleted');
+                    $success_count++;
+                } else {
+                    array_push($messages, 'error');
+                    $error_count++;
+                }
+            }
+
+            array_push($response,
+                [
+                    'file name' => $filename,
+                    'preview count' => "{$preview_files_count}",
+                    'success count' => "{$success_count}",
+                    'error count' => "{$error_count}",
+                    'associated files' => array_combine($to_trash, $messages)
+                ]);
+        }
+
+//        echo self::array2html($response);
+//        file_put_contents('php://stderr', print_r($response, TRUE)."\n");
+        return $response;
     }
 
     /**

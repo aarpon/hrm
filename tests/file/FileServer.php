@@ -14,7 +14,7 @@ session_start();
 
 $dir = "/data/images/user/src";
 
-$_SESSION[FileServer::$SESSION_KEY] = new FileServer($dir);
+$_SESSION[FileServer::SESSION_KEY] = new FileServer($dir);
 
 echo "
 <html>

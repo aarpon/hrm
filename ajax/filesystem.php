@@ -39,6 +39,9 @@ use hrm\file\FileServer;
  *    time-series=/some/file.tif
  *          -> users relative paths to the user content root!
  *             returns an array of file names
+ *
+ *  JSON posting
+ *
  */
 
 
@@ -51,8 +54,8 @@ if (!in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1'])) {
     }
 }
 
-if (isset($_SESSION[FileServer::$SESSION_KEY])) {
-    $fs = $_SESSION[FileServer::$SESSION_KEY];
+if (isset($_SESSION[FileServer::SESSION_KEY])) {
+    $fs = $_SESSION[FileServer::SESSION_KEY];
 } else {
     $fs = new FileServer($_SESSION['user']->name());
 }
@@ -69,6 +72,13 @@ if (isset($_REQUEST['dirs'])) {
     $queryType = 'time-series';
 } else if (isset($_REQUEST['ls'])) {
     $queryType = 'ls';
+} else if (isset($_REQUEST['delete'])) {
+    if (isset($_SERVER['CONTENT_TYPE'])) {
+        $contentType = trim($_SERVER['CONTENT_TYPE']);
+//        if ($contentType === 'application/json') {
+//        }
+    }
+    $queryType = 'delete';
 }
 
 
@@ -104,6 +114,13 @@ switch ($queryType) {
         $response = $fs->getImageTimeSeries($path_abs);
         break;
 
+    case 'delete':
+        $content = trim(file_get_contents('php://input'));
+        $fileList = json_decode($content);
+        $response = $fs->deleteFiles($fileList);
+//        file_put_contents('php://stderr', json_encode($response, JSON_FORCE_OBJECT));
+        break;
+
     default:
         $response = null;
         break;
@@ -117,7 +134,7 @@ if ($response === null) {
 }
 
 // Update the sessions FileServer object
-$_SESSION[FileServer::$SESSION_KEY] = $fs;
+$_SESSION[FileServer::SESSION_KEY] = $fs;
 
 // Post the response
 //echo FileServer::array2html($response);
