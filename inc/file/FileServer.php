@@ -207,10 +207,10 @@ class FileServer extends UserFiles
      * Get the list of files of a directory or null if the directory does not exist
      *
      * @param string $dir directory to list files from
-     * @param null $extension filter by file extension
+     * @param null $extfilt filter by file extension
      * @return array|mixed
      */
-    public function getFileList($dir, $extension = null)
+    public function getFileList($dir, $extfilt = null)
     {
         $this->synchronize();
         $files = array();
@@ -243,8 +243,8 @@ class FileServer extends UserFiles
             $i++;
         }
 
-        if ($extension != null) {
-            $reg = "/.*(" . strtolower($extension) . "$|" . strtolower($extension) . " \(.+\)$)/";
+        if ($extfilt !== null) {
+            $reg = "/.*(" . strtolower($extfilt) . "$|" . strtolower($extfilt) . " \(.+\)$)/";
             $files = array_filter($files, function ($str) use($reg) {
                 return (preg_match($reg, strtolower($str["name"])) == 1);
             });
