@@ -33,7 +33,6 @@ class ImageFiles
      * @param string $dir path to the image directory
      * @param array $files list of image files
      * @return array
-     * @todo this seems to be the part that slows down file-listings a lot.
      */
     public static function getImageFileSeries($dir, array $files)
     {
@@ -78,6 +77,7 @@ class ImageFiles
                 case "ERROR":
                     $i++;
                     echo($answer[$i]);
+                    break;
                 case "END IMG":
                     $cur = NULL;
                     break;
