@@ -36,13 +36,13 @@ class ImagePreviews extends UserFiles
     const VIEW_YZ = '_yz';
 
     /** SFP view */
-    const VIEW_SFP = 'sfp';
+    const VIEW_SFP = '.sfp';
 
     /** Comparision slider strip */
-    const VIEW_STRIP = 'strip_';
+    const VIEW_STRIP = '.strip_';
 
     /** stack view @todo ambiguous ('stack.compare.strip contains' 'stack' of the avi movie file name) */
-    const VIEW_STACK = 'stack';
+    const VIEW_STACK = '.stack';
 
     /** Preview output format */
     const OUTPUT_FORMAT = '.jpg';
@@ -178,20 +178,6 @@ class ImagePreviews extends UserFiles
     }
 
     /**
-     * Split the path in directory path and filename
-     *
-     * @param $path
-     * @return array
-     */
-    private function splitPath($path)
-    {
-        $filename = basename($path);
-        $filedir = dirname($path);
-
-        return array($filedir, $filename);
-    }
-
-    /**
      * Calls hucore to open an image and generate a jpeg preview.
      *
      * @param string $dir Absolute path to image
@@ -245,13 +231,20 @@ class ImagePreviews extends UserFiles
      * @param string $dir Absolute path to image
      * @param string $filename Image file name
      * @param bool $view @const VIEW_XY (default) or @const VIEW_XZ
+     * @param string $size Preview size: integer or 'preview'
      * @return string Absolute path to generated preview
      */
     private function getHucoreOutputPath($dir, $filename, $view, $size = 'preview')
     {
         // Huygens does not support ":" in names of saved files.
         $filename_ = str_replace(":", "_", $filename);
-        $preview_path = $dir . "/" . self::CACHE_DIR . "/" . $filename_ . ".". $size . $view . self::OUTPUT_FORMAT;
+
+        $preview_path = $dir . "/" . self::CACHE_DIR . "/" . $filename_ . ".". $size . $view;
+        if ($view == self::VIEW_STACK) {
+            $preview_path .= ".avi"; //@todo: might be better to have VIEW_ to be tuples with name->file-format pairs
+        } else {
+            $preview_path .= self::OUTPUT_FORMAT;
+        }
 
         return stripslashes($preview_path);
     }
@@ -287,7 +280,7 @@ class ImagePreviews extends UserFiles
      * @param $filename
      * @return array
      */
-    private function getAvailableViews($dir, $filename)
+    public function getAvailableViews($dir, $filename)
     {
         $views = array();
         foreach ($this->getViewConstants() as $index => $view) {
@@ -319,7 +312,7 @@ class ImagePreviews extends UserFiles
     }
 
     /**
-     * Get all the view constanst defined in this class.
+     * Get all the view constants defined in this class.
      *
      * @return array
      */

@@ -25,6 +25,9 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
  */
 class ImageFiles
 {
+    const STK_TIMESERIES_PATTERN = "/[^_]+_(T|t)[0-9]+\.stk$/i";
+    const LEICA_TIMESERIES_PATTERN = "/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.ti(f{1,2})$/i";
+
     /**
      * Certain image files contain several image series within one file.
      * An series corresponds to a multidimensional acquisition. Different
@@ -212,6 +215,20 @@ class ImageFiles
     }
 
     /**
+     * Test if the file name matches the image-file time-series name pattern
+     *
+     * @param $filename
+     * @return bool
+     */
+    public static function isTimeSeries($filename)
+    {
+        $res1 = preg_match(self::LEICA_TIMESERIES_PATTERN, $filename);
+        $res2 = preg_match(self::STK_TIMESERIES_PATTERN, $filename);
+
+        return ($res1 === 1) || ($res2 === 1);
+    }
+
+    /**
      * Collapse all files with known file name pattern into a time series:
      * @see ImageFiles::collapseStkTimeSeries()
      * @see ImageFiles::collapseLeicaTimeSeries()
@@ -235,7 +252,7 @@ class ImageFiles
     private static function collapseLeicaTimeSeries(array $files)
     {
         $dict = array();
-        $candidates = preg_grep("/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.ti(f{1,2})$/i", $files);
+        $candidates = preg_grep(self::LEICA_TIMESERIES_PATTERN, $files);
         foreach ($candidates as $key => $value) {
             $basename = ImageFiles::getLeicaTimeSeriesBaseName($value);
             $dict[$basename][] = $value;
@@ -265,7 +282,7 @@ class ImageFiles
     private static function collapseStkTimeSeries(array $files)
     {
         $dict = array();
-        $candidates = preg_grep("/[^_]+_(T|t)[0-9]+\.stk$/i", $files);
+        $candidates = preg_grep(self::STK_TIMESERIES_PATTERN, $files);
         foreach ($candidates as $key => $file) {
             $basename = ImageFiles::getStkTimeSeriesBaseName($file);
             $dict[$basename][] = $file;

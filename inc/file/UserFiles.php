@@ -86,6 +86,16 @@ class UserFiles
     }
 
     /**
+     * Get the user name
+     *
+     * @return string
+     */
+    public function getUserName()
+    {
+        return $this->username;
+    }
+
+    /**
      * Getter for the user root directory
      *
      * @return string
@@ -136,5 +146,19 @@ class UserFiles
     public function getAbsolutePath($path)
     {
         return rtrim(stripslashes($this->root_dir . '/' . $path), '/');
+    }
+
+    /**
+     * Split the path in directory path and filename
+     *
+     * @param $path
+     * @return array
+     */
+    protected function splitPath($path)
+    {
+        $filename = basename($path);
+        $filedir = dirname($path);
+
+        return array($filedir, $filename);
     }
 }
