@@ -482,7 +482,7 @@ class TaskSetting extends Setting
               && $numberOfChannels == 1)
                 continue;
             if ($parameter->name() == 'ReductionMode'
-              && !strstr($micrType, "detector-array"))
+              && !strstr($micrType, "array detector confocal"))
                 continue;
             $result = $result .
                 $parameter->displayString($numberOfChannels);

@@ -5906,8 +5906,8 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ReductionMode";
-    $record["value"] = "coreAll";
-    $record["translation"] = "Core-All: use the core detectors only, with reduction.";
+    $record["value"] = "core all";
+    $record["translation"] = "Core all: use the core detectors only, with reduction.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -5928,8 +5928,8 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ReductionMode";
-    $record["value"] = "coreNo";
-    $record["translation"] = "Core-No: use the core detectors only, without reduction.";
+    $record["value"] = "core no";
+    $record["translation"] = "Core no: use the core detectors only, without reduction.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -5972,7 +5972,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ReductionMode";
-    $record["value"] = "aggr";
+    $record["value"] = "aggressive";
     $record["translation"] = "Aggressive: reduce as many detectors as possible.";
     $record["isDefault"] = "f";
 
@@ -5994,8 +5994,8 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ReductionMode";
-    $record["value"] = "superXY";
-    $record["translation"] = "SuperXY: reduce all detectors into a supersampled image.";
+    $record["value"] = "supersample in XY";
+    $record["translation"] = "Supersample in XY: reduce all detectors into an image supersampled in XY.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -6016,8 +6016,8 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ReductionMode";
-    $record["value"] = "superY";
-    $record["translation"] = "SuperY: reduce all detectors into an image supersampled in Y (for fast mode acquisitions).";
+    $record["value"] = "supersample in Y";
+    $record["translation"] = "Supersample in Y: reduce all detectors into an image supersampled in Y.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
