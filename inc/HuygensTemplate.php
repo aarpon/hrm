@@ -553,21 +553,22 @@ class HuygensTemplate
 
         /* Options for the 'execute deconvolution' action */
         $this->algArray =
-            array('q'       => '',
-                  'brMode'  => '',
-                  'varPsf'  => '',
-                  'it'      => '',
-                  'bgMode'  => '',
-                  'bg'      => '',
-                  'sn'      => '',
-                  'blMode'  => 'auto',
-                  'pad'     => 'auto',
-                  'psfMode' => '',
-                  'psfPath' => '',
-                  'timeOut' => '36000',
-                  'mode'    => 'fast',
-                  'itMode'  => 'auto',
-                  'listID'  => '');
+            array('q'          => '',
+                  'brMode'     => '',
+                  'varPsf'     => '',
+                  'it'         => '',
+                  'bgMode'     => '',
+                  'bg'         => '',
+                  'sn'         => '',
+                  'blMode'     => 'auto',
+                  'pad'        => 'auto',
+                  'reduceMode' => 'auto',
+                  'psfMode'    => '',
+                  'psfPath'    => '',
+                  'timeOut'    => '36000',
+                  'mode'       => 'fast',
+                  'itMode'     => 'auto',
+                  'listID'     => '');
 
         /* Options for the 'autocrop' action. */
         $this->autocropArray =
@@ -1878,7 +1879,8 @@ class HuygensTemplate
 
         foreach ($this->algArray as $key => $value) {
 
-            if ($key != "mode" && $key != "itMode" && $key != 'listID') {
+            if ($key != "mode" && $key != "reduceMode" 
+                && $key != "itMode" && $key != 'listID') {
                 $taskDescr .= " " . $key . " ";
             }
 
@@ -1927,6 +1929,12 @@ class HuygensTemplate
                         $taskDescr .= $value;
                     }
                     break;
+                case 'reduceMode':
+                    if ($this->getAlgorithm() == "cmle") {
+                        $taskDescr .= " " . $key . " ";
+                        $taskDescr .= $this->getReductionMode();                        
+                    }                    
+                    break;                
                 case 'listID':
                     break;
                 default:
@@ -1989,6 +1997,47 @@ class HuygensTemplate
     }
 
     /**
+     * Gets the reduction mode.
+     * @return string Reduction mode.
+     */
+    private function getReductionMode()
+    {
+        /* Initialize. */
+        $reductionModeStr = "auto";
+
+        $reductionModeParam = $this->deconSetting->parameter("ReductionMode");
+        $reductionModeValue = $reductionModeParam->value();
+
+        switch ($reductionModeValue) {
+            case 'auto':
+            case 'all':
+            case 'safe':
+            case 'no':
+                $reductionModeStr = $reductionModeValue;
+                break;
+            case 'core no':
+                $reductionModeStr = "coreNo";
+                break;
+            case 'core all':
+                $reductionModeStr = "coreAll";
+                break;
+            case 'aggressive':
+                $reductionModeStr = "aggr";
+                break;
+            case 'supersample in Y':
+                $reductionModeStr = "superY";
+                break;
+            case 'supersample in XY':
+                $reductionModeStr = "superXY";
+                break;
+            default:
+                Log::error("Reduction mode '$reductionModeValue' not yet implemented.");                
+        }
+
+        return $reductionModeStr;
+    }
+
+    /**
      * Gets the background mode.
      * @return string Background mode.
      */
@@ -2005,7 +2054,7 @@ class HuygensTemplate
         } else {
             return "manual";
         }
-    }
+    }    
 
     /**
      * Gets the background value. One channel.
