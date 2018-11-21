@@ -44,7 +44,7 @@ class ReductionMode extends ChoiceParameter
     {
         $this->message = '';
 
-        $possibleValuesSorted = array("auto", "all", "no", "coreAll", "coreNo", "safe", "aggr", "superY", "superXY");
+        $possibleValuesSorted = array("auto", "all", "no", "coreAll", "coreNo", "safe", "aggr", "superXY", "superY");
         $possibleValuesUnsorted = parent::possibleValues();
 
         /* Check for consistency. */

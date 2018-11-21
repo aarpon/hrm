@@ -5951,7 +5951,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ReductionMode";
     $record["value"] = "safe";
-    $record["translation"] = "Safe: reduce the brightest detectors into independent images.";
+    $record["translation"] = "Safe: reduce the high-signal detectors.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -5973,7 +5973,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ReductionMode";
     $record["value"] = "aggr";
-    $record["translation"] = "Aggressive: reduce most detectors into a few independent images.";
+    $record["translation"] = "Aggressive: reduce as many detectors as possible.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -5995,7 +5995,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ReductionMode";
     $record["value"] = "superXY";
-    $record["translation"] = "SuperXY: combine all detectors into a sumpersampled image.";
+    $record["translation"] = "SuperXY: reduce all detectors into a supersampled image.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -6017,7 +6017,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ReductionMode";
     $record["value"] = "superY";
-    $record["translation"] = "SuperY: combine all detectors into an image supersampled in Y (for fast mode acquisitions).";
+    $record["translation"] = "SuperY: reduce all detectors into an image supersampled in Y (for fast mode acquisitions).";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
