@@ -488,6 +488,53 @@ for ($j = 1; $j <= 4; $j++) {
 
                 </select>
         </div> <!-- Autocrop -->
+
+        <div id="ReductionMomde">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('reductionMode');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/ArrayDetector')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Array Detector Reduction Mode
+                </legend>
+
+                <select id="ReductionMode"
+                        title="ReductionMode"
+                        name="ReductionMode"
+                        class="ReductionMode">
+                    <?php
+
+                    /*
+                          REDUCTION MODE
+                    */
+                    $parameterReductionMode =
+                        $_SESSION['task_setting']->parameter("ReductionMode");
+                    $possibleValues = $parameterReductionMode->possibleValues();
+                    $selectedMode = $parameterReductionMode->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterReductionMode->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- ReductionMode -->
+
         <!-- background mode -->
         <fieldset class="setting provided"
                   onmouseover="changeQuickHelp('background');">

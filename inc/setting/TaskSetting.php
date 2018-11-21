@@ -46,6 +46,7 @@ class TaskSetting extends Setting
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
+            'ReductionMode',
             'ZStabilization',
             'ChromaticAberration',
             'TStabilization',
@@ -265,6 +266,19 @@ class TaskSetting extends Setting
             }
         }
 
+        // ReductionMode
+        if (isset($postedParameters["ReductionMode"]) ||
+            $postedParameters["ReductionMode"] == ''
+        ) {
+            $parameter = $this->parameter("ReductionMode");
+            $parameter->setValue($postedParameters["ReductionMode"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+
         return $noErrorsFound;
     }
 
@@ -466,6 +480,9 @@ class TaskSetting extends Setting
                 continue;
             if ($parameter->name() == 'ChromaticAberration'
               && $numberOfChannels == 1)
+                continue;
+            if ($parameter->name() == 'ReductionMode'
+              && !strstr($micrType, "detector-array"))
                 continue;
             $result = $result .
                 $parameter->displayString($numberOfChannels);
@@ -680,6 +697,19 @@ class TaskSetting extends Setting
                 }
             }
         }
+
+        // Reduction Mode.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " reduceMode";
+            } 
+            if (strpos($huArray[$key], "") === FALSE) {
+                $reductionMode = $huArray[$key];          
+                $this->parameter('ReductionMode')->setValue($reductionMode);
+                break;      
+            }
+        }
+        
 
         // Quality factor.
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
