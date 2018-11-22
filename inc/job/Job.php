@@ -166,6 +166,7 @@ class Job
             'absolute'         => 'Background absolute value',
             'estimation'       => 'Background estimation',
             'ratio'            => 'Signal/Noise ratio',
+            'reduction mode'   => 'Reduction mode',
             'autocrop'         => 'Autocrop',
             'z stabilization'  => 'Z Stabilization',
             't stabilization'  => 'T Stabilization');
