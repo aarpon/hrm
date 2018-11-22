@@ -491,7 +491,7 @@ for ($j = 1; $j <= 4; $j++) {
 
         <div id="ArrayDetectorReductionMode">
             <fieldset class="setting provided"
-                      onmouseover="changeQuickHelp('ArrayDetectorReductionMode');">
+                      onmouseover="changeQuickHelp('arrayDetectorReductionMode');">
 
                 <legend>
                     <a href="javascript:openWindow(
