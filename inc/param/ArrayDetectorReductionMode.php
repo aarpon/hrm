@@ -45,7 +45,7 @@ class ArrayDetectorReductionMode extends ChoiceParameter
         $this->message = '';
 
         $possibleValuesSorted = array("auto", "all", "no", "core all", "core no", 
-                                      "safe", "aggressive", "supersample in Y", "supersample in XY");
+                                      "supersample in Y", "supersample in XY");
         $possibleValuesUnsorted = parent::possibleValues();
 
         /* Check for consistency. */

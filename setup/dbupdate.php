@@ -5950,50 +5950,6 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ArrayDetectorReductionMode";
-    $record["value"] = "safe";
-    $record["translation"] = "Safe: reduce the high-signal detectors.";
-    $record["isDefault"] = "f";
-
-    // Skip it if the row is already there.
-    $query = "SELECT * FROM " . $tabname .
-        " WHERE parameter='" . $record['parameter'] .
-        "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                "the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-
-    $tabname = "possible_values";
-    $record = array();
-    $record["parameter"] = "ArrayDetectorReductionMode";
-    $record["value"] = "aggressive";
-    $record["translation"] = "Aggressive: reduce as many detectors as possible.";
-    $record["isDefault"] = "f";
-
-    // Skip it if the row is already there.
-    $query = "SELECT * FROM " . $tabname .
-        " WHERE parameter='" . $record['parameter'] .
-        "' AND value='" . $record['value'] . "'";
-    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-        $insertSQL = $db->GetInsertSQL($tabname, $record);
-        if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                "the database to revision " . $n . ".";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-
-    $tabname = "possible_values";
-    $record = array();
-    $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "supersample in XY";
     $record["translation"] = "Supersample in XY: reduce all detectors into an image supersampled in XY.";
     $record["isDefault"] = "f";
