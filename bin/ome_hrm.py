@@ -263,6 +263,12 @@ def omero_to_hrm(conn, id_str, dest):
     """
     # FIXME: group switching required!!
     _, gid, obj_type, image_id = id_str.split(':')
+    
+    # To allow for non default groups:
+    if not gid:
+        gid = '-1'
+    conn.SERVICE_OPTS.setOmeroGroup(gid)
+
     # check if dest is a directory, rewrite it otherwise:
     if not os.path.isdir(dest):
         dest = os.path.dirname(dest)
@@ -345,6 +351,47 @@ def download_thumb(conn, image_id, dest):
         print("ERROR downloading thumbnail to '%s'." % target)
         return False
 
+def parse_id(stdoutfile,objectType):
+    '''Parse Id from given file. Return first id for given objectType. Delete file after parsing.
+    '''
+    with open(stdoutfile) as inFile:
+    for line in inFile:
+        objectName,imgID = line.split(':')
+        if objectName == objectType:
+            os.remove(stdoutfile)
+        return imgID
+    return None
+
+
+
+
+def attachObjects(imgID,annotations,conn):
+    """Link annotations in OMERO to image with imgID
+    """
+    imgObj = conn.getObject('Image',imgID)
+    for ann in annotations:
+        imgObj.linkAnnotation(ann)
+
+def importImage(conn,cmd):
+    """Import image to OMERO with given arguments cmd
+    """
+    client = conn.c
+    from omero.cli import CLI
+    cli = CLI()
+    cli.loadplugins()
+    cli.set_client(client)
+
+    try:
+        cli.invoke(cmd,strict=True)
+    except Exception as ex:
+        print('ERROR: import file failed [Command: %s]!' % (cmd))
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        template = "\n !!!!!!!!! ERROR An exception of type {0} occurred while {1}[line {2}]. Arguments:\n{3!r}"
+        message = template.format(type(ex).__name__, 'upload to OMERO',exc_tb.tb_lineno,ex.args)
+        print message
+        return False
+    return True
+
 
 def hrm_to_omero(conn, id_str, image_file):
     """Upload an image into a specific dataset in OMERO.
@@ -374,48 +421,60 @@ def hrm_to_omero(conn, id_str, image_file):
     # TODO I: group switching required!!
     _, gid, obj_type, dset_id = id_str.split(':')
     # we have to create the annotations *before* we actually upload the image
-    # data itself and link them to the image during the upload - the other way
-    # round is not possible right now as the CLI wrapper (see below) doesn't
-    # expose the ID of the newly created object in OMERO (confirmed by J-M and
-    # Sebastien on the 2015 OME Meeting):
+    # data itself and link them after import to the image. 
+    # Catch the image ID by save output of the CLI wrapper (see below) to a file
+    # and parse that id
     namespace = 'deconvolved.hrm'
-    #### mime = 'text/plain'
+    mime = 'text/plain'
     # extract the image basename without suffix:
     # TODO: is it [0-9a-f] or really [0-9a-z] as in the original PHP code?
     basename = re.sub(r'(_[0-9a-f]{13}_hrm)\..*', r'\1', image_file)
     comment = gen_parameter_summary(basename + '.parameters.txt')
-    #### annotations = []
-    #### # TODO: the list of suffixes should not be hardcoded here!
-    #### for suffix in ['.hgsb', '.log.txt', '.parameters.txt']:
-    ####     if not os.path.exists(basename + suffix):
-    ####         continue
-    ####     ann = conn.createFileAnnfromLocalFile(
-    ####         basename + suffix, mimetype=mime, ns=namespace, desc=None)
-    ####     annotations.append(ann.getId())
+    
+    annotations = []
+    for suffix in ['.log.txt', '.parameters.txt']:
+        if not os.path.exists(basename + suffix):
+            continue
+        try:    
+            ann = conn.createFileAnnfromLocalFile(basename + suffix, mimetype=mime, ns=namespace, desc=None)
+            annotations.append(ann)
+        except Exception as ex: 
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            template = "\n !!!!!!!!! ERROR An exception of type {0} occurred while {1}[line {2}]. Arguments:\n{3!r}"
+            message = template.format(type(ex).__name__, 'upload annot to OMERO',exc_tb.tb_lineno,ex.args)
+            print message
+
+	    
+
     # currently there is no direct "Python way" to import data into OMERO, so
     # we have to use the CLI wrapper for this:
-    from omero.cli import CLI
-    cli = CLI()
-    cli.loadplugins()
     # NOTE: cli._client should be replaced with cli.set_client() when switching
     # to support for OMERO 5.1 and later only:
-    cli._client = conn.c
+
+    conn.setGroupForSession(gid)
+
     import_args = ["import"]
     import_args.extend(['-d', dset_id])
     if comment is not None:
         import_args.extend(['--annotation_ns', namespace])
         import_args.extend(['--annotation_text', comment])
-    #### for ann_id in annotations:
-    ####     import_args.extend(['--annotation_link', str(ann_id)])
+    
     import_args.append(image_file)
-    # print("import_args: " + str(import_args))
+    # destination for output of cli.invoke
+    outlog = basename + '.stdout_import.txt'
+    import_args.extend(["--file",outlog])
+    imgID=None
     try:
-        cli.invoke(import_args, strict=True)
-    except:
-        print('ERROR: uploading "%s" to %s failed!' % (image_file, id_str))
-        # print(import_args)
-        return False
-    return True
+        importImage(conn,import_args)    
+        imgID=parse_id(outlog,'Image')
+    except Exception as ex:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        template = "\n !!!!!!!!! ERROR An exception of type {0} occurred while {1}[line {2}]. Arguments:\n{3!r}"
+        message = template.format(type(ex).__name__, 'upload to OMERO',exc_tb.tb_lineno,ex.args)
+        print message
+        return False,[],None,gid
+
+    return True,annotations,imgID,gid
 
 
 def gen_parameter_summary(fname):
@@ -570,7 +629,20 @@ def main():
     elif args.action == 'OMEROtoHRM':
         return omero_to_hrm(conn, args.imageid, args.dest)
     elif args.action == 'HRMtoOMERO':
-        return hrm_to_omero(conn, args.dset, args.file)
+        result,annotations,imgID,gid= hrm_to_omero(conn, args.dset, args.file)
+        # to attach files you have to reconnect because cli.invoke seems to cut
+        # the connection after 
+        try:
+            conn = omero_login(args.user, args.password, HOST, PORT)
+            conn.setGroupForSession(gid)
+            attachObjects(imgID,annotations,conn)
+        except Exception as ex:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            template = "\n !!!!!!!!! ERROR An exception of type {0} occurred while {1}[line {2}]. Arguments:\n{3!r}"
+            message = template.format(type(ex).__name__, 'upload to OMERO',exc_tb.tb_lineno,ex.args)
+            print message
+            return False
+        return result
     else:
         raise Exception('Huh, how could this happen?!')
 
