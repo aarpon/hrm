@@ -5836,10 +5836,10 @@ if ($current_revision < $n) {
         }
     }
 
-    // -------------------- Add reduction mode option ------------------------
+    // ------------- Add the array detector reduction mode option ----------------
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "ReductionMode";
+    $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "auto";
     $record["translation"] = "Auto";
     $record["isDefault"] = "t";
@@ -5861,7 +5861,7 @@ if ($current_revision < $n) {
 
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "ReductionMode";
+    $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "all";
     $record["translation"] = "All: use all detectors, with reduction.";
     $record["isDefault"] = "f";
@@ -5883,7 +5883,7 @@ if ($current_revision < $n) {
 
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "ReductionMode";
+    $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "no";
     $record["translation"] = "No: use all detectors, without reduction.";
     $record["isDefault"] = "f";
@@ -5905,7 +5905,7 @@ if ($current_revision < $n) {
 
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "ReductionMode";
+    $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "core all";
     $record["translation"] = "Core all: use the core detectors only, with reduction.";
     $record["isDefault"] = "f";
@@ -5927,7 +5927,7 @@ if ($current_revision < $n) {
     
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "ReductionMode";
+    $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "core no";
     $record["translation"] = "Core no: use the core detectors only, without reduction.";
     $record["isDefault"] = "f";
@@ -5949,7 +5949,7 @@ if ($current_revision < $n) {
 
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "ReductionMode";
+    $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "safe";
     $record["translation"] = "Safe: reduce the high-signal detectors.";
     $record["isDefault"] = "f";
@@ -5971,7 +5971,7 @@ if ($current_revision < $n) {
 
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "ReductionMode";
+    $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "aggressive";
     $record["translation"] = "Aggressive: reduce as many detectors as possible.";
     $record["isDefault"] = "f";
@@ -5993,7 +5993,7 @@ if ($current_revision < $n) {
 
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "ReductionMode";
+    $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "supersample in XY";
     $record["translation"] = "Supersample in XY: reduce all detectors into an image supersampled in XY.";
     $record["isDefault"] = "f";
@@ -6015,7 +6015,7 @@ if ($current_revision < $n) {
 
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "ReductionMode";
+    $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "supersample in Y";
     $record["translation"] = "Supersample in Y: reduce all detectors into an image supersampled in Y.";
     $record["isDefault"] = "f";

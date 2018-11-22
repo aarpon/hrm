@@ -1932,7 +1932,7 @@ class HuygensTemplate
                 case 'reduceMode':
                     if ($this->getAlgorithm() == "cmle") {
                         $taskDescr .= " " . $key . " ";
-                        $taskDescr .= $this->getReductionMode();                        
+                        $taskDescr .= $this->getArrDetReductionMode();                        
                     }                    
                     break;                
                 case 'listID':
@@ -1997,15 +1997,15 @@ class HuygensTemplate
     }
 
     /**
-     * Gets the reduction mode.
+     * Gets the array detector reduction mode.
      * @return string Reduction mode.
      */
-    private function getReductionMode()
+    private function getArrDetReductionMode()
     {
         /* Initialize. */
         $reductionModeStr = "auto";
 
-        $reductionModeParam = $this->deconSetting->parameter("ReductionMode");
+        $reductionModeParam = $this->deconSetting->parameter("ArrayDetectorReductionMode");
         $reductionModeValue = $reductionModeParam->value();
 
         switch ($reductionModeValue) {

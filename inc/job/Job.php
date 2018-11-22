@@ -159,17 +159,17 @@ class Job
         );
 
         $this->restParam = array(
-            'algorithm'        => 'Deconvolution algorithm',
-            'iterations'       => 'Number of iterations',
-            'quality'          => 'Quality stop criterion',
-            'format'           => 'Output file format',
-            'absolute'         => 'Background absolute value',
-            'estimation'       => 'Background estimation',
-            'ratio'            => 'Signal/Noise ratio',
-            'reduction mode'   => 'Reduction mode',
-            'autocrop'         => 'Autocrop',
-            'z stabilization'  => 'Z Stabilization',
-            't stabilization'  => 'T Stabilization');
+            'algorithm'                       => 'Deconvolution algorithm',
+            'iterations'                      => 'Number of iterations',
+            'quality'                         => 'Quality stop criterion',
+            'format'                          => 'Output file format',
+            'absolute'                        => 'Background absolute value',
+            'estimation'                      => 'Background estimation',
+            'ratio'                           => 'Signal/Noise ratio',
+            'array detector reduction mode'   => 'Array detector reduction mode',
+            'autocrop'                        => 'Autocrop',
+            'z stabilization'                 => 'Z Stabilization',
+            't stabilization'                 => 'T Stabilization');
     }
 
     /**

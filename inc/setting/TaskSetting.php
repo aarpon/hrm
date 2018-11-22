@@ -46,7 +46,7 @@ class TaskSetting extends Setting
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
-            'ReductionMode',
+            'ArrayDetectorReductionMode',
             'ZStabilization',
             'ChromaticAberration',
             'TStabilization',
@@ -266,12 +266,12 @@ class TaskSetting extends Setting
             }
         }
 
-        // ReductionMode
-        if (isset($postedParameters["ReductionMode"]) ||
-            $postedParameters["ReductionMode"] == ''
+        // ArrayDetectorReductionMode
+        if (isset($postedParameters["ArrayDetectorReductionMode"]) ||
+            $postedParameters["ArrayDetectorReductionMode"] == ''
         ) {
-            $parameter = $this->parameter("ReductionMode");
-            $parameter->setValue($postedParameters["ReductionMode"]);
+            $parameter = $this->parameter("ArrayDetectorReductionMode");
+            $parameter->setValue($postedParameters["ArrayDetectorReductionMode"]);
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
@@ -481,7 +481,7 @@ class TaskSetting extends Setting
             if ($parameter->name() == 'ChromaticAberration'
               && $numberOfChannels == 1)
                 continue;
-            if ($parameter->name() == 'ReductionMode'
+            if ($parameter->name() == 'ArrayDetectorReductionMode'
               && !strstr($micrType, "array detector confocal"))
                 continue;
             $result = $result .
@@ -698,14 +698,14 @@ class TaskSetting extends Setting
             }
         }
 
-        // Reduction Mode.
+        // Array Detector Reduction Mode.
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
                 $key = "cmle:" . $chan . " reduceMode";
             } 
             if (strpos($huArray[$key], "") === FALSE) {
                 $reductionMode = $huArray[$key];          
-                $this->parameter('ReductionMode')->setValue($reductionMode);
+                $this->parameter('ArrayDetectorReductionMode')->setValue($reductionMode);
                 break;      
             }
         }

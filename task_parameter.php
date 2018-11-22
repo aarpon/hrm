@@ -489,9 +489,9 @@ for ($j = 1; $j <= 4; $j++) {
                 </select>
         </div> <!-- Autocrop -->
 
-        <div id="ReductionMomde">
+        <div id="ArrayDetectorReductionMode">
             <fieldset class="setting provided"
-                      onmouseover="changeQuickHelp('reductionMode');">
+                      onmouseover="changeQuickHelp('ArrayDetectorReductionMode');">
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -501,17 +501,17 @@ for ($j = 1; $j <= 4; $j++) {
                     Array Detector Reduction Mode
                 </legend>
 
-                <select id="ReductionMode"
-                        title="ReductionMode"
-                        name="ReductionMode"
-                        class="ReductionMode">
+                <select id="ArrayDetectorReductionMode"
+                        title="ArrayDetectorReductionMode"
+                        name="ArrayDetectorReductionMode"
+                        class="ArrayDetectorReductionMode">
                     <?php
 
                     /*
-                          REDUCTION MODE
+                          ARRAY DETECTOR REDUCTION MODE
                     */
                     $parameterReductionMode =
-                        $_SESSION['task_setting']->parameter("ReductionMode");
+                        $_SESSION['task_setting']->parameter("ArrayDetectorReductionMode");
                     $possibleValues = $parameterReductionMode->possibleValues();
                     $selectedMode = $parameterReductionMode->value();
 
@@ -533,7 +533,7 @@ for ($j = 1; $j <= 4; $j++) {
                     ?>
 
                 </select>
-        </div> <!-- ReductionMode -->
+        </div> <!-- ArrayDetectorReductionMode -->
 
         <!-- background mode -->
         <fieldset class="setting provided"

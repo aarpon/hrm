@@ -1,6 +1,6 @@
 <?php
 /**
- * Reduction Mode
+ * Array Detector Reduction Mode
  *
  * @package hrm
  *
@@ -16,15 +16,15 @@ use hrm\param\base\ChoiceParameter;
  *
  * @package hrm
  */
-class ReductionMode extends ChoiceParameter
+class ArrayDetectorReductionMode extends ChoiceParameter
 {
 
     /**
-     * ReductionMode constructor.
+     * ArrayDetectorReductionMode constructor.
      */
     public function __construct()
     {
-        parent::__construct("ReductionMode");
+        parent::__construct("ArrayDetectorReductionMode");
     }
 
     /**
@@ -52,7 +52,7 @@ class ReductionMode extends ChoiceParameter
         /* There might be a better way to cross-check both arrays in PHP. */
         foreach ($possibleValuesSorted as $value) {
             if (!in_array($value, $possibleValuesUnsorted)) {
-                $this->message = "Non existing value in Reduce Mode table.";
+                $this->message = "Non existing value in Reduction Mode table.";
                 
                 unset($possibleValuesSorted);
                 break;
@@ -60,7 +60,7 @@ class ReductionMode extends ChoiceParameter
         }
         foreach ($possibleValuesUnsorted as $value) {
             if (!in_array($value, $possibleValuesSorted)) {
-                $this->message = "Non existing value in Reduce Mode array.";
+                $this->message = "Non existing value in Reduction Mode array.";
 
                 unset($possibleValuesSorted);
                 break;
