@@ -5950,8 +5950,8 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ArrayDetectorReductionMode";
-    $record["value"] = "supersample in XY";
-    $record["translation"] = "Supersample in XY: reduce all detectors into an image supersampled in XY.";
+    $record["value"] = "superXY";
+    $record["translation"] = "SuperXY: create an image supersampled in XY.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -5972,8 +5972,8 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ArrayDetectorReductionMode";
-    $record["value"] = "supersample in Y";
-    $record["translation"] = "Supersample in Y: reduce all detectors into an image supersampled in Y.";
+    $record["value"] = "superY";
+    $record["translation"] = "Super:Y create an image supersampled in Y.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.

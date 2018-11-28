@@ -2013,6 +2013,8 @@ class HuygensTemplate
             case 'all':
             case 'safe':
             case 'no':
+            case 'superY':
+            case 'superXY':
                 $reductionModeStr = $reductionModeValue;
                 break;
             case 'core no':
@@ -2023,13 +2025,7 @@ class HuygensTemplate
                 break;
             case 'aggressive':
                 $reductionModeStr = "aggr";
-                break;
-            case 'supersample in Y':
-                $reductionModeStr = "superY";
-                break;
-            case 'supersample in XY':
-                $reductionModeStr = "superXY";
-                break;
+                break;            
             default:
                 Log::error("Reduction mode '$reductionModeValue' not yet implemented.");                
         }
