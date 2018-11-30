@@ -322,7 +322,9 @@ class System
                 "spim" => "SPIM",
                 "sted" => "STED",
                 "sted3D" => "STED 3D",
-                "widefield" => "Widefield"
+                "widefield" => "Widefield",
+                "rescan" => "Rescan",
+                "detector-array" => "Array detector confocal"
             ),
             "file_formats" => array(
                 "all-formats-reader" => "Additional file readers"
