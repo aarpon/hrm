@@ -34,7 +34,7 @@ class System
      * Current HRM minor version. This value has to be set by the developers!
      * @var int
      */
-    const HRM_VERSION_MINOR = 5;
+    const HRM_VERSION_MINOR = 6;
 
     /**
      * Current HRM maintenance (patch) version. This value has to be set by the
