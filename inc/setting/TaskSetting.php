@@ -46,6 +46,7 @@ class TaskSetting extends Setting
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
+            'ArrayDetectorReductionMode',
             'ZStabilization',
             'ChromaticAberration',
             'TStabilization',
@@ -265,6 +266,19 @@ class TaskSetting extends Setting
             }
         }
 
+        // ArrayDetectorReductionMode
+        if (isset($postedParameters["ArrayDetectorReductionMode"]) ||
+            $postedParameters["ArrayDetectorReductionMode"] == ''
+        ) {
+            $parameter = $this->parameter("ArrayDetectorReductionMode");
+            $parameter->setValue($postedParameters["ArrayDetectorReductionMode"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+
         return $noErrorsFound;
     }
 
@@ -466,6 +480,9 @@ class TaskSetting extends Setting
                 continue;
             if ($parameter->name() == 'ChromaticAberration'
               && $numberOfChannels == 1)
+                continue;
+            if ($parameter->name() == 'ArrayDetectorReductionMode'
+              && !strstr($micrType, "array detector confocal"))
                 continue;
             $result = $result .
                 $parameter->displayString($numberOfChannels);
@@ -680,6 +697,19 @@ class TaskSetting extends Setting
                 }
             }
         }
+
+        // Array Detector Reduction Mode.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " reduceMode";
+            } 
+            if (strpos($huArray[$key], "") === FALSE) {
+                $reductionMode = $huArray[$key];          
+                $this->parameter('ArrayDetectorReductionMode')->setValue($reductionMode);
+                break;      
+            }
+        }
+        
 
         // Quality factor.
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {

@@ -488,6 +488,53 @@ for ($j = 1; $j <= 4; $j++) {
 
                 </select>
         </div> <!-- Autocrop -->
+
+        <div id="ArrayDetectorReductionMode">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('arrayDetectorReductionMode');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/ArrayDetector')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Array Detector Reduction Mode
+                </legend>
+
+                <select id="ArrayDetectorReductionMode"
+                        title="ArrayDetectorReductionMode"
+                        name="ArrayDetectorReductionMode"
+                        class="ArrayDetectorReductionMode">
+                    <?php
+
+                    /*
+                          ARRAY DETECTOR REDUCTION MODE
+                    */
+                    $parameterReductionMode =
+                        $_SESSION['task_setting']->parameter("ArrayDetectorReductionMode");
+                    $possibleValues = $parameterReductionMode->possibleValues();
+                    $selectedMode = $parameterReductionMode->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterReductionMode->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- ArrayDetectorReductionMode -->
+
         <!-- background mode -->
         <fieldset class="setting provided"
                   onmouseover="changeQuickHelp('background');">

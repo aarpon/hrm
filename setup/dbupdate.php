@@ -370,6 +370,7 @@ write_to_error(timestamp());
 
 //  Check if the database exists; if it does not exist, create it
 $dsn = $db_type."://".$db_user.":".$db_password."@".$db_host;
+
 $db = ADONewConnection($dsn);
 if(!$db) {
     $msg = "Cannot connect to database host.";
@@ -5782,7 +5783,215 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return false;
     }
+
+
+    // ------- Add Rescan microscopy. ------
+
+    $tabname = "possible_values";
+
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "rescan";
+    $record["translation"] = "rescan";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType8";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
     
+
+    // ------- Add Array Detector Confocal microscopy. ------
+
+    $tabname = "possible_values";
+
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "array detector confocal";
+    $record["translation"] = "detector-array";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType9";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // ------------- Add the array detector reduction mode option ----------------
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "auto";
+    $record["translation"] = "Auto";
+    $record["isDefault"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "all";
+    $record["translation"] = "All: use all detectors, with reduction.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "no";
+    $record["translation"] = "No: use all detectors, without reduction.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "core all";
+    $record["translation"] = "Core all: use the core detectors only, with reduction.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "core no";
+    $record["translation"] = "Core no: use the core detectors only, without reduction.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "superXY";
+    $record["translation"] = "SuperXY: create an image supersampled in XY.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "superY";
+    $record["translation"] = "Super:Y create an image supersampled in Y.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
     // Update revision
     if(!update_dbrevision($n))
         return;
