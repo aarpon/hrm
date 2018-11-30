@@ -263,6 +263,14 @@ def omero_to_hrm(conn, id_str, dest):
     """
     # FIXME: group switching required!!
     _, gid, obj_type, image_id = id_str.split(':')
+    if not image_id:
+        print("Could not parse ID string '%s'. Expecting [GID]:[Type]:[Image_ID]" % id_str)
+        return False
+    # Provided that the tree displays only groups that the current user has access to, cross-group query (introduced in
+    # OMERO 4.4) is a generic way to get the image.
+    if not gid:
+        gid = '-1'
+    conn.SERVICE_OPTS.setOmeroGroup(gid)
     # check if dest is a directory, rewrite it otherwise:
     if not os.path.isdir(dest):
         dest = os.path.dirname(dest)
