@@ -362,9 +362,9 @@ include("header.inc.php");
                     <td class="miap"
                         onclick="javascript:openWindow('https://miap.uni-freiburg.de')">
                     </td>
-                    <td class="blank">
-                        &nbsp;
-                    </td>
+                    <td class="unimanchester"
+                        onclick="javascript:openWindow('https://www.manchester.ac.uk/')">
+                    </td>                    
                     <td class="blank">
                         &nbsp;
                     </td>
@@ -387,7 +387,11 @@ include("header.inc.php");
                         University of Freiburg
                     </td>
                     <td>
-                        &nbsp;
+                        <a href="https://www.bmh.manchester.ac.uk/research/facilities/#bioimaging"
+                           onclick="this.target='_blank'; return true;">
+                        BioImaging Facility
+                        </a><br/>
+                        University of Manchester
                     </td>
                     <td>
                         &nbsp;
