@@ -160,13 +160,23 @@ if (isset($generatedScript)) {
 ?>
 
     <style type="text/css">
-        @import "css/default.css?v=3.5";
+        <?php
+        global $switch_to_dark_mode;
+        if ($switch_to_dark_mode == true) {
+        ?>
+        @import "css/dark.css?v=3.6";
+        <?php
+        } else {
+        ?>
+        @import "css/default.css?v=3.6";
+        <?php
+        }
+        ?>
     </style>
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with HRM.
         Please upgrade to a later version of Internet Explorer or to a new
         browser altogether.</h3>
-    <link rel="stylesheet" href="css/default.css?v=3.5">
     <![endif]-->
 
 <?php
