@@ -381,6 +381,7 @@ table {
 #logos {
     font-size: 85%;
     text-align: center;
+    background-color: #fff;
 }
 
 #logos table {
@@ -2256,8 +2257,8 @@ div.StedDeplModeValues {
 .dropbtn {
     cursor: pointer;
     border: none;
-    color: black;
-    background-color: white;
+    color: #fff;
+    background-color: #1e1e1e;
     padding: 0;
     font-weight: bold;
     font-family: 'Open Sans', sans-serif;
@@ -2277,7 +2278,7 @@ div.StedDeplModeValues {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: white;
+    background-color: #000;
     min-width: 200px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     border: solid #aaa 1px;
