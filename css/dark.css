@@ -1417,23 +1417,27 @@ tr.disabled {
 }
 
 a.selected {
-    color: black;
+    color: #fff;
     text-decoration: none;
-    border: solid 1px;
+    border: solid 1px darkgrey;
+    font-size: 14px;
+    padding: 1px;
+    font-weight: bold;
 }
 
 a.empty {
-    color: rgb(194, 26, 26);
+    color: #f00;
     text-decoration: none;
-    border: solid 1px white;
     font-size: 9px;
+    padding: 1px;
 }
 
 a.filled {
-    color: blue;
+    color: #4988de;
     text-decoration: none;
-    border: solid 1px white;
-    font-size: 9px;
+    font-size: 14px;
+    padding: 1px;
+    font-weight: bold;
 }
 
 #password_reset {
