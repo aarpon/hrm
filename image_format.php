@@ -117,7 +117,6 @@ $nParamRequiringReset = 0;
         <ul>
             <?php
             echo(Nav::textUser($_SESSION['user']->name()));
-            echo(Nav::linkHome(Util::getThisPageName()));
             ?>
         </ul>
     </div>
