@@ -15,3 +15,6 @@ require_once dirname(__FILE__) . '/../vendor/autoload.php';
 
 // Load configuration
 require_once dirname(__FILE__) . '/hrm_config.inc.php';
+
+// Turn on dark mode?
+$switch_to_dark_mode = true;

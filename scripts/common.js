@@ -810,7 +810,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
         case 0:
            if ( gen == 0 ) {
            // Preview doesn't exist
-           html = "<img src=\"images/no_preview.jpg\" alt=\"No preview\">"
+           html = "<img src=\"images/no_preview_button.png\" alt=\"No preview\">"
                   + "<br />No preview available";
 
            } else {

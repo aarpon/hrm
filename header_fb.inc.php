@@ -30,11 +30,22 @@ if (Util::using_IE()) {
     }
     echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
 ?>
-    <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
-    <link rel="stylesheet" href="css/jqtree-custom.css">
-    <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
-    <link rel="stylesheet" href="scripts/fineuploader/fine-uploader-new.css">
-    <link rel="stylesheet" href="css/custom_fineuploader.css">
+    <link rel="stylesheet" type="text/css" href="scripts/jqTree/jqtree.css">
+    <link rel="stylesheet" type="text/css" href="css/jqtree-custom.css">
+    <link rel="stylesheet" type="text/css" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
+    <link rel="stylesheet" type="text/css" href="scripts/fineuploader/fine-uploader-new.css">
+    <?php
+    global $switch_to_dark_mode;
+    if ($switch_to_dark_mode == true) {
+        ?>
+        <link rel="stylesheet" type="text/css" href="css/custom_fineuploader_dark.css">
+        <?php
+    } else {
+        ?>
+        <link rel="stylesheet" type="text/css" href="css/custom_fineuploader.css">
+        <?php
+    }
+    ?>
 
     <!-- Include jQuery -->
     <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
@@ -160,13 +171,23 @@ if (isset($generatedScript)) {
 ?>
 
     <style type="text/css">
-        @import "css/default.css?v=3.5";
+        <?php
+        global $switch_to_dark_mode;
+        if ($switch_to_dark_mode == true) {
+        ?>
+        @import "css/dark.css?v=3.6";
+        <?php
+        } else {
+        ?>
+        @import "css/default.css?v=3.6";
+        <?php
+        }
+        ?>
     </style>
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with HRM.
         Please upgrade to a later version of Internet Explorer or to a new
         browser altogether.</h3>
-    <link rel="stylesheet" href="css/default.css?v=3.5">
     <![endif]-->
 
 <?php

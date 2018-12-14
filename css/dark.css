@@ -35,8 +35,8 @@ Copyright and license notice: see license.txt
 
 /* basic elements */
 body {
-    background: #fff;
-    color: #000;
+    background: #1e1e1e;
+    color: #fff;
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
     font-size: 14px;
@@ -133,7 +133,8 @@ table {
 
 .selection {
     width: 100%;
-    background-color: #fdfdfd;
+    background-color: #000;
+    color:  #fff;
 }
 
 #basket {
@@ -238,7 +239,7 @@ table {
 
 #nav a {
     font-weight: bold;
-    color: #000;
+    color: #fff;
 }
 
 .requirements {
@@ -381,6 +382,8 @@ table {
 #logos {
     font-size: 85%;
     text-align: center;
+    background-color: #fff;
+    color: #000;
 }
 
 #logos table {
@@ -858,6 +861,7 @@ table#Servers td {
     margin-right: 10px;
     width: 98%;
     margin-top: 0;
+    color: #fff;
 }
 
 #joblist h3 {
@@ -883,6 +887,7 @@ table#Servers td {
 #queue table {
     font-size: 75%;
     padding-bottom: 1em;
+    color: #000;
 }
 
 #queue td {
@@ -893,51 +898,61 @@ table#Servers td {
 #queue td.del {
     width: 3%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.nr {
     width: 3%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.owner {
     width: 10%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.files {
     width: 24%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.created {
     width: 15%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.status {
     width: 8%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.started {
     width: 15%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.stop {
     width: 15%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.pid {
     width: 8%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.server {
     width: 14%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue input {
@@ -999,25 +1014,28 @@ table#Servers td {
 #jobParameters td.param {
     width: 175px;
     font-weight: bold;
-    background-color: #eee;
+    background-color: #000
+    ;
 }
 
 #jobParameters td.value {
     width: 100px;
     font-weight: bold;
-    background-color: #eee;
+    background-color: #000;
 }
 
 #jobParameters td.channel {
     width: 50px;
     font-weight: bold;
-    background-color: #eee;
+    background-color: #000
+    ;
 }
 
 #jobParameters td.source {
     width: 100px;
     font-weight: bold;
-    background-color: #eee;
+    background-color: #000
+    ;
 }
 
 #jobParameters td.metadata {
@@ -1026,6 +1044,7 @@ table#Servers td {
 
 #jobParameters td.userdef {
     background-color: #CFD7F2;
+    color: #000;
 }
 
 #colocPage {
@@ -1398,25 +1417,25 @@ tr.disabled {
 }
 
 a.selected {
-    color: black;
+    color: #fff;
     text-decoration: none;
-    border: solid 1px;
+    border: solid 1px darkgrey;
     font-size: 14px;
     padding: 1px;
     font-weight: bold;
 }
 
 a.empty {
-    color: rgb(194, 26, 26);
+    color: #f00;
     text-decoration: none;
     font-size: 9px;
     padding: 1px;
 }
 
 a.filled {
-    color: blue;
+    color: #4988de;
     text-decoration: none;
-    font-size: 9px;
+    font-size: 14px;
     padding: 1px;
     font-weight: bold;
 }
@@ -1487,7 +1506,7 @@ fieldset legend {
     font-size: 1.2em;
     font-weight: bold;
     text-align: left;
-    color: black;
+    color: white;
     width: 100%
 }
 
@@ -1530,7 +1549,8 @@ input {
     text-align: center;
     height: 18px;
     border: solid #aaa 1px;
-    background-color: white;
+    background-color: #000;
+    color: #fff;
 }
 
 input.icon {
@@ -1650,7 +1670,8 @@ select {
     width: 100%;
     text-align: center;
     border: 1px solid #aaa;
-    background-color: #fff;
+    background-color: #000;
+    color: #fff;
     padding: 5px;
 }
 
@@ -1797,7 +1818,8 @@ option.default {
 }
 
 #prevMenu .menuEntry, .menuEntryActive {
-    background-color: #fff;
+    background-color: #1e1e1e;
+    color: #000;
     padding: 10px;
     white-space: nowrap;
     display: inline-block;
@@ -1844,7 +1866,7 @@ option.default {
     font-size: 16px;
     font-weight: bold;
     text-decoration: none;
-    color: #000;
+    color: #fff;
 }
 
 #licenses .row {
@@ -2009,7 +2031,7 @@ div.StedDeplModeValues {
 .message_confidence_provided:before {
     font-size: 0.8em;
     content: "";
-    color: #000000;
+    color: #fff;
     height: 0;
 }
 
@@ -2146,7 +2168,7 @@ div.StedDeplModeValues {
     margin-left: -397px;
     padding: 0;
     font-size: 12px;
-    background-color: #82BCED;
+    background-color: #1e1e1e;
     position: absolute;
     z-index: 15;
     border: 2px solid #000;
@@ -2187,7 +2209,7 @@ div.StedDeplModeValues {
     width: 480px;
     border-top: solid 1px black;
     border-bottom: solid 1px black;
-    background-color: white;
+    background-color: #1e1e1e;
     padding: 10px 10px 20px;
 }
 
@@ -2257,8 +2279,8 @@ div.StedDeplModeValues {
 .dropbtn {
     cursor: pointer;
     border: none;
-    color: black;
-    background-color: white;
+    color: #fff;
+    background-color: #1e1e1e;
     padding: 0;
     font-weight: bold;
     font-family: 'Open Sans', sans-serif;
@@ -2278,7 +2300,7 @@ div.StedDeplModeValues {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: white;
+    background-color: #000;
     min-width: 200px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     border: solid #aaa 1px;
@@ -2304,6 +2326,7 @@ div.StedDeplModeValues {
 }
 
 .highlight {
-    background-color: yellow;
+    background-color: #FF0;
+    color: #000;
     padding: 2px;
 }

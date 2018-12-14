@@ -1619,7 +1619,7 @@ class Fileserver
             $ret = "<img src=\"file_management.php?getThumbnail=$thumb&amp;" .
                 "dir=$dir\" alt=\"preview\" />";
         } else {
-            $imgsrc = "<img src=\"images/no_preview.jpg\" alt=\"No preview\" />";
+            $imgsrc = "<img src=\"images/no_preview_button.png\" alt=\"No preview\" />";
             // $ret = "<p><center>No preview available.</center></p>";
             $ret = "$imgsrc<br />No preview available";
         }
@@ -1651,7 +1651,7 @@ class Fileserver
         $files = $this->findStrip($file, $type, $dir);
 
         if (count($files) != 1) {
-            echo "<img src=\"images/no_preview.jpg\">";
+            echo "<img src=\"images/no_preview_button.png\">";
             return;
         }
         preg_match("/strip_(.+)x(.+)x(.+)_fr/", $files[0], $match);
@@ -1807,7 +1807,7 @@ class Fileserver
      */
     public function previewPage($file, $op = "close", $mode = "MIP", $size = 400)
     {
-        global $allowHttpTransfer;
+        global $allowHttpTransfer, $switch_to_dark_mode;
 
         $file = stripslashes($file);
 
@@ -1816,6 +1816,13 @@ class Fileserver
 
         /* All job previews share a common root name and relative path. */
         $this->previewBase = $file;
+
+        /* Page theme */
+        if ($switch_to_dark_mode == true) {
+            $theme = "dark";
+        } else {
+            $theme = "default";
+        }
 
         echo ' <!DOCTYPE html>
           <html lang="en">
@@ -1830,7 +1837,7 @@ class Fileserver
         echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
         echo '          <script type="text/javascript" src="scripts/common.js"></script>
           <style type="text/css">
-              @import "css/default.css?v=3.5";
+              @import "css/' . $theme . '.css?v=3.6";
           </style>
           </head>
           <body>
@@ -2487,9 +2494,9 @@ class Fileserver
         $path = $dir . "/hrm_previews/" . $base;
         $path = stripslashes($path);
         if (!file_exists($path)) {
-            $path = "images/no_preview.jpg";
+            $path = "images/no_preview_button.png";
         }
-        header("Content-Type: image/jpeg");
+        header("Content-Type: image/png");
         readfile($path);
     }
 
@@ -2513,8 +2520,8 @@ class Fileserver
 
         $path = stripslashes($dirname . "/hrm_previews/" . $basename);
         if (!file_exists($path)) {
-            $path = "images/no_preview.jpg";
-            header("Content-Type: image/jpeg");
+            $path = "images/no_preview_button.png";
+            header("Content-Type: image/png");
             readfile($path);
         }
 

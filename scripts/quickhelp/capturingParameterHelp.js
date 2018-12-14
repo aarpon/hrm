@@ -22,7 +22,7 @@ window.helpText[ "voxel" ] =
   'of the input signal in order to be able to reconstruct the original ' + 
   'perfectly from the sampled version. Meeting the Nyquist rate is an ' +
   'important requisite for successful deconvolution. The ' +
-  '<span style="background-color:yellow">highlighted values</span> are ' +
+  '<span class="highlight">highlighted values</span> are ' +
   'the ideal voxel size for your parameters. The HRM will not try to stop ' +
   'you from running a deconvolution on under-sampled data (i.e. with a ' +
   'sampling rate much larger than the ideal), but do not expect meaningful ' +

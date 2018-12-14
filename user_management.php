@@ -370,9 +370,9 @@ include("header.inc.php");
                             }
                             ?>
 
-                            [<a href="?index=all"
+                            <a href="?index=all"
                                 class="<?php echo($style); ?>">
-                                &nbsp;all&nbsp;</a>]&nbsp;[
+                                &nbsp;[ All ]&nbsp;</a> &nbsp;
 
                             <?php
                             for ($i = 0; $i < count($counts); $i++) {
@@ -389,7 +389,6 @@ include("header.inc.php");
                                     strtoupper($c) . "&nbsp;</a>";
                             }
                             ?>
-                            ]
                         </div>
                     </td>
                 </tr>
