@@ -134,6 +134,7 @@ table {
 .selection {
     width: 100%;
     background-color: #000;
+    color:  #fff;
 }
 
 #basket {
@@ -860,6 +861,7 @@ table#Servers td {
     margin-right: 10px;
     width: 98%;
     margin-top: 0;
+    color: #fff;
 }
 
 #joblist h3 {
@@ -885,6 +887,7 @@ table#Servers td {
 #queue table {
     font-size: 75%;
     padding-bottom: 1em;
+    color: #000;
 }
 
 #queue td {
@@ -895,51 +898,61 @@ table#Servers td {
 #queue td.del {
     width: 3%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.nr {
     width: 3%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.owner {
     width: 10%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.files {
     width: 24%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.created {
     width: 15%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.status {
     width: 8%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.started {
     width: 15%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.stop {
     width: 15%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.pid {
     width: 8%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.server {
     width: 14%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue input {
@@ -1849,7 +1862,7 @@ option.default {
     font-size: 16px;
     font-weight: bold;
     text-decoration: none;
-    text-color: black;
+    color: #fff;
 }
 
 #licenses .row {
@@ -1876,9 +1889,8 @@ option.default {
 }
 
 #licenses .unchecked {
-    width: 22px;
-    height: 22px;
     width: 50px;
+    height: 22px;
     display: inline-block;
 }
 
