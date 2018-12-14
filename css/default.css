@@ -2299,3 +2299,8 @@ div.StedDeplModeValues {
 .show {
     display:block;
 }
+
+.highlight {
+    background-color: yellow;
+    padding: 2px;
+}

@@ -386,8 +386,6 @@ if ($files == null) {
 
 include("header_fb.inc.php");
 
-
-
 // HTML CODE:
 ?>
 
