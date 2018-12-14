@@ -158,7 +158,18 @@ if (isset($_POST['add'])) {
         -->
     </script>
     <style type="text/css">
-        @import "css/default.css?v=3.5";
+        <?php
+        global $switch_to_dark_mode;
+        if ($switch_to_dark_mode == true) {
+        ?>
+        @import "css/dark.css?v=3.6";
+        <?php
+        } else {
+        ?>
+        @import "css/default.css?v=3.6";
+        <?php
+        }
+        ?>
     </style>
 </head>
 
