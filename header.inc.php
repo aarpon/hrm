@@ -127,13 +127,11 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 <div id="basket">
 
-<?php if (!isset($excludeTitle)) { ?>
-    <a href="home.php">
-	    <div id="title">
-	        <h1>
-                Huygens Remote Manager
-            </h1>
-        </div>
-    </a>
+<?php if (!isset($excludeTitle)) { ?>    
+	<div id="title">
+	    <h1>
+            Huygens Remote Manager
+        </h1>
+    </div>
 <?php } ?>
 
