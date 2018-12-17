@@ -133,7 +133,7 @@ table {
 
 .selection {
     width: 100%;
-    background-color: #000;
+    background-color: rgba(51, 51, 51, 0.918);
     color:  #fff;
 }
 
@@ -1014,36 +1014,36 @@ table#Servers td {
 #jobParameters td.param {
     width: 175px;
     font-weight: bold;
-    background-color: #000
+    background-color: rgba(51, 51, 51, 0.918);
     ;
 }
 
 #jobParameters td.value {
     width: 100px;
     font-weight: bold;
-    background-color: #000;
+    background-color: rgba(51, 51, 51, 0.918);    
 }
 
 #jobParameters td.channel {
     width: 50px;
     font-weight: bold;
-    background-color: #000
+    background-color: rgba(51, 51, 51, 0.918);    
     ;
 }
 
 #jobParameters td.source {
     width: 100px;
     font-weight: bold;
-    background-color: #000
+    background-color: rgba(51, 51, 51, 0.918);    
     ;
 }
 
 #jobParameters td.metadata {
-    background-color: #CEFEC6;
+    background-color: rgba(110, 139, 105, 0.904);
 }
 
 #jobParameters td.userdef {
-    background-color: #CFD7F2;
+    background-color: rgb(121, 126, 145);
     color: #000;
 }
 
