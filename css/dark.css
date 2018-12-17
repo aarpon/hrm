@@ -415,7 +415,7 @@ table {
 #logos table td.epfl {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_epfl.jpg") no-repeat center;
+    background: url("../images/logo_epfl.png") no-repeat center;
     background-size: 130px;
 }
 
@@ -438,7 +438,7 @@ table {
     margin-top: 50px;
     padding-bottom: 5px;
     cursor: pointer;
-    background: url("../images/logo_bsse.jpg") no-repeat center;
+    background: url("../images/logo_bsse.png") no-repeat center;
     background-size: 124px;
 }
 
@@ -459,7 +459,7 @@ table {
 #logos table td.lin {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_lin.jpeg") no-repeat center;
+    background: url("../images/logo_lin_en.png") no-repeat center;
     background-size: 130px;
 }
 
