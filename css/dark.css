@@ -171,14 +171,14 @@ table {
 
 #stats {
     margin: 10px auto;
-    width: 50%;
+    width: 50%;    
 }
 
 #statschart {
     width: 100%;
     height: 400px;
     margin: 16px 0 10px 0;
-    border-top: #ccc 1px dotted;
+    border-top: #ccc 1px dotted;    
 }
 
 #statstable {
@@ -187,6 +187,7 @@ table {
     margin-left: 50px;
     margin-right: 50px;
     border-top: #ccc 1px dotted;
+    background-color: rgb(62, 87, 111);
 }
 
 #statstable h3 {
@@ -203,7 +204,7 @@ table {
 #statstable table th {
     text-align: center;
     font-weight: bold;
-    background-color: #eee;
+    background-color: #888;
 }
 
 .clear {
