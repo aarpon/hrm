@@ -416,7 +416,7 @@ table {
 #logos table td.epfl {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_epfl.png") no-repeat center;
+    background: url("../images/logo_epfl_neg.png") no-repeat center;
     background-size: 130px;
 }
 
@@ -439,14 +439,14 @@ table {
     margin-top: 50px;
     padding-bottom: 5px;
     cursor: pointer;
-    background: url("../images/logo_bsse.png") no-repeat center;
+    background: url("../images/logo_bsse_neg.png") no-repeat center;
     background-size: 124px;
 }
 
 #logos table td.fmi {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_fmi.png") no-repeat center;
+    background: url("../images/logo_fmi_neg.png") no-repeat center;
     background-size: 150px;
 }
 
@@ -460,21 +460,21 @@ table {
 #logos table td.lin {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_lin_en.png") no-repeat center;
+    background: url("../images/logo_lin_neg.png") no-repeat center;
     background-size: 130px;
 }
 
 #logos table td.cni {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_cni.png") no-repeat center;
+    background: url("../images/logo_cni_neg.png") no-repeat center;
     background-size: 130px;
 }
 
 #logos table td.unf {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_unf.png") no-repeat center;
+    background: url("../images/logo_unf_neg.png") no-repeat center;
     background-size: 120px;
 }
 
@@ -488,7 +488,7 @@ table {
 #logos table td.unimanchester {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_unimanchester.png") no-repeat center;
+    background: url("../images/logo_unimanchester_neg.png") no-repeat center;
     background-size: 130px;
 }
 
