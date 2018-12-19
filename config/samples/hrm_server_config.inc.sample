@@ -131,6 +131,10 @@ $decompressBin['tgz'] = "cd %DEST% \n /usr/bin/tar xzf ";
 $decompressBin['tar'] = "cd %DEST% \n /usr//bin/tar xf ";
 $decompressBin['tar.gz'] = "cd %DEST% \n /usr/bin/tar xzf ";
 
+// Default output file format.
+// One of: 'ics', 'ics2', 'hdf5', 'r3d', 'ome'.
+$default_output_format = "ics";
+
 //==============================================================================
 // HRM configuration parameters
 //==============================================================================
