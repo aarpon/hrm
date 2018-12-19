@@ -1671,10 +1671,6 @@ class HuygensTemplate
             }
         }
 
-        if (strstr($micrType, 'detector-array')) {
-            $micrType = 'arrDetConf';
-        }
-
         return $micrType;
     }
 

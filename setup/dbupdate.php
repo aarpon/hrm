@@ -5818,7 +5818,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "MicroscopeType";
     $record["value"] = "array detector confocal";
-    $record["translation"] = "detector-array";
+    $record["translation"] = "arrDetConf";
     $record["isDefault"] = "f";
     $record["parameter_key"] = "MicroscopeType9";
 
