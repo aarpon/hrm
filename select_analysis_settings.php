@@ -414,6 +414,9 @@ if (!$_SESSION['user']->isAdmin()) {
 
         <div id="<?php echo "actions" . $divState; ?>"
              class="taskselection">
+          <label id="actions">
+                Template actions:
+          </label>             
           <table id="actions">
              <tr>
                 <td class="button">

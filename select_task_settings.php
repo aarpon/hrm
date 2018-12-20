@@ -151,7 +151,7 @@ else if ( isset($_POST['annihilate']) &&
 }
 else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
   if (!isset($_POST['task_setting'])) {
-    $message = "Please select a restoration template";
+    $message = "Please select a template from \"Your restoration templates\".";
   }
   else {
     $_SESSION['task_setting'] =
@@ -448,6 +448,9 @@ else {
             <div id="upMsg"></div>
             <div id="actions"
                  class="taskselection">
+                 <label id="actions">
+                    Template actions:
+                 </label>
                  <table id="actions">
                   <tr>
                     <td class="button">

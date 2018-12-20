@@ -336,7 +336,7 @@ table {
 
 #content_disabled {
     float: left;
-    width: 480px;
+    width: 580px;
     text-align: left;
     margin: 0;
     padding: 0 15px 0 15px;
@@ -658,30 +658,30 @@ input.apply {
 
 #actions {
     text-align: center;
-    font-size: 70%;
-    padding: 5px 0 0 0;
+    font-size: 80%;
+    padding: 20px 0 0 0;
 }
 
 #actions label {
     display: block;
-    margin-top: 20px;
+    text-align: center;
+    font-size: 100%;
     margin-bottom: 20px;
-    padding-left: 5px;
 }
 
 #actions_disabled {
     opacity: 0.4;
     filter: alpha(opacity=40);
     text-align: center;
-    font-size: 70%;
-    padding: 5px 0 0 0;
+    font-size: 80%;
+    padding: 20px 0 0 0;
 }
 
 #actions_disabled label {
     display: block;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    padding-left: 5px;
+    text-align: center;
+    font-size: 100%;
+    margin-bottom: 20px;    
 }
 
 #actions table {

@@ -192,7 +192,7 @@ if (isset($_POST['copy_public'])) {
 } else if (isset($_POST['OK']) && $_POST['OK'] == "OK") {
 
     if (!isset($_POST['setting'])) {
-        $message = "Please select an image template";
+        $message  = "Please select a template from \"Your image templates\".";        
     } else {
         $_SESSION['setting'] = $_SESSION['editor']->loadSelectedSetting();
         $_SESSION['setting']->parameter("ImageFileFormat")->setValue($fileFormat);
@@ -500,8 +500,11 @@ if (!$_SESSION['user']->isAdmin()) {
             $validFiles = $_SESSION['fileserver']->selectedFiles();
         }
         ?>
-        <div id="upMsg"></div>
-        <div id="actions" class="parameterselection">
+        <div id="upMsg"></div>        
+        <div id="actions" class="parameterselection">    
+           <label id="actions">
+                Template actions:
+           </label>                    
            <table id="actions">
               <tr>
                 <td class="button">
