@@ -191,6 +191,10 @@ $imageProcessingIsOnQueueManager = true;
 // If true the images are copied to the huygens server machine
 $copy_images_to_huygens_server = false;
 
+// Minimum amount of free memory required from the processing machine 
+// to accept deconvolution jobs.
+$min_free_mem_launch_requirement = 0;  // In Mb.
+
 // Thumbnails require Huygens Core 3.3.2 or higher.
 
 // Notice that despite some script executions are relatively fast (like

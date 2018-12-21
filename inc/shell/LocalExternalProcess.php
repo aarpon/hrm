@@ -166,4 +166,29 @@ class LocalExternalProcess extends ExternalProcess
         return True;
     }
 
+    /**
+     * Queries the OS for the amount of free memory currently available.
+     * @return int The amount of free memory in MB. -1 when unknown.
+     */
+    public function getFreeMem()
+    {
+        // Initialize with unknown free memory. 
+        $freeMem = -1;
+        
+        // Build a command to inquire 'free' about the total free memory available.        
+        $cmd = "free -m | awk '/Mem:/ {print $7}'";            
+
+        // We don't use the HRM 'execute' utility because it doesn't
+        // return results.
+        exec($cmd, $result);
+
+        // Check if the result is consistent.
+        if (array_key_exists(0, $result)) {
+            if (is_numeric($result[0])) {
+                $freeMem = $result[0];
+            }
+        }
+
+        return $freeMem;        
+    }
 }
