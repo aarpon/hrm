@@ -61,7 +61,7 @@ if (isset($_POST['create'])) {
         if ($job->addJob()) {
             $_SESSION['jobcreated'] = True;
             $_SESSION['numberjobadded'] = count($job->files());
-            header("Location: " . "job_queue.php");
+            header("Location: " . "home.php");
             exit();
         } else {
             $message = $job->message();
