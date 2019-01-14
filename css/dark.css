@@ -757,6 +757,7 @@ input.apply {
 #login .button {
     font-weight: normal;
     background-color: white;
+    color: black;
     border: thin solid #5294e2;
     margin: 2px;
     text-align: center;
