@@ -5772,19 +5772,6 @@ if ($current_revision < $n) {
         return false;
     }
 
-    // Update the upper limit for the number of iterations in the boundary_values table
-    $tabname = "boundary_values";
-    $record = array(
-        "max" => "500"
-    );
-    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter='NumberOfIterations'")) {
-        $msg = "Could not update the upper limit for the number of iterations in $tabname.";
-        write_message($msg);
-        write_to_error($msg);
-        return false;
-    }
-
-
     // ------- Add Rescan microscopy. ------
 
     $tabname = "possible_values";
