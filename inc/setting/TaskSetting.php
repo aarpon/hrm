@@ -558,6 +558,25 @@ class TaskSetting extends Setting
 
 
     /**
+     * Checks whether the restoration should allow for array reduction.
+     * @param ParameterSetting $paramSetting An instance of the ParameterSetting
+     * class (ignored).
+     * @return bool True to enable array reduction, false otherwise.
+     */
+    public function isEligibleForArrayReduction(ParameterSetting $paramSetting)
+    {
+        if (!$paramSetting->isArrDetConf()) {
+            return FALSE;
+        }
+        if (!System::hasLicense("detector-array")) {
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+
+    /**
      * Get the list of templates shared with the given user.
      * @param string $username Name of the user to query for.
      * @return array List of shared templates with the user.

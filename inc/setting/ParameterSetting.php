@@ -2127,6 +2127,17 @@ class ParameterSetting extends Setting {
         return ($value === 'SPIM');
     }
 
+    /**
+     * Checks whether the currently selected microscope type is array detector confocal.
+     * @return bool True if the currently selected microscope type is array detector
+     * confocal, false otherwise.
+    */
+    public function isArrDetConf() {
+        /** @var MicroscopeType $parameter */
+        $parameter = $this->parameter('MicroscopeType');
+        $value = $parameter->value();
+        return ($value === 'array detector confocal');
+    }
 
     /**
      * Checks whether the currently selected microscope type is spinning

@@ -490,6 +490,11 @@ for ($j = 1; $j <= 4; $j++) {
         </div> <!-- Autocrop -->
 
         <div id="ArrayDetectorReductionMode">
+        <?php
+            if ($_SESSION['user']->isAdmin()
+               || $_SESSION['task_setting']->isEligibleForArrayReduction($_SESSION['setting'])) {
+
+            ?>
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('arrayDetectorReductionMode');">
 
@@ -533,6 +538,15 @@ for ($j = 1; $j <= 4; $j++) {
                     ?>
 
                 </select>
+
+            <?php
+            } else {
+                 $_SESSION['task_setting']->parameter("ArrayDetectorReductionMode")->setValue('all');
+            ?>
+                 <input name="ArrayDetectorReductionMode" type="hidden" value="all">
+            <?php
+            }
+            ?>
         </div> <!-- ArrayDetectorReductionMode -->
 
         <!-- background mode -->
