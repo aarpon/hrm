@@ -43,7 +43,7 @@ ksort($chromaticArray);
  **************************************************************************** */
 $postErrors = 0;
 if ($_SESSION['user']->isAdmin()
-    || $_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
+    || $_SESSION['task_setting']->isEligibleForCAC()) {
    if (!$_SESSION['task_setting']->checkPostedChromaticAberrationParameters($_POST)) {
      $postErrors++;
    }
@@ -121,7 +121,7 @@ include("header.inc.php");
     <form method="post" action="" id="select">
 <?php
 if ($_SESSION['user']->isAdmin()
-    || $_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
+    || $_SESSION['task_setting']->isEligibleForCAC()) {
 ?>
     <div id="ChromaticAberration">
         <fieldset class="setting provided"

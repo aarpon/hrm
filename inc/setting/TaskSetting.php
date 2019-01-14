@@ -538,13 +538,10 @@ class TaskSetting extends Setting
 
 
     /**
-     * Checks whether the restoration should allow for CAC.
-     * @param ParameterSetting $paramSetting An instance of the ParameterSetting
-     * class (ignored).
-     * @return bool True to enable CAC, false otherwise.
-     * @todo Why is this taking a ParameterSetting as an input?
+     * Checks whether the restoration should allow for CAC.    
+     * @return bool True to enable CAC, false otherwise.     
      */
-    public function isEligibleForCAC(ParameterSetting $paramSetting)
+    public function isEligibleForCAC()
     {
         if ($this->numberOfChannels() == 1) {
             return FALSE;

@@ -63,7 +63,7 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
 
 if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
     if ($_SESSION['user']->isAdmin()
-    || $_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])
+    || $_SESSION['task_setting']->isEligibleForCAC()
     || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
         header("Location: " . "post_processing.php");
         exit();
@@ -825,7 +825,7 @@ for ($j = 1; $j <= 4; $j++) {
             <?php
             /* Don't proceed to the post processing page. */
             if ($_SESSION['user']->isAdmin()
-            || $_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])
+            || $_SESSION['task_setting']->isEligibleForCAC()
             || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
                 ?>
                 <input type="submit" value="" class="icon next"
