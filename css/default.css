@@ -747,6 +747,7 @@ input.apply {
 #login input.textfield {
     width: 80px;
     text-align: center;
+    color: black;
 }
 
 #login .button {
