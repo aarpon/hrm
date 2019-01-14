@@ -1807,7 +1807,7 @@ class Fileserver
      */
     public function previewPage($file, $op = "close", $mode = "MIP", $size = 400)
     {
-        global $allowHttpTransfer, $switch_to_dark_mode;
+        global $allowHttpTransfer;
 
         $file = stripslashes($file);
 
@@ -1816,13 +1816,6 @@ class Fileserver
 
         /* All job previews share a common root name and relative path. */
         $this->previewBase = $file;
-
-        /* Page theme */
-        if ($switch_to_dark_mode == true) {
-            $theme = "dark";
-        } else {
-            $theme = "default";
-        }
 
         echo ' <!DOCTYPE html>
           <html lang="en">
@@ -1836,9 +1829,11 @@ class Fileserver
         }
         echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
         echo '          <script type="text/javascript" src="scripts/common.js"></script>
-          <style type="text/css">
-              @import "css/' . $theme . '.css?v=3.6";
-          </style>
+
+        <!-- Main stylesheets -->
+        <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
+        <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
+
           </head>
           <body>
           <script type="text/javascript" src="./scripts/wz_tooltip/wz_tooltip.js"></script>
