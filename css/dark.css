@@ -453,7 +453,7 @@ table {
 #logos table td.bio-basel {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_biozentrum.png") no-repeat center;
+    background: url("../images/logo_biozentrum_neg.png") no-repeat center;
     background-size: 130px;
 }
 
