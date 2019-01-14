@@ -489,7 +489,7 @@ class UserManager
         // If there are jobs in the queue for the user, we do not delete
         $sql = "SELECT id FROM job_queue WHERE username=?;";
         $result = $db->connection()->Execute($sql, array($username));
-        if ($result != false) {
+        if ($result->EOF == false) {
             return false;
         }
 
