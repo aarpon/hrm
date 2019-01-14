@@ -560,7 +560,7 @@ class TaskSetting extends Setting
     /**
      * Checks whether the restoration should allow for array reduction.
      * @param ParameterSetting $paramSetting An instance of the ParameterSetting
-     * class (ignored).
+     * class.
      * @return bool True to enable array reduction, false otherwise.
      */
     public function isEligibleForArrayReduction(ParameterSetting $paramSetting)
