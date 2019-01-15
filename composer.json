@@ -31,6 +31,10 @@
     {
       "name": "Olivier Burri",
       "email": "olivier.burri@epfl.ch"
+    },
+    {
+      "name": "Egor Zindy",
+      "email": "egor.zindy@manchester.ac.uk"
     }
   ],
   "minimum-stability": "stable",
