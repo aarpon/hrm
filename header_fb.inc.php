@@ -35,6 +35,9 @@ if (Util::using_IE()) {
     <link rel="stylesheet" type="text/css" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
     <link rel="stylesheet" type="text/css" href="scripts/fineuploader/fine-uploader-new.css">
 
+    <!-- Theming support -->
+    <script type="text/javascript" src="scripts/theming.js"></script>
+
     <!-- Main stylesheets -->
     <link rel="stylesheet" type="text/css" href="css/custom_fineuploader_dark.css?v=3.6" title="dark"> <!-- Default -->
     <link rel="alternate stylesheet" type="text/css" href="css/custom_fineuploader.css?v=3.6" title="light">
@@ -167,54 +170,8 @@ if (isset($generatedScript)) {
     <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
 
     <script>
-        function switch_style(css_title)
-        {
-            // Get links in <head>
-            var links = $("head").find("link");
-            //var links = $('head link[rel="stylesheet"]');
-
-            $.each(links, function( key, value ) {
-                if (value.rel.indexOf("stylesheet") !== -1 &&
-                    (value.title.toLowerCase() === "dark" ||
-                        value.title.toLowerCase() === "light")) {
-
-                    // Disable stylesheet
-                    value.disabled = true;
-                    value.rel = "alternate stylesheet";
-
-                    // Enable the selected one
-                    if (value.title.toLowerCase() === css_title) {
-
-                        // Enable selected stylesheet
-                        value.disabled = false;
-                        value.rel = "stylesheet";
-
-                        // Store selection in the session storage
-                        localStorage.setItem('user_hrm_theme', css_title);
-                    }
-                }
-            });
-        }
-    </script>
-
-    <script>
-
-        <!-- Enable the correct CSS -->
-
-        // Retrieve stored theme
-        var css_title = localStorage.getItem('user_hrm_theme');
-        if (null === css_title) {
-
-            // Set to default
-            css_title = "dark";
-
-            // Store default in the session storage
-            localStorage.setItem('user_hrm_theme', css_title);
-        }
-
-        // Apply it
-        switch_style(css_title);
-
+        <!-- Apply the theme -->
+        apply_stored_or_default_theme();
     </script>
 
     <!--[if lt IE 9]>

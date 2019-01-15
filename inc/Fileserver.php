@@ -1581,7 +1581,7 @@ class Fileserver
 
         return
             "imgPrev('" . rawurlencode($file) . "', $mode, " .
-            (int)$genThumbnails . ", $compare, $index, '$dir', "   .
+            (int)$genThumbnails . ", $compare, $index, '$dir', " .
             "'$referer', $data)";
     }
 
@@ -1830,63 +1830,20 @@ class Fileserver
         echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
         echo '          <script type="text/javascript" src="scripts/common.js"></script>
 
+        <!-- Theming support -->
+        <script type="text/javascript" src="scripts/theming.js"></script>
+
         <!-- Main stylesheets -->
         <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
         <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
 
-    <!-- Include jQuery -->
-    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
+        <!-- Include jQuery -->
+        <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
 
-    <script>
-        function switch_style(css_title)
-        {
-            // Get links in <head>
-            var links = $("head").find("link");
-            //var links = $(\'head link[rel="stylesheet"]\');
-
-            $.each(links, function( key, value ) {
-                if (value.rel.indexOf("stylesheet") !== -1 &&
-                    (value.title.toLowerCase() === "dark" ||
-                        value.title.toLowerCase() === "light")) {
-
-                    // Disable stylesheet
-                    value.disabled = true;
-                    value.rel = "alternate stylesheet";
-
-                    // Enable the selected one
-                    if (value.title.toLowerCase() === css_title) {
-
-                        // Enable selected stylesheet
-                        value.disabled = false;
-                        value.rel = "stylesheet";
-
-                        // Store selection in the session storage
-                        localStorage.setItem(\'user_hrm_theme\', css_title);
-                    }
-                }
-            });
-        }
-    </script>
-
-    <script>
-
-        <!-- Enable the correct CSS -->
-
-        // Retrieve stored theme
-        var css_title = localStorage.getItem(\'user_hrm_theme\');
-        if (null === css_title) {
-
-            // Set to default
-            css_title = "dark";
-
-            // Store default in the session storage
-            localStorage.setItem(\'user_hrm_theme\', css_title);
-        }
-
-        // Apply it
-        switch_style(css_title);
-
-    </script>
+        <script>
+            <!-- Apply the theme -->
+            apply_stored_or_default_theme();
+        </script>
 
           </head>
           <body>
@@ -1902,7 +1859,7 @@ class Fileserver
         echo '
       <div id="basket"> <!--basket-->
       <div id="title">
-      <h1>' . $sourceFilename .'</h1>
+      <h1>' . $sourceFilename . '</h1>
       </div>';
 
         $pdest = $this->destinationFolder();
@@ -4171,7 +4128,8 @@ class Fileserver
         }
     }
 
-    private function getSourceFileNameForResult($filename) {
+    private function getSourceFileNameForResult($filename)
+    {
 
         // Remove the extension
         $pos = strrpos($filename, '_hrm.');
