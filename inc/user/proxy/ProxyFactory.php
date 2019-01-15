@@ -114,6 +114,7 @@ class ProxyFactory {
      * mode is specified, return the default authenticator.
      * @param string $username Name of the User to query.
      * @return DatabaseProxy|ActiveDirectoryProxy|LDAPProxy Proxy.
+     * @throws \Exception If the authentication mode is not recognized.
      */
     public static function getProxy($username)
     {
@@ -147,6 +148,7 @@ class ProxyFactory {
     /**
      * Get the default proxy from the configuration files.
      * @return AbstractProxy Proxy.
+     * @throws \Exception If the authentication mode is not recognized.
      */
     public static function getDefaultProxy()
     {

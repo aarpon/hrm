@@ -259,7 +259,7 @@ class DatabaseProxy extends AbstractProxy {
      * @throws \Exception if the method is not reimplemented.
      */
     public function markPasswordReset($username) {
-        throw new \Exception("Reimplement this method!");
+        throw new \Exception("Re-implement this method!");
     }
 
 };

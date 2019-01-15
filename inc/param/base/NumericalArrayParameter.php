@@ -148,13 +148,17 @@ class NumericalArrayParameter extends NumericalParameter
         $db = new DatabaseConnection;
         $maxChanCnt = $db->getMaxChanCnt();
 
-        $n = count($value);
-        for ($i = 0; $i < $maxChanCnt; $i++) {
-            if ($i < $n) {
-                $this->value[$i] = $value[$i];
-            } else {
-                $this->value[$i] = null;
+        if (is_array($value)) {
+            $n = count($value);
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                if ($i < $n) {
+                    $this->value[$i] = $value[$i];
+                } else {
+                    $this->value[$i] = null;
+                }
             }
+        } else {
+            $this->value = array($value);
         }
     }
 

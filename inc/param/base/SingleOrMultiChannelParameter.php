@@ -121,7 +121,7 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
 
     /**
      * Returns the internal possible values of the SingleOrMultiChannelParameter
-     * @return string The internal possible values of the Parameter, which are
+     * @return array The internal possible values of the Parameter, which are
      * the <b>checked</b> values with the prefix prepended.
     */
     public function internalPossibleValues() {

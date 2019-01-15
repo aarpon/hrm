@@ -70,6 +70,12 @@ class QueueManager
     private $nping;
 
     /**
+     * List of running Jobs.
+     * @var array
+     */
+    private $runningJobs;
+
+    /**
      * QueueManager constructor.
      */
     public function __construct()
@@ -126,7 +132,7 @@ class QueueManager
 
         $server = $this->freeServer;
         // server name without proc number
-        $s = split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
         $desc = $job->description();
         $clientTemplatePath = $desc->sourceFolder();
@@ -285,7 +291,7 @@ class QueueManager
             $psf = $parameterSetting->parameter('PSF');
             $values = $psf->value();
             foreach ($values as $value) {
-                $path = split("/", $value);
+                $path = explode("/", $value);
                 if (sizeof($path) > 0) {
                     for ($i = 0; $i < sizeof($path) - 1; $i++) {
                         $batch .= "-mkdir \"" . $path[$i] . "\"\n";
@@ -296,7 +302,7 @@ class QueueManager
                     $image_source . "/" . $value;
                 if (stristr($filename, ".ics")) {
                     $batch .= "put \"" . $filename . "\"\n";
-                    $filename = eregi_replace(".ics", ".ids", $filename);
+                    $filename = preg_replace("/.ics/", ".ids", $filename);
                     $batch .= "put \"" . $filename . "\"\n";
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
@@ -332,7 +338,7 @@ class QueueManager
 
         // Now copy the files
         foreach ($files as $file) {
-            $path = split("/", $file);
+            $path = explode("/", $file);
             if (sizeof($path) > 0) {
                 for ($i = 0; $i < sizeof($path) - 1; $i++) {
                     $batch .= "-mkdir \"" . $path[$i] . "\"\n";
@@ -447,7 +453,7 @@ class QueueManager
         Log::warning("cleaning up file server");
         $server = $job->server();
         // server name without proc number
-        $s = split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
         $desc = $job->description();
         $user = $desc->owner();
@@ -516,6 +522,54 @@ class QueueManager
         $proc->release();
 
         return $isReachable;
+    }
+
+    /**
+     * Checks whether the processing server has enough free memory according
+     * to the limits set in the configuration files.
+     * @param string $server The server's name.
+     * @param string $outLog A string specific of the output log file name.
+     * @param string $errLog A string specific of the error log file name.
+     * @return bool True on enough memory, false otherwise.
+     */
+    private function hasProcessingServerEnoughFreeMem($server,
+                                                      $outLog = NULL,
+                                                      $errLog = NULL)
+    {        
+        global $min_free_mem_launch_requirement;
+        
+        /* Initialize. */ 
+        $hasEnoughFreeMem = True;
+
+        /* Sanity checks. */
+        if (!isset($min_free_mem_launch_requirement) 
+            || !is_numeric($min_free_mem_launch_requirement)) {
+                $min_free_mem_launch_requirement = 0;
+        }
+        if ($outLog) {
+            $outLog .= "_";
+        }
+        if ($errLog) {
+            $errLog .= "_";
+        }
+
+        $proc = ExternalProcessFactory::getExternalProcess($server,
+            $server . $outLog . "_out.txt",
+            $server . $errLog . "_error.txt");        
+
+        $isReachable = $proc->ping();
+
+        if ($isReachable) {
+            $freeMem = $proc->getFreeMem();
+            if (is_numeric($freeMem) && $freeMem > 0
+                && $freeMem < $min_free_mem_launch_requirement) {
+                $hasEnoughFreeMem = False;
+            }
+        }
+
+        $proc->release();
+
+        return $hasEnoughFreeMem;
     }
 
     /**
@@ -870,10 +924,12 @@ class QueueManager
             if ($status == 'free') {
 
                 if ($this->isProcessingServerReachable($server)) {
-                    $this->nping[$server] = 0;
-                    $this->freeServer = $server;
-                    $this->freeGpu = $db->getGPUID($server);
-                    return True;
+                    if ($this->hasProcessingServerEnoughFreeMem($server)) {
+                        $this->nping[$server] = 0;
+                        $this->freeServer = $server;
+                        $this->freeGpu = $db->getGPUID($server);
+                        return True;
+                    }
                 } else {
                     $this->incNPing($server);
                     if ($this->nping[$server] == 40) {

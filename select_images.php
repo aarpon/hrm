@@ -76,7 +76,7 @@ if (isset($_POST['down'])) {
         header("Location: " . "select_parameter_settings.php");
         exit();
     }
-} else if ($_SESSION['fileserver'] == null) {
+} else if (!isset($_SESSION['fileserver']) || $_SESSION['fileserver'] == null) {
     // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
     $_SESSION['fileserver'] = new Fileserver($name);
     $_SESSION['autoseries'] = "TRUE";
@@ -162,7 +162,7 @@ function imageAction (list) {
 
     index = parseInt(list[n].value)
     filename = list[n].text
-    imgPrev(filename, 0, 1, 0, index, 'src', '', 1);
+    ajaxGetImgPreview(filename, index, 'src');    
 };
 ";
 }

@@ -175,9 +175,9 @@ if ($nyquist === false) {
         "previous pages. You can use the online Nyquist calculator instead.";
 } else {
     $NyquistMessage = "Calculated from current optical parameters, the " .
-        "(Nyquist) ideal pixel size is <span style=\"background-color:yellow\">" .
+        "(Nyquist) ideal pixel size is <span class=\"highlight\">" .
         $nyquist[0] . " nm</span> " .
-        "and the ideal z-step is <span style=\"background-color:yellow\">" .
+        "and the ideal z-step is <span class=\"highlight\">" .
         $nyquist[1] . " nm</span>.";
 }
 

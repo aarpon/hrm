@@ -194,7 +194,7 @@ class ExternalProcess
             $answer = system("ssh $huygens_user" . '@' . $this->host . " '" .
                 "ps -Alfd | sort | grep sshd | grep $huygens_user" . "'",
                 $result);
-            $array = split('[ ]+', $answer);
+            $array = preg_split('/[ ]+/', $answer);
             $pid = $array[3];
             $answer = system("ssh $huygens_user" . '@' . $this->host . " '" .
                 "kill $pid" . "'", $result);
@@ -435,10 +435,14 @@ class ExternalProcess
         }
 
         // Kill the parent.
-        $noParent = posix_kill($pid, 15);
+        $noParent = posix_kill($pid, SIGKILL);
 
         if ($noParent == False) {
             Log::error('Failed killing parent process.');
+            
+            //Good to report, but does that mean the parent cannot be killed or is already dead?
+            //TODO make a better test
+            $noParent = True;
         }
 
         return ($noParent && $noChild);
@@ -461,7 +465,7 @@ class ExternalProcess
             if (array_key_exists(0, $child)) {
                 $childPid = $child[0];
                 if ($childPid > 0) {
-                    $dead = posix_kill($childPid, 15);
+                    $dead = posix_kill($childPid, SIGKILL);
                 } else {
                     $dead = true;
                 }
@@ -473,6 +477,37 @@ class ExternalProcess
         }
 
         return $dead;
+    }
+
+    /**
+     * Queries the OS for the amount of free memory currently available.
+     * @return int The amount of free memory in MB. -1 when unknown.
+     */
+    public function getFreeMem()
+    {
+        global $huygens_user;
+
+        // Initialize with unknown free memory.
+        $freeMem = -1;
+
+        // Build a command to inquire 'free' about the total free memory available.        
+        $cmd = "free -m | awk '/Mem:/ {print $7}'";
+
+        // Create a command to be executed remotely.
+        $cmd = "ssh " . $huygens_user . "@" . $this->host . " " . "'$cmd'";
+
+        // We don't use the HRM 'execute' utility because it doesn't
+        // return results.
+        exec($cmd, $result);
+
+        // Check if the result is consistent.
+        if (array_key_exists(0, $result)) {
+            if (is_numeric($result[0])) {
+                $freeMem = $result[0];
+            }
+        }
+
+        return $freeMem;
     }
 
 }

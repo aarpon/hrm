@@ -42,12 +42,14 @@ ksort($chromaticArray);
  *
  **************************************************************************** */
 $postErrors = 0;
-if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
+if ($_SESSION['user']->isAdmin()
+    || $_SESSION['task_setting']->isEligibleForCAC()) {
    if (!$_SESSION['task_setting']->checkPostedChromaticAberrationParameters($_POST)) {
      $postErrors++;
    }
 }
-if ($_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+if ($_SESSION['user']->isAdmin()
+    || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
    if (!$_SESSION['task_setting']->checkPostedTStabilizationParameters($_POST)) {
      $postErrors++;
    }
@@ -118,7 +120,8 @@ include("header.inc.php");
     
     <form method="post" action="" id="select">
 <?php
-if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
+if ($_SESSION['user']->isAdmin()
+    || $_SESSION['task_setting']->isEligibleForCAC()) {
 ?>
     <div id="ChromaticAberration">
         <fieldset class="setting provided"
@@ -211,7 +214,8 @@ if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
               TIME STABILIZATION
         */
 
-if ($_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+if ($_SESSION['user']->isAdmin()
+  || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
         ?>
 
     <div id="TimeStabilization">

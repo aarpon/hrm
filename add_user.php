@@ -3,10 +3,15 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Mail;
+use hrm\Nav;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserConstants;
 use hrm\user\UserManager;
+use hrm\Util;
 use hrm\Validator;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
+
 
 // Settings
 global $hrm_url, $image_folder, $image_host, $email_sender, $userManagerScript;
@@ -23,17 +28,6 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 $message = "";
 
 $added = False;
-
-/*
- *
- * SANITIZE INPUT
- *   We check the relevant contents of $_POST for validity and store them in
- *   a new array $clean that we will use in the rest of the code.
- *
- *   After this step, only the $clean array and no longer the $_POST array
- *   should be used!
- *
- */
 
 // Here we store the cleaned variables
 $clean = array(
@@ -81,7 +75,6 @@ if (isset($_POST["inform"]) && $_POST["inform"] == "Yes") {
  * END OF SANITIZE INPUT
  *
  */
-
 // Add the user
 if (isset($_POST['add'])) {
 
@@ -105,8 +98,7 @@ if (isset($_POST['add'])) {
             $password = UserManager::generateRandomPlainPassword();
             $result = UserManager::createUser($clean["username"],
                 $password, $clean["email"], $clean["group"], $institution_id,
-                ProxyFactory::getDefaultAuthenticationMode(),
-                UserConstants::ROLE_USER, UserConstants::STATUS_ACTIVE);
+                $clean["authMode"], UserConstants::ROLE_USER, UserConstants::STATUS_ACTIVE);
 
             // TODO refactor
             if ($result) {
@@ -140,136 +132,161 @@ if (isset($_POST['add'])) {
     }
 }
 
+include("header.inc.php");
+
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<!--
+  Tooltips
+-->
+<span class="toolTip" id="ttSpanCancel">Cancel and return to user management.</span>
+<span class="toolTip" id="ttSpanSave">Add the user.</span>
 
-<head>
-    <meta charset="utf-8">
-    <title>Huygens Remote Manager</title>
-    <script type="text/javascript">
-        <!--
-        <?php
+<div id="nav">
+    <div id="navleft">
+        <ul>
+            <?php
+            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpUserManagement'));
+            ?>
+        </ul>
+    </div>
+    <div id="navright">
+        <ul>
+            <?php
+            echo(Nav::textUser($_SESSION['user']->name()));
+            echo(Nav::linkHome(Util::getThisPageName()));
+            ?>
+        </ul>
+    </div>
+    <div class="clear"></div>
+</div>
 
-        if ($added) echo "        var added = true;\n";
-        else echo "        var added = false;\n";
 
-        ?>
-        -->
-    </script>
-    <style type="text/css">
-        @import "css/default.css?v=3.5";
-    </style>
-</head>
+<div id="content">
 
-<body<?php if ($added) echo " onload=\"parent.report()\"" ?>>
-
-<div>
+    <h3>Add user</h3>
 
     <form method="post" action="">
 
-            <fieldset>
+        <fieldset>
 
-                <legend>New account details</legend>
+            <legend>New account details</legend>
 
-                <div id="adduser">
+            <div id="adduser">
 
-                    <div id="notice">
-                        <?php echo "$message"; ?>
-                    </div>
+                <p>Default authentication mechanism
+                    is <?php echo(ProxyFactory::getDefaultProxy()->friendlyName()); ?>.</p>
 
-                    <p>Default authentication mechanism
-                        is <?php echo(ProxyFactory::getDefaultProxy()->friendlyName()); ?>.</p>
+                <label for="username">Username: </label>
+                <input type="text"
+                       name="username"
+                       id="username"
+                       value=""
+                       class=""/>
 
-                    <label for="username">Username: </label>
-                    <input type="text"
-                           name="username"
-                           id="username"
-                           value=""
-                           class=""/>
+                <br/>
 
-                    <br/>
+                <label for="email">E-mail address: </label>
+                <input type="text"
+                       name="email"
+                       id="email"
+                       value=""
+                       class=""/>
 
-                    <label for="email">E-mail address: </label>
-                    <input type="text"
-                           name="email"
-                           id="email"
-                           value=""
-                           class=""/>
+                <br/>
 
-                    <br/>
+                <label for="group">Research group: </label>
+                <input type="text"
+                       name="group"
+                       id="group"
+                       value=""
+                       class=""/>
 
-                    <label for="group">Research group: </label>
-                    <input type="text"
-                           name="group"
-                           id="group"
-                           value=""
-                           class=""/>
-
-                    <br/>
+                <br/>
 
 
-                    <br/>
+                <br/>
 
-                    <select name="authMode"
-                            id="authMode"
-                            title="Authentication mode"
-                            class="selection">
+                <select name="authMode"
+                        id="authMode"
+                        title="Authentication mode"
+                        class="selection">
 
-                        <?php
+                    <?php
 
-                        // Retrieve all configured authentication modes
-                        $allAuthMap = ProxyFactory::getAllConfiguredAuthenticationModes();
+                    // Retrieve all configured authentication modes
+                    $allAuthMap = ProxyFactory::getAllConfiguredAuthenticationModes();
 
-                        // Get default authentication mode
-                        $defaultAuthMode = ProxyFactory::getDefaultAuthenticationMode();
+                    // Get default authentication mode
+                    $defaultAuthMode = ProxyFactory::getDefaultAuthenticationMode();
 
-                        $auth_keys = array_keys($allAuthMap);
-                        for ($i = 0; $i < count($allAuthMap); $i++) {
-                            $value = $auth_keys[$i];
-                            $text = $allAuthMap[$value];
-                            if ($defaultAuthMode == $value) {
-                                $selected = "selected";
-                            } else {
-                                $selected = "";
-                            }
-                            echo("<option value='$value' $selected>$text</option>");
+                    $auth_keys = array_keys($allAuthMap);
+                    for ($i = 0; $i < count($allAuthMap); $i++) {
+                        $value = $auth_keys[$i];
+                        $text = $allAuthMap[$value];
+                        if ($defaultAuthMode == $value) {
+                            $selected = "selected";
+                        } else {
+                            $selected = "";
                         }
+                        echo("<option value='$value' $selected>$text</option>");
+                    }
 
-                        ?>
-                    </select>
+                    ?>
+                </select>
 
-                </div>
-
-                <p>
-
-                    <input title="Send an e-mail to the user"
-                           type="checkbox"
-                           name="inform"
-                           id="inform"
-                           value='Yes'/>Send an e-mail to the user on creation?
-                </p>
-
-                <input name="add"
-                       type="submit"
-                       value="add"
-                       class="button"/>
-
-            </fieldset>
-
-            <br/>
-
-            <div>
-                <input type="button"
-                       value="close"
-                       onclick="window.close();"/>
             </div>
+
+            <p>
+
+                <input title="Send an e-mail to the user"
+                       type="checkbox"
+                       name="inform"
+                       id="inform"
+                       value='Yes'/>Send an e-mail to the user on creation?
+            </p>
+
+      <div id="controls">
+            <input type="submit" name="add" value="add"
+                   class="icon save"
+                   onmouseover="TagToTip('ttSpanSave')"
+                   onmouseout="UnTip()" />
+            <input type="button" name="cancel" value="cancel"
+                   class="icon cancel"
+                   onmouseover="TagToTip('ttSpanCancel')"
+                   onmouseout="UnTip()"
+                   onclick="document.location.href='user_management.php'"/>
+        </div>
+
+        </fieldset>
 
     </form>
 
-</div>
+</div> <!-- content -->
 
-</body>
+<div id="rightpanel">
 
-</html>
+    <div id="info">
+
+        <h3>Quick help</h3>
+
+        <p>Add a new user to HRM. Please make sure to choose
+            the proper authentication mechanism.</p>
+
+    </div>
+
+    <div id="message">
+        <?php
+
+        echo "<p>$message</p>";
+
+        ?>
+    </div>
+
+</div>  <!-- rightpanel -->
+
+<?php
+
+include("footer.inc.php");
+
+?>

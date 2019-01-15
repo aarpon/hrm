@@ -102,7 +102,7 @@ class ChromaticAberration extends Parameter
      * @param int $chanCnt The number of channels.
      * @return string String representation of the Parameter.
      */
-    public function displayString($chanCnt)
+    public function displayString($chanCnt = 0)
     {
         $result = "";
 

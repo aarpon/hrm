@@ -24,9 +24,9 @@ window.helpText[ "snr" ] =
   'amplifying noise.</p>' +
   '<p>The different deconvolution algorithms have different requirements on ' +
   'the SNR parameter.</p>' +
-  '<p>For the <strong>CMLE and GMLE algorithms</strong>, you are asked to give a numerical ' +
-  'estimation of the SNR of your images. The SNR estimator can help you calculate ' +
-  'the SNR for your images.</p>' +
+  '<p>For the <strong>CMLE and GMLE algorithms</strong>, you are asked to give a ' +
+  'numericalestimation of the SNR of your images. The SNR estimator can help you ' +
+  'calculate the SNR for your images.</p>' +
   '<p>For the <strong>QMLE algorithm</strong>, only a coarser classification ' +
   'of the SNR is required.</p>';
  
@@ -41,7 +41,11 @@ window.helpText[ "stopcrit" ] =
   '<p>The first stopping criterium reached will stop the restoration. ' +
   'The quality change criterium may apply first and stop the iterations ' +
   'before the maximum number is reached: set the quality change to a low ' +
-  'value or zero if you want to make sure all the set iterations are run.</p>';
+  'value or zero if you want to make sure all the set iterations are run.</p>' +
+  '<p>Please notice that the maximum number of iterations is limited. If ' +
+  'you are using the CMLE algorithm and you feel like you would need more ' +
+  'iterations to converge to a solution, you might probably want to try ' +
+  'the GMLE algorithm instead.</p>';
 
 window.helpText[ "zstabilization" ] =
   '<p>Due to the high lateral resolution, <b>STED</b> image ' +
@@ -56,7 +60,30 @@ window.helpText[ "autocrop" ] =
   '<p>Huygens will automatically survey the image to find a reasonable ' +
   'proposal for the crop region. In computing this initial proposal the ' +
   'Microscopic Parameters are taken into account, making sure that ' +
-    'cropping will not have a negative impact on the deconvolution result.</p>';
+  'cropping will not have a negative impact on the deconvolution result.</p>';
+
+window.helpText[ "arrayDetectorReductionMode" ] =
+    '<p>The array detector reduction mode specifies which pixel reassignment method ' +
+    'to use in order to combine the data from all the detectors in the array. ' +
+    'Examples of such detectors are the Zeiss Airyscan and the SPAD detector, but ' +
+    'other generic, customized detector layouts can also be used.</p>' +
+    '<p>By selecting mode <b>all</b> the images ' +
+    'from all detectors are centered and combined, thus increasing the SNR. ' +
+    'The resulting, combined image is then deconvolved.</p> ' +
+    '<p>Mode <b>no</b> uses the input of ' +
+    'all detectors as separate inputs for the deconvolution.</p>' +
+    '<p>Modes <b>core all</b> and <b>core no</b> behave the same way as <b>all</b> and ' +
+    '<b>no</b> but use the core detectors only. These can be specially helpful when only ' +
+    'the core (central) detectors behave well or capture enough light. </p>' +
+    '<p>Mode <b>superXY</b> creates an image with double the samples in X ' +
+    'and Y. Thus, producing an image with 4 times more samples. '  +    
+    'This is a good option when dealing with images that have been acquired ' +
+    'well under the Nyquist rate.</p>' + 
+    '<p>Mode <b>superY</b> creates an image with 4 times as many samples in Y. ' +
+    'This is mostly useful when dealing with images ' +
+    'recorded with the Zeiss Airyscan in <b>fast mode</b>.</p>' +
+    '<p>Lastly, mode <b>auto</b> will fall back to one of the above mentioned modes ' +
+    'depending on the microscopic parameters and detector model of the image.</p>';  
 
 window.helpText[ "default" ] =
   '<p>On this page you specify the parameters for restoration.</p>' +

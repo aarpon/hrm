@@ -1,7 +1,7 @@
 {
   "name": "hrm/hrm",
   "description": "The Huygens Remote Manager is an easy to use interface to the Huygens Software by Scientific Volume Imaging B.V. that allows for multi-user, large-scale deconvolution and analysis",
-  "license": "GPL-2.0+",
+  "license": "CECILL-1.0",
   "keywords": [
     "deconvolution",
     "batch",
@@ -34,11 +34,17 @@
     }
   ],
   "minimum-stability": "stable",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/aarpon/php-traditional-server_old.git"
+    }
+  ],
   "require": {
     "php": ">5.5.0",
-    "adodb/adodb-php": "v5.20.7",
+    "adodb/adodb-php": "5.20.12",
     "adldap2/adldap2": "4.0.5",
-    "fineuploader/php-traditional-server": "1.0.1",
+    "aarpon/php-traditional-server_old": "1.0.2",
     "monolog/monolog": "1.19.0"
   },
   "require-dev": {

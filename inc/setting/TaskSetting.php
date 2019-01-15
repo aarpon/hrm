@@ -46,6 +46,7 @@ class TaskSetting extends Setting
             'MultiChannelOutput',
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
+            'ArrayDetectorReductionMode',
             'ZStabilization',
             'ChromaticAberration',
             'TStabilization',
@@ -265,6 +266,19 @@ class TaskSetting extends Setting
             }
         }
 
+        // ArrayDetectorReductionMode
+        if (isset($postedParameters["ArrayDetectorReductionMode"]) ||
+            $postedParameters["ArrayDetectorReductionMode"] == ''
+        ) {
+            $parameter = $this->parameter("ArrayDetectorReductionMode");
+            $parameter->setValue($postedParameters["ArrayDetectorReductionMode"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        }
+
         return $noErrorsFound;
     }
 
@@ -467,6 +481,9 @@ class TaskSetting extends Setting
             if ($parameter->name() == 'ChromaticAberration'
               && $numberOfChannels == 1)
                 continue;
+            if ($parameter->name() == 'ArrayDetectorReductionMode'
+              && !strstr($micrType, "array detector confocal"))
+                continue;
             $result = $result .
                 $parameter->displayString($numberOfChannels);
         }
@@ -521,18 +538,34 @@ class TaskSetting extends Setting
 
 
     /**
-     * Checks whether the restoration should allow for CAC.
-     * @param ParameterSetting $paramSetting An instance of the ParameterSetting
-     * class (ignored).
-     * @return bool True to enable CAC, false otherwise.
-     * @todo Why is this taking a ParameterSetting as an input?
+     * Checks whether the restoration should allow for CAC.    
+     * @return bool True to enable CAC, false otherwise.     
      */
-    public function isEligibleForCAC(ParameterSetting $paramSetting)
+    public function isEligibleForCAC()
     {
         if ($this->numberOfChannels() == 1) {
             return FALSE;
         }
         if (!System::hasLicense("chromaticS")) {
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+
+    /**
+     * Checks whether the restoration should allow for array reduction.
+     * @param ParameterSetting $paramSetting An instance of the ParameterSetting
+     * class.
+     * @return bool True to enable array reduction, false otherwise.
+     */
+    public function isEligibleForArrayReduction(ParameterSetting $paramSetting)
+    {
+        if (!$paramSetting->isArrDetConf()) {
+            return FALSE;
+        }
+        if (!System::hasLicense("detector-array")) {
             return FALSE;
         }
 
@@ -680,6 +713,19 @@ class TaskSetting extends Setting
                 }
             }
         }
+
+        // Array Detector Reduction Mode.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+                $key = "cmle:" . $chan . " reduceMode";
+            } 
+            if (strpos($huArray[$key], "") === FALSE) {
+                $reductionMode = $huArray[$key];          
+                $this->parameter('ArrayDetectorReductionMode')->setValue($reductionMode);
+                break;      
+            }
+        }
+        
 
         // Quality factor.
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {

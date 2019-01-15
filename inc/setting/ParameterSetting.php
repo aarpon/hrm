@@ -319,8 +319,51 @@ class ParameterSetting extends Setting {
         $names[array_search('EmissionWavelength', $names)] =
             'EmissionWavelength0';
 
-        // We handle multi-value parameters differently than single-valued ones
+        // Preliminary sanity checks.
+        if (isset($postedParameters['MicroscopeType'])
+          && $postedParameters['MicroscopeType'] != 'two photon') {
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                if (!isset($postedParameters["EmissionWavelength$i"])) {
+                    continue;
+                }             
+                if (!isset($postedParameters["ExcitationWavelength$i"])) {
+                    continue;
+                }             
+                if ($postedParameters["EmissionWavelength$i"] 
+                    < $postedParameters["ExcitationWavelength$i"]) {
+                    $noErrorsFound = false;                    
+                    $this->message  = "Impossible combination of wavelengths: ";
+                    $this->message .= "the emission wavelength is shorter ";
+                    $this->message .= "than the excitation wavelength in channel $i.";
+                    break;        
+                }
+            }            
+        }
+        if (isset($postedParameters['MicroscopeType'])
+          && $postedParameters['MicroscopeType'] == 'two photon') {
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                if (!isset($postedParameters["EmissionWavelength$i"])) {
+                    continue;
+                }             
+                if (!isset($postedParameters["ExcitationWavelength$i"])) {
+                    continue;
+                }             
+                if ($postedParameters["EmissionWavelength$i"] 
+                    > $postedParameters["ExcitationWavelength$i"]) {
+                    $noErrorsFound = false;
+                    $this->message  = "Impossible combination of wavelengths for a two photon ";
+                    $this->message .= "microscope: the emission wavelength is shorter ";
+                    $this->message .= "than the excitiation wavelength in channel $i.";
+                    break;        
+                }
+            }            
+        }
 
+        if (!$noErrorsFound) {
+            return $noErrorsFound;
+        }
+
+        // We handle multi-value parameters differently than single-valued ones
         // Excitation wavelengths
         for ($i = 0; $i < $maxChanCnt; $i++) {
             $value[$i] = null;
@@ -389,7 +432,7 @@ class ParameterSetting extends Setting {
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
-            }
+            }       
 
         } else {
 
@@ -2084,6 +2127,17 @@ class ParameterSetting extends Setting {
         return ($value === 'SPIM');
     }
 
+    /**
+     * Checks whether the currently selected microscope type is array detector confocal.
+     * @return bool True if the currently selected microscope type is array detector
+     * confocal, false otherwise.
+    */
+    public function isArrDetConf() {
+        /** @var MicroscopeType $parameter */
+        $parameter = $this->parameter('MicroscopeType');
+        $value = $parameter->value();
+        return ($value === 'array detector confocal');
+    }
 
     /**
      * Checks whether the currently selected microscope type is spinning

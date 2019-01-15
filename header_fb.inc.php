@@ -30,11 +30,17 @@ if (Util::using_IE()) {
     }
     echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
 ?>
-    <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
-    <link rel="stylesheet" href="css/jqtree-custom.css">
-    <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
-    <link rel="stylesheet" href="scripts/fineuploader/fine-uploader-new.css">
-    <link rel="stylesheet" href="css/custom_fineuploader.css">
+    <link rel="stylesheet" type="text/css" href="scripts/jqTree/jqtree.css">
+    <link rel="stylesheet" type="text/css" href="css/jqtree-custom.css">
+    <link rel="stylesheet" type="text/css" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
+    <link rel="stylesheet" type="text/css" href="scripts/fineuploader/fine-uploader-new.css">
+
+    <!-- Theming support -->
+    <script type="text/javascript" src="scripts/theming.js"></script>
+
+    <!-- Main stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/custom_fineuploader_dark.css?v=3.6" title="dark"> <!-- Default -->
+    <link rel="alternate stylesheet" type="text/css" href="css/custom_fineuploader.css?v=3.6" title="light">
 
     <!-- Include jQuery -->
     <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
@@ -159,14 +165,19 @@ if (isset($generatedScript)) {
 }
 ?>
 
-    <style type="text/css">
-        @import "css/default.css?v=3.5";
-    </style>
+    <!-- Main stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
+    <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
+
+    <script>
+        <!-- Apply the theme -->
+        apply_stored_or_default_theme();
+    </script>
+
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with HRM.
         Please upgrade to a later version of Internet Explorer or to a new
         browser altogether.</h3>
-    <link rel="stylesheet" href="css/default.css?v=3.5">
     <![endif]-->
 
 <?php
@@ -187,7 +198,7 @@ if (isset($generatedScript)) {
 
 <div id="basket">
 
-<?php if (!isset($excludeTitle)) { ?>
+<?php if (!isset($excludeTitle)) { ?>    
     <div id="title">
         <h1>
             Huygens Remote Manager

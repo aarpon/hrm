@@ -99,6 +99,8 @@ class ActiveDirectoryProxy extends AbstractProxy {
      * the configuration file.
      *
      * No parameters are passed to the constructor.
+     *
+     * @throws \Exception if config/active_directory_config.inc file could not be found.
      */
     public function __construct() {
 
