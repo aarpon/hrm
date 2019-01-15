@@ -405,14 +405,18 @@ function act($action, &$data)
             } else {
                 return false;
             }
-
+            if (isset($_POST['index'])) {
+                $index = $_POST['index'];
+            } else {
+                return false;
+            }
             if (isset($_POST['folder'])) {
                 $folder = $_POST['folder'];
             } else {
                 return false;
-            }
-
-            $data = $_SESSION['fileserver']->getImageAction($filename, 0,
+            }            
+            
+            $data .= $_SESSION['fileserver']->getImageAction($filename, $index,
                     $folder, "preview", 0, 0);        
         
             return true;

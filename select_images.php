@@ -162,7 +162,7 @@ function imageAction (list) {
 
     index = parseInt(list[n].value)
     filename = list[n].text
-    ajaxGetImgPreview(filename, 'src');    
+    ajaxGetImgPreview(filename, index, 'src');    
 };
 ";
 }

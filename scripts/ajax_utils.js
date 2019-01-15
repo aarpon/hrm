@@ -106,7 +106,7 @@ function ajaxSetFileFormat(pFormat) {
 // Calls the subsequent javaScript code to retrieve an image preview (2D, 3D, mockup, etc).
 // \param pFilename: name of the selected file 
 // \param pFolder: whether 'src' or 'dst'.
-function ajaxGetImgPreview(pFilename, pFolder) {
+function ajaxGetImgPreview(pFilename, pIndex, pFolder) {
   $.ajaxSetup ({  
     cache: false  
   });
@@ -114,6 +114,7 @@ function ajaxGetImgPreview(pFilename, pFolder) {
     "ajax/ajax.php",
     { action: "getImgPreview",
       filename: pFilename,
+      index:    pIndex,
       folder:   pFolder
     },
     function(data) {
