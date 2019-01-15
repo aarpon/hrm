@@ -40,7 +40,7 @@ use hrm\FileserverV2;
 use hrm\UtilV2;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.php';
-require_once dirname(__FILE__) . '/../vendor/fineuploader/php-traditional-server/handler.php';
+require_once dirname(__FILE__) . '/../vendor/aarpon/php-traditional-server_old/handler.php';
 
 global $httpUploadTempChunksDir, $httpUploadTempFilesDir;
 
