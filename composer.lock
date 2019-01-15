@@ -4,31 +4,32 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a109d609f4d6a0cdd048d31ad74e996",
+    "content-hash": "49099a04e656a022da7efb2057b867fe",
     "packages": [
         {
-            "name": "aarpon/php-traditional-server",
-            "version": "1.2",
+            "name": "aarpon/php-traditional-server_old",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/aarpon/php-traditional-server.git",
-                "reference": "b4f4f099a79150e5ce5a13bf0032d5772cba5476"
+                "url": "https://github.com/aarpon/php-traditional-server_old.git",
+                "reference": "3ab7e06298cd6caf819d304c18cce8292dd113b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aarpon/php-traditional-server/zipball/b4f4f099a79150e5ce5a13bf0032d5772cba5476",
-                "reference": "b4f4f099a79150e5ce5a13bf0032d5772cba5476",
+                "url": "https://api.github.com/repos/aarpon/php-traditional-server_old/zipball/3ab7e06298cd6caf819d304c18cce8292dd113b3",
+                "reference": "3ab7e06298cd6caf819d304c18cce8292dd113b3",
                 "shasum": ""
             },
             "type": "library",
             "license": [
                 "MIT"
             ],
-            "description": "Endpoint handler for Fine Uploader's traditional server requests. Born from the ashes of the original FineUploader project.",
+            "description": "Endpoint handler for Fine Uploader's traditional server requests.",
+            "homepage": "http://fineuploader.com",
             "support": {
-                "source": "https://github.com/aarpon/php-traditional-server/tree/1.2"
+                "source": "https://github.com/aarpon/php-traditional-server_old/tree/1.0.1"
             },
-            "time": "2018-11-22T19:53:57+00:00"
+            "time": "2015-09-17T15:26:08+00:00"
         },
         {
             "name": "adldap2/adldap2",
