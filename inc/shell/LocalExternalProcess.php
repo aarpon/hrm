@@ -176,7 +176,7 @@ class LocalExternalProcess extends ExternalProcess
         $freeMem = -1;
         
         // Build a command to inquire 'free' about the total free memory available.        
-        $cmd = "free -m | awk '/Mem:/ {print $7}'";            
+        $cmd = "free -m | awk \"/Mem:/ {print \$7}\"";  
 
         // We don't use the HRM 'execute' utility because it doesn't
         // return results.
