@@ -178,83 +178,6 @@ class QueueManager
     }
 
     /**
-     * Grants permissions to deconvolved images and image previews
-     * to avoid conflicts between the previews generated from
-     * the website and the ones generated from the queue manager, as
-     * well as to guarantee that the files can always be deleted.
-     * @param JobDescription $desc A JobDescription object.
-     * @param Fileserver $fileserver A Fileserver object.
-     * @todo Is this still used?
-     */
-    private function chmodJob(JobDescription $desc, Fileserver $fileserver)
-    {
-
-        // Build a subdirectory pattern to look for the source previews.
-        $resultFiles = $desc->files();
-        if (dirname($resultFiles[0]) == ".") {
-            $previewSubdir = "/hrm_previews/";
-        } else {
-            $previewSubdir = "/" . dirname($resultFiles[0]) . "/hrm_previews/";
-        }
-        $subdirPreviewPattern = $previewSubdir . basename($resultFiles[0]) . "*";
-
-        // Grant all permissions to the source preview in the source folder.
-        $srcFolder = $fileserver->sourceFolder();
-        $srcPreviews = $srcFolder . $subdirPreviewPattern;
-        $this->chmodFiles(glob($srcPreviews), 0777);
-        $this->chmodFiles(dirname($srcPreviews), 0777);
-
-        // Find the results directory. Grant all permissions to it, if necessary
-        $destFolder = $fileserver->destinationFolder();
-        if (dirname($resultFiles[0]) == ".") {
-            $jobFileDir = $destFolder;
-        } else {
-            $subdir = str_replace(" ", "_", dirname($resultFiles[0]));
-            $jobFileDir = $destFolder . "/" . $subdir;
-            $this->chmodFiles($jobFileDir, 0777);
-        }
-
-        // Build a file pattern to look for the deconvolved images.
-        $jobFilePattern = $jobFileDir . "/" .
-            $desc->destinationImageName() . "*";
-
-        // Grant all permissions to the deconvolved images.
-        $this->chmodFiles(glob($jobFilePattern), 0777);
-
-        // Build a file pattern to look for the preview results.
-        $taskSetting = $desc->taskSetting();
-        $jobFilePattern = dirname($jobFilePattern) . "/hrm_previews/";
-        $jobFilePattern .= "*" . $taskSetting->name() . "_hrm*";
-
-        // Grant all permissions the job previews.
-        $this->chmodFiles(glob($jobFilePattern), 0777);
-
-        // Grant all permissions to the source preview in the destination folder
-        $srcPreviews = $destFolder . str_replace(" ", "_", $subdirPreviewPattern);
-        $this->chmodFiles(glob($srcPreviews), 0777);
-        $this->chmodFiles(dirname($srcPreviews), 0777);
-    }
-
-    /**
-     * Changes file modes.
-     * @param array $files An array of files or single file.
-     * @param string $permission The requested file permission.
-     * @todo Is this still used?
-     */
-    private function chmodFiles($files, $permission)
-    {
-
-        if (is_array($files)) {
-            foreach ($files as $f) {
-                @chmod($f, $permission);
-            }
-        } else {
-            @chmod($files, $permission);
-        }
-
-    }
-
-    /**
      * Copies the images needed by a given Job to the processing server.
      * @param Job $job A Job object.
      * @param string $server_hostname Name of the server to which to copy the files.
@@ -480,22 +403,6 @@ class QueueManager
     }
 
     /**
-     * Sets ownership of the files in the user area to the user
-     * @param string $username Name of the user (must be a valid linux user on
-     * the file server).
-     * @todo Is this still used?
-     */
-    function restoreOwnership($username)
-    {
-        global $image_user;
-        global $image_group;
-        global $image_folder;
-
-        $result = exec("sudo chown -R " . $image_user . ":" . $image_group .
-            " " . $image_folder . "/" . $username);
-    }
-
-    /**
      * Checks whether the processing server reacts on 'ping'.
      * @param string $server The server's name.
      * @param string $outLog A string specific of the output log file name.
@@ -684,8 +591,6 @@ class QueueManager
                 $this->stopTime = $queue->stopJob($job);
                 $this->assembleJobLogFile($job, $startTime, $logFile, $errorFile);
 
-                $this->chmodJob($desc, $fileserver);
-
                 // Write email
                 if ($send_mail)
                     $this->notifySuccess($job, $startTime);
@@ -742,10 +647,6 @@ class QueueManager
         $file = fopen($parameterFileName, "w");
         $result = !$result && (fwrite($file, $text) > 0);
         fclose($file);
-
-        if (!$imageProcessingIsOnQueueManager) {
-            $this->restoreOwnership($username);
-        }
 
         return $result;
     }
