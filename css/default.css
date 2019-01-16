@@ -134,6 +134,7 @@ table {
 .selection {
     width: 100%;
     background-color: #fdfdfd;
+    color: black;
 }
 
 #basket {
