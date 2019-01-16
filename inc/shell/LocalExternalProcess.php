@@ -109,7 +109,7 @@ class LocalExternalProcess extends ExternalProcess
     /**
      * Wakes up the Huygens Process with given Process IDentifier.
      * @param int $pid Process identifier as returned by the OS.
-     * @todo    This function is currenly doing nothing.
+     * @todo    This function is currently doing nothing.
      */
     public function rewakeHuygensProcess($pid)
     {
