@@ -18,9 +18,8 @@ HRM_DEST="dst"
 # file mode to use for user directories
 FILE_MODE=0775
 
-# User to run the HRM daemon with rights to
-# execute /bin/mkdir, /bin/chown, /bin/chmod and
-# /bin/rm on HRM_DATA (see above) for user management.
+# User that runs the HRM daemon and owns HRM_DATA (see above).
+# https://huygens-remote-manager.readthedocs.io/en/latest/admin/hrm_user_group_perm.html
 SUSER="hrm"
 
 # HRM log directory
