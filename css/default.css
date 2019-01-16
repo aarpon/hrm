@@ -435,7 +435,7 @@ table {
     margin-top: 50px;
     padding-bottom: 5px;
     cursor: pointer;
-    background: url("../images/logo_bsse.jpg") no-repeat center;
+    background: url("../images/logo_bsse_pos.png") no-repeat center;
     background-size: 124px;
 }
 
@@ -747,11 +747,13 @@ input.apply {
 #login input.textfield {
     width: 80px;
     text-align: center;
+    color: black;
 }
 
 #login .button {
     font-weight: normal;
     background-color: white;
+    color: black;
     border: thin solid #5294e2;
     margin: 2px;
     text-align: center;
@@ -1531,6 +1533,7 @@ input {
     height: 18px;
     border: solid #aaa 1px;
     background-color: white;
+    color: black;
 }
 
 input.icon {

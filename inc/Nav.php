@@ -326,6 +326,24 @@ EOT;
     }
 
     /**
+     * Generate HTML code to display the theme selector.
+     *
+     * @return string HTML code to display the theme selector.
+     */
+    public static function actionStyleToggle()
+    {
+        $html = <<<EOT
+<li>
+<form>Theme:&nbsp;
+<input type="submit" onclick="switch_style('dark');return false;" name="theme" value="dark">
+<input type="submit" onclick="switch_style('light');return false;" name="theme" value="light">
+</form>
+</li>
+EOT;
+        return $html;
+    }
+
+    /**
      * Generate HTML code to trigger the check for updates action.
      *
      * @param bool $wrapInLiElement Wrap the link in a <li></li> element.

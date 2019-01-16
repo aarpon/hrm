@@ -34,18 +34,13 @@ if (Util::using_IE()) {
     <link rel="stylesheet" type="text/css" href="css/jqtree-custom.css">
     <link rel="stylesheet" type="text/css" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
     <link rel="stylesheet" type="text/css" href="scripts/fineuploader/fine-uploader-new.css">
-    <?php
-    global $switch_to_dark_mode;
-    if ($switch_to_dark_mode == true) {
-        ?>
-        <link rel="stylesheet" type="text/css" href="css/custom_fineuploader_dark.css">
-        <?php
-    } else {
-        ?>
-        <link rel="stylesheet" type="text/css" href="css/custom_fineuploader.css">
-        <?php
-    }
-    ?>
+
+    <!-- Theming support -->
+    <script type="text/javascript" src="scripts/theming.js"></script>
+
+    <!-- Main stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/custom_fineuploader_dark.css?v=3.6" title="dark"> <!-- Default -->
+    <link rel="alternate stylesheet" type="text/css" href="css/custom_fineuploader.css?v=3.6" title="light">
 
     <!-- Include jQuery -->
     <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
@@ -170,20 +165,15 @@ if (isset($generatedScript)) {
 }
 ?>
 
-    <style type="text/css">
-        <?php
-        global $switch_to_dark_mode;
-        if ($switch_to_dark_mode == true) {
-        ?>
-        @import "css/dark.css?v=3.6";
-        <?php
-        } else {
-        ?>
-        @import "css/default.css?v=3.6";
-        <?php
-        }
-        ?>
-    </style>
+    <!-- Main stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
+    <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
+
+    <script>
+        <!-- Apply the theme -->
+        apply_stored_or_default_theme();
+    </script>
+
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with HRM.
         Please upgrade to a later version of Internet Explorer or to a new
