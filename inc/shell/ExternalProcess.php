@@ -491,7 +491,7 @@ class ExternalProcess
         $freeMem = -1;
 
         // Build a command to inquire 'free' about the total free memory available.        
-        $cmd = "free -m | awk '/Mem:/ {print $7}'";
+        $cmd = "free -m | awk \"/Mem:/ {print \$7}\"";
 
         // Create a command to be executed remotely.
         $cmd = "ssh " . $huygens_user . "@" . $this->host . " " . "'$cmd'";
