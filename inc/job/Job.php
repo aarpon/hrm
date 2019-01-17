@@ -402,7 +402,7 @@ class Job
             $image = $huygens_server_image_folder . "/" . $user->name() .
                 "/" . $image_destination . "/" .
                 $desc->relativeSourcePath() . $destFileName . "*";
-            $previews = $huygens_server_image_folder;
+            $previews = $huygens_server_image_folder . "/";
             $previews .= $user->name() . "/" . $image_destination . "/";
             $previews .= $desc->relativeSourcePath() . "hrm_previews/";
             $previews .= "*" . $desc->id() . "_hrm*";
@@ -411,18 +411,16 @@ class Job
             $image = str_replace(".ics", ".i*s", $image);
             $previews = preg_replace("/ /", "\\ ", $previews);
 
-            $result = exec("sudo mkdir -p " . escapeshellarg($path));
-            $result = exec("sudo mkdir -p " . escapeshellarg($path)
-                . "/hrm_previews");
+            // Try retrieving the results from the remote machine
+            $result = exec("mkdir -p " . escapeshellarg($path));
+            $result = exec("mkdir -p " . escapeshellarg($path) . "/hrm_previews");
 
             $result = exec("(cd " . escapeshellarg($path) .
-                " && sudo scp " . $huygens_user . "@" . $server_hostname .
+                " && scp " . $huygens_user . "@" . $server_hostname .
                 ":" . escapeshellarg($image) . " .)");
             $result = exec("(cd " . escapeshellarg($path) .
-                "/hrm_previews && sudo scp " . $huygens_user . "@" .
+                "/hrm_previews && scp " . $huygens_user . "@" .
                 $server_hostname . ":" . escapeshellarg($previews) . " .)");
-
-            //Log::error($result);
         }
 
         // TODO is checking for job id only a good idea?
@@ -501,12 +499,11 @@ class Job
             //ls " . $marker);
             //Log::error($result);
 
-            // TODO: is the queue manager a sudoer?
             if ($remoteFile == $marker) {
                 if (!file_exists($dpath)) {
-                    $result = exec("sudo mkdir -p " . escapeshellarg($dpath));
+                    $result = exec("mkdir -p " . escapeshellarg($dpath));
                 }
-                exec("(cd " . $dpath . " && sudo scp " . $huygens_user . "@"
+                exec("(cd " . $dpath . " && scp " . $huygens_user . "@"
                     . $server_hostname . ":" . $marker . " .)");
 
                 $this->filterHuygensOutput();

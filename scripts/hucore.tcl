@@ -70,15 +70,15 @@ proc reportImageDimensions { } {
         set sizeC 0
         set sizeT 0
     }
-           
+
     reportKeyValue "sizeX" $sizeX
     reportKeyValue "sizeY" $sizeY
     reportKeyValue "sizeZ" $sizeZ
     reportKeyValue "sizeT" $sizeT
     reportKeyValue "sizeC" $sizeC
-    
+
     catch { del $src }
-} 
+}
 
 
 # Auxiliary procedure isMultiImgFile.
@@ -95,12 +95,12 @@ proc isMultiImgFile { filename } {
         }
     }
     return $isMulti
-}   
+}
 
 # Script for Huygens Core to explore multi-image files and return their
 # subimages. Currently valid for Leica LIF, LOF and Zeiss CZI files.
 proc reportSubImages {} {
-    
+
     set imgCount [Hu_getOpt -count]
     set dir [Hu_getOpt -dir]
 
@@ -144,10 +144,10 @@ proc reportSubImages {} {
             puts "END IMG"
             continue
         }
-        
+
         puts "TYPE"
         puts "multiple"
-        
+
         if { [ catch {
             img preOpen $path 
         } contents ] } {
@@ -155,7 +155,7 @@ proc reportSubImages {} {
             puts "END IMG"
             continue
         }
-        
+
         # LIFs can report 2-level nesting sub images, CZIs can't.
         # Parse CZIs and 1st nesting level LIFs accordingly.
         set extension [file extension $path]
@@ -165,18 +165,18 @@ proc reportSubImages {} {
                || [string equal -nocase $extension ".lof"]} {
             set resDict [dict create {*}[lindex $contents 1]]
             set subImages [dict keys $resDict]
-            
+
             # Leave no debries to the next iteration.
             dict unset $resDict $subImages
         }
-        
+
         puts "COUNT"
         puts "[llength $subImages]"
         foreach subImg $subImages {
             puts "SUBIMG"
             puts "$subImg"
         }
-        
+
         puts "END IMG"
     }
 }
@@ -260,7 +260,7 @@ proc generateImagePreview {} {
                 $src setp -chan $i -em $lambda
                 incr i
             }
-            
+
         } err ] } {
             reportError "Problems setting wavelengths $emm: $err"
             return
@@ -271,9 +271,6 @@ proc generateImagePreview {} {
     if { [ catch {
         reportMsg "Processing image: generating MIP and scaling."
         ::WebTools::savePreview $src $dest $filename $sizes $scheme
-        
-        # Make the preview directory writable/readable to all users.
-        catch { exec chmod -R 777 $dest }
 
     }  res ] } {
         reportError "$res"
@@ -337,7 +334,7 @@ proc reportFormatInfo { } {
 proc reportVersionNumberAsInteger { } {
 
     set verInteger [ versionAsInteger ]
-    
+
     puts "KEY"
     puts "version"
     puts "VALUE"
@@ -413,10 +410,10 @@ proc getMetaData { } {
 
 # Script for reading in an image and output data in template form.
 proc getMetaDataFromImage {} {
-    
+
     set error [ getInputVariables {path filename} ]
     if { $error } { exit 1 }
-    
+
     set img  [ hrmImgOpen $path $filename ]
     set dims [ $img getdims ]
     reportKeyValue "dims" $dims
@@ -434,10 +431,10 @@ proc getMetaDataFromImage {} {
 
 # Script for reading in a Huygens microscopy template and output template data.
 proc getMetaDataFromHuTemplate {} {
-    
+
     set error [ getInputVariables {huTemplate} ]
     if { $error } { exit 1 }
-    
+
     set fp [open $huTemplate]
     set contents [read $fp]
     close $fp
@@ -449,7 +446,7 @@ proc getMetaDataFromHuTemplate {} {
     } else {
         set chanCnt 1
     }
-    
+
     # Let Huygens interpret the template. Notice that info up to 32 channels
     # is added automatically.
     set templateList [::Template::loadCommon "micr" $huTemplate outArr]
@@ -475,10 +472,10 @@ proc getDeconDataFromHuTemplate {} {
     set parseKeys {
         "cmle" "qmle" "stabilize" "shift" "autocrop" "stabilize:post"
     } 
-    
+
     set error [ getInputVariables {huTemplate} ]
     if { $error } { exit 1 }
-    
+
     set fp [open $huTemplate]
     set contents [read $fp]
     close $fp
@@ -502,7 +499,7 @@ proc getDeconDataFromHuTemplate {} {
     # Let Huygens interpret the template. Notice that info up to 32 channels
     # is added automatically.
     set templateList [::Template::loadCommon "decon" $huTemplate outArr]
-    
+
     # Convert the result to a dict.
     dict set templDict params $templateList
 
@@ -514,7 +511,7 @@ proc getDeconDataFromHuTemplate {} {
             continue
         }
         reportKeyValue $dictKey $dictValue
-        
+
         foreach {param value} $dictValue {
             if {$param ne "vector"} {
                 set value [lindex $value 0]
@@ -561,7 +558,7 @@ proc estimateSnrFromImage {} {
                 $srcImg setp -chan $i -em $lambda
                 incr i
             }
-            
+
         } err ] } {
             reportError "Problems setting wavelengths $emm: $err"
             return
