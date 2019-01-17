@@ -402,7 +402,7 @@ class Job
             $image = $huygens_server_image_folder . "/" . $user->name() .
                 "/" . $image_destination . "/" .
                 $desc->relativeSourcePath() . $destFileName . "*";
-            $previews = $huygens_server_image_folder;
+            $previews = $huygens_server_image_folder . "/";
             $previews .= $user->name() . "/" . $image_destination . "/";
             $previews .= $desc->relativeSourcePath() . "hrm_previews/";
             $previews .= "*" . $desc->id() . "_hrm*";
