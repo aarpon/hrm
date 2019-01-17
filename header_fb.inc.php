@@ -183,11 +183,6 @@ if (isset($generatedScript)) {
     <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
     <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
 
-    <script>
-        <!-- Apply the theme -->
-        apply_stored_or_default_theme();
-    </script>
-
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with HRM.
         Please upgrade to a later version of Internet Explorer or to a new
@@ -200,6 +195,11 @@ if (isset($generatedScript)) {
         echo '    <link rel="stylesheet" href="' . $custom_css . '">' . "\n";
     }
 ?>
+
+    <script>
+        <!-- Apply the theme -->
+        apply_stored_or_default_theme();
+    </script>
 
 </head>
 
