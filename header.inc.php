@@ -19,9 +19,12 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
     <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
 
     <!-- Main stylesheets -->
-    <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.6" title="fonts">
-    <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
-    <link rel="alternate stylesheet" type="text/css" href="css/light.css?v=3.6" title="light">
+    <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.6">
+    <link rel="stylesheet" type="text/css" href="css/default.css?v=3.6">
+
+    <!-- Themes -->
+    <link rel="stylesheet" type="text/css" href="css/themes/dark.css?v=3.6" title="dark">
+    <link rel="alternate stylesheet" type="text/css" href="css/themes/light.css?v=3.6" title="light">
 
     <?php
 

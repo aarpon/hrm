@@ -3,6 +3,7 @@
 }
 
 .qq-uploader {
+    background-color: #1e1e1e;
     position: relative;
     min-height: 200px;
     overflow-x: hidden;
