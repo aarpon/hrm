@@ -1585,7 +1585,7 @@ class Fileserver
 
         return
             "imgPrev('" . rawurlencode($file) . "', $mode, " .
-            (int)$genThumbnails . ", $compare, $index, '$dir', "   .
+            (int)$genThumbnails . ", $compare, $index, '$dir', " .
             "'$referer', $data)";
     }
 
@@ -1811,7 +1811,7 @@ class Fileserver
      */
     public function previewPage($file, $op = "close", $mode = "MIP", $size = 400)
     {
-        global $allowHttpTransfer, $switch_to_dark_mode;
+        global $allowHttpTransfer;
 
         $file = stripslashes($file);
 
@@ -1820,13 +1820,6 @@ class Fileserver
 
         /* All job previews share a common root name and relative path. */
         $this->previewBase = $file;
-
-        /* Page theme */
-        if ($switch_to_dark_mode == true) {
-            $theme = "dark";
-        } else {
-            $theme = "default";
-        }
 
         echo ' <!DOCTYPE html>
           <html lang="en">
@@ -1840,9 +1833,22 @@ class Fileserver
         }
         echo '    <link rel="SHORTCUT ICON" href="' . $ico . '"/>';
         echo '          <script type="text/javascript" src="scripts/common.js"></script>
-          <style type="text/css">
-              @import "css/' . $theme . '.css?v=3.6";
-          </style>
+
+        <!-- Theming support -->
+        <script type="text/javascript" src="scripts/theming.js"></script>
+
+        <!-- Main stylesheets -->
+        <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
+        <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
+
+        <!-- Include jQuery -->
+        <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
+
+        <script>
+            <!-- Apply the theme -->
+            apply_stored_or_default_theme();
+        </script>
+
           </head>
           <body>
           <script type="text/javascript" src="./scripts/wz_tooltip/wz_tooltip.js"></script>
@@ -1857,7 +1863,7 @@ class Fileserver
         echo '
       <div id="basket"> <!--basket-->
       <div id="title">
-      <h1>' . $sourceFilename .'</h1>
+      <h1>' . $sourceFilename . '</h1>
       </div>';
 
         $pdest = $this->destinationFolder();
@@ -4126,7 +4132,8 @@ class Fileserver
         }
     }
 
-    private function getSourceFileNameForResult($filename) {
+    private function getSourceFileNameForResult($filename)
+    {
 
         // Remove the extension
         $pos = strrpos($filename, '_hrm.');

@@ -331,7 +331,7 @@ include("header.inc.php");
                 Existing users (<?php echo $count - 1; // Ignore admin ?>)
             </legend>
             <p class="menu">
-                <a href="javascript:openPopup('add_user')">
+                <a href="add_user.php">
                     add new user
                 </a> |
                 <a href="mailto:<?php echo $email_admin; ?>?bcc=

@@ -51,20 +51,14 @@ $emSetting = $emSettingArr[$chan];
         }
         //-->
     </script>
-    <style type="text/css">
-        <?php
-        global $switch_to_dark_mode;
-        if ($switch_to_dark_mode == true) {
-        ?>
-        @import "css/dark.css?v=3.6";
-        <?php
-        } else {
-        ?>
-        @import "css/default.css?v=3.6";
-        <?php
-        }
-        ?>
-    </style>
+
+    <!-- Theming support -->
+    <script type="text/javascript" src="scripts/theming.js"></script>
+
+    <!-- Main stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
+    <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
+
 </head>
 
 <body>

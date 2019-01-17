@@ -4,8 +4,33 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "82d63e7d2e048fd7131dbe2a39d1e3eb",
+    "content-hash": "b73c3022f06bd3d1b2dacff0ca2d6c9a",
     "packages": [
+        {
+            "name": "aarpon/php-traditional-server_old",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aarpon/php-traditional-server_old.git",
+                "reference": "aaaba3c3e5687ecf1e8f9082ece7befdefb4de6d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aarpon/php-traditional-server_old/zipball/aaaba3c3e5687ecf1e8f9082ece7befdefb4de6d",
+                "reference": "aaaba3c3e5687ecf1e8f9082ece7befdefb4de6d",
+                "shasum": ""
+            },
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "description": "Endpoint handler for Fine Uploader's traditional server requests.",
+            "homepage": "http://fineuploader.com",
+            "support": {
+                "source": "https://github.com/aarpon/php-traditional-server_old/tree/1.0.2"
+            },
+            "time": "2019-01-15T11:43:58+00:00"
+        },
         {
             "name": "adldap2/adldap2",
             "version": "v4.0.5",
@@ -110,29 +135,6 @@
                 "php"
             ],
             "time": "2018-03-30T17:31:04+00:00"
-        },
-        {
-            "name": "fineuploader/php-traditional-server",
-            "version": "1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/FineUploader/php-traditional-server.git",
-                "reference": "3ab7e06298cd6caf819d304c18cce8292dd113b3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/FineUploader/php-traditional-server/zipball/3ab7e06298cd6caf819d304c18cce8292dd113b3",
-                "reference": "3ab7e06298cd6caf819d304c18cce8292dd113b3",
-                "shasum": ""
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Endpoint handler for Fine Uploader's traditional server requests.",
-            "homepage": "http://fineuploader.com",
-            "time": "2015-09-17T15:26:08+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -588,19 +590,20 @@
         },
         {
             "name": "erusev/parsedown",
-            "version": "1.7.0",
+            "version": "1.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "6678d59be48c4be64eaca6ce70bea48a09488cc2"
+                "reference": "92e9c27ba0e74b8b028b111d1b6f956a15c01fc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/6678d59be48c4be64eaca6ce70bea48a09488cc2",
-                "reference": "6678d59be48c4be64eaca6ce70bea48a09488cc2",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/92e9c27ba0e74b8b028b111d1b6f956a15c01fc1",
+                "reference": "92e9c27ba0e74b8b028b111d1b6f956a15c01fc1",
                 "shasum": ""
             },
             "require": {
+                "ext-mbstring": "*",
                 "php": ">=5.3.0"
             },
             "require-dev": {
@@ -629,7 +632,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2018-02-28T11:41:37+00:00"
+            "time": "2018-03-08T01:11:30+00:00"
         },
         {
             "name": "herrera-io/json",
@@ -2542,16 +2545,16 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.3.2",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "6ad28354c04b364c3c71a34e4a18b629cc3b231e"
+                "reference": "379deb987e26c7cd103a7b387aea178baec96e48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/6ad28354c04b364c3c71a34e4a18b629cc3b231e",
-                "reference": "6ad28354c04b364c3c71a34e4a18b629cc3b231e",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/379deb987e26c7cd103a7b387aea178baec96e48",
+                "reference": "379deb987e26c7cd103a7b387aea178baec96e48",
                 "shasum": ""
             },
             "require": {
@@ -2589,7 +2592,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2018-09-23T23:08:17+00:00"
+            "time": "2018-12-19T23:57:18+00:00"
         },
         {
             "name": "symfony/config",
@@ -3334,31 +3337,31 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.35.4",
+            "version": "v1.37.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "7e081e98378a1e78c29cc9eba4aefa5d78a05d2a"
+                "reference": "66be9366c76cbf23e82e7171d47cbfa54a057a62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/7e081e98378a1e78c29cc9eba4aefa5d78a05d2a",
-                "reference": "7e081e98378a1e78c29cc9eba4aefa5d78a05d2a",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/66be9366c76cbf23e82e7171d47cbfa54a057a62",
+                "reference": "66be9366c76cbf23e82e7171d47cbfa54a057a62",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3",
+                "php": ">=5.4.0",
                 "symfony/polyfill-ctype": "^1.8"
             },
             "require-dev": {
                 "psr/container": "^1.0",
                 "symfony/debug": "^2.7",
-                "symfony/phpunit-bridge": "^3.3"
+                "symfony/phpunit-bridge": "^3.4.19|^4.1.8"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.35-dev"
+                    "dev-master": "1.37-dev"
                 }
             },
             "autoload": {
@@ -3396,7 +3399,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-07-13T07:12:17+00:00"
+            "time": "2019-01-14T14:59:29+00:00"
         },
         {
             "name": "wimg/php-compatibility",
@@ -3404,12 +3407,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCompatibility/PHPCompatibility.git",
-                "reference": "9b48a389e25ac207b6e073ab7e5b5984423e22b2"
+                "reference": "cac8ef629aa14a8d5148b1b56d09b657904604bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibility/zipball/9b48a389e25ac207b6e073ab7e5b5984423e22b2",
-                "reference": "9b48a389e25ac207b6e073ab7e5b5984423e22b2",
+                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibility/zipball/cac8ef629aa14a8d5148b1b56d09b657904604bb",
+                "reference": "cac8ef629aa14a8d5148b1b56d09b657904604bb",
                 "shasum": ""
             },
             "require": {
@@ -3455,7 +3458,7 @@
                 "standards"
             ],
             "abandoned": "phpcompatibility/php-compatibility",
-            "time": "2018-12-13T20:23:14+00:00"
+            "time": "2019-01-13T22:26:44+00:00"
         },
         {
             "name": "zendframework/zend-cache",
@@ -3652,16 +3655,16 @@
         },
         {
             "name": "zendframework/zend-filter",
-            "version": "2.9.0",
+            "version": "2.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-filter.git",
-                "reference": "875da9790e5cb16b9a12f41453d5f7c441452daf"
+                "reference": "1c3e6d02f9cd5f6c929c9859498f5efbe216e86f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-filter/zipball/875da9790e5cb16b9a12f41453d5f7c441452daf",
-                "reference": "875da9790e5cb16b9a12f41453d5f7c441452daf",
+                "url": "https://api.github.com/repos/zendframework/zend-filter/zipball/1c3e6d02f9cd5f6c929c9859498f5efbe216e86f",
+                "reference": "1c3e6d02f9cd5f6c929c9859498f5efbe216e86f",
                 "shasum": ""
             },
             "require": {
@@ -3713,7 +3716,7 @@
                 "filter",
                 "zf"
             ],
-            "time": "2018-12-12T23:14:25+00:00"
+            "time": "2018-12-17T16:00:04+00:00"
         },
         {
             "name": "zendframework/zend-hydrator",
