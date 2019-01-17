@@ -125,13 +125,15 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
         echo '    <link rel="stylesheet" href="' . $custom_css . '">' . "\n";
     }
     ?>
+
+    <script>
+        <!-- Apply the theme -->
+        apply_stored_or_default_theme();
+    </script>
+
 </head>
 
 <body>
-<script>
-    <!-- Apply the theme -->
-    apply_stored_or_default_theme();
-</script>
 
 <!--
   // Use the great Tooltip JavaScript Library by Walter Zorn
