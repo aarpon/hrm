@@ -60,9 +60,12 @@ $emSetting = $emSettingArr[$chan];
     <script type="text/javascript" src="scripts/theming.js"></script>
 
     <!-- Main stylesheets -->
-    <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.6" title="fonts">
-    <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
-    <link rel="alternate stylesheet" type="text/css" href="css/light.css?v=3.6" title="light">
+    <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.6">
+    <link rel="stylesheet" type="text/css" href="css/default.css?v=3.6">
+
+    <!-- Themes -->
+    <link rel="stylesheet" type="text/css" href="css/themes/dark.css?v=3.6" title="dark" disabled="false">
+    <link rel="alternate stylesheet" type="text/css" href="css/themes/light.css?v=3.6" title="light" disabled="true">
 
 </head>
 

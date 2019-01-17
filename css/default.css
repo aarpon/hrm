@@ -1,6 +1,6 @@
 /*
 
-HRM light style
+HRM default style
 
 This file is part of the Huygens Remote Manager
 Copyright and license notice: see license.txt
@@ -9,8 +9,8 @@ Copyright and license notice: see license.txt
 
 /* basic elements */
 body {
-    background: #fff;
-    color: #000;
+    background: #1e1e1e;
+    color: #fff;
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
     font-size: 14px;
@@ -107,8 +107,8 @@ table {
 
 .selection {
     width: 100%;
-    background-color: #fdfdfd;
-    color: black;
+    background-color: rgba(51, 51, 51, 0.918);
+    color:  #fff;
 }
 
 #basket {
@@ -161,6 +161,7 @@ table {
     margin-left: 50px;
     margin-right: 50px;
     border-top: #ccc 1px dotted;
+    background-color: rgb(62, 87, 111);
 }
 
 #statstable h3 {
@@ -177,7 +178,7 @@ table {
 #statstable table th {
     text-align: center;
     font-weight: bold;
-    background-color: #eee;
+    background-color: #888;
 }
 
 .clear {
@@ -213,7 +214,7 @@ table {
 
 #nav a {
     font-weight: bold;
-    color: #000;
+    color: #fff;
 }
 
 .requirements {
@@ -356,6 +357,8 @@ table {
 #logos {
     font-size: 85%;
     text-align: center;
+    background-color: #1e1e1e;
+    color: #fff;
 }
 
 #logos table {
@@ -387,7 +390,7 @@ table {
 #logos table td.epfl {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_epfl.jpg") no-repeat center;
+    background: url("../images/logo_epfl_neg.png") no-repeat center;
     background-size: 130px;
 }
 
@@ -410,42 +413,42 @@ table {
     margin-top: 50px;
     padding-bottom: 5px;
     cursor: pointer;
-    background: url("../images/logo_bsse_pos.png") no-repeat center;
+    background: url("../images/logo_bsse_neg.png") no-repeat center;
     background-size: 124px;
 }
 
 #logos table td.fmi {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_fmi.png") no-repeat center;
+    background: url("../images/logo_fmi_neg.png") no-repeat center;
     background-size: 150px;
 }
 
 #logos table td.bio-basel {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_biozentrum.png") no-repeat center;
+    background: url("../images/logo_biozentrum_neg.png") no-repeat center;
     background-size: 130px;
 }
 
 #logos table td.lin {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_lin.jpeg") no-repeat center;
+    background: url("../images/logo_lin_neg.png") no-repeat center;
     background-size: 130px;
 }
 
 #logos table td.cni {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_cni.png") no-repeat center;
+    background: url("../images/logo_cni_neg.png") no-repeat center;
     background-size: 130px;
 }
 
 #logos table td.unf {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_unf.png") no-repeat center;
+    background: url("../images/logo_unf_neg.png") no-repeat center;
     background-size: 120px;
 }
 
@@ -459,7 +462,7 @@ table {
 #logos table td.unimanchester {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_unimanchester.png") no-repeat center;
+    background: url("../images/logo_unimanchester_neg.png") no-repeat center;
     background-size: 130px;
 }
 
@@ -656,7 +659,7 @@ input.apply {
     display: block;
     text-align: center;
     font-size: 100%;
-    margin-bottom: 20px;    
+    margin-bottom: 20px;
 }
 
 #actions table {
@@ -722,7 +725,7 @@ input.apply {
 #login input.textfield {
     width: 80px;
     text-align: center;
-    color: black;
+    color: white;
 }
 
 #login .button {
@@ -835,6 +838,7 @@ table#Servers td {
     margin-right: 10px;
     width: 98%;
     margin-top: 0;
+    color: #fff;
 }
 
 #joblist h3 {
@@ -860,6 +864,7 @@ table#Servers td {
 #queue table {
     font-size: 75%;
     padding-bottom: 1em;
+    color: #000;
 }
 
 #queue td {
@@ -870,51 +875,61 @@ table#Servers td {
 #queue td.del {
     width: 3%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.nr {
     width: 3%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.owner {
     width: 10%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.files {
     width: 24%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.created {
     width: 15%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.status {
     width: 8%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.started {
     width: 15%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.stop {
     width: 15%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.pid {
     width: 8%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue td.server {
     width: 14%;
     font-weight: bold;
+    color: #fff;
 }
 
 #queue input {
@@ -976,33 +991,37 @@ table#Servers td {
 #jobParameters td.param {
     width: 175px;
     font-weight: bold;
-    background-color: #eee;
+    background-color: rgba(51, 51, 51, 0.918);
+;
 }
 
 #jobParameters td.value {
     width: 100px;
     font-weight: bold;
-    background-color: #eee;
+    background-color: rgba(51, 51, 51, 0.918);
 }
 
 #jobParameters td.channel {
     width: 50px;
     font-weight: bold;
-    background-color: #eee;
+    background-color: rgba(51, 51, 51, 0.918);
+;
 }
 
 #jobParameters td.source {
     width: 100px;
     font-weight: bold;
-    background-color: #eee;
+    background-color: rgba(51, 51, 51, 0.918);
+;
 }
 
 #jobParameters td.metadata {
-    background-color: #CEFEC6;
+    background-color: rgba(110, 139, 105, 0.904);
 }
 
 #jobParameters td.userdef {
-    background-color: #CFD7F2;
+    background-color: rgb(121, 126, 145);
+    color: #000;
 }
 
 #colocPage {
@@ -1375,25 +1394,25 @@ tr.disabled {
 }
 
 a.selected {
-    color: black;
+    color: #fff;
     text-decoration: none;
-    border: solid 1px;
+    border: solid 1px darkgrey;
     font-size: 14px;
     padding: 1px;
     font-weight: bold;
 }
 
 a.empty {
-    color: rgb(194, 26, 26);
+    color: #f00;
     text-decoration: none;
     font-size: 9px;
     padding: 1px;
 }
 
 a.filled {
-    color: blue;
+    color: #4988de;
     text-decoration: none;
-    font-size: 9px;
+    font-size: 14px;
     padding: 1px;
     font-weight: bold;
 }
@@ -1464,7 +1483,7 @@ fieldset legend {
     font-size: 1.2em;
     font-weight: bold;
     text-align: left;
-    color: black;
+    color: white;
     width: 100%
 }
 
@@ -1507,8 +1526,8 @@ input {
     text-align: center;
     height: 18px;
     border: solid #aaa 1px;
-    background-color: white;
-    color: black;
+    background-color: rgba(51, 51, 51, 0.918);
+    color: #fff;
 }
 
 input.icon {
@@ -1588,9 +1607,11 @@ input.abort {
     background: url("../images/cancel_small.png") no-repeat center;
 }
 
+/* The dimensions are set to values smaller than the image to solve an
+issue in Chrome where some white padding is added to the image. */
 input.noPreview {
-    width: 200px;
-    height: 200px;
+    width: 196px;
+    height: 146px;
     background: url("../images/no_preview_button.png") no-repeat center;
 }
 
@@ -1628,7 +1649,8 @@ select {
     width: 100%;
     text-align: center;
     border: 1px solid #aaa;
-    background-color: #fff;
+    background-color: rgba(51, 51, 51, 0.918);
+    color: #fff;
     padding: 5px;
 }
 
@@ -1775,7 +1797,8 @@ option.default {
 }
 
 #prevMenu .menuEntry, .menuEntryActive {
-    background-color: #fff;
+    background-color: #1e1e1e;
+    color: #000;
     padding: 10px;
     white-space: nowrap;
     display: inline-block;
@@ -1822,7 +1845,7 @@ option.default {
     font-size: 16px;
     font-weight: bold;
     text-decoration: none;
-    color: #000;
+    color: #fff;
 }
 
 #licenses .row {
@@ -1987,7 +2010,7 @@ div.StedDeplModeValues {
 .message_confidence_provided:before {
     font-size: 0.8em;
     content: "";
-    color: #000000;
+    color: #fff;
     height: 0;
 }
 
@@ -2124,7 +2147,7 @@ div.StedDeplModeValues {
     margin-left: -397px;
     padding: 0;
     font-size: 12px;
-    background-color: #82BCED;
+    background-color: #1e1e1e;
     position: absolute;
     z-index: 15;
     border: 2px solid #000;
@@ -2165,7 +2188,7 @@ div.StedDeplModeValues {
     width: 480px;
     border-top: solid 1px black;
     border-bottom: solid 1px black;
-    background-color: white;
+    background-color: #1e1e1e;
     padding: 10px 10px 20px;
 }
 
@@ -2235,8 +2258,8 @@ div.StedDeplModeValues {
 .dropbtn {
     cursor: pointer;
     border: none;
-    color: black;
-    background-color: white;
+    color: #fff;
+    background-color: #1e1e1e;
     padding: 0;
     font-weight: bold;
     font-family: 'Open Sans', sans-serif;
@@ -2256,7 +2279,7 @@ div.StedDeplModeValues {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: white;
+    background-color: #000;
     min-width: 200px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     border: solid #aaa 1px;
@@ -2282,6 +2305,7 @@ div.StedDeplModeValues {
 }
 
 .highlight {
-    background-color: yellow;
+    background-color: #FF0;
+    color: #000;
     padding: 2px;
 }

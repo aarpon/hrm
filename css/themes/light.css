@@ -1,0 +1,338 @@
+/*
+
+HRM light style
+
+This file is part of the Huygens Remote Manager
+Copyright and license notice: see license.txt
+
+*/
+
+/* basic elements */
+body {
+    background: #fff;
+    color: #000;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    text-align: center;
+    margin: 0;
+}
+
+.selection {
+    width: 100%;
+    background-color: #fdfdfd;
+    color: black;
+}
+
+#statstable {
+    font-weight: normal;
+    font-size: 0.7em;
+    margin-left: 50px;
+    margin-right: 50px;
+    border-top: #ccc 1px dotted;
+}
+
+#statstable table th {
+    text-align: center;
+    font-weight: bold;
+    background-color: #eee;
+}
+
+#nav a {
+    font-weight: bold;
+    color: #000;
+}
+
+#logos {
+    font-size: 85%;
+    text-align: center;
+    background-color: #fff;
+}
+
+#logos table td.epfl {
+    height: 100px;
+    cursor: pointer;
+    background: url("../../images/logo_epfl.jpg") no-repeat center;
+    background-size: 130px;
+}
+
+#logos table td.bsse {
+    height: 100px;
+    margin-top: 50px;
+    padding-bottom: 5px;
+    cursor: pointer;
+    background: url("../../images/logo_bsse_pos.png") no-repeat center;
+    background-size: 124px;
+}
+
+#logos table td.fmi {
+    height: 100px;
+    cursor: pointer;
+    background: url("../../images/logo_fmi.png") no-repeat center;
+    background-size: 150px;
+}
+
+#logos table td.bio-basel {
+    height: 100px;
+    cursor: pointer;
+    background: url("../../images/logo_biozentrum.png") no-repeat center;
+    background-size: 130px;
+}
+
+#logos table td.lin {
+    height: 100px;
+    cursor: pointer;
+    background: url("../../images/logo_lin.jpeg") no-repeat center;
+    background-size: 130px;
+}
+
+#logos table td.cni {
+    height: 100px;
+    cursor: pointer;
+    background: url("../../images/logo_cni.png") no-repeat center;
+    background-size: 130px;
+}
+
+#logos table td.unf {
+    height: 100px;
+    cursor: pointer;
+    background: url("../../images/logo_unf.png") no-repeat center;
+    background-size: 120px;
+}
+
+#logos table td.unimanchester {
+    height: 100px;
+    cursor: pointer;
+    background: url("../../images/logo_unimanchester.png") no-repeat center;
+    background-size: 130px;
+}
+
+#login input.textfield {
+    width: 80px;
+    text-align: center;
+    color: black;
+}
+
+#joblist {
+    float: left;
+    text-align: left;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 98%;
+    margin-top: 0;
+}
+
+#queue table {
+    font-size: 75%;
+    padding-bottom: 1em;
+}
+
+#queue td.del {
+    width: 3%;
+    font-weight: bold;
+}
+
+#queue td.nr {
+    width: 3%;
+    font-weight: bold;
+}
+
+#queue td.owner {
+    width: 10%;
+    font-weight: bold;
+}
+
+#queue td.files {
+    width: 24%;
+    font-weight: bold;
+}
+
+#queue td.created {
+    width: 15%;
+    font-weight: bold;
+}
+
+#queue td.status {
+    width: 8%;
+    font-weight: bold;
+}
+
+#queue td.started {
+    width: 15%;
+    font-weight: bold;
+}
+
+#queue td.stop {
+    width: 15%;
+    font-weight: bold;
+}
+
+#queue td.pid {
+    width: 8%;
+    font-weight: bold;
+}
+
+#queue td.server {
+    width: 14%;
+    font-weight: bold;
+}
+
+#jobParameters td.param {
+    width: 175px;
+    font-weight: bold;
+    background-color: #eee;
+}
+
+#jobParameters td.value {
+    width: 100px;
+    font-weight: bold;
+    background-color: #eee;
+}
+
+#jobParameters td.channel {
+    width: 50px;
+    font-weight: bold;
+    background-color: #eee;
+}
+
+#jobParameters td.source {
+    width: 100px;
+    font-weight: bold;
+    background-color: #eee;
+}
+
+#jobParameters td.metadata {
+    background-color: #CEFEC6;
+}
+
+#jobParameters td.userdef {
+    background-color: #CFD7F2;
+}
+
+a.selected {
+    color: black;
+    text-decoration: none;
+    border: solid 1px;
+    font-size: 14px;
+    padding: 1px;
+    font-weight: bold;
+}
+
+a.empty {
+    color: rgb(194, 26, 26);
+    text-decoration: none;
+    font-size: 9px;
+    padding: 1px;
+}
+
+a.filled {
+    color: blue;
+    text-decoration: none;
+    font-size: 9px;
+    padding: 1px;
+    font-weight: bold;
+}
+
+fieldset legend {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: left;
+    color: black;
+    width: 100%
+}
+
+input {
+    text-align: center;
+    height: 18px;
+    border: solid #aaa 1px;
+    background-color: white;
+    color: black;
+}
+
+input.noPreview {
+    width: 200px;
+    height: 200px;
+    background: url("../../images/no_preview_button.png") no-repeat center;
+}
+
+select {
+    width: 100%;
+    text-align: center;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    padding: 5px;
+}
+
+#prevMenu .menuEntry, .menuEntryActive {
+    background-color: #fff;
+    padding: 10px;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align:  middle;
+    font-size: 1.0em;
+}
+
+#licenses .category {
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #000;
+}
+
+.message_confidence_verified:before {
+    font-size: 0.8em;
+    content: "Leave blank to read from file during deconvolution.";
+    color: #009C89;
+}
+
+#sharedTemplatePicker {
+    width: 500px;
+    display: none;
+    left: 50%;
+    top: 130px;
+    margin-left: -397px;
+    padding: 0;
+    font-size: 12px;
+    background-color: #82BCED;
+    position: absolute;
+    z-index: 15;
+    border: 2px solid #000;
+    border-radius: 7px;
+}
+
+#shareTemplatePickerBody {
+    position: relative;
+    display: block;
+    width: 480px;
+    border-top: solid 1px black;
+    border-bottom: solid 1px black;
+    background-color: white;
+    padding: 10px 10px 20px;
+}
+
+/* Dropdown Button */
+.dropbtn {
+    cursor: pointer;
+    border: none;
+    color: black;
+    background-color: white;
+    padding: 0;
+    font-weight: bold;
+    font-family: 'Open Sans', sans-serif;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border: solid #aaa 1px;
+    text-align: left;
+}
+
+.highlight {
+    background-color: yellow;
+    padding: 2px;
+}
