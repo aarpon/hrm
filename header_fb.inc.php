@@ -21,6 +21,7 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
     <!-- Main stylesheets -->
     <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.6">
     <link rel="stylesheet" type="text/css" href="css/default.css?v=3.6">
+    <link rel="stylesheet" type="text/css" href="css/custom_fineuploader.css?v=3.6">
 
     <!-- Themes -->
     <link rel="stylesheet" type="text/css" href="css/themes/dark.css?v=3.6" title="dark">
@@ -170,7 +171,7 @@ if (isset($generatedScript)) {
 }
 ?>
 
-    <!-- Main stylesheets -->
+    <!-- Themes -->
     <link rel="stylesheet" type="text/css" href="css/themes/custom_fineuploader_dark.css?v=3.6" title="dark"> <!-- Default -->
     <link rel="alternate stylesheet" type="text/css" href="css/themes/custom_fineuploader_light.css?v=3.6" title="light">
 
