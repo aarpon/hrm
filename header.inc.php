@@ -23,8 +23,8 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
     <link rel="stylesheet" type="text/css" href="css/default.css?v=3.6">
 
     <!-- Themes -->
-    <link rel="stylesheet" type="text/css" href="css/themes/dark.css?v=3.6" title="dark" disabled="false">
-    <link rel="alternate stylesheet" type="text/css" href="css/themes/light.css?v=3.6" title="light" disabled="true">
+    <link rel="stylesheet" type="text/css" href="css/themes/dark.css?v=3.6" title="dark">
+    <link rel="alternate stylesheet" type="text/css" href="css/themes/light.css?v=3.6" title="light">
 
     <?php
 

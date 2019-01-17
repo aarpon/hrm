@@ -120,61 +120,73 @@ body {
     margin-right: 10px;
     width: 98%;
     margin-top: 0;
+    color: black;
 }
 
 #queue table {
     font-size: 75%;
     padding-bottom: 1em;
+    color: #000;
 }
 
 #queue td.del {
     width: 3%;
     font-weight: bold;
+    color: #000;
 }
 
 #queue td.nr {
     width: 3%;
     font-weight: bold;
+    color: #000;
 }
 
 #queue td.owner {
     width: 10%;
     font-weight: bold;
+    color: #000;
 }
 
 #queue td.files {
     width: 24%;
     font-weight: bold;
+    color: #000;
 }
 
 #queue td.created {
     width: 15%;
     font-weight: bold;
+    color: #000;
 }
 
 #queue td.status {
     width: 8%;
     font-weight: bold;
+    color: #000;
 }
 
 #queue td.started {
     width: 15%;
     font-weight: bold;
+    color: #000;
 }
 
 #queue td.stop {
     width: 15%;
     font-weight: bold;
+    color: #000;
 }
 
 #queue td.pid {
     width: 8%;
     font-weight: bold;
+    color: #000;
 }
 
 #queue td.server {
     width: 14%;
     font-weight: bold;
+    color: #000;
 }
 
 #jobParameters td.param {
@@ -283,6 +295,7 @@ select {
     font-size: 0.8em;
     content: "Leave blank to read from file during deconvolution.";
     color: #009C89;
+    height: 0;
 }
 
 #sharedTemplatePicker {
