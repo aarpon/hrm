@@ -25,11 +25,12 @@ function switch_style(css_title) {
                 value.disabled = false;
                 value.rel = "stylesheet";
 
-                // Store selection in the session storage
-                localStorage.setItem('user_hrm_theme', css_title);
             }
         }
     });
+
+    // Store selection in the session storage
+    localStorage.setItem('user_hrm_theme', css_title);
 }
 
 // Apply the stored (or the default) theme

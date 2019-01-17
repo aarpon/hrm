@@ -43,21 +43,8 @@ $emSetting = $emSettingArr[$chan];
     <meta charset="utf-8">
     <title>Huygens Remote Manager</title>
 
-    <!-- Workaround for the page flickering on CSS switch in Firefox -->
-    <style type="text/css">
-        .hidden {display:none;}
-    </style>
-
     <!-- Include jQuery -->
     <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
-
-    <!-- Workaround for the page flickering on CSS switch in Firefox / cont -->
-    <script type="text/javascript">
-        $('html').addClass('hidden');
-        $(window).on('load', function () {
-            $('html').removeClass('hidden');
-        });
-    </script>
 
     <script type="text/javascript">
         <!--
@@ -73,8 +60,9 @@ $emSetting = $emSettingArr[$chan];
     <script type="text/javascript" src="scripts/theming.js"></script>
 
     <!-- Main stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.6" title="fonts">
     <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
-    <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
+    <link rel="alternate stylesheet" type="text/css" href="css/light.css?v=3.6" title="light">
 
 </head>
 
