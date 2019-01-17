@@ -14,6 +14,27 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 <head>
     <meta charset="utf-8">
+
+    <!-- Workaround for the page flickering on CSS switch in Firefox -->
+    <style type="text/css">
+        .hidden {display:none;}
+    </style>
+
+    <!-- Include jQuery -->
+    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
+
+    <!-- Workaround for the page flickering on CSS switch in Firefox / cont -->
+    <script type="text/javascript">
+        $('html').addClass('hidden');
+        $(window).on('load', function () {
+            $('html').removeClass('hidden');
+        });
+    </script>
+
+    <!-- Main stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
+    <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
+
     <?php
 
     if (Util::using_IE()) {
@@ -92,15 +113,6 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
     <!-- Theming support -->
     <script type="text/javascript" src="scripts/theming.js"></script>
 
-    <!-- Main stylesheets -->
-    <link rel="stylesheet" type="text/css" href="css/dark.css?v=3.6" title="dark"> <!-- Default -->
-    <link rel="alternate stylesheet" type="text/css" href="css/default.css?v=3.6" title="light">
-
-    <script>
-        <!-- Apply the theme -->
-        apply_stored_or_default_theme();
-    </script>
-
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with HRM.
         Please upgrade to a later version of Internet Explorer or to a new
@@ -113,10 +125,13 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
         echo '    <link rel="stylesheet" href="' . $custom_css . '">' . "\n";
     }
     ?>
-
 </head>
 
 <body>
+<script>
+    <!-- Apply the theme -->
+    apply_stored_or_default_theme();
+</script>
 
 <!--
   // Use the great Tooltip JavaScript Library by Walter Zorn

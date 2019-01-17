@@ -14,7 +14,28 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 <head>
     <meta charset="utf-8">
-<?php
+
+    <!-- Workaround for the page flickering on CSS switch in Firefox -->
+    <style type="text/css">
+        .hidden {display:none;}
+    </style>
+
+    <!-- Include jQuery -->
+    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
+
+    <!-- Workaround for the page flickering on CSS switch in Firefox / cont -->
+    <script type="text/javascript">
+        $('html').addClass('hidden');
+        $(window).on('load', function () {
+            $('html').removeClass('hidden');
+        });
+    </script>
+
+    <!-- Main stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/custom_fineuploader_dark.css?v=3.6" title="dark"> <!-- Default -->
+    <link rel="alternate stylesheet" type="text/css" href="css/custom_fineuploader.css?v=3.6" title="light">
+
+    <?php
 
 if (Util::using_IE()) {
     echo '<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>';
@@ -37,13 +58,6 @@ if (Util::using_IE()) {
 
     <!-- Theming support -->
     <script type="text/javascript" src="scripts/theming.js"></script>
-
-    <!-- Main stylesheets -->
-    <link rel="stylesheet" type="text/css" href="css/custom_fineuploader_dark.css?v=3.6" title="dark"> <!-- Default -->
-    <link rel="alternate stylesheet" type="text/css" href="css/custom_fineuploader.css?v=3.6" title="light">
-
-    <!-- Include jQuery -->
-    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
 
     <script type="text/javascript" src="scripts/common.js"></script>
 
