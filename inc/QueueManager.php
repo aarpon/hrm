@@ -935,7 +935,11 @@ class QueueManager
             return;
         }
 
-        // We will use the first server for the following queries
+        // We will use the first server for the following queries.
+        // Due to historical reasons, the name field can also contain the GPU ID.
+        $serverNameAndGpuID = explode(" ", $servers[0]['name']);
+        $server = $serverNameAndGpuID[0];
+
         $server = $servers[0]['name'];
         $hucorePath = $servers[0]['huscript_path'];
 
