@@ -2310,6 +2310,17 @@ div.StedDeplModeValues {
     padding: 2px;
 }
 
+.theme_div {
+    margin-left: 35px;
+    font-size: 0.85em;
+}
+
+.theme_div > form > label {
+    margin-right: 5px;
+}
+
 .theme_name {
-    font-size: 0.8em;
+    font-size: 1.0em;
+    margin-right: 5px;
+    border: 1px solid lightgray;
 }
