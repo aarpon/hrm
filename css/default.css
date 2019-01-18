@@ -2309,3 +2309,7 @@ div.StedDeplModeValues {
     color: #000;
     padding: 2px;
 }
+
+.theme_name {
+    font-size: 0.8em;
+}

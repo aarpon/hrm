@@ -335,8 +335,8 @@ EOT;
         $html = <<<EOT
 <li>
 <form>Theme:&nbsp;
-<input type="submit" onclick="switch_style('dark');return false;" name="theme" value="dark">
-<input type="submit" onclick="switch_style('light');return false;" name="theme" value="light">
+<input type="submit" class="theme_name" onclick="switch_style('dark');return false;" name="theme" value="dark">
+<input type="submit" class="theme_name" onclick="switch_style('light');return false;" name="theme" value="light">
 </form>
 </li>
 EOT;
