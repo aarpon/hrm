@@ -2092,7 +2092,7 @@ class Fileserver
         switch ($op) {
             case "close":
                 echo "onclick=\"document.location.href='file_management.php?folder=dest'\" " .
-                    "onmouseover=\"Tip('Close this window and go back to your results')\" onmouseout=\"UnTip()\">" .
+                    "onmouseover=\"Tip('Go back to your results')\" onmouseout=\"UnTip()\">" .
                     "<a href=\"#\">" .
                     "<img src=\"images/results_small.png\" alt=\"back\" />" .
                     "</a>\n";
@@ -2336,7 +2336,7 @@ class Fileserver
         switch ($op) {
             case "close":
                 echo " <a href=\"#\" onclick=\"window.location='file_management.php?folder=dest'\" " .
-                    "onmouseover=\"Tip('Close this window and go back to your results')\" onmouseout=\"UnTip()\">" .
+                    "onmouseover=\"Tip('Go back to your results')\" onmouseout=\"UnTip()\">" .
                     "<img src=\"images/results_small.png\" alt=\"back\" />" .
                     "</a>\n";
                 break;
