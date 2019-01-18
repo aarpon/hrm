@@ -34,7 +34,7 @@
             return;
          }
 
-         echo "Checking against HRM v3.5.x." . PHP_EOL;
+         echo "Checking against HRM v3.6.x." . PHP_EOL;
 
          include($configFile);
 
