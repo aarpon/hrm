@@ -389,7 +389,7 @@ EOT;
 
     /* When the user clicks on the button, toggle between hiding and showing the dropdown content */
     function expandExternalSupportLinksDropdownMenu() {
-        document.getElementById("supportDropdownMenu").classList.toggle("show");
+        $("#supportDropdownMenu").toggle()
     }
 
     // Close the dropdown menu if the user clicks outside of it
