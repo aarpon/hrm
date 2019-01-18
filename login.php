@@ -388,7 +388,7 @@ include("header.inc.php");
                         University of Freiburg
                     </td>
                     <td>
-                        <a href="https://www.bmh.manchester.ac.uk/research/facilities/#bioimaging"
+                        <a href="https://www.bmh.manchester.ac.uk/research/facilities/bioimaging/"
                            onclick="this.target='_blank'; return true;">
                         BioImaging Facility
                         </a><br/>
