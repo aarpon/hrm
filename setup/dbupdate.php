@@ -5750,7 +5750,7 @@ if ($current_revision < $n) {
 
         $rs = $db->Execute($sql);
         if (!$rs) {
-            $msg = "Could not add foreign key to shared_task_parameter.";
+            $msg = "Could not add foreign key to username.";
             write_message($msg);
             write_to_error($msg);
             return;
