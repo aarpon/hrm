@@ -243,8 +243,7 @@ $info = "<h3>Quick help</h3>" .
                     class="selection"
                     id="ImageFileFormat"
                     title="Supported image file formats"
-                    size="1"
-                    onclick="storeFileFormatSelection(this,autoseries)"
+                    size="1"                    
                     onchange="storeFileFormatSelection(this,autoseries);this.form.submit();"
                     onkeyup="this.blur();this.focus();">
 
