@@ -224,17 +224,9 @@ include("header.inc.php");
                 if (!isset($_SESSION['first_visit'])) {
                     global $default_output_format;
 
-                    $db = new DatabaseConnection();
-                    $sql = "SELECT value FROM possible_values WHERE ".
-                           "parameter='OutputFileFormat' AND translation='$default_output_format';";                    
-                    $default_output_value = $db->queryLastValue($sql);
-
-                    /* Fallbacks. */
-                    if ($default_output_value === FALSE) {
-                        $default_output_value = "ICS (Image Cytometry Standard)";
-                    }
+                    /* Fallback. */
                     if (! in_array($default_output_value, $possibleValues)) {
-                        $default_output_value = $possibleValues[0];
+                        $default_output_value = "ICS (Image Cytometry Standard)";
                     }                                   
 
                     $parameter->setValue($default_output_value);
