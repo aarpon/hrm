@@ -2509,8 +2509,12 @@ class Fileserver
         $path = stripslashes($path);
         if (!file_exists($path)) {
             $path = "images/no_preview_button.png";
+            $contentType = "Content-Type: image/png";
+        } else {
+            $contentType = "Content-Type: image/jpeg";
         }
-        header("Content-Type: image/png");
+        ob_clean();
+        header($contentType);
         readfile($path);
     }
 
@@ -2543,6 +2547,7 @@ class Fileserver
         $type = "video/x-msvideo";
 
         if ($size) {
+            ob_clean();
             header("Accept-Ranges: bytes");
             header("Connection: close");
             header("Content-Disposition-type: attachment");
