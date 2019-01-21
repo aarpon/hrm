@@ -940,7 +940,6 @@ class QueueManager
         $serverNameAndGpuID = explode(" ", $servers[0]['name']);
         $server = $serverNameAndGpuID[0];
 
-        $server = $servers[0]['name'];
         $hucorePath = $servers[0]['huscript_path'];
 
         if (!$this->askHuCoreVersionAndStoreIntoDB($server, $hucorePath)) {
