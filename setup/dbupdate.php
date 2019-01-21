@@ -5690,56 +5690,6 @@ if ($current_revision < $n) {
 
     // Fix foreign keys
 
-    // Add foreign key from shared_analyis_parameter.setting_id to shared_analysis_setting.id
-    $fk = $db->metaForeignKeys("shared_analysis_parameter");
-    if ($fk === true || !(is_array($fk) && array_key_exists("shared_analysis_setting", $fk) == true)) {
-        $sql = "ALTER TABLE shared_analysis_parameter " .
-            "ADD CONSTRAINT shared_analysis_parameter_shared_analysis_setting_fk " .
-            "FOREIGN KEY (setting_id) REFERENCES shared_analysis_setting (id);";
-
-        $rs = $db->Execute($sql);
-        if (!$rs) {
-            $msg = "Could not add foreign key to shared_analysis_parameter.";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-
-    // Add foreign key from shared_parameter.setting_id to shared_parameter_setting.id
-    $fk = $db->metaForeignKeys("shared_parameter");
-    if ($fk === true || !(is_array($fk) && array_key_exists("shared_parameter_setting", $fk) == true)) {
-
-        $sql = "ALTER TABLE shared_parameter " .
-            "ADD CONSTRAINT shared_parameter_shared_parameter_setting_fk " .
-            "FOREIGN KEY (setting_id) REFERENCES shared_parameter_setting (id);";
-
-        $rs = $db->Execute($sql);
-        if (!$rs) {
-            $msg = "Could not add foreign key to shared_parameter.";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-
-    // Add foreign key from shared_task_parameter.setting_id to shared_task_setting.id
-    $fk = $db->metaForeignKeys("shared_task_parameter");
-    if ($fk === true || !(is_array($fk) && array_key_exists("shared_task_setting", $fk) == true)) {
-
-        $sql = "ALTER TABLE shared_task_parameter " .
-            "ADD CONSTRAINT shared_task_parameter_shared_task_setting_fk " .
-            "FOREIGN KEY (setting_id) REFERENCES shared_task_setting (id);";
-
-        $rs = $db->Execute($sql);
-        if (!$rs) {
-            $msg = "Could not add foreign key to shared_task_parameter.";
-            write_message($msg);
-            write_to_error($msg);
-            return;
-        }
-    }
-
     // Add foreign key from username.institution_id to institution.id
     $fk = $db->metaForeignKeys("username");
     if ($fk === true || !(is_array($fk) && array_key_exists("institution", $fk) == true)) {
