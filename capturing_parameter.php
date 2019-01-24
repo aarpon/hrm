@@ -366,10 +366,21 @@ if ($saveToDB == true) {
                            type="text"
                            size="5"
                            value="<?php echo $value ?>"/>
-                    <?php
+                    <?php                    
                     }
-                    ?>
-                    </td>
+                    ?>    
+                </td>
+                <?php
+                if ($_SESSION['setting']->isArrDetConf()) {
+                ?>
+                <td>
+                    <span class="message_small">
+                        Notice that <b>Y pixel size = 4 * X pixel size</b> in Airyscan Fast Mode!
+                    </span>
+                </td>
+                <?php
+                }
+                ?>
                 </tr>
                 <tr>
                 <td>
@@ -638,10 +649,14 @@ if ($saveToDB == true) {
                 dataset geometry, you might have to enter additional parameters,
                 such as the back-projected pinhole size and spacing, and the
                 time
-                interval for time series. For microscope type that use cameras
+                interval for time series. For microscope types that use cameras
                 (such as widefield and spinning disk confocal), you have the
                 possibility to calculate the image pixel size from the camera
                 pixel size, total magnification, and binning.
+            </p>
+            <p>
+                For <b>Airyscan Fast Mode</b> the sampling size in the Y direction is 4 
+                times as large as the sampling size in the X direction. 
             </p>
 
         </div>
