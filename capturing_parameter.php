@@ -270,7 +270,7 @@ if ($saveToDB == true) {
 
         /***************************************************************************
          *
-         * CCDCaptorSizeX
+         * CCDCaptorSizeX - CCDCaptorSizeY
          ***************************************************************************/
 
         /** @var CCDCaptorSizeX $parameterCCDCaptorSizeX */
@@ -295,14 +295,21 @@ if ($saveToDB == true) {
 
             <?php
 
-            $value = $parameterCCDCaptorSizeX->value();
-            $textForCaptorSize = "pixel size (nm)";
+            $value = $parameterCCDCaptorSizeX->value();            
 
             ?>
             <table id="table_nyquist">
               <tr>
                 <td>
-                    <?php echo $textForCaptorSize ?>:
+                    <?php 
+                    
+                    if ($_SESSION['setting']->isArrDetConf()) {
+                        $textForCaptorSize = "X pixel size (nm)";
+                    } else {
+                        $textForCaptorSize = "XY pixel size (nm)";
+                    }
+                     
+                    echo $textForCaptorSize; ?>
                 </td>
                 <td>
                     <input id="CCDCaptorSizeX"
@@ -337,8 +344,36 @@ if ($saveToDB == true) {
                     </td>
                 </tr>
                 <tr>
+                    <td>
+                    <?php 
+                    if ($_SESSION['setting']->isArrDetConf()) {
+                        $textForCaptorSize = "Y pixel size (nm)";
+                        echo $textForCaptorSize;
+                    }
+                    ?>
+                    
+                    </td>
+                    <td>
+                    <?php
+                    if ($_SESSION['setting']->isArrDetConf()) {
+                        $parameterCCDCaptorSizeY =
+                            $_SESSION['setting']->parameter("CCDCaptorSizeY");
+                        $value = $parameterCCDCaptorSizeY->value();       
+                    ?>
+                    <input id="CCDCaptorSizeY"
+                           title="Pixel size"
+                           name="CCDCaptorSizeY"
+                           type="text"
+                           size="5"
+                           value="<?php echo $value ?>"/>
+                    <?php
+                    }
+                    ?>
+                    </td>
+                </tr>
+                <tr>
                 <td>
-                    z-step (nm):
+                    Z-step (nm):
                 </td>
                     <?php
 

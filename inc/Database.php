@@ -63,7 +63,8 @@ class DatabaseConnection
 
         // Set the parameter name dictionary
         $this->parameterNameDictionary = array(
-            "CCDCaptorSizeX" => "sampleSizesX",       // In HRM there is no distinction between x and y pixel size
+            "CCDCaptorSizeX" => "sampleSizesX",       
+            "CCDCaptorSizeY" => "sampleSizesY",       
             "ZStepSize" => "sampleSizesZ",
             "TimeInterval" => "sampleSizesT",
             "PinholeSize" => "pinhole",
@@ -2016,7 +2017,7 @@ class DatabaseConnection
                 } elseif (($parameterName == "CCDCaptorSizeX") ||
                     ($parameterName == "ZStepSize")
                 ) {
-
+                    /* No need to check CCDCaptorSizeY here. */
                     $confidenceLevelX = $this->huCoreConfidenceLevel(
                         $fileFormat, "CCDCaptorSizeX");
                     $confidenceLevelZ = $this->huCoreConfidenceLevel(

@@ -13,6 +13,7 @@ use hrm\DatabaseConnection;
 use hrm\HuygensTools;
 use hrm\param\base\Parameter;
 use hrm\param\CCDCaptorSizeX;
+use hrm\param\CCDCaptorSizeY;
 use hrm\param\MicroscopeType;
 use hrm\param\PinholeSize;
 use hrm\param\PSF;
@@ -53,6 +54,7 @@ class ParameterSetting extends Setting {
             'TubeFactor',
             'CCDCaptorSize',
             'CCDCaptorSizeX',
+            'CCDCaptorSizeY',
             'ZStepSize',
             'TimeInterval',
             'PinholeSize',
@@ -1228,6 +1230,36 @@ class ParameterSetting extends Setting {
             }
         }
 
+        // CCDCaptorSizeY
+        $valueSet = isset($postedParameters["CCDCaptorSizeY"]) &&
+        $postedParameters["CCDCaptorSizeY"] != '';
+
+        $parameter = $this->parameter("CCDCaptorSizeY");
+
+        if ($valueSet) {
+
+        // Set the Parameter and check the value
+            $parameter->setValue($postedParameters["CCDCaptorSizeY"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        } else {
+
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the pixel size!";
+                $noErrorsFound = False;
+            }
+        }
+
         // ZStepSize
         $valueSet = isset($postedParameters["ZStepSize"]) &&
                 $postedParameters["ZStepSize"] != '';
@@ -2238,13 +2270,23 @@ class ParameterSetting extends Setting {
 
     /**
      * Returns the sample size in Y direction in um.
-     *
-     * This just returns the value in X direction.
+     *     
      *
      * @return float Sample size in um.
     */
     public function sampleSizeY() {
-        return $this->sampleSizeX();
+
+        /* In HRM 3.6 we make a distinction between X and Y for 
+        array detectors only. This is because of the different
+        sampling sizes in Airyscan fast mode. All other microscope
+        type use the same sampling sizes for X and Y. */
+        if ($this->isArrDetConf()) {            
+            $param = $this->parameter('CCDCaptorSizeY');
+            $size = (float) $param->value();
+            return $size / 1000;
+        } else {
+            return $this->sampleSizeX();            
+        }
     }
 
     /**
@@ -2347,6 +2389,9 @@ class ParameterSetting extends Setting {
 
             $sampleSizes[0] = round($sampleSizes[0] * 1000);
             $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
+
+            $sampleSizes[1] = round($sampleSizes[1] * 1000);
+            $this->parameter['CCDCaptorSizeY']->setValue($sampleSizes[1]);
 
             $sampleSizes[2] = round($sampleSizes[2] * 1000);
             $this->parameter['ZStepSize']->setValue($sampleSizes[2]);
