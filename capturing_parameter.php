@@ -168,17 +168,24 @@ include("header.inc.php");
 
 // If all necessaty Parameters were set, the Nyquist rate can be calculated
 // displayed. If not, we inform the user
-$nyquist = $_SESSION['setting']->calculateNyquistRate();
-if ($nyquist === false) {
-    $NyquistMessage = "The optimal Nyquist sampling rate could not be " .
-        "calculated because not all necessary parameters were set in the " .
-        "previous pages. You can use the online Nyquist calculator instead.";
+if ($_SESSION['setting']->isSted() || $_SESSION['setting']->isSpim()
+    || $_SESSION['setting']->isSted3D()) {
+    $NyquistMessage = "To calculate the ideal sampling sizes for this " .
+                      "microscope type please consult the online Nyquist " .
+                      "calculator below.";
 } else {
-    $NyquistMessage = "Calculated from current optical parameters, the " .
-        "(Nyquist) ideal pixel size is <span class=\"highlight\">" .
-        $nyquist[0] . " nm</span> " .
-        "and the ideal z-step is <span class=\"highlight\">" .
-        $nyquist[1] . " nm</span>.";
+    $nyquist = $_SESSION['setting']->calculateNyquistRate();
+    if ($nyquist === false) {
+        $NyquistMessage = "The optimal Nyquist sampling rate could not be " .
+            "calculated because not all necessary parameters were set in the " .
+            "previous pages. You can use the online Nyquist calculator instead.";
+    } else {
+        $NyquistMessage = "Calculated from current optical parameters, the " .
+            "(Nyquist) ideal pixel size is <span class=\"highlight\">" .
+            $nyquist[0] . " nm</span> " .
+            "and the ideal z-step is <span class=\"highlight\">" .
+            $nyquist[1] . " nm</span>.";
+    }   
 }
 
 ?>
@@ -421,7 +428,7 @@ if ($saveToDB == true) {
                onclick="storeValuesAndRedirectExtern(
                       'https://svi.nl/NyquistCalculator');">
                 <img src="images/calc_small.png" alt=""/>
-                On-line Nyquist rate and PSF calculator
+                Online Nyquist rate and PSF calculator
                 &nbsp;<img src="images/web.png" alt="external link"/>
             </a>
 
