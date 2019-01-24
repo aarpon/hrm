@@ -5670,8 +5670,7 @@ if ($current_revision < $n) {
         "shared_parameter_setting" => array("owner", "previous_owner"),
         "shared_task_parameter" => array("owner", "setting"),
         "shared_task_setting" => array("owner", "previous_owner"),
-        "statistics" => array("owner"),
-        "username" => array("name")
+        "statistics" => array("owner")
     );
 
     foreach ($tablesToRevert as $table => $columns) {
