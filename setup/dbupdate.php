@@ -5662,7 +5662,6 @@ if ($current_revision < $n) {
 
     // Tables to revert
     $tablesToRevert = array(
-        "institution" => array("name"),
         "job_files" => array("owner"),
         "shared_analysis_parameter" => array("owner", "setting"),
         "shared_analysis_setting" => array("owner", "previous_owner"),
@@ -5670,8 +5669,7 @@ if ($current_revision < $n) {
         "shared_parameter_setting" => array("owner", "previous_owner"),
         "shared_task_parameter" => array("owner", "setting"),
         "shared_task_setting" => array("owner", "previous_owner"),
-        "statistics" => array("owner"),
-        "username" => array("name")
+        "statistics" => array("owner")
     );
 
     foreach ($tablesToRevert as $table => $columns) {
