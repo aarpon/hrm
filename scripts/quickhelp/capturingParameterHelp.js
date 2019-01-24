@@ -26,7 +26,9 @@ window.helpText[ "voxel" ] =
   'the ideal voxel size for your parameters. The HRM will not try to stop ' +
   'you from running a deconvolution on under-sampled data (i.e. with a ' +
   'sampling rate much larger than the ideal), but do not expect meaningful ' +
-  'results! Set the z-step to <b>0</b> for 2D datasets.</p>';
+  'results! Set the z-step to <b>0</b> for 2D datasets.</p>' + 
+  '<p>In <b>Airyscan Fast Mode</b> the sampling size in the Y direction is 4 ' + 
+  'times as large as the sampling size in the X direction.</p>';
 
 window.helpText[ "time" ] =
   '<p>The time interval is the (temporal) distance between two frames in a ' +

@@ -375,7 +375,7 @@ if ($saveToDB == true) {
                 ?>
                 <td>
                     <span class="message_small">
-                        Notice that <b>Y pixel size = 4 * X pixel size</b> in Airyscan Fast Mode!
+                        Notice that <b>Y pixel size should be 4 * X pixel size</b> in Airyscan Fast Mode!
                     </span>
                 </td>
                 <?php
@@ -655,7 +655,7 @@ if ($saveToDB == true) {
                 pixel size, total magnification, and binning.
             </p>
             <p>
-                For <b>Airyscan Fast Mode</b> the sampling size in the Y direction is 4 
+                In <b>Airyscan Fast Mode</b> the sampling size in the Y direction is 4 
                 times as large as the sampling size in the X direction. 
             </p>
 
