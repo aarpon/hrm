@@ -5662,7 +5662,6 @@ if ($current_revision < $n) {
 
     // Tables to revert
     $tablesToRevert = array(
-        "institution" => array("name"),
         "job_files" => array("owner"),
         "shared_analysis_parameter" => array("owner", "setting"),
         "shared_analysis_setting" => array("owner", "previous_owner"),
