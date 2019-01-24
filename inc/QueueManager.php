@@ -70,6 +70,12 @@ class QueueManager
     private $nping;
 
     /**
+     * List of running Jobs.
+     * @var array
+     */
+    private $runningJobs;
+
+    /**
      * QueueManager constructor.
      */
     public function __construct()
@@ -126,7 +132,7 @@ class QueueManager
 
         $server = $this->freeServer;
         // server name without proc number
-        $s = split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
         $desc = $job->description();
         $clientTemplatePath = $desc->sourceFolder();
@@ -172,83 +178,6 @@ class QueueManager
     }
 
     /**
-     * Grants permissions to deconvolved images and image previews
-     * to avoid conflicts between the previews generated from
-     * the website and the ones generated from the queue manager, as
-     * well as to guarantee that the files can always be deleted.
-     * @param JobDescription $desc A JobDescription object.
-     * @param Fileserver $fileserver A Fileserver object.
-     * @todo Is this still used?
-     */
-    private function chmodJob(JobDescription $desc, Fileserver $fileserver)
-    {
-
-        // Build a subdirectory pattern to look for the source previews.
-        $resultFiles = $desc->files();
-        if (dirname($resultFiles[0]) == ".") {
-            $previewSubdir = "/hrm_previews/";
-        } else {
-            $previewSubdir = "/" . dirname($resultFiles[0]) . "/hrm_previews/";
-        }
-        $subdirPreviewPattern = $previewSubdir . basename($resultFiles[0]) . "*";
-
-        // Grant all permissions to the source preview in the source folder.
-        $srcFolder = $fileserver->sourceFolder();
-        $srcPreviews = $srcFolder . $subdirPreviewPattern;
-        $this->chmodFiles(glob($srcPreviews), 0777);
-        $this->chmodFiles(dirname($srcPreviews), 0777);
-
-        // Find the results directory. Grant all permissions to it, if necessary
-        $destFolder = $fileserver->destinationFolder();
-        if (dirname($resultFiles[0]) == ".") {
-            $jobFileDir = $destFolder;
-        } else {
-            $subdir = str_replace(" ", "_", dirname($resultFiles[0]));
-            $jobFileDir = $destFolder . "/" . $subdir;
-            $this->chmodFiles($jobFileDir, 0777);
-        }
-
-        // Build a file pattern to look for the deconvolved images.
-        $jobFilePattern = $jobFileDir . "/" .
-            $desc->destinationImageName() . "*";
-
-        // Grant all permissions to the deconvolved images.
-        $this->chmodFiles(glob($jobFilePattern), 0777);
-
-        // Build a file pattern to look for the preview results.
-        $taskSetting = $desc->taskSetting();
-        $jobFilePattern = dirname($jobFilePattern) . "/hrm_previews/";
-        $jobFilePattern .= "*" . $taskSetting->name() . "_hrm*";
-
-        // Grant all permissions the job previews.
-        $this->chmodFiles(glob($jobFilePattern), 0777);
-
-        // Grant all permissions to the source preview in the destination folder
-        $srcPreviews = $destFolder . str_replace(" ", "_", $subdirPreviewPattern);
-        $this->chmodFiles(glob($srcPreviews), 0777);
-        $this->chmodFiles(dirname($srcPreviews), 0777);
-    }
-
-    /**
-     * Changes file modes.
-     * @param array $files An array of files or single file.
-     * @param string $permission The requested file permission.
-     * @todo Is this still used?
-     */
-    private function chmodFiles($files, $permission)
-    {
-
-        if (is_array($files)) {
-            foreach ($files as $f) {
-                @chmod($f, $permission);
-            }
-        } else {
-            @chmod($files, $permission);
-        }
-
-    }
-
-    /**
      * Copies the images needed by a given Job to the processing server.
      * @param Job $job A Job object.
      * @param string $server_hostname Name of the server to which to copy the files.
@@ -285,7 +214,7 @@ class QueueManager
             $psf = $parameterSetting->parameter('PSF');
             $values = $psf->value();
             foreach ($values as $value) {
-                $path = split("/", $value);
+                $path = explode("/", $value);
                 if (sizeof($path) > 0) {
                     for ($i = 0; $i < sizeof($path) - 1; $i++) {
                         $batch .= "-mkdir \"" . $path[$i] . "\"\n";
@@ -296,7 +225,7 @@ class QueueManager
                     $image_source . "/" . $value;
                 if (stristr($filename, ".ics")) {
                     $batch .= "put \"" . $filename . "\"\n";
-                    $filename = eregi_replace(".ics", ".ids", $filename);
+                    $filename = preg_replace("/.ics/", ".ids", $filename);
                     $batch .= "put \"" . $filename . "\"\n";
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
@@ -332,7 +261,7 @@ class QueueManager
 
         // Now copy the files
         foreach ($files as $file) {
-            $path = split("/", $file);
+            $path = explode("/", $file);
             if (sizeof($path) > 0) {
                 for ($i = 0; $i < sizeof($path) - 1; $i++) {
                     $batch .= "-mkdir \"" . $path[$i] . "\"\n";
@@ -447,7 +376,7 @@ class QueueManager
         Log::warning("cleaning up file server");
         $server = $job->server();
         // server name without proc number
-        $s = split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
         $desc = $job->description();
         $user = $desc->owner();
@@ -471,22 +400,6 @@ class QueueManager
         // remove job
         $this->stopTime = $queue->stopJob($job);
         Log::info("stopped job (" . date("l d F Y H:i:s") . ")\n");
-    }
-
-    /**
-     * Sets ownership of the files in the user area to the user
-     * @param string $username Name of the user (must be a valid linux user on
-     * the file server).
-     * @todo Is this still used?
-     */
-    function restoreOwnership($username)
-    {
-        global $image_user;
-        global $image_group;
-        global $image_folder;
-
-        $result = exec("sudo chown -R " . $image_user . ":" . $image_group .
-            " " . $image_folder . "/" . $username);
     }
 
     /**
@@ -516,6 +429,54 @@ class QueueManager
         $proc->release();
 
         return $isReachable;
+    }
+
+    /**
+     * Checks whether the processing server has enough free memory according
+     * to the limits set in the configuration files.
+     * @param string $server The server's name.
+     * @param string $outLog A string specific of the output log file name.
+     * @param string $errLog A string specific of the error log file name.
+     * @return bool True on enough memory, false otherwise.
+     */
+    private function hasProcessingServerEnoughFreeMem($server,
+                                                      $outLog = NULL,
+                                                      $errLog = NULL)
+    {        
+        global $min_free_mem_launch_requirement;
+        
+        /* Initialize. */ 
+        $hasEnoughFreeMem = True;
+
+        /* Sanity checks. */
+        if (!isset($min_free_mem_launch_requirement) 
+            || !is_numeric($min_free_mem_launch_requirement)) {
+                $min_free_mem_launch_requirement = 0;
+        }
+        if ($outLog) {
+            $outLog .= "_";
+        }
+        if ($errLog) {
+            $errLog .= "_";
+        }
+
+        $proc = ExternalProcessFactory::getExternalProcess($server,
+            $server . $outLog . "_out.txt",
+            $server . $errLog . "_error.txt");        
+
+        $isReachable = $proc->ping();
+
+        if ($isReachable) {
+            $freeMem = $proc->getFreeMem();
+            if (is_numeric($freeMem) && $freeMem > 0
+                && $freeMem < $min_free_mem_launch_requirement) {
+                $hasEnoughFreeMem = False;
+            }
+        }
+
+        $proc->release();
+
+        return $hasEnoughFreeMem;
     }
 
     /**
@@ -630,8 +591,6 @@ class QueueManager
                 $this->stopTime = $queue->stopJob($job);
                 $this->assembleJobLogFile($job, $startTime, $logFile, $errorFile);
 
-                $this->chmodJob($desc, $fileserver);
-
                 // Write email
                 if ($send_mail)
                     $this->notifySuccess($job, $startTime);
@@ -688,10 +647,6 @@ class QueueManager
         $file = fopen($parameterFileName, "w");
         $result = !$result && (fwrite($file, $text) > 0);
         fclose($file);
-
-        if (!$imageProcessingIsOnQueueManager) {
-            $this->restoreOwnership($username);
-        }
 
         return $result;
     }
@@ -870,10 +825,12 @@ class QueueManager
             if ($status == 'free') {
 
                 if ($this->isProcessingServerReachable($server)) {
-                    $this->nping[$server] = 0;
-                    $this->freeServer = $server;
-                    $this->freeGpu = $db->getGPUID($server);
-                    return True;
+                    if ($this->hasProcessingServerEnoughFreeMem($server)) {
+                        $this->nping[$server] = 0;
+                        $this->freeServer = $server;
+                        $this->freeGpu = $db->getGPUID($server);
+                        return True;
+                    }
                 } else {
                     $this->incNPing($server);
                     if ($this->nping[$server] == 40) {
@@ -970,17 +927,32 @@ class QueueManager
             return;
         }
 
-        if (!$this->askHuCoreVersionAndStoreIntoDB()) {
+        // Query the database for processing servers
+        $db = new DatabaseConnection();
+        $servers = $db->getAllServers();
+        if (count($servers) == 0) {
+            Log::error("There are no processing servers configured in the database!");
+            return;
+        }
+
+        // We will use the first server for the following queries.
+        // Due to historical reasons, the name field can also contain the GPU ID.
+        $serverNameAndGpuID = explode(" ", $servers[0]['name']);
+        $server = $serverNameAndGpuID[0];
+
+        $hucorePath = $servers[0]['huscript_path'];
+
+        if (!$this->askHuCoreVersionAndStoreIntoDB($server, $hucorePath)) {
             Log::error("An error occurred while reading HuCore version");
             return;
         }
 
-        if (!$this->storeHuCoreLicenseDetailsIntoDB()) {
+        if (!$this->storeHuCoreLicenseDetailsIntoDB($server, $hucorePath)) {
             Log::error("An error occurred while saving HuCore license details");
             return;
         }
 
-        if (!$this->storeConfidenceLevelsIntoDB()) {
+        if (!$this->storeConfidenceLevelsIntoDB($server, $hucorePath)) {
             Log::error("An error occurred while storing the confidence " .
                 "levels in the database");
             return;
@@ -1085,14 +1057,20 @@ class QueueManager
 
     /**
      * Asks HuCore to provide its version number and store it in the DB
+     * @param string server Server on which hucore is running. Omit for localhost.
+     * @param string server Full path to hucore on the specified server.
      * @return bool True if asking the version and storing it in the database was
      * successful, false otherwise.
      */
-    private function askHuCoreVersionAndStoreIntoDB()
+    private function askHuCoreVersionAndStoreIntoDB($server, $hucorePath)
     {
-        $huversion = HuygensTools::askHuCore("reportVersionNumberAsInteger");
+        $huversion = HuygensTools::askHuCore("reportVersionNumberAsInteger", "", $server, $hucorePath);
+        if ($huversion == null) {
+            Log::error("Could not retrieve HuCore version!");
+            return false;
+        }
         $huversion = $huversion["version"];
-        Log::info("HuCore version = " . $huversion . "\n");
+        Log::info("HuCore version = " . $huversion);
         if (!System::setHuCoreVersion($huversion)) {
             return false;
         }
@@ -1101,18 +1079,25 @@ class QueueManager
 
     /**
      * Gets license details from HuCore and saves them into the db.
+     * @param string server Server on which hucore is running. Omit for localhost.
+     * @param string server Full path to hucore on the specified server.
      * @return bool True if everything went OK, false otherwise.
      */
-    private function storeHuCoreLicenseDetailsIntoDB()
+    private function storeHuCoreLicenseDetailsIntoDB($server, $hucorePath)
     {
-        $licDetails = HuygensTools::askHuCore("reportHuCoreLicense");
+        $licDetails = HuygensTools::askHuCore("reportHuCoreLicense", "", $server, $hucorePath);
+        if ($licDetails == null) {
+            Log::error("Could not retrieve license details!");
+            return false;
+        }
+
 
         Log::info($licDetails);
 
         // Store the license details in the database.
         $db = new DatabaseConnection();
         if (!$db->storeLicenseDetails($licDetails['license'])) {
-            Log::error("Could not store license details in the database!\n");
+            Log::error("Could not store license details in the database!");
             return false;
         }
 
@@ -1123,14 +1108,21 @@ class QueueManager
     /**
      * Store the confidence levels returned by huCore into the database
      * for faster retrieval.
+     * @param string server Server on which hucore is running. Omit for localhost.
+     * @param string server Full path to hucore on the specified server.
      * @return bool True if asking the version and storing it in the database was
      * successful, false otherwise.
      */
-    private function storeConfidenceLevelsIntoDB()
+    private function storeConfidenceLevelsIntoDB($server, $hucorePath)
     {
 
         // Get the confidence levels string from HuCore
-        $result = HuygensTools::askHuCore("reportFormatInfo");
+        $result = HuygensTools::askHuCore("reportFormatInfo", "", $server, $hucorePath);
+        if ($result == null) {
+            Log::error("Could not retrieve confidence levels!");
+            return false;
+        }
+
         $confidenceLevelString = $result["formatInfo"];
 
         // Parse the confidence levels string
@@ -1140,7 +1132,7 @@ class QueueManager
         // Store the confidence levels in the database
         $db = new DatabaseConnection();
         if (!$db->storeConfidenceLevels($confidenceLevels)) {
-            Log::error("Could not store confidence levels to the database!\n");
+            Log::error("Could not store confidence levels to the database!");
             return false;
         }
         return true;

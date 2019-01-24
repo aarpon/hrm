@@ -113,7 +113,14 @@ include("header.inc.php");
             <a href="https://biop.epfl.ch/" onclick="this.target='_blank'; return true;">
                 BioImaging and Optics Platform</a>,
             <a href="https://www.epfl.ch/" onclick="this.target='_blank'; return true;">
-                EPFL</a>.
+                EPFL</a>;
+        </li>
+        <li>
+            <b>Egor Zindy</b>,
+            <a href="https://www.bmh.manchester.ac.uk/research/facilities/bioimaging/" onclick="this.target='_blank'; return true;">
+                BioImaging Facility</a>,
+            <a href="https://www.manchester.ac.uk/" onclick="this.target='_blank'; return true;">
+                University of Manchester</a>.
         </li>
     </ul>
 

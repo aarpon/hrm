@@ -13,6 +13,7 @@ use hrm\DatabaseConnection;
 use hrm\HuygensTools;
 use hrm\param\base\Parameter;
 use hrm\param\CCDCaptorSizeX;
+use hrm\param\CCDCaptorSizeY;
 use hrm\param\MicroscopeType;
 use hrm\param\PinholeSize;
 use hrm\param\PSF;
@@ -53,6 +54,7 @@ class ParameterSetting extends Setting {
             'TubeFactor',
             'CCDCaptorSize',
             'CCDCaptorSizeX',
+            'CCDCaptorSizeY',
             'ZStepSize',
             'TimeInterval',
             'PinholeSize',
@@ -319,8 +321,51 @@ class ParameterSetting extends Setting {
         $names[array_search('EmissionWavelength', $names)] =
             'EmissionWavelength0';
 
-        // We handle multi-value parameters differently than single-valued ones
+        // Preliminary sanity checks.
+        if (isset($postedParameters['MicroscopeType'])
+          && $postedParameters['MicroscopeType'] != 'two photon') {
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                if (!isset($postedParameters["EmissionWavelength$i"])) {
+                    continue;
+                }             
+                if (!isset($postedParameters["ExcitationWavelength$i"])) {
+                    continue;
+                }             
+                if ($postedParameters["EmissionWavelength$i"] 
+                    < $postedParameters["ExcitationWavelength$i"]) {
+                    $noErrorsFound = false;                    
+                    $this->message  = "Impossible combination of wavelengths: ";
+                    $this->message .= "the emission wavelength is shorter ";
+                    $this->message .= "than the excitation wavelength in channel $i.";
+                    break;        
+                }
+            }            
+        }
+        if (isset($postedParameters['MicroscopeType'])
+          && $postedParameters['MicroscopeType'] == 'two photon') {
+            for ($i = 0; $i < $maxChanCnt; $i++) {
+                if (!isset($postedParameters["EmissionWavelength$i"])) {
+                    continue;
+                }             
+                if (!isset($postedParameters["ExcitationWavelength$i"])) {
+                    continue;
+                }             
+                if ($postedParameters["EmissionWavelength$i"] 
+                    > $postedParameters["ExcitationWavelength$i"]) {
+                    $noErrorsFound = false;
+                    $this->message  = "Impossible combination of wavelengths for a two photon ";
+                    $this->message .= "microscope: the emission wavelength is shorter ";
+                    $this->message .= "than the excitiation wavelength in channel $i.";
+                    break;        
+                }
+            }            
+        }
 
+        if (!$noErrorsFound) {
+            return $noErrorsFound;
+        }
+
+        // We handle multi-value parameters differently than single-valued ones
         // Excitation wavelengths
         for ($i = 0; $i < $maxChanCnt; $i++) {
             $value[$i] = null;
@@ -389,7 +434,7 @@ class ParameterSetting extends Setting {
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
-            }
+            }       
 
         } else {
 
@@ -1185,6 +1230,36 @@ class ParameterSetting extends Setting {
             }
         }
 
+        // CCDCaptorSizeY
+        $valueSet = isset($postedParameters["CCDCaptorSizeY"]) &&
+        $postedParameters["CCDCaptorSizeY"] != '';
+
+        $parameter = $this->parameter("CCDCaptorSizeY");
+
+        if ($valueSet) {
+
+        // Set the Parameter and check the value
+            $parameter->setValue($postedParameters["CCDCaptorSizeY"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            }
+        } else {
+
+            $mustProvide = $parameter->mustProvide();
+
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the pixel size!";
+                $noErrorsFound = False;
+            }
+        }
+
         // ZStepSize
         $valueSet = isset($postedParameters["ZStepSize"]) &&
                 $postedParameters["ZStepSize"] != '';
@@ -1676,6 +1751,8 @@ class ParameterSetting extends Setting {
         // pinhole size if the microscope type is 'widefield'.
         /** @var Parameter $parameter */
         foreach ($this->parameter as $parameter) {
+            if (!$this->isArrDetConf() && $parameter->name() == 'CCDCaptorSizeY')
+                continue;
             if (!$this->hasPinhole() && $parameter->name() == 'PinholeSize')
                 continue;
             if ($parameter->name() == 'ImageFileFormat')
@@ -1830,6 +1907,12 @@ class ParameterSetting extends Setting {
         }
         $opt = "-micr $micr -na $na -em $em -ex $ex -pcnt $pcnt -ril $ril";
         $ideal = HuygensTools::askHuCore("calculateNyquistRate", $opt);
+        if ($ideal == null) {
+            $ideal = array(
+                "xy" => -1,
+                "z" => -1
+            );
+        }
         // print_r($ideal);
         return array($ideal['xy'], $ideal['z']);
     }
@@ -2078,6 +2161,17 @@ class ParameterSetting extends Setting {
         return ($value === 'SPIM');
     }
 
+    /**
+     * Checks whether the currently selected microscope type is array detector confocal.
+     * @return bool True if the currently selected microscope type is array detector
+     * confocal, false otherwise.
+    */
+    public function isArrDetConf() {
+        /** @var MicroscopeType $parameter */
+        $parameter = $this->parameter('MicroscopeType');
+        $value = $parameter->value();
+        return ($value === 'array detector confocal');
+    }
 
     /**
      * Checks whether the currently selected microscope type is spinning
@@ -2178,13 +2272,23 @@ class ParameterSetting extends Setting {
 
     /**
      * Returns the sample size in Y direction in um.
-     *
-     * This just returns the value in X direction.
+     *     
      *
      * @return float Sample size in um.
     */
     public function sampleSizeY() {
-        return $this->sampleSizeX();
+
+        /* In HRM 3.6 we make a distinction between X and Y for 
+        array detectors only. This is because of the different
+        sampling sizes in Airyscan fast mode. All other microscope
+        type use the same sampling sizes for X and Y. */
+        if ($this->isArrDetConf()) {            
+            $param = $this->parameter('CCDCaptorSizeY');
+            $size = (float) $param->value();
+            return $size / 1000;
+        } else {
+            return $this->sampleSizeX();            
+        }
     }
 
     /**
@@ -2287,6 +2391,9 @@ class ParameterSetting extends Setting {
 
             $sampleSizes[0] = round($sampleSizes[0] * 1000);
             $this->parameter['CCDCaptorSizeX']->setValue($sampleSizes[0]);
+
+            $sampleSizes[1] = round($sampleSizes[1] * 1000);
+            $this->parameter['CCDCaptorSizeY']->setValue($sampleSizes[1]);
 
             $sampleSizes[2] = round($sampleSizes[2] * 1000);
             $this->parameter['ZStepSize']->setValue($sampleSizes[2]);

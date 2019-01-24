@@ -810,7 +810,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
         case 0:
            if ( gen == 0 ) {
            // Preview doesn't exist
-           html = "<img src=\"images/no_preview.jpg\" alt=\"No preview\">"
+           html = "<img src=\"images/no_preview_button.png\" alt=\"No preview\">"
                   + "<br />No preview available";
 
            } else {
@@ -898,13 +898,10 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
            link = "file_management.php?compareResult=" + infile
                   + "&size=" + compare + "&op=close";
 
-           html = '<br /><a '
-                  +    'onclick="'
-                  +        'openWindow(\'' + link + '\'); '
-                  +    '"'
-                  + '><div class="expandedView">'
+           html = '<br /><a href="' + link + '">'
+                  + '<div class="expandedView">'
                   + '<img src="images/eye.png">&nbsp;&nbsp;'
-                  + 'Click on the preview for the fully detailed results:'
+                  + 'Click for detailed results:'
                   + '</div>'
                   + html + '</a>' ;
     }

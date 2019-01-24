@@ -399,6 +399,31 @@ function act($action, &$data)
 
         // ---------------------------------------------------------------------
 
+        case 'getImgPreview':        
+            if (isset($_POST['filename'])) {
+                $filename = $_POST['filename'];
+            } else {
+                return false;
+            }
+            if (isset($_POST['index'])) {
+                $index = $_POST['index'];
+            } else {
+                return false;
+            }
+            if (isset($_POST['folder'])) {
+                $folder = $_POST['folder'];
+            } else {
+                return false;
+            }            
+            
+            $data .= $_SESSION['fileserver']->getImageAction($filename, $index,
+                    $folder, "preview", 0, 0);        
+        
+            return true;
+            break;
+
+        // ---------------------------------------------------------------------
+
         default:
             return false;
     }

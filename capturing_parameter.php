@@ -168,17 +168,24 @@ include("header.inc.php");
 
 // If all necessaty Parameters were set, the Nyquist rate can be calculated
 // displayed. If not, we inform the user
-$nyquist = $_SESSION['setting']->calculateNyquistRate();
-if ($nyquist === false) {
-    $NyquistMessage = "The optimal Nyquist sampling rate could not be " .
-        "calculated because not all necessary parameters were set in the " .
-        "previous pages. You can use the online Nyquist calculator instead.";
+if ($_SESSION['setting']->isSted() || $_SESSION['setting']->isSpim()
+    || $_SESSION['setting']->isSted3D()) {
+    $NyquistMessage = "To calculate the ideal sampling sizes for this " .
+                      "microscope type please consult the online Nyquist " .
+                      "calculator below.";
 } else {
-    $NyquistMessage = "Calculated from current optical parameters, the " .
-        "(Nyquist) ideal pixel size is <span style=\"background-color:yellow\">" .
-        $nyquist[0] . " nm</span> " .
-        "and the ideal z-step is <span style=\"background-color:yellow\">" .
-        $nyquist[1] . " nm</span>.";
+    $nyquist = $_SESSION['setting']->calculateNyquistRate();
+    if ($nyquist === false) {
+        $NyquistMessage = "The optimal Nyquist sampling rate could not be " .
+            "calculated because not all necessary parameters were set in the " .
+            "previous pages. You can use the online Nyquist calculator instead.";
+    } else {
+        $NyquistMessage = "Calculated from current optical parameters, the " .
+            "(Nyquist) ideal pixel size is <span class=\"highlight\">" .
+            $nyquist[0] . " nm</span> " .
+            "and the ideal z-step is <span class=\"highlight\">" .
+            $nyquist[1] . " nm</span>.";
+    }   
 }
 
 ?>
@@ -270,7 +277,7 @@ if ($saveToDB == true) {
 
         /***************************************************************************
          *
-         * CCDCaptorSizeX
+         * CCDCaptorSizeX - CCDCaptorSizeY
          ***************************************************************************/
 
         /** @var CCDCaptorSizeX $parameterCCDCaptorSizeX */
@@ -295,14 +302,21 @@ if ($saveToDB == true) {
 
             <?php
 
-            $value = $parameterCCDCaptorSizeX->value();
-            $textForCaptorSize = "pixel size (nm)";
+            $value = $parameterCCDCaptorSizeX->value();            
 
             ?>
             <table id="table_nyquist">
               <tr>
                 <td>
-                    <?php echo $textForCaptorSize ?>:
+                    <?php 
+                    
+                    if ($_SESSION['setting']->isArrDetConf()) {
+                        $textForCaptorSize = "X pixel size (nm)";
+                    } else {
+                        $textForCaptorSize = "XY pixel size (nm)";
+                    }
+                     
+                    echo $textForCaptorSize; ?>
                 </td>
                 <td>
                     <input id="CCDCaptorSizeX"
@@ -337,8 +351,47 @@ if ($saveToDB == true) {
                     </td>
                 </tr>
                 <tr>
+                    <td>
+                    <?php 
+                    if ($_SESSION['setting']->isArrDetConf()) {
+                        $textForCaptorSize = "Y pixel size (nm)";
+                        echo $textForCaptorSize;
+                    }
+                    ?>
+                    
+                    </td>
+                    <td>
+                    <?php
+                    if ($_SESSION['setting']->isArrDetConf()) {
+                        $parameterCCDCaptorSizeY =
+                            $_SESSION['setting']->parameter("CCDCaptorSizeY");
+                        $value = $parameterCCDCaptorSizeY->value();       
+                    ?>
+                    <input id="CCDCaptorSizeY"
+                           title="Pixel size"
+                           name="CCDCaptorSizeY"
+                           type="text"
+                           size="5"
+                           value="<?php echo $value ?>"/>
+                    <?php                    
+                    }
+                    ?>    
+                </td>
+                <?php
+                if ($_SESSION['setting']->isArrDetConf()) {
+                ?>
                 <td>
-                    z-step (nm):
+                    <span class="message_small">
+                        Notice that <b>Y pixel size should be 4 * X pixel size</b> in Airyscan Fast Mode!
+                    </span>
+                </td>
+                <?php
+                }
+                ?>
+                </tr>
+                <tr>
+                <td>
+                    Z-step (nm):
                 </td>
                     <?php
 
@@ -375,7 +428,7 @@ if ($saveToDB == true) {
                onclick="storeValuesAndRedirectExtern(
                       'https://svi.nl/NyquistCalculator');">
                 <img src="images/calc_small.png" alt=""/>
-                On-line Nyquist rate and PSF calculator
+                Online Nyquist rate and PSF calculator
                 &nbsp;<img src="images/web.png" alt="external link"/>
             </a>
 
@@ -603,10 +656,14 @@ if ($saveToDB == true) {
                 dataset geometry, you might have to enter additional parameters,
                 such as the back-projected pinhole size and spacing, and the
                 time
-                interval for time series. For microscope type that use cameras
+                interval for time series. For microscope types that use cameras
                 (such as widefield and spinning disk confocal), you have the
                 possibility to calculate the image pixel size from the camera
                 pixel size, total magnification, and binning.
+            </p>
+            <p>
+                In <b>Airyscan Fast Mode</b> the sampling size in the Y direction is 4 
+                times as large as the sampling size in the X direction. 
             </p>
 
         </div>

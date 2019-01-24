@@ -11,9 +11,8 @@
 namespace hrm\stats;
 
 use hrm\DatabaseConnection;
-use hrm\user\mngm\UserManager;
-use hrm\user\UserV2;
 use hrm\Util;
+use hrm\user\UserV2;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
@@ -350,6 +349,7 @@ class Stats
      * Compares the passed username to the admin user name and returns true
      * if the user is the admin.
      * @return boolean True if the user is the admin user, false otherwise.
+     * @throws \Exception If the authentication mode is not recognized for the user.
      */
     private function isAdmin()
     {

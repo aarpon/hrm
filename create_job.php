@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Fileserver;
+use hrm\DatabaseConnection;
 use hrm\job\JobDescription;
 use hrm\Nav;
 use hrm\System;
@@ -218,9 +219,17 @@ include("header.inc.php");
                     $possibleValues = array_values($possibleValues);
                 }
 
-                // if 'first visit' is not set, set the OutputFileFormat as ICS
+                // if 'first visit' is not set, set the OutputFileFormat to the default chosen by the admin.
+                // See config files. 
                 if (!isset($_SESSION['first_visit'])) {
-                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    global $default_output_format;
+
+                    /* Fallback. */
+                    if (! in_array($default_output_value, $possibleValues)) {
+                        $default_output_value = "ICS (Image Cytometry Standard)";
+                    }                                   
+
+                    $parameter->setValue($default_output_value);
                     $_SESSION['first_visit'] = False;
                 }
 

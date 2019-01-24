@@ -370,6 +370,7 @@ write_to_error(timestamp());
 
 //  Check if the database exists; if it does not exist, create it
 $dsn = $db_type."://".$db_user.":".$db_password."@".$db_host;
+
 $db = ADONewConnection($dsn);
 if(!$db) {
     $msg = "Cannot connect to database host.";
@@ -5611,7 +5612,327 @@ if ($current_revision < $n) {
     // Update revision
     if(!update_dbrevision($n))
         return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+// -----------------------------------------------------------------------------
+// Update to revision 17
+// Change : Apply fix for key size also to existing installations
+// -----------------------------------------------------------------------------
+$n = 17;
+if ($current_revision < $n) {
+
+    // Tables to update
+    $tablesToUpdate = array(
+        "analysis_parameter" => array("owner", "setting"),
+        "analysis_setting" => array("owner", "name"),
+        "boundary_values" => array("parameter"),
+        "job_analysis_parameter" => array("owner", "setting"),
+        "job_analysis_setting" => array("owner", "name"),
+        "job_files" => array("file"),
+        "job_parameter" => array("owner", "setting"),
+        "job_parameter_setting" => array("owner", "name"),
+        "job_task_parameter" => array("owner", "setting"),
+        "job_task_setting" => array("owner", "name"),
+        "parameter" => array("owner", "setting"),
+        "parameter_setting" => array("name", "owner"),
+        "possible_values" => array("value"),
+        "server" => array("name"),
+        "task_parameter" => array("setting", "owner"),
+        "task_setting" => array("name", "owner")
+    );
+
+    foreach ($tablesToUpdate as $table => $columns) {
+        // Update table boundary_values
+        foreach($columns as $column) {
+            $alterColumnSQL = $datadict->AlterColumnSQL($table, $column . ' VARCHAR(191)');
+            $rs = $db->Execute($alterColumnSQL[0]);
+            if (!$rs) {
+                $msg = "Could not change size of column $column in table $table.";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // Tables to revert
+    $tablesToRevert = array(
+        "institution" => array("name"),
+        "job_files" => array("owner"),
+        "shared_analysis_parameter" => array("owner", "setting"),
+        "shared_analysis_setting" => array("owner", "previous_owner"),
+        "shared_parameter" => array("owner", "setting"),
+        "shared_parameter_setting" => array("owner", "previous_owner"),
+        "shared_task_parameter" => array("owner", "setting"),
+        "shared_task_setting" => array("owner", "previous_owner"),
+        "statistics" => array("owner"),
+        "username" => array("name")
+    );
+
+    foreach ($tablesToRevert as $table => $columns) {
+        // Update table boundary_values
+        foreach($columns as $column) {
+            $alterColumnSQL = $datadict->AlterColumnSQL($table, $column . ' VARCHAR(255)');
+            $rs = $db->Execute($alterColumnSQL[0]);
+            if (!$rs) {
+                $msg = "Could not change size of column $column in table $table.";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // Fix foreign keys
+
+    // Add foreign key from username.institution_id to institution.id
+    $fk = $db->metaForeignKeys("username");
+    if ($fk === true || !(is_array($fk) && array_key_exists("institution", $fk) == true)) {
+
+        $sql = "ALTER TABLE username " .
+            "ADD CONSTRAINT username_institution_fk " .
+            "FOREIGN KEY (institution_id) REFERENCES institution (id);";
+
+        $rs = $db->Execute($sql);
+        if (!$rs) {
+            $msg = "Could not add foreign key to username.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Update the for the SVI HDF5 file format
+    $tabname = "possible_values";
+    $record = array(
+        "parameter" => "ImageFileFormat",
+        "value" => "hdf5",
+        "translation" => "SVI HDF5 (*.h5)",
+        "isDefault" => "f"
+    );
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter='ImageFileFormat' and value='hdf5'")) {
+        $msg = "Could not correct translation for ImageFileFormat HDF5 in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // ------- Add Rescan microscopy. ------
+
+    $tabname = "possible_values";
+
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "rescan";
+    $record["translation"] = "rescan";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType8";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
     
+
+    // ------- Add Array Detector Confocal microscopy. ------
+
+    $tabname = "possible_values";
+
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "array detector confocal";
+    $record["translation"] = "arrDetConf";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType9";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n . " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // ------------- Add the array detector reduction mode option ----------------
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "auto";
+    $record["translation"] = "Auto";
+    $record["isDefault"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "all";
+    $record["translation"] = "All: use all detectors, with reduction.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "no";
+    $record["translation"] = "No: use all detectors, without reduction.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "core all";
+    $record["translation"] = "Core all: use the core detectors only, with reduction.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "core no";
+    $record["translation"] = "Core no: use the core detectors only, without reduction.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "superXY";
+    $record["translation"] = "SuperXY: create an image supersampled in XY.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ArrayDetectorReductionMode";
+    $record["value"] = "superY";
+    $record["translation"] = "Super:Y create an image supersampled in Y.";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);

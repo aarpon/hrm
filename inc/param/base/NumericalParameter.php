@@ -100,12 +100,11 @@ class NumericalParameter extends Parameter
             $this->isMaxIncluded = False;
         }
         if ($default != NULL) {
-            if (count($default) == 1) {
-                $default = intval($default);
-            }
-            // @todo The inheriting classes will call their setValue()
-            // method here. The value should be an array, but this is not
-            // the case for StedImmunity.
+
+            // Cast to integer
+            $default = intval($default);
+
+            // @todo The inheriting classes will call their setValue() method here.
             $this->setValue($default);
         }
     }

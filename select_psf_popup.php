@@ -42,6 +42,10 @@ $emSetting = $emSettingArr[$chan];
 <head>
     <meta charset="utf-8">
     <title>Huygens Remote Manager</title>
+
+    <!-- Include jQuery -->
+    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
+
     <script type="text/javascript">
         <!--
         function lock(l) {
@@ -51,9 +55,18 @@ $emSetting = $emSettingArr[$chan];
         }
         //-->
     </script>
-    <style type="text/css">
-        @import "css/default.css?v=3.5";
-    </style>
+
+    <!-- Theming support -->
+    <script type="text/javascript" src="scripts/theming.js"></script>
+
+    <!-- Main stylesheets -->
+    <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.6">
+    <link rel="stylesheet" type="text/css" href="css/default.css?v=3.6">
+
+    <!-- Themes -->
+    <link rel="stylesheet" type="text/css" href="css/themes/dark.css?v=3.6" title="dark">
+    <link rel="alternate stylesheet" type="text/css" href="css/themes/light.css?v=3.6" title="light">
+
 </head>
 
 <body>

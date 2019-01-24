@@ -81,7 +81,7 @@ class UserManager
     public static function existsUserWithName($username)
     {
         $db = new DatabaseConnection();
-        $query = "select status from username where name = '$username'";
+        $query = "select status from username where lower(name) = lower('$username')";
         $result = $db->queryLastValue($query);
         if ($result) {
             return true;
@@ -170,8 +170,8 @@ class UserManager
      *
      * This function returns false by default and must be reimplemented for
      * those user management implementations that support this.
+     * @param string $username User name that is expected to have the specified seed.
      * @param string $seed Seed to be compared.
-     * @username string User name that is expected to have the specified seed.
      * @return bool True if a user with given seed exists, false otherwise.
      */
     public static function existsUserPasswordResetRequestWithSeed($username, $seed)
@@ -224,6 +224,7 @@ class UserManager
         } else {
             true;
         }
+        return false;
     }
 
     /**
@@ -272,6 +273,7 @@ class UserManager
      * @param $password string User password The password is not stored in the User object.
      * Set $password to "" to create a random password (useful for external authentication
      * mechanisms).
+     * @throws \Exception If user creation failed.
      */
     public static function addUser(UserV2 $user, $password="") {
 
@@ -381,6 +383,7 @@ class UserManager
      * @param bool $force User to be updated in the database!
      * @return bool True if the User could be updated or created successfully,
      * false otherwise.
+     * @throws \Exception If user creation failed.
      */
     public static function storeUser(UserV2 $user, $force=false)
     {
@@ -484,9 +487,9 @@ class UserManager
         $db = new DatabaseConnection();
 
         // If there are jobs in the queue for the user, we do not delete
-        $sql = "SELECT id FROM job_queue WHERE name=?;";
+        $sql = "SELECT id FROM job_queue WHERE username=?;";
         $result = $db->connection()->Execute($sql, array($username));
-        if ($result != false) {
+        if ($result->EOF == false) {
             return false;
         }
 
@@ -707,8 +710,11 @@ class UserManager
     public static function getAllActiveUserDBRows()
     {
         $db = new DatabaseConnection();
-        $rows = $db->query("SELECT * FROM username WHERE status = '" .
-            UserConstants::STATUS_ACTIVE . "' AND length(seedid) = 0 ORDER BY name;");
+        $rows = $db->query("SELECT * FROM username WHERE (status = '" .
+            UserConstants::STATUS_ACTIVE . "' OR status = '" .
+            UserConstants::STATUS_OUTDATED . "' OR status = '" .
+            UserConstants::STATUS_PASSWORD_RESET . "') " .
+        "AND (seedid IS NULL OR length(seedid) = 0) ORDER BY name;");
         return $rows;
     }
 
@@ -721,8 +727,8 @@ class UserManager
     public static function getAllPendingUserDBRows()
     {
         $db = new DatabaseConnection();
-        $rows = $db->query("SELECT * FROM username WHERE length(seedid) > 0 " .
-            " AND status!='" . UserConstants::STATUS_PASSWORD_RESET . "' ORDER BY name;");
+        $rows = $db->query("SELECT * FROM username WHERE (seedid IS NOT NULL OR length(seedid) > 0)" .
+            " AND status='" . UserConstants::STATUS_PASSWORD_RESET . "' ORDER BY name;");
         return $rows;
     }
 
@@ -898,7 +904,7 @@ class UserManager
         // Only the super admin is left untouched
         $db = new DatabaseConnection();
         $role = UserConstants::ROLE_SUPERADMIN;
-        $query = "UPDATE username SET status = '$status', seedid = NULL WHERE role != $role";
+        $query = "UPDATE username SET status = '$status', seedid = '' WHERE role != $role";
         $result = $db->execute($query);
         if ($result) {
             return true;

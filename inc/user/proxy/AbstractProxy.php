@@ -108,7 +108,7 @@ abstract class AbstractProxy {
      * @param string $username User name.
      * @return bool True if the User must be updated, false otherwise.
      */
-    public function isOutdated($username = "ignored") { return false; }
+    public function isOutdated($username) { return false; }
 
 
     /**
@@ -130,12 +130,12 @@ abstract class AbstractProxy {
     /**
      * Set the User status to outdated (e.g. in need of a password update).
      *
-     * Inheriting classes might need to reimplement this.
+     * Inheriting classes might need to re-implement this.
      *
      * @param string $username User name.
      * @return void.
      */
-    public function setOutdated($username = "ignored") {}
+    public function setOutdated($username) {}
 
     /**
      * Mark password reset.
@@ -146,7 +146,7 @@ abstract class AbstractProxy {
      * @return string string
      * @throws \Exception The base implementation of this method throws an exception.
      */
-    public function markPasswordReset($username = "ignored") {
+    public function markPasswordReset($username) {
         throw new \Exception("Re-implement this method!");
     }
 };

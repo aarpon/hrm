@@ -22,7 +22,7 @@ $db_host = "localhost";
 $db_name = "hrm";
 
 // The name of the user with which the database is accessed
-$db_user = "dbuser";
+$db_user = "hrm";
 
 // The password of the account with which the database is accessed
 $db_password = "dbpasswd";
@@ -59,7 +59,7 @@ $image_user = "hrm";
 $image_group = "hrm";
 
 // File server base folder
-$image_folder = "/scratch/hrm_data";
+$image_folder = "/data/hrm_data";
 
 // File server image source folder
 $image_source = "src";
@@ -68,7 +68,7 @@ $image_source = "src";
 $image_destination = "dst";
 
 // File server base folder as seen from the Huygens server machines
-$huygens_server_image_folder = "/scratch/hrm_data";
+$huygens_server_image_folder = "/data/hrm_data";
 
 // Allow HTTP transfer of the restored (download) images
 $allowHttpTransfer = true;
@@ -131,6 +131,10 @@ $decompressBin['tgz'] = "cd %DEST% \n /usr/bin/tar xzf ";
 $decompressBin['tar'] = "cd %DEST% \n /usr//bin/tar xf ";
 $decompressBin['tar.gz'] = "cd %DEST% \n /usr/bin/tar xzf ";
 
+// Default output file format.
+// One of: 'ics', 'ics2', 'hdf5', 'r3d', 'ome'.
+$default_output_format = "ics";
+
 //==============================================================================
 // HRM configuration parameters
 //==============================================================================
@@ -186,6 +190,10 @@ $imageProcessingIsOnQueueManager = true;
 
 // If true the images are copied to the huygens server machine
 $copy_images_to_huygens_server = false;
+
+// Minimum amount of free memory required from the processing machine 
+// to accept deconvolution jobs.
+$min_free_mem_launch_requirement = 0;  // In Mb.
 
 // Thumbnails require Huygens Core 3.3.2 or higher.
 

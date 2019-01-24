@@ -68,20 +68,20 @@ function showFileBrowser()
     }
 
     $selected = "";
-    if ($algorithm == "old") {
-        $selected = "selected=\"selected\"";
-    }
-
-    $additionalHTMLElements .= "
-        <option value=\"old\" $selected>Classic estimator</option>";
-
-    $selected = "";
     if ($algorithm == "new") {
         $selected = "selected=\"selected\"";
     }
 
     $additionalHTMLElements .= "
-        <option value=\"new\" $selected>New estimator (beta)</option>";
+        <option value=\"new\" $selected>Auto</option>";
+
+    $selected = "";
+    if ($algorithm == "old") {
+        $selected = "selected=\"selected\"";
+    }
+
+    $additionalHTMLElements .= "
+        <option value=\"old\" $selected>Legacy</option>";
 
     $additionalHTMLElements .= "
           </select>
@@ -112,16 +112,16 @@ function showFileBrowser()
                on the corresponding help button for additional information.</p>';
 
     if ($type != "") {
-        $info .= "<p>Only images of type <b>$type</b>, as set in the image
-        parameters, are shown.</p>";
+        $info .= "<p>Only images of type <b>$type</b>, as set in the image selection
+        filter, are shown.</p>";
     }
 
     $info .= '<p>Please notice that undersampled or clipped images will provide
             wrong estimations, as well as wrong deconvolution results!</p>
-            <p>A SNR value must be set per image channel: please select an
+            <p>An SNR value must be set per image channel: please select an
                image that is representative of the datasets you will deconvolve,
                as each channel may have a different noise level.</p>
-            <p>Please remind that, in this context, the SNR
+            <p>Please mind that, in this context, the SNR
                is not a property of the images but a parameter
                for the deconvolution that you can tune, to adapt the result to
                the experimental needs.
@@ -214,9 +214,9 @@ function estimateSnrFromFile($file)
 
     // Build a label to be shown at the SNR results page .
     if ($algorithm == "old") {
-        $algLabel = "Classic";
+        $algLabel = "Legacy";
     } else {
-        $algLabel = "Beta";
+        $algLabel = "Auto";
     }
 
     // When no particular SNR estimation image is shown (in a small portion of
@@ -272,6 +272,12 @@ function estimateSnrFromFile($file)
         // display them.
 
         $estimation = HuygensTools::askHuCore("estimateSnrFromImage", $opt);
+
+        // If estimation failed, we interrupt.
+        if ($estimation == null) {
+            exit("Error estimating SNR value!");
+        }
+
         // No line-breaks in the output, it is going to be escaped for JavaScript.
         $output =
             "<h3><img alt=\"SNR\" src=\"./images/results_title.png\" " .

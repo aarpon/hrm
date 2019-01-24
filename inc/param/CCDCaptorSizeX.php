@@ -44,7 +44,7 @@ class CCDCaptorSizeX extends NumericalParameter
      */
     public function displayString($numberOfChannels = 0)
     {
-        $result = $this->formattedName('pixel size');
+        $result = $this->formattedName('x pixel size');
         if ($this->notSet()) {
             $result = $result . "*not set*" . "\n";
         } else {

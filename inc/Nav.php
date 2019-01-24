@@ -326,6 +326,27 @@ EOT;
     }
 
     /**
+     * Generate HTML code to display the theme selector.
+     *
+     * @return string HTML code to display the theme selector.
+     */
+    public static function actionStyleToggle()
+    {
+        $html = <<<EOT
+<li>
+<div class="theme_div">
+<form>
+<label>Theme:</label>
+<input type="submit" class="theme_name" onclick="switch_style('dark');return false;" name="theme" value="dark">
+<input type="submit" class="theme_name" onclick="switch_style('light');return false;" name="theme" value="light">
+</form>
+</div>
+</li>
+EOT;
+        return $html;
+    }
+
+    /**
      * Generate HTML code to trigger the check for updates action.
      *
      * @param bool $wrapInLiElement Wrap the link in a <li></li> element.
@@ -336,7 +357,7 @@ EOT;
     {
         return self::buildActionHTMLElement("Check for updates",
             "images/check_for_update.png", "Check for updates",
-            "checkForUpdates();", $wrapInLiElement, "");
+            "checkForUpdates();", $wrapInLiElement);
     }
 
     /**
@@ -371,7 +392,7 @@ EOT;
 
     /* When the user clicks on the button, toggle between hiding and showing the dropdown content */
     function expandExternalSupportLinksDropdownMenu() {
-        document.getElementById("supportDropdownMenu").classList.toggle("show");
+        $("#supportDropdownMenu").toggle()
     }
 
     // Close the dropdown menu if the user clicks outside of it

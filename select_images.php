@@ -76,7 +76,7 @@ if (isset($_POST['down'])) {
         header("Location: " . "select_parameter_settings.php");
         exit();
     }
-} else if ($_SESSION['fileserver'] == null) {
+} else if (!isset($_SESSION['fileserver']) || $_SESSION['fileserver'] == null) {
     // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
     $_SESSION['fileserver'] = new Fileserver($name);
     $_SESSION['autoseries'] = "TRUE";
@@ -162,7 +162,8 @@ function imageAction (list) {
 
     index = parseInt(list[n].value)
     filename = list[n].text
-    imgPrev(filename, 0, 1, 0, index, 'src', '', 1);
+    
+    ajaxGetImgPreview(filename, index, 'src');    
 };
 ";
 }
@@ -243,8 +244,7 @@ $info = "<h3>Quick help</h3>" .
                     class="selection"
                     id="ImageFileFormat"
                     title="Supported image file formats"
-                    size="1"
-                    onclick="storeFileFormatSelection(this,autoseries)"
+                    size="1"                    
                     onchange="storeFileFormatSelection(this,autoseries);this.form.submit();"
                     onkeyup="this.blur();this.focus();">
 
@@ -354,7 +354,7 @@ $info = "<h3>Quick help</h3>" .
                     ) {
                         echo " checked=\"checked\" ";
                     }
-                    ?>
+                    ?>                       
                        onclick="storeFileFormatSelection(ImageFileFormat,this)"
                        onchange="storeFileFormatSelection(ImageFileFormat,this);this.form.submit();"
                 />
@@ -396,20 +396,19 @@ $info = "<h3>Quick help</h3>" .
                 }
 
                 ?>
-                <select title="List of selected images"
-                        id="selectedimages"
-                        class="selection"
-                        onclick="imageAction(this)"
-                        onchange="imageAction(this)"
+
+                <select id="selectedimages"
                         name="selectedfiles[]"
+                        class="selection"                        
+                        title="List of selected images"
                         size="5"
-                        multiple="multiple"<?php echo $flag ?>>
+                        multiple="multiple"<?php echo $flag ?>
+                        onclick="imageAction(this)"
+                        onchange="imageAction(this)">
                     <?php
                     if ($selectedFiles != null) {
-                        foreach ($selectedFiles as $filename) {
-                            $key = $keyArr[$filename];
-                            echo $_SESSION['fileserver']->getImageOptionLine($filename,
-                                $key, "src", "preview", 0, 1);
+                        foreach ($selectedFiles as $filename) {                            
+                                echo "<option value=\"" . $filename . "\">" . $filename . "</option>\n";                                                   
                         }
                     } else echo "                        <option>&nbsp;</option>\n";
 

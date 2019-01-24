@@ -73,6 +73,11 @@ class TaskSettingEditor extends SettingEditor
         $opts = "-huTemplate \"" . $huTemplate . "\"";
 
         $data = HuygensTools::askHuCore('getDeconDataFromHuTemplate', $opts);
+        if ($data == null) {
+            $this->message = "Could not create HRM template from raw Huygens template!";
+            return False;
+        }
+
 
         $setting->parseParamsFromHuCore($data);
         $this->message = $setting->message();

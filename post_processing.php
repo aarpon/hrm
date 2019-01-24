@@ -42,12 +42,14 @@ ksort($chromaticArray);
  *
  **************************************************************************** */
 $postErrors = 0;
-if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
+if ($_SESSION['user']->isAdmin()
+    || $_SESSION['task_setting']->isEligibleForCAC()) {
    if (!$_SESSION['task_setting']->checkPostedChromaticAberrationParameters($_POST)) {
      $postErrors++;
    }
 }
-if ($_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+if ($_SESSION['user']->isAdmin()
+    || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
    if (!$_SESSION['task_setting']->checkPostedTStabilizationParameters($_POST)) {
      $postErrors++;
    }
@@ -74,7 +76,7 @@ if ($postErrors == 0) {
 
 // Javascript includes
 $script = array("settings.js", "quickhelp/help.js",
-    "quickhelp/taskParameterHelp.js");
+    "quickhelp/postProcessingHelp.js");
 
 include("header.inc.php");
 ?>
@@ -118,7 +120,8 @@ include("header.inc.php");
     
     <form method="post" action="" id="select">
 <?php
-if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
+if ($_SESSION['user']->isAdmin()
+    || $_SESSION['task_setting']->isEligibleForCAC()) {
 ?>
     <div id="ChromaticAberration">
         <fieldset class="setting provided"
@@ -211,7 +214,8 @@ if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])) {
               TIME STABILIZATION
         */
 
-if ($_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+if ($_SESSION['user']->isAdmin()
+  || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
         ?>
 
     <div id="TimeStabilization">
@@ -444,10 +448,9 @@ if ($_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])
     <div id="info">
         <h3>Quick help</h3>
         <div id="contextHelp">
-            <p>On this page you specify the parameters for the chromatic
-                aberration correction.</p>
-            <p>These parameters comprise the shifts along x, y, z, the rotations
-                and the zoom factors across channels.</p>
+            <p>On this page you specify the parameters of those 
+               restoration operations to be carried out on the deconvolved
+               image.</p>
         </div>
     </div>
 

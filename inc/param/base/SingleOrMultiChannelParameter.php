@@ -16,7 +16,7 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  * with prefixing.
  *
  * @todo Check whether this is still used anywhere.
- * 
+ *
  * @package hrm
  */
 class SingleOrMultiChannelParameter extends ChoiceParameter {
@@ -74,7 +74,6 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
      * the value is set as final value of the SingleOrMultiChannelParameter.
      *
      * @param  mixed $value  New value for the SingleOrMultiChannelParameter.
-     * @see postfix
     */
     public function setValue($value) {
         if (!strstr($value, "_")) {
@@ -122,7 +121,7 @@ class SingleOrMultiChannelParameter extends ChoiceParameter {
 
     /**
      * Returns the internal possible values of the SingleOrMultiChannelParameter
-     * @return string The internal possible values of the Parameter, which are
+     * @return array The internal possible values of the Parameter, which are
      * the <b>checked</b> values with the prefix prepended.
     */
     public function internalPossibleValues() {

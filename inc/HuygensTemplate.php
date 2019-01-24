@@ -553,21 +553,22 @@ class HuygensTemplate
 
         /* Options for the 'execute deconvolution' action */
         $this->algArray =
-            array('q'       => '',
-                  'brMode'  => '',
-                  'varPsf'  => '',
-                  'it'      => '',
-                  'bgMode'  => '',
-                  'bg'      => '',
-                  'sn'      => '',
-                  'blMode'  => 'auto',
-                  'pad'     => 'auto',
-                  'psfMode' => '',
-                  'psfPath' => '',
-                  'timeOut' => '36000',
-                  'mode'    => 'fast',
-                  'itMode'  => 'auto',
-                  'listID'  => '');
+            array('q'          => '',
+                  'brMode'     => '',
+                  'varPsf'     => '',
+                  'it'         => '',
+                  'bgMode'     => '',
+                  'bg'         => '',
+                  'sn'         => '',
+                  'blMode'     => 'auto',
+                  'pad'        => 'auto',
+                  'reduceMode' => 'auto',
+                  'psfMode'    => '',
+                  'psfPath'    => '',
+                  'timeOut'    => '36000',
+                  'mode'       => 'fast',
+                  'itMode'     => 'auto',
+                  'listID'     => '');
 
         /* Options for the 'autocrop' action. */
         $this->autocropArray =
@@ -1874,7 +1875,8 @@ class HuygensTemplate
 
         foreach ($this->algArray as $key => $value) {
 
-            if ($key != "mode" && $key != "itMode" && $key != 'listID') {
+            if ($key != "mode" && $key != "reduceMode" 
+                && $key != "itMode" && $key != 'listID') {
                 $taskDescr .= " " . $key . " ";
             }
 
@@ -1923,6 +1925,12 @@ class HuygensTemplate
                         $taskDescr .= $value;
                     }
                     break;
+                case 'reduceMode':
+                    if ($this->getAlgorithm() == "cmle") {
+                        $taskDescr .= " " . $key . " ";
+                        $taskDescr .= $this->getArrDetReductionMode();                        
+                    }                    
+                    break;                
                 case 'listID':
                     break;
                 default:
@@ -1976,7 +1984,49 @@ class HuygensTemplate
             }
         }
 
+          /* Special case for GMLE where varPsf is always on. */
+        if ($this->getAlgorithm() == "gmle" && $varPsf == "off") {
+            $varPsf = "one";
+        }
+
         return $varPsf;
+    }
+
+    /**
+     * Gets the array detector reduction mode.
+     * @return string Reduction mode.
+     */
+    private function getArrDetReductionMode()
+    {
+        /* Initialize. */
+        $reductionModeStr = "auto";
+
+        $reductionModeParam = $this->deconSetting->parameter("ArrayDetectorReductionMode");
+        $reductionModeValue = $reductionModeParam->value();
+
+        switch ($reductionModeValue) {
+            case 'auto':
+            case 'all':
+            case 'safe':
+            case 'no':
+            case 'superY':
+            case 'superXY':
+                $reductionModeStr = $reductionModeValue;
+                break;
+            case 'core no':
+                $reductionModeStr = "coreNo";
+                break;
+            case 'core all':
+                $reductionModeStr = "coreAll";
+                break;
+            case 'aggressive':
+                $reductionModeStr = "aggr";
+                break;            
+            default:
+                Log::error("Reduction mode '$reductionModeValue' not yet implemented.");                
+        }
+
+        return $reductionModeStr;
     }
 
     /**
@@ -1996,7 +2046,7 @@ class HuygensTemplate
         } else {
             return "manual";
         }
-    }
+    }    
 
     /**
      * Gets the background value. One channel.
@@ -2301,6 +2351,7 @@ class HuygensTemplate
             return $bgRate[$channel];
         } else {
             Log::error("Unknown colocalization threshold mode.");
+            // @TODO Return something usable!
             return;
         }
     }
@@ -2590,6 +2641,8 @@ class HuygensTemplate
             default:
                 // @todo Return something usable in this case!
                 Log::error("Parameter $paramName not yet implemented");
+
+                // @TODO Set $paramConf to something usable!
         }
 
         return $paramConf;
@@ -2974,52 +3027,6 @@ class HuygensTemplate
             return;
         }
 
-        $imgDims = $this->getImageDimensions($image);
-
-        $imgSizeX = $imgDims['sizeX'];
-        $imgSizeY = $imgDims['sizeY'];
-        $imgSizeZ = $imgDims['sizeZ'];
-        $imgSizeT = $imgDims['sizeT'];
-
-        if ($imgSizeX == 0 && $imgSizeY == 0) {
-            $this->compareZviews = FALSE;
-            $this->compareTviews = FALSE;
-            return;
-        }
-
-        if ($imgSizeX < $maxComparisonSize) {
-            $imgSizeX = $maxComparisonSize;
-        }
-
-        if ($imgSizeY < $maxComparisonSize) {
-            $imgSizeY = $maxComparisonSize;
-        }
-
-        /* It could happen that even if imgSizeX and imgSizeY are small the image
-         contains so many slices or time frames that the slicer gets huge. */
-        $slicerPixelsX = 2 * $imgSizeX;
-        $slicerPixelsYZ = $imgSizeY * $imgSizeZ;
-        $slicerPixelsYT = $imgSizeY * $imgSizeT;
-
-        /* The maximum number of pixels per dimension that the JPEG libraries
-     can handle. If the image is larger than this, we won't be able to
-     generate a slicer preview. */
-        $maxPixelsPerDim = 65000;
-        
-        if ($slicerPixelsX >= $maxPixelsPerDim) {
-            $this->compareZviews = FALSE;
-            $this->compareTviews = FALSE;
-            return;
-        }
-
-        if ($slicerPixelsYZ >= $maxPixelsPerDim) {
-            $this->compareZviews = FALSE;
-        }
-
-        if ($slicerPixelsYT >= $maxPixelsPerDim) {
-            $this->compareTviews = FALSE;
-        }
-
         /* The dimensions of the raw and restored data will be different
            if the time stabilization is on with a cropping scheme other than
            'original'. In that case disable the T comparison. */
@@ -3176,26 +3183,6 @@ class HuygensTemplate
     {
         $destInfo = pathinfo($this->destImage);
         return basename($this->destImage, '.' . $destInfo['extension']);
-    }
-
-    /**
-     * Gets x, y, z, t and channel dimensions.
-     * @todo Document input argument!
-     * @param ?? $image ??
-     * @return array An array with X,Y,Z,T,C dimensions.
-     */
-    private function getImageDimensions($image)
-    {
-
-        /* Get file path, name and time series option */
-        $pathInfo = pathinfo($image);
-        $path = $pathInfo['dirname'];
-        $filename = $pathInfo['basename'];
-        $series = $this->getSeriesMode();
-        $opt = "-path \"$path\" -filename \"$filename\" -series $series";
-
-        /* Retrieve the image dimensions */
-        return HuygensTools::askHuCore("reportImageDimensions", $opt);
     }
 
     /**

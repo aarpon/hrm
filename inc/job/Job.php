@@ -159,16 +159,17 @@ class Job
         );
 
         $this->restParam = array(
-            'algorithm'        => 'Deconvolution algorithm',
-            'iterations'       => 'Number of iterations',
-            'quality'          => 'Quality stop criterion',
-            'format'           => 'Output file format',
-            'absolute'         => 'Background absolute value',
-            'estimation'       => 'Background estimation',
-            'ratio'            => 'Signal/Noise ratio',
-            'autocrop'         => 'Autocrop',
-            'z stabilization'  => 'Z Stabilization',
-            't stabilization'  => 'T Stabilization');
+            'algorithm'                       => 'Deconvolution algorithm',
+            'iterations'                      => 'Number of iterations',
+            'quality'                         => 'Quality stop criterion',
+            'format'                          => 'Output file format',
+            'absolute'                        => 'Background absolute value',
+            'estimation'                      => 'Background estimation',
+            'ratio'                           => 'Signal/Noise ratio',
+            'array detector reduction mode'   => 'Array detector reduction mode',
+            'autocrop'                        => 'Autocrop',
+            'z stabilization'                 => 'Z Stabilization',
+            't stabilization'                 => 'T Stabilization');
     }
 
     /**
@@ -382,7 +383,7 @@ class Job
 
         // Server name without proc number
         $server = $this->server;
-        $s = split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
 
         $desc = $this->description();
@@ -401,27 +402,25 @@ class Job
             $image = $huygens_server_image_folder . "/" . $user->name() .
                 "/" . $image_destination . "/" .
                 $desc->relativeSourcePath() . $destFileName . "*";
-            $previews = $huygens_server_image_folder;
+            $previews = $huygens_server_image_folder . "/";
             $previews .= $user->name() . "/" . $image_destination . "/";
             $previews .= $desc->relativeSourcePath() . "hrm_previews/";
             $previews .= "*" . $desc->id() . "_hrm*";
             // escape special characters in image path
-            $image = eregi_replace(" ", "\\ ", $image);
+            $image = preg_replace("/ /", "\\ ", $image);
             $image = str_replace(".ics", ".i*s", $image);
-            $previews = eregi_replace(" ", "\\ ", $previews);
+            $previews = preg_replace("/ /", "\\ ", $previews);
 
-            $result = exec("sudo mkdir -p " . escapeshellarg($path));
-            $result = exec("sudo mkdir -p " . escapeshellarg($path)
-                . "/hrm_previews");
+            // Try retrieving the results from the remote machine
+            $result = exec("mkdir -p " . escapeshellarg($path));
+            $result = exec("mkdir -p " . escapeshellarg($path) . "/hrm_previews");
 
             $result = exec("(cd " . escapeshellarg($path) .
-                " && sudo scp " . $huygens_user . "@" . $server_hostname .
+                " && scp " . $huygens_user . "@" . $server_hostname .
                 ":" . escapeshellarg($image) . " .)");
             $result = exec("(cd " . escapeshellarg($path) .
-                "/hrm_previews && sudo scp " . $huygens_user . "@" .
+                "/hrm_previews && scp " . $huygens_user . "@" .
                 $server_hostname . ":" . escapeshellarg($previews) . " .)");
-
-            //Log::error($result);
         }
 
         // TODO is checking for job id only a good idea?
@@ -469,7 +468,7 @@ class Job
 
         // Server name without proc number
         $server = $this->server;
-        $s = split(" ", $server);
+        $s = explode(" ", $server);
         $server_hostname = $s[0];
 
         $desc = $this->description();
@@ -500,12 +499,11 @@ class Job
             //ls " . $marker);
             //Log::error($result);
 
-            // TODO: is the queue manager a sudoer?
             if ($remoteFile == $marker) {
                 if (!file_exists($dpath)) {
-                    $result = exec("sudo mkdir -p " . escapeshellarg($dpath));
+                    $result = exec("mkdir -p " . escapeshellarg($dpath));
                 }
-                exec("(cd " . $dpath . " && sudo scp " . $huygens_user . "@"
+                exec("(cd " . $dpath . " && scp " . $huygens_user . "@"
                     . $server_hostname . ":" . $marker . " .)");
 
                 $this->filterHuygensOutput();

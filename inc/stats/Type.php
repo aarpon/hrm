@@ -146,6 +146,7 @@ class Type
     private function getPieChart(DatabaseConnection $db, $variable, $group,
                                  $dateFilter, $groupFilter, $userNameFilter)
     {
+        global $switch_to_dark_mode;
 
         if (strstr($this->m_Name, 'Coloc')) {
             $colocFilter = " AND ColocAnalysis = '1' ";
@@ -212,21 +213,30 @@ class Type
 
         // Create script
         // -------------------------------------------------------------------------
+        if ($switch_to_dark_mode) {
+            $labelColor = 'white';
+            $mainBgColor = '#1e1e1e';
+        } else {
+            $labelColor = 'black';
+            $mainBgColor = 'white';
+        }
+
         $script = "$(document).ready(function() {
-        var chart = new Highcharts.Chart({
-        chart: { renderTo: 'statschart', margin: [50, 200, 60, 170] },
-        title: { text: '" . $title . "'  },
-        subtitle: { text: '" . $subtitle . "' },
-        plotArea: { shadow: null, borderWidth: null, backgroundColor: null },
-        tooltip: { formatter: function() { return '<b>'+ this.point.name +'</b>: '+ this.y +' %'; } },
-        plotOptions: { pie: { dataLabels: { enabled: true,
+            var chart = new Highcharts.Chart({
+            chart: { renderTo: 'statschart', margin: [50, 200, 60, 170], backgroundColor: '" . $mainBgColor . "' },
+            title: { text: '" . $title . "'  },
+            subtitle: { text: '" . $subtitle . "' },
+            plotArea: { shadow: null, borderWidth: null, backgroundColor: null },
+            tooltip: { formatter: function() { return '<b>'+ this.point.name +'</b>: '+ this.y +' %'; } },
+            plotOptions: { pie: { dataLabels: { enabled: true,
                                             formatter: function() { if (this.y > 5) return this.point.name; },
-                                            color: 'black',
+                                            color: '" . $labelColor . "',
                                             style: { font: '13px Trebuchet MS, Verdana, sans-serif' } } } },
-	legend: { layout: 'vertical', style: { left: 'auto', bottom: 'auto', right: '50px', top: '100px' } },
-        series: [{ type: 'pie', name: '" . $title . "', data: " . $data . " } ] });
-		});
-    ";
+	        legend: { layout: 'vertical', style: { left: 'auto', bottom: 'auto', right: '50px', top: '100px' } },
+            series: [{ type: 'pie', name: '" . $title . "', data: " . $data . " } ] });
+	    	});
+            ";  
+        
         return $script;
     }
 

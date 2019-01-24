@@ -62,7 +62,8 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
  **************************************************************************** */
 
 if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
-    if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])
+    if ($_SESSION['user']->isAdmin()
+    || $_SESSION['task_setting']->isEligibleForCAC()
     || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
         header("Location: " . "post_processing.php");
         exit();
@@ -487,6 +488,67 @@ for ($j = 1; $j <= 4; $j++) {
 
                 </select>
         </div> <!-- Autocrop -->
+
+        <div id="ArrayDetectorReductionMode">
+        <?php
+            if ($_SESSION['user']->isAdmin()
+               || $_SESSION['task_setting']->isEligibleForArrayReduction($_SESSION['setting'])) {
+
+            ?>
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('arrayDetectorReductionMode');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/ArrayDetector')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Array Detector Reduction Mode
+                </legend>
+
+                <select id="ArrayDetectorReductionMode"
+                        title="ArrayDetectorReductionMode"
+                        name="ArrayDetectorReductionMode"
+                        class="ArrayDetectorReductionMode">
+                    <?php
+
+                    /*
+                          ARRAY DETECTOR REDUCTION MODE
+                    */
+                    $parameterReductionMode =
+                        $_SESSION['task_setting']->parameter("ArrayDetectorReductionMode");
+                    $possibleValues = $parameterReductionMode->possibleValues();
+                    $selectedMode = $parameterReductionMode->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterReductionMode->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+
+            <?php
+            } else {
+                 $_SESSION['task_setting']->parameter("ArrayDetectorReductionMode")->setValue('all');
+            ?>
+                 <input name="ArrayDetectorReductionMode" type="hidden" value="all">
+            <?php
+            }
+            ?>
+        </div> <!-- ArrayDetectorReductionMode -->
+
         <!-- background mode -->
         <fieldset class="setting provided"
                   onmouseover="changeQuickHelp('background');">
@@ -587,7 +649,7 @@ for ($j = 1; $j <= 4; $j++) {
                                 <input
                                     id="BackgroundOffsetPercent<?php echo $i ?>"
                                     name="BackgroundOffsetPercent<?php echo $i ?>"
-                                    title="Background offset percent"
+                                    title="Background offset"
                                     type="text"
                                     size="8"
                                     value="<?php echo $val ?>"
@@ -762,7 +824,8 @@ for ($j = 1; $j <= 4; $j++) {
 
             <?php
             /* Don't proceed to the post processing page. */
-            if ($_SESSION['task_setting']->isEligibleForCAC($_SESSION['setting'])
+            if ($_SESSION['user']->isAdmin()
+            || $_SESSION['task_setting']->isEligibleForCAC()
             || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
                 ?>
                 <input type="submit" value="" class="icon next"

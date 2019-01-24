@@ -34,7 +34,7 @@ class System
      * Current HRM minor version. This value has to be set by the developers!
      * @var int
      */
-    const HRM_VERSION_MINOR = 5;
+    const HRM_VERSION_MINOR = 6;
 
     /**
      * Current HRM maintenance (patch) version. This value has to be set by the
@@ -48,7 +48,7 @@ class System
      * set by the developers!
      * @var int
      */
-    const DB_LAST_REVISION = 16;
+    const DB_LAST_REVISION = 17;
 
     /**
      * Minimum HuCore (major) version number to be compatible with HRM.
@@ -322,7 +322,9 @@ class System
                 "spim" => "SPIM",
                 "sted" => "STED",
                 "sted3D" => "STED 3D",
-                "widefield" => "Widefield"
+                "widefield" => "Widefield",
+                "rescan" => "Rescan",
+                "detector-array" => "Array detector confocal"
             ),
             "file_formats" => array(
                 "all-formats-reader" => "Additional file readers"

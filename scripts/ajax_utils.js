@@ -101,3 +101,28 @@ function ajaxSetFileFormat(pFormat) {
     }
   );
 }
+
+// Requires jQuery
+// Calls the subsequent javaScript code to retrieve an image preview (2D, 3D, mockup, etc).
+// \param pFilename: name of the selected file 
+// \param pFolder: whether 'src' or 'dst'.
+function ajaxGetImgPreview(pFilename, pIndex, pFolder) {
+  $.ajaxSetup ({  
+    cache: false  
+  });
+  $.post(
+    "ajax/ajax.php",
+    { action: "getImgPreview",
+      filename: pFilename,
+      index:    pIndex,
+      folder:   pFolder
+    },
+    function(data) {
+      // 'data' should contain here a string with the subsequent
+      // javaScript function (and correct arguments) to call and 
+      // to retrieve the proper preview. Simply evaluate the string
+      // to call the underlying javaScript.
+      eval(data);
+    }
+  );
+}

@@ -16,31 +16,61 @@ namespace hrm;
  */
 class HuygensTools
 {
-
     /**
-     * Calls a local hucore (that must be in the $PATH) to
+     * Calls a local hucore ($local_huygens_core, as defined in settings) to
      * execute some freeware image processing tools, or report
      * parameters. This local hucore doesn't need to have a license!
      * @param string $tool is the procedure in scripts/hucore.tcl to be executed.
      * @param string $options are extra command line options to send to that script
+     * @param string $server (optional) Server where to run the command; if $server is empty, it
+     *                will be run on localhost.
+     * @param string $hucorePath (optional) Full path to hucore; if $hucorePath is empty, $local_huygens_core
+     *                from the settings will be used.
      * @return array|null An array with all stdout lines
+     * @throws \Exception if a $remote server is specified with no hucore full path.
      */
-    public static function huCoreTools($tool, $options)
+    public static function huCoreTools($tool, $options, $server="", $hucorePath="")
     {
-        global $hrm_path, $local_huygens_core;
+        global $hrm_path, $local_huygens_core, $huygens_user;
 
-        if (!isset($local_huygens_core)) {
-            echo "Huygens tools can only work if you define a variable " .
-                "'local_huygens_core' in the configuration files pointing to a local " .
-                "hucore. Administrator: see hrm_client_config.inc.sample.";
-            return null;
+        // Local or remote server?
+        $serverIsLocaHost = False;
+        if (strcmp($server, "") == 0 || strcmp(strtolower($server), "localhost") == 0) {
+            $serverIsLocaHost = True;
         }
 
-        $cmd = "$local_huygens_core -noExecLog -checkUpdates disable " .
+        // Use specified hucore path or fall back to $local_huygens_core?
+        if ($serverIsLocaHost == true) {
+            if (strcmp($hucorePath, "") == 0) {
+                if (!isset($local_huygens_core)) {
+                    Log::error("Huygens tools can only work if you define a variable " .
+                        "'local_huygens_core' in the configuration files pointing to a local " .
+                        "hucore. Administrator: see hrm_client_config.inc.sample.");
+                    return null;
+                }
+                $hucorePathToUse = $local_huygens_core;
+            } else {
+                $hucorePathToUse = $hucorePath;
+            }
+        } else {
+            if (strcmp($hucorePath, "") == 0) {
+                throw new \Exception("A full hucore path must be specified for a remote server!");
+            }
+            $hucorePathToUse = $hucorePath;
+        }
+
+        // Build the core command
+        $cmd = "$hucorePathToUse -noExecLog -checkUpdates disable " .
             "-task \"$hrm_path/scripts/hucore.tcl\" " .
             "-huCoreTcl \"$hrm_path/scripts/hucore.tcl\" " .
             "-tool $tool $options 2>&1";
 
+        // If needed, wrap it in an ssh call
+        if ($serverIsLocaHost == False) {
+            $cmd = 'ssh -f ' . $huygens_user . "@" . $server . " '" . $cmd . " '";
+        }
+
+        // Get the proper (local or remote) Processor
         $answer = exec($cmd, $output, $result);
 
         if ($result == 0) {
@@ -77,16 +107,24 @@ class HuygensTools
      * @param string $tool It is the procedure in scripts/hucore.tcl to be executed.
      * @param string $options These are extra command line options to send to that script
      * hucore output. By default, it uses the same tool name.
+     * @param string $server (optional) Server where to run the command; if $server is empty, it
+     *                will be run on localhost.
+     * @param string $hucorePath (optional) Full path to hucore; if $hucorePath is empty, $local_huygens_core
+     *                from the settings will be used.
      * @return array|string The requested array.
      * @todo Do not return different types!
      */
-    public static function askHuCore($tool, $options = "")
+    public static function askHuCore($tool, $options = "", $server="", $hucorePath="")
     {
 
-        $answer = self::huCoreTools($tool, $options);
+        try {
+            $answer = self::huCoreTools($tool, $options, $server, $hucorePath);
+        } catch (\Exception $e) {
+            $answer = null;
+        }
 
         if (!$answer)
-            return "(nothing)";
+            return null;
 
         $lines = count($answer);
         $msg = "";

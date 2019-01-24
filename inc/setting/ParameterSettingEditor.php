@@ -76,6 +76,10 @@ class ParameterSettingEditor extends SettingEditor
         $opts = "-path \"" . $dirName . "\" -filename \"$fileName\"";
 
         $data = HuygensTools::askHuCore('getMetaDataFromImage', $opts);
+        if ($data == null) {
+            $this->message = "Could not retrieve metadata!";
+            return False;
+        }
 
         $setting->parseParamsFromHuCore($data);
         $this->message = $setting->message();
