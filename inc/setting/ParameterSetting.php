@@ -1751,6 +1751,8 @@ class ParameterSetting extends Setting {
         // pinhole size if the microscope type is 'widefield'.
         /** @var Parameter $parameter */
         foreach ($this->parameter as $parameter) {
+            if (!$this->isArrDetConf() && $parameter->name() == 'CCDCaptorSizeY')
+                continue;
             if (!$this->hasPinhole() && $parameter->name() == 'PinholeSize')
                 continue;
             if ($parameter->name() == 'ImageFileFormat')
