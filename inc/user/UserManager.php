@@ -143,7 +143,7 @@ class UserManager
     /**
      * Checks whether a seed for a user creation request exists.
      *
-     * Notice, that the user must also have status != UserConstants::STATUS_PASSWORD_RESET
+     * Notice, that the user must also have status = UserConstants::STATUS_NEW_ACCOUNT
      * in the database.
      *
      * @param string $seed Seed to be compared.
@@ -152,8 +152,8 @@ class UserManager
     public static function existsUserRegistrationRequestWithSeed($seed)
     {
         $db = new DatabaseConnection();
-        $query = "SELECT seedid FROM username WHERE status!='" .
-            UserConstants::STATUS_PASSWORD_RESET . "' AND seedid = '$seed';";
+        $query = "SELECT seedid FROM username WHERE status=='" .
+            UserConstants::STATUS_NEW_ACCOUNT . "' AND seedid = '$seed';";
         $value = $db->queryLastValue($query);
         if ($value == false) {
             return false;
@@ -714,7 +714,7 @@ class UserManager
             UserConstants::STATUS_ACTIVE . "' OR status = '" .
             UserConstants::STATUS_OUTDATED . "' OR status = '" .
             UserConstants::STATUS_PASSWORD_RESET . "') " .
-        "AND (seedid IS NULL OR length(seedid) = 0) ORDER BY name;");
+        "ORDER BY name;");
         return $rows;
     }
 
@@ -728,7 +728,7 @@ class UserManager
     {
         $db = new DatabaseConnection();
         $rows = $db->query("SELECT * FROM username WHERE (seedid IS NOT NULL OR length(seedid) > 0)" .
-            " AND status='" . UserConstants::STATUS_PASSWORD_RESET . "' ORDER BY name;");
+            " AND status='" . UserConstants::STATUS_NEW_ACCOUNT . "' ORDER BY name;");
         return $rows;
     }
 
