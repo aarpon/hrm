@@ -38,6 +38,11 @@ class UserConstants
     const STATUS_PASSWORD_RESET = 'r';
 
     /**
+     * A new user requested an account.
+     */
+    const STATUS_NEW_ACCOUNT = 'n';
+
+    /**
      * This is the one and only HRM super administrator.
      */
     const ROLE_SUPERADMIN = 0;

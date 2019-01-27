@@ -114,7 +114,7 @@ if (isset($_POST["OK"])) {
                 $clean["pass1"], $clean["email"], $clean["group"],
                 $institution_id, "integrated",
                 UserConstants::ROLE_USER,
-                UserConstants::STATUS_ACTIVE,
+                UserConstants::STATUS_NEW_ACCOUNT,
                 $uniqueId);
 
             // TODO refactor

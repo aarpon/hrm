@@ -76,8 +76,7 @@ abstract class AbstractProxy {
     abstract public function getGroup($username);
 
     /**
-     * Checks whether a request from the user with given name was accepted by
-     * the administrator and his active.
+     * Checks whether the user with given name his active.
      * @param string $username Username for which to query the active status.
      * @return bool True if the user is active, false otherwise.
      * @override
