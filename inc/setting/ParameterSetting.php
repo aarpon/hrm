@@ -1231,32 +1231,34 @@ class ParameterSetting extends Setting {
         }
 
         // CCDCaptorSizeY
-        $valueSet = isset($postedParameters["CCDCaptorSizeY"]) &&
-        $postedParameters["CCDCaptorSizeY"] != '';
+        if ($this->isArrDetConf()) {
+            $valueSet = isset($postedParameters["CCDCaptorSizeY"]) &&
+            $postedParameters["CCDCaptorSizeY"] != '';
 
-        $parameter = $this->parameter("CCDCaptorSizeY");
+            $parameter = $this->parameter("CCDCaptorSizeY");
 
-        if ($valueSet) {
+            if ($valueSet) {
 
-        // Set the Parameter and check the value
-            $parameter->setValue($postedParameters["CCDCaptorSizeY"]);
-            $this->set($parameter);
-            if (!$parameter->check()) {
-                $this->message = $parameter->message();
-                $noErrorsFound = False;
-            }
-        } else {
+            // Set the Parameter and check the value
+                $parameter->setValue($postedParameters["CCDCaptorSizeY"]);
+                $this->set($parameter);
+                if (!$parameter->check()) {
+                    $this->message = $parameter->message();
+                    $noErrorsFound = False;
+                }
+            } else {
 
-            $mustProvide = $parameter->mustProvide();
+                $mustProvide = $parameter->mustProvide();
 
-            // Reset the Parameter
-            $parameter->reset();
-            $this->set($parameter);
+                // Reset the Parameter
+                $parameter->reset();
+                $this->set($parameter);
 
-            // If the Parameter value must be provided, we return an error
-            if ($mustProvide) {
-                $this->message = "Please set the pixel size!";
-                $noErrorsFound = False;
+                // If the Parameter value must be provided, we return an error
+                if ($mustProvide) {
+                    $this->message = "Please set the pixel size!";
+                    $noErrorsFound = False;
+                }
             }
         }
 
