@@ -485,21 +485,17 @@ class Job
         // If fileshare is not on the same host as Huygens.
         if (!$imageProcessingIsOnQueueManager) {
 
-            // Old code: to be removed.
-            // $marker = $huygens_server_image_folder . "/" . $user->name() .
-            // "/" . $image_destination . "/" . $finishedMarker;
-
             // Copy the finished marker
             $marker = $dpath . $finishedMarker;
             $remoteFile = exec("ssh " . $huygens_user . "@" .
                 $server_hostname . " ls " . $marker);
 
-            // Old code: to be removed.
-            //Log::error("ssh " . $huygens_user . "@" . $server_hostname . "
-            //ls " . $marker);
-            //Log::error($result);
+           $result = !$proc->existsHuygensProcess($this->pid());
 
-            if ($remoteFile == $marker) {
+            // Notice that the job is finished if $result = true.
+            if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
+                $proc->rewakeHuygensProcess($this->pid());
+            } elseif ($result && $remoteFile == $marker) {
                 if (!file_exists($dpath)) {
                     $result = exec("mkdir -p " . escapeshellarg($dpath));
                 }
@@ -507,10 +503,11 @@ class Job
                     . $server_hostname . ":" . $marker . " .)");
 
                 $this->filterHuygensOutput();
+
+		        $result = file_exists($marker);
             }
         }
 
-        $result = file_exists($dpath . $finishedMarker);
 
         if ($imageProcessingIsOnQueueManager) {
 
