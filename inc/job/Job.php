@@ -504,7 +504,7 @@ class Job
 
                 $this->filterHuygensOutput();
 
-		        $result = file_exists($marker);
+		$result = file_exists($marker);
             }
         }
 
