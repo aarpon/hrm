@@ -257,6 +257,8 @@ class ExternalProcess
     {
         global $huygens_user;
 
+        /* Some versions or configurations of SSH close the connection
+           right away if there's no redirection of stderr to stdout. */
         $cmd = 'ssh -f ' . $huygens_user . "@" . $this->host . " '" .
             $command . " 2>&1";
         $cmd .= " & echo $!'\n";
