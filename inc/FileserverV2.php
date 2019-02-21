@@ -172,7 +172,7 @@ class FileserverV2
         // QM can process the file.
 
         // First, start with the directories.
-        $chmodCmd = "find " . $destDir . " -type d -exec chmod 0750 {} +";
+        $chmodCmd = "find " . $destDir . " -type d -exec chmod 0777 {} +";
         exec($chmodCmd, $chmodOutput, $chmodResult);
         Log::info("Chmod subdirectories with command: $chmodCmd, got: " . print_r($chmodOutput,true)); 
 
