@@ -89,13 +89,6 @@ class DatabaseConnection
             "Sted3D" => "sted3D");
     }
 
-    public function __destruct() {
-        if ($this->connection != null && $this->connection->isConnected()) {
-            $this->connection->Close();
-            $this->connection = null;
-        }
-    }
-
     /**
      * Checks whether a connection to the DB is possible.
      * @return boolean True if the connection is possible, false otherwise.
