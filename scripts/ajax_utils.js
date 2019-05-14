@@ -87,7 +87,7 @@ function ajaxGetJobQueueTable(id) {
 // Requires jQuery
 // Stores the selected file format in the session
 // \param pFormat: selected file format
-function ajaxSetFileFormat(pFormat) {
+function ajaxSetFileFormat(pFormat, _callback) {
   $.ajaxSetup ({  
     cache: false  
   });
@@ -97,7 +97,9 @@ function ajaxSetFileFormat(pFormat) {
       format: pFormat
     },
     function(data) {
-      // Nothing to return
+        if (typeof _callback === "function") {
+            _callback(data);
+        }
     }
   );
 }

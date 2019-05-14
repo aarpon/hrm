@@ -97,7 +97,7 @@ function storeFileFormatSelection(sel,series) {
    var format = $('#' + sel.id + ' :selected').attr(\"name\");
 
    // Store it
-   ajaxSetFileFormat(format);
+   ajaxSetFileFormat(format, function(data){ document.getElementById('select').submit(); });
 };
 ";
 
@@ -245,7 +245,7 @@ $info = "<h3>Quick help</h3>" .
                     id="ImageFileFormat"
                     title="Supported image file formats"
                     size="1"                    
-                    onchange="storeFileFormatSelection(this,autoseries);this.form.submit();"
+                    onchange="storeFileFormatSelection(this,autoseries);"
                     onkeyup="this.blur();this.focus();">
 
 
