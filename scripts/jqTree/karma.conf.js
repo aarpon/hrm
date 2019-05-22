@@ -3,37 +3,80 @@
 
 module.exports = function(config) {
     config.set({
-
         // base path that will be used to resolve all patterns (eg. files, exclude)
-        basePath: '',
+        basePath: "",
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['browserify', 'qunit'],
+        frameworks: ["qunit"],
 
         // list of files / patterns to load in the browser
         files: [
-            'src/karma-test.js',
-            'static/bower_components/json3/lib/json3.js'
+            {
+                pattern: "static/bower_components/jquery/dist/jquery.min.js",
+                watched: false
+            },
+            {
+                pattern:
+                    "static/bower_components/jquery-mockjax/dist/jquery.mockjax.js",
+                watched: false
+            },
+            { pattern: "src_test/test.ts", watched: false }
         ],
 
         // list of files to exclude
-        exclude: [
-        ],
+        exclude: [],
 
         preprocessors: {
-            'src/karma-test.js': ['browserify']
+            "src_test/test.ts": ["webpack"]
         },
 
-        browserify: {
-            transform: ['coffeeify'],
-            extensions: ['.js', '.coffee']
+        webpack: {
+            resolve: {
+                extensions: [".ts", ".js"]
+            },
+            mode: "development",
+            module: {
+                rules: [
+                    {
+                        test: /\.ts$/,
+                        exclude: /node_modules/,
+                        use: {
+                            loader: "ts-loader",
+                            options: {
+                                compilerOptions: {
+                                    inlineSourceMap: true
+                                }
+                            }
+                        },
+                    },
+                    {
+                        test: /\.ts$/,
+                        exclude: /node_modules/,
+                        use: {
+                            loader: "istanbul-instrumenter-loader"
+                        },
+                        enforce: 'post'
+                    }
+                ]
+            },
+            externals: {
+                jquery: "jQuery"
+            }
+        },
+
+        mime: {
+            "text/x-typescript": ["ts", "tsx"]
         },
 
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress'],
+        reporters: ["progress", "coverage-istanbul"],
+
+        coverageIstanbulReporter: {
+            reports: [ "text-summary", "lcov" ]
+        },
 
         // web server port
         port: 9876,
@@ -50,7 +93,14 @@ module.exports = function(config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['Chrome', 'Firefox', 'PhantomJS', 'IE7 - WinXP'],
+        browsers: ["ChromeHeadlessNoSandbox"],
+
+        customLaunchers: {
+            ChromeHeadlessNoSandbox: {
+                base: "ChromeHeadless",
+                flags: ["--no-sandbox"]
+            }
+        },
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits

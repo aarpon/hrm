@@ -43,8 +43,12 @@ $emSetting = $emSettingArr[$chan];
     <meta charset="utf-8">
     <title>Huygens Remote Manager</title>
 
-    <!-- Include jQuery -->
-    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
+    <!-- jQuery UI -->
+    <link rel="stylesheet" href="vendor/components/jqueryui/themes/dark-hive/jquery-ui.min.css"
+
+    <!-- Include jQuery and jQuery-UI -->
+    <script type="text/javascript" src="vendor/components/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/components/jqueryui/jquery-ui.min.js"></script>
 
     <script type="text/javascript">
         <!--

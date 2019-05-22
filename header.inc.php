@@ -15,8 +15,9 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 <head>
     <meta charset="utf-8">
 
-    <!-- Include jQuery -->
-    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
+    <!-- Include jQuery and jQuery-UI -->
+    <script type="text/javascript" src="vendor/components/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/components/jqueryui/jquery-ui.min.js"></script>
 
     <!-- Main stylesheets -->
     <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.6">
@@ -45,10 +46,11 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
     <link rel="stylesheet" href="scripts/jqTree/jqtree.css">
     <link rel="stylesheet" href="css/jqtree-custom.css">
-    <link rel="stylesheet" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
+    <link rel="stylesheet" href="vendor/components/jqueryui/themes/dark-hive/jquery-ui.min.css"
 
-    <!-- Include jQuery -->
-    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
+    <!-- Include jQuery and jQuery-UI -->
+    <script type="text/javascript" src="vendor/components/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/components/jqueryui/jquery-ui.min.js"></script>
 
     <script type="text/javascript" src="scripts/common.js"></script>
 

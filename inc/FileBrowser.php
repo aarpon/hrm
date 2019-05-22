@@ -174,10 +174,7 @@ if (isset($_POST['refreshOmero'])) {
 
 // JavaScript
 $script = array("settings.js",
-                "jquery-1.8.3.min.js",
                 "jqTree/tree.jquery.js",
-                "jquery-ui/jquery-ui-1.9.1.custom.js",
-                "jquery-ui/jquery.bgiframe-2.1.2.js",
                 "fineuploader/jquery.fine-uploader.js",
                 "omero.js");
 

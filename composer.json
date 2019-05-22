@@ -46,15 +46,18 @@
   ],
   "require": {
     "php": ">5.5.0",
-    "adodb/adodb-php": "5.20.12",
+    "adodb/adodb-php": "5.20.7",
     "adldap2/adldap2": "4.0.5",
     "aarpon/php-traditional-server_old": "1.0.2",
-    "monolog/monolog": "1.19.0"
+    "monolog/monolog": "1.19.0",
+    "components/jquery": "3.3.*",
+    "components/jqueryui": "1.12.*"
   },
   "require-dev": {
     "phpunit/phpunit": "4.8.24",
     "phpdocumentor/phpdocumentor": "2.8.5",
     "squizlabs/php_codesniffer": "^2.0 || ^3.0.1",
+    "dealerdirect/phpcodesniffer-composer-installer" : "^0.4.3",
     "wimg/php-compatibility": "dev-master",
     "simplyadmire/composer-plugins": "dev-master"
   },

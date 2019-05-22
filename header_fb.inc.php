@@ -15,9 +15,6 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 <head>
     <meta charset="utf-8">
 
-    <!-- Include jQuery -->
-    <script type="text/javascript" src="scripts/jquery-1.8.3.min.js"></script>
-
     <?php
 
 if (Util::using_IE()) {
@@ -36,13 +33,17 @@ if (Util::using_IE()) {
 ?>
     <link rel="stylesheet" type="text/css" href="scripts/jqTree/jqtree.css">
     <link rel="stylesheet" type="text/css" href="css/jqtree-custom.css">
-    <link rel="stylesheet" type="text/css" href="scripts/jquery-ui/jquery-ui-1.9.1.custom.css">
+    <link rel="stylesheet" href="vendor/components/jqueryui/themes/dark-hive/jquery-ui.min.css"
 
     <!-- Fine uploader's css -->
     <link rel="stylesheet" type="text/css" href="scripts/fineuploader/fine-uploader-new.css">
     <link rel="stylesheet" type="text/css" href="css/custom_fineuploader.css?v=3.6">
     <link rel="stylesheet" type="text/css" href="css/themes/custom_fineuploader_dark.css?v=3.6" title="dark">
     <link rel="alternate stylesheet" type="text/css" href="css/themes/custom_fineuploader_light.css?v=3.6" title="light">
+
+    <!-- Include jQuery and jQuery-UI -->
+    <script type="text/javascript" src="vendor/components/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/components/jqueryui/jquery-ui.min.js"></script>
 
     <!-- Theming support -->
     <script type="text/javascript" src="scripts/theming.js"></script>

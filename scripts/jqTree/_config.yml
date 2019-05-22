@@ -11,8 +11,9 @@ collections:
   examples:
     output: true
 
-jqtree_version: 1.1.0
+jqtree_version: 1.4.10
 
 # Build settings
 markdown: kramdown
 permalink: pretty
+exclude: ["node_modules", "static/bower_components/qunit"]
