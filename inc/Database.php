@@ -10,7 +10,8 @@
 
 namespace hrm;
 
-use ADODB_mysql;
+use ADOConnection;
+use ADORecordSet;
 use hrm\job\Job;
 use hrm\job\JobDescription;
 use hrm\param\base\Parameter;
@@ -36,30 +37,31 @@ class DatabaseConnection
 {
 
     /**
-     * Private ADOConnection object.
-     * @var ADODB_mysql|\ADODB_postgres8|\ADODB_postgres9
+     * Private ADOConnection object. Do not access directly,
+     * always use $this->connection(), since this function
+     * will make sure that a persistent connection exists
+     * before accessing it.
+     *
+     * @var $connection ADOConnection
      */
-    private $connection;
+    private static $connection = null;
 
     /**
      * Maps the Parameter names between HRM and Huygens.
-     * @var array
+     * @var $parameterNameDictionary array
      */
     private $parameterNameDictionary;
 
     /**
      * DatabaseConnection constructor: creates a database connection.
+     * @throws \Exception if the connection to the database cannot be established.
      */
     public function __construct()
     {
-        global $db_type;
-        global $db_host;
-        global $db_name;
-        global $db_user;
-        global $db_password;
-
-        $this->connection = ADONewConnection($db_type);
-        $this->connection->Connect($db_host, $db_user, $db_password, $db_name);
+        // Try establishing a connection
+        if (!$this->establishConnection()) {
+            throw new \Exception("Could not connect to the database!");
+        }
 
         // Set the parameter name dictionary
         $this->parameterNameDictionary = array(
@@ -90,20 +92,56 @@ class DatabaseConnection
     }
 
     /**
+     * Destructor.
+     */
+    public function __destruct()
+    {
+        // Notice: the connection object is static to prevent creations
+        // of too many SQL connections to the server. For this reason,
+        // in the destructor of the DatabaseConnection, we specifically
+        // do not close() the open connection.
+    }
+
+    /**
      * Checks whether a connection to the DB is possible.
+     *
+     * The connection attempted is persistent. This means that if the connection
+     * is possible, it will be left open.
      * @return boolean True if the connection is possible, false otherwise.
      */
     public function isReachable()
     {
-        global $db_type;
-        global $db_host;
-        global $db_name;
-        global $db_user;
-        global $db_password;
-        /** @var ADODB_mysql|\ADODB_postgres8|\ADODB_postgres9 $connection */
-        $connection = ADONewConnection($db_type);
-        $result = $connection->Connect($db_host, $db_user, $db_password, $db_name);
-        return $result;
+        return $this->establishConnection();
+    }
+
+    /**
+     * This function is responsible for establishing the connection to the
+     * database if needed.
+     *
+     * @return true if the connection could be established, false otherwise.
+     */
+    private function establishConnection() {
+
+        // Create a persistent connection if none exists. Please notice that
+        // the connection object is static. This way if survives across calls
+        // to the DatabaseConnection constructor.
+        if (self::$connection == null) {
+
+            // Get parameters
+            global $db_type, $db_host, $db_name, $db_user, $db_password;
+
+            /** @var ADOConnection $connection */
+            $connection = ADONewConnection($db_type);
+
+            // Open a persistent connection
+            $connection->PConnect($db_host, $db_user, $db_password, $db_name);
+
+            // Store the connection as static class member
+            self::$connection = $connection;
+        }
+
+        // Return true if the connection is not null
+        return self::$connection != null;
     }
 
     /**
@@ -162,34 +200,29 @@ class DatabaseConnection
     }
 
     /**
-     * Returns the password of the database user.
-     * @return string Password of the database user.
-     */
-    public function password()
-    {
-        global $db_password;
-        return $db_password;
-    }
-
-    /**
      * Returns the ADOConnection object.
-     * @return \ADORecordSet_mysql|\ADODB_postgres8|\ADODB_postgres9 The connection object.
+     * @return ADOConnection The connection object.
      */
     public function connection()
     {
-        return $this->connection;
+        // Establish a connection if one does not exist yet
+        $this->establishConnection();
+
+        // Return it.
+        return self::$connection;
     }
 
     /**
      * Executes an SQL query.
      * @param string $query SQL query.
-     * @return \ADORecordSet_empty|\ADORecordSet_mysql|False Query result.
+     * @return ADORecordSet|False Query result.
      */
     public function execute($query)
     {
-        /** @var ADODB_mysql|\ADODB_postgres8|\ADODB_postgres9 $connection */
-        $connection = $this->connection();
-        $result = $connection->Execute($query);
+        // Create a connection if needed, and execute the query.
+
+        /** @var ADORecordSet|False $result */
+        $result = $this->connection()->Execute($query);
         return $result;
     }
 
@@ -200,12 +233,15 @@ class DatabaseConnection
      */
     public function query($queryString)
     {
+        // Create a connection if needed, and execute the query.
         $resultSet = $this->connection()->Execute($queryString);
         if ($resultSet === false) {
             return False;
         }
         /** @var \ADORecordSet $resultSet */
         $rows = $resultSet->GetRows();
+
+        /** @var array|False $rows */
         return $rows;
     }
 
@@ -217,6 +253,7 @@ class DatabaseConnection
      */
     public function queryPrepared($sql, array $values)
     {
+        // Create a connection if needed, and execute the query.
         $resultSet = $this->connection()->Execute($sql, $values);
         if ($resultSet === false) {
             return False;
@@ -229,7 +266,7 @@ class DatabaseConnection
     /**
      * Executes an SQL query and returns the last row of the results.
      * @param string $queryString SQL query.
-     * @return array Last row of the result of the query.
+     * @return array|False Last row of the result of the query.
      */
     public function queryLastRow($queryString)
     {
@@ -245,7 +282,7 @@ class DatabaseConnection
      * Executes an SQL query and returns the value in the last column of the
      * last row of the results.
      * @param string $queryString SQL query.
-     * @return string Value of the last column of the last row of the result of
+     * @return string|False Value of the last column of the last row of the result of
      * the query.
      */
     public function queryLastValue($queryString)
@@ -264,8 +301,9 @@ class DatabaseConnection
      * If the setting already exists, the old values are overwritten, otherwise
      * a new setting is created.
      *
-     * @param \hrm\setting\base\Setting $settings Settings object to be saved.
+     * @param Setting $settings Settings object to be saved.
      * @return bool True if saving was successful, false otherwise.
+     * @throws \Exception
      */
     public function saveParameterSettings(Setting $settings)
     {
@@ -352,6 +390,7 @@ class DatabaseConnection
      * @param string $targetUserName User name of the user that the Setting is
      * to be shared with.
      * @return bool True if saving was successful, false otherwise.
+     * @throws \Exception
      */
     public function saveSharedParameterSettings($settings, $targetUserName)
     {
@@ -448,6 +487,7 @@ class DatabaseConnection
      * value at the index 0.
      * @param Setting $settings Setting object to be loaded.
      * @return Setting $settings Setting object with loaded values.
+     * @throws \Exception
      * @todo Debug the switch blog (possibly buggy!)
      */
     public function loadParameterSettings($settings)
@@ -729,7 +769,7 @@ class DatabaseConnection
         // Now add the rows to the destination table
         $ok = True;
         $record = array();
-        $this->connection->BeginTrans();
+        $this->connection()->BeginTrans();
         foreach ($rows as $row) {
             $record["owner"] = $row["owner"];
             $record["setting"] = $out_setting_name;
@@ -761,9 +801,9 @@ class DatabaseConnection
 
             }
 
-            $insertSQL = $this->connection->GetInsertSQL($destParameterTable,
+            $insertSQL = $this->connection()->GetInsertSQL($destParameterTable,
                 $record);
-            $status = $this->connection->Execute($insertSQL);
+            $status = $this->connection()->Execute($insertSQL);
             $ok &= !(false === $status);
             if (!$ok) {
                 break;
@@ -773,9 +813,9 @@ class DatabaseConnection
         // If everything went okay, we commit the transaction; otherwise we roll
         // back
         if ($ok) {
-            $this->connection->CommitTrans();
+            $this->connection()->CommitTrans();
         } else {
-            $this->connection->RollbackTrans();
+            $this->connection()->RollbackTrans();
             return False;
         }
 
@@ -787,44 +827,44 @@ class DatabaseConnection
         }
 
         $ok = True;
-        $this->connection->BeginTrans();
+        $this->connection()->BeginTrans();
         $record = array();
         $row = $rows[0];
         $record["owner"] = $row["owner"];
         $record["name"] = $out_setting_name;
         $record["standard"] = 'f';
-        $insertSQL = $this->connection->GetInsertSQL($destSettingTable,
+        $insertSQL = $this->connection()->GetInsertSQL($destSettingTable,
             $record);
-        $status = $this->connection->Execute($insertSQL);
+        $status = $this->connection()->Execute($insertSQL);
         $ok &= !(false === $status);
 
         if ($ok) {
-            $this->connection->CommitTrans();
+            $this->connection()->CommitTrans();
         } else {
-            $this->connection->RollbackTrans();
+            $this->connection()->RollbackTrans();
             return False;
         }
 
         // Now we can delete the records from the source tables.
 
-        $this->connection->BeginTrans();
+        $this->connection()->BeginTrans();
 
         // Delete parameter entries
         $query = "delete from $sourceParameterTable where setting_id=$id";
-        $status = $this->connection->Execute($query);
+        $status = $this->connection()->Execute($query);
         if (false === $status) {
             return False;
         }
 
         // Delete setting entry
         $query = "delete from $sourceSettingTable where id=$id";
-        $status = $this->connection->Execute($query);
+        $status = $this->connection()->Execute($query);
         if (false === $status) {
             return False;
         }
 
         // Commit transaction
-        $this->connection->CommitTrans();
+        $this->connection()->CommitTrans();
 
         return True;
     }
@@ -860,20 +900,20 @@ class DatabaseConnection
             }
         }
 
-        $this->connection->BeginTrans();
+        $this->connection()->BeginTrans();
 
         // Delete parameter entries
         $query = "delete from $sourceParameterTable where setting_id=$id";
-        $status = $this->connection->Execute($query);
+        $status = $this->connection()->Execute($query);
         $ok &= !(false === $status);
 
         // Delete setting entry
         $query = "delete from $sourceSettingTable where id=$id";
-        $status = $this->connection->Execute($query);
+        $status = $this->connection()->Execute($query);
         $ok &= !(false === $status);
 
         // Commit transaction
-        $this->connection->CommitTrans();
+        $this->connection()->CommitTrans();
 
         return $ok;
     }
@@ -2109,7 +2149,7 @@ class DatabaseConnection
         $licStored = true;
 
         // Make sure that the hucore_license table exists.
-        $tables = $this->connection->MetaTables("TABLES");
+        $tables = $this->connection()->MetaTables("TABLES");
         if (!in_array("hucore_license", $tables)) {
             $msg = "Table hucore_license does not exist! " .
                 "Please update the database!";
@@ -2175,7 +2215,7 @@ class DatabaseConnection
     {
 
         // Make sure that the confidence_levels table exists
-        $tables = $this->connection->MetaTables("TABLES");
+        $tables = $this->connection()->MetaTables("TABLES");
         if (!in_array("confidence_levels", $tables)) {
             $msg = "Table confidence_levels does not exist! " .
                 "Please update the database!";
@@ -2197,7 +2237,7 @@ class DatabaseConnection
             if ($this->queryLastValue($query) === FALSE) {
 
                 // INSERT
-                if (!$this->connection->AutoExecute("confidence_levels",
+                if (!$this->connection()->AutoExecute("confidence_levels",
                     $confidenceLevels[$format], "INSERT")
                 ) {
                     $msg = "Could not insert confidence levels for file format $format!";
@@ -2208,7 +2248,7 @@ class DatabaseConnection
             } else {
 
                 // UPDATE
-                if (!$this->connection->AutoExecute("confidence_levels",
+                if (!$this->connection()->AutoExecute("confidence_levels",
                     $confidenceLevels[$format], 'UPDATE',
                     "fileFormat = '$format'")
                 ) {
@@ -2265,8 +2305,8 @@ class DatabaseConnection
         $record['huscript_path'] = $huPath;
         $record['status'] = 'free';
         
-        $insertSQL = $this->connection->GetInsertSQL($tableName, $record);
-        $status = $this->connection->Execute($insertSQL);
+        $insertSQL = $this->connection()->GetInsertSQL($tableName, $record);
+        $status = $this->connection()->Execute($insertSQL);
         
         return $status;
     }
@@ -2368,24 +2408,10 @@ class DatabaseConnection
      */
     private function doGlobalVariablesExist()
     {
-        global $db_type;
-        global $db_host;
-        global $db_name;
-        global $db_user;
-        global $db_password;
-
-        $test = False;
-
-        $dsn = $db_type . "://" . $db_user . ":" . $db_password . "@" . $db_host . "/" . $db_name;
-        /** @var ADODB_mysql|\ADODB_postgres8|\ADODB_postgres9 $db */
-        $db = ADONewConnection($dsn);
-        if (!$db)
-            return False;
-        $tables = $db->MetaTables("TABLES");
-        if (in_array("global_variables", $tables))
+        $tables = $this->connection()->MetaTables("TABLES");
+        if (in_array("global_variables", $tables)) {
             $test = True;
-
+        }
         return $test;
     }
-
 }
