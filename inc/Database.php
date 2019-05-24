@@ -10,7 +10,8 @@
 
 namespace hrm;
 
-use ADODB_mysql;
+use ADOConnection;
+use ADORecordSet;
 use hrm\job\Job;
 use hrm\job\JobDescription;
 use hrm\param\base\Parameter;
@@ -41,13 +42,13 @@ class DatabaseConnection
      * will make sure that a persistent connection exists
      * before accessing it.
      *
-     * @var ADODB_mysql|\ADODB_postgres8|\ADODB_postgres9
+     * @var $connection ADOConnection
      */
     private static $connection = null;
 
     /**
      * Maps the Parameter names between HRM and Huygens.
-     * @var array
+     * @var $parameterNameDictionary array
      */
     private $parameterNameDictionary;
 
@@ -129,11 +130,17 @@ class DatabaseConnection
             // Get parameters
             global $db_type, $db_host, $db_name, $db_user, $db_password;
 
-            // Open a persistent connection
+            /** @var ADOConnection $connection */
             $connection = ADONewConnection($db_type);
+
+            // Open a persistent connection
             $connection->PConnect($db_host, $db_user, $db_password, $db_name);
+
+            // Store the connection as static class member
             self::$connection = $connection;
         }
+
+        // Return true if the connection is not null
         return self::$connection != null;
     }
 
@@ -192,19 +199,9 @@ class DatabaseConnection
         return $db_user;
     }
 
-//    /**
-//     * Returns the password of the database user.
-//     * @return string Password of the database user.
-//     */
-//    public function password()
-//    {
-//        global $db_password;
-//        return $db_password;
-//    }
-
     /**
      * Returns the ADOConnection object.
-     * @return \ADORecordSet_mysql|\ADODB_postgres8|\ADODB_postgres9 The connection object.
+     * @return ADOConnection The connection object.
      */
     public function connection()
     {
@@ -218,11 +215,13 @@ class DatabaseConnection
     /**
      * Executes an SQL query.
      * @param string $query SQL query.
-     * @return \ADORecordSet_empty|\ADORecordSet_mysql|False Query result.
+     * @return ADORecordSet|False Query result.
      */
     public function execute($query)
     {
         // Create a connection if needed, and execute the query.
+
+        /** @var ADORecordSet|False $result */
         $result = $this->connection()->Execute($query);
         return $result;
     }
@@ -241,6 +240,8 @@ class DatabaseConnection
         }
         /** @var \ADORecordSet $resultSet */
         $rows = $resultSet->GetRows();
+
+        /** @var array|False $rows */
         return $rows;
     }
 
@@ -265,7 +266,7 @@ class DatabaseConnection
     /**
      * Executes an SQL query and returns the last row of the results.
      * @param string $queryString SQL query.
-     * @return array Last row of the result of the query.
+     * @return array|False Last row of the result of the query.
      */
     public function queryLastRow($queryString)
     {
@@ -281,7 +282,7 @@ class DatabaseConnection
      * Executes an SQL query and returns the value in the last column of the
      * last row of the results.
      * @param string $queryString SQL query.
-     * @return string Value of the last column of the last row of the result of
+     * @return string|False Value of the last column of the last row of the result of
      * the query.
      */
     public function queryLastValue($queryString)
@@ -300,7 +301,7 @@ class DatabaseConnection
      * If the setting already exists, the old values are overwritten, otherwise
      * a new setting is created.
      *
-     * @param \hrm\setting\base\Setting $settings Settings object to be saved.
+     * @param Setting $settings Settings object to be saved.
      * @return bool True if saving was successful, false otherwise.
      * @throws \Exception
      */
