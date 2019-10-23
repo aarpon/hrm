@@ -46,8 +46,6 @@ if (isset($_POST["password"])) {
     }
 }
 
-// TODO Clean $_POST['request']
-
 /*
  *
  * END OF SANITIZE INPUT
@@ -62,15 +60,14 @@ if (isset($_SESSION['request'])) {
 } else {
     $req = "";
 }
-if (isset($_POST['request'])) {
-    $req = $_POST['request'];
-}
 
 /* Reset all! */
 session_unset();
 session_destroy();
 
 session_start();
+// restore previously set redirect target after session reset
+$_SESSION['request'] = $req;
 
 if (isset($_POST['password']) && isset($_POST['username'])) {
     if ($clean['password'] != "" && $clean['username'] != "") {
@@ -111,6 +108,8 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
             } else {
                 // Is there a requested redirection?
                 if ($req != "") {
+                    // clean redirect target from session to avoid redirect on next login
+                    unset($_SESSION['request']);
                     header("Location: " . $req);
                     exit();
                 } else {
@@ -158,8 +157,7 @@ include("header.inc.php");
         <ul>
             <?php
             echo(Nav::linkLogIn(true,
-                ProxyFactory::getDefaultAuthenticationMode() == "integrated",
-                $req));
+                ProxyFactory::getDefaultAuthenticationMode() == "integrated"));
             ?>
         </ul>
     </div>
