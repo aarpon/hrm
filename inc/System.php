@@ -10,6 +10,8 @@
 
 namespace hrm;
 
+use Exception;
+
 require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
@@ -84,7 +86,7 @@ class System
      * string counterpart. If not passed, current HRM version is returned.
      * @return  string The HRM version number as string (e.g. 3.3)
      */
-    public static function getHRMVersionAsString($version = -1)
+    public static function getHRMVersionAsString(int $version = -1): string
     {
 
         if ($version == -1) {
@@ -106,7 +108,7 @@ class System
      * @return int The HRM version number as integer.
      */
 
-    public static function getHRMVersionAsInteger()
+    public static function getHRMVersionAsInteger(): int
     {
         return (1000000 * self::HRM_VERSION_MAJOR +
             10000 * self::HRM_VERSION_MINOR +
@@ -120,7 +122,7 @@ class System
      *
      * @return int The latest released HRM version number as integer.
      */
-    public static function getLatestHRMVersionFromRemoteAsInteger()
+    public static function getLatestHRMVersionFromRemoteAsInteger(): int
     {
         $version = file_get_contents('http://www.huygens-rm.org/updates/VERSION');
         if ($version === false) {
@@ -137,7 +139,7 @@ class System
      *
      * @return string The HRM version number as string (e.g. 3.3)
      */
-    public static function getLatestHRMVersionFromRemoteAsString()
+    public static function getLatestHRMVersionFromRemoteAsString(): string
     {
         $version = self::getLatestHRMVersionFromRemoteAsInteger();
         if ($version === -1) {
@@ -154,13 +156,13 @@ class System
      *
      * @return bool True if a newer HRM release exist, false otherwise; if no
      * version information could be retrieved, an Exception is thrown.
-     * @throws \Exception If the remove server could not be reached.
+     * @throws Exception If the remove server could not be reached.
      */
-    public static function isThereNewHRMRelease()
+    public static function isThereNewHRMRelease(): bool
     {
         $latestVersion = self::getLatestHRMVersionFromRemoteAsInteger();
         if ($latestVersion === -1) {
-            throw new \Exception("Could not retrieve version information!");
+            throw new Exception("Could not retrieve version information!");
         }
         if (self::getHRMVersionAsInteger() < $latestVersion) {
             return true;
@@ -173,18 +175,23 @@ class System
      * Returns the DB revision expected by this version of HRM.
      * @return int DB_LAST_REVISION expected DB revision (e.g. 14).
      */
-    public static function getDBLastRevision()
+    public static function getDBLastRevision(): int
     {
         return self::DB_LAST_REVISION;
     }
 
     /**
      * Returns current DB revision from the database.
-     * @return int DB revision from the database (e.g. 14).
+     * @return int DB revision from the database (e.g. 14). If the revision number
+     * cannot be queried, the function returns -1.
      */
-    public static function getDBCurrentRevision()
+    public static function getDBCurrentRevision(): int
     {
-        $db = new DatabaseConnection();
+        try {
+            $db = new DatabaseConnection();
+        } catch (Exception $e) {
+            return -1;
+        }
         $rows = $db->query(
             "SELECT * FROM global_variables WHERE name LIKE 'dbrevision';");
         if (!$rows) {
@@ -197,8 +204,9 @@ class System
     /**
      * Checks whether the database is up-to-date.
      * @return bool True if the database is up-to-date, false otherwise.
+     * @throws Exception If the database query fails.
      */
-    public static function isDBUpToDate()
+    public static function isDBUpToDate(): bool
     {
         return (self::getDBLastRevision() == self::getDBCurrentRevision());
     }
@@ -207,7 +215,7 @@ class System
      * Returns the HuCore version in integer notation
      * @rreturn int HuCore version as an integer (e.g. 4010002)
      */
-    public static function getHuCoreVersionAsInteger()
+    public static function getHuCoreVersionAsInteger(): int
     {
         $db = new DatabaseConnection();
         $query = "SELECT value FROM global_variables WHERE name= 'huversion';";
@@ -215,7 +223,7 @@ class System
         if ($version == false) {
             return 0;
         } else {
-            return $version;
+            return (int) $version;
         }
     }
 
@@ -223,7 +231,7 @@ class System
      * Returns the minimum acceptable HuCore version in string notation.
      * @return string Minimum HuCore version as a string (e.g. 4.1.0-p2).
      */
-    public static function getMinHuCoreVersionAsString()
+    public static function getMinHuCoreVersionAsString(): string
     {
         $v = self::MIN_HUCORE_VERSION_MAJOR . "." .
             self::MIN_HUCORE_VERSION_MINOR . "." .
@@ -238,19 +246,19 @@ class System
      * Returns the minimum acceptable HuCore version in integer notation.
      * @return int Minimum HuCore version as an integer (e.g. 4010002)
      */
-    public static function getMinHuCoreVersionAsInteger()
+    public static function getMinHuCoreVersionAsInteger(): int
     {
-        $v = self::MIN_HUCORE_VERSION_MAJOR * 1000000 +
+        return
+            self::MIN_HUCORE_VERSION_MAJOR * 1000000 +
             self::MIN_HUCORE_VERSION_MINOR * 10000 +
             self::MIN_HUCORE_VERSION_MAINTENANCE * 100 +
             self::MIN_HUCORE_VERSION_PATCH;
-        return $v;
     }
 
     /**
      * Checks whether the HuCore version is recent enough.
-     * @return bool True if HuCore is recent enough to run HRM, false
-     * otherwise.
+     * @return bool True if HuCore is recent enough to run HRM, false otherwise.
+     * @throws Exception If the database query fails.
      */
     public static function isMinHuCoreVersion()
     {
@@ -268,8 +276,9 @@ class System
      * Stores the HuCore version in integer notation into the DB.
      * @param int $value HuCore version in integer notation (e.g. 4010002)
      * @return bool true if success, false otherwise.
+     * @throws Exception If the database query fails.
      */
-    public static function setHuCoreVersion($value)
+    public static function setHuCoreVersion(int $value): bool
     {
         $db = new DatabaseConnection();
         $rs = $db->query("SELECT * FROM global_variables WHERE name = 'huversion';");
@@ -291,7 +300,7 @@ class System
      * string counterpart. If not passed, current Hucore version is returned.
      * @return string The version number as string (e.g. 4.1.0-p2)
      */
-    public static function getHucoreVersionAsString($version = -1)
+    public static function getHucoreVersionAsString(int $version = -1): string
     {
         if ($version == -1) {
             $version = self::getHuCoreVersionAsInteger();
@@ -314,52 +323,51 @@ class System
      */
     public static function getAllLicenses()
     {
-        $allLicenses = array(
-            "microscopes" => array(
-                "confocal" => "Confocal",
-                "multi-photon" => "Multi-photon",
-                "nipkow-disk" => "Spinning-disk",
-                "spim" => "SPIM",
-                "sted" => "STED",
-                "sted3D" => "STED 3D",
-                "widefield" => "Widefield",
-                "rescan" => "Rescan",
-                "detector-array" => "Array detector confocal"
-            ),
-            "file_formats" => array(
-                "all-formats-reader" => "Additional file readers"
-            ),
-            "computing" => array(
-                "gpuMaxCores-1024" => "GPU max cores: 1024",
-                "gpuMaxCores-3072" => "GPU max cores: 3072",
-                "gpuMaxCores-8192" => "GPU max cores: 8192",
-                "gpuMaxMemory-2048" => "GPU max memory: 2GB",
-                "gpuMaxMemory-4096" => "GPU max memory: 4GB",
-                "gpuMaxMemory-24576" => "GPU max memory: 24GB",
-                "server=desktop" => "Server type: desktop",
-                "server=small" => "Server type: small",
-                "server=medium" => "Server type: medium",
-                "server=large" => "Server type: large",
-                "server=extreme" => "Server type: extreme"
-            ),
-            "options" => array(
-                "analysis" => "Object analyzer",
-                "coloc" => "Colocalization analysis",
-                "chromaticS" => "Chromatic aberration correction",
-                "floating-license" => "Floating license",
-                "fusion" => "Light-sheet fusion",
-                "movie" => "Movie",
-                "psf" => "PSF distilller",
-                "stabilizer" => "Object stabilizer",
-                "stitcher" => "Stitcher",
-                "time" => "Time",
-                "tracker" => "Tracker",
-                "unmixing" => "Unmixing",
-                "visu" => "Visualization"
-            )
-        );
-
-        return $allLicenses;
+        return
+            array(
+                "microscopes" => array(
+                    "confocal" => "Confocal",
+                    "multi-photon" => "Multi-photon",
+                    "nipkow-disk" => "Spinning-disk",
+                    "spim" => "SPIM",
+                    "sted" => "STED",
+                    "sted3D" => "STED 3D",
+                    "widefield" => "Widefield",
+                    "rescan" => "Rescan",
+                    "detector-array" => "Array detector confocal"
+                ),
+                "file_formats" => array(
+                    "all-formats-reader" => "Additional file readers"
+                ),
+                "computing" => array(
+                    "gpuMaxCores-1024" => "GPU max cores: 1024",
+                    "gpuMaxCores-3072" => "GPU max cores: 3072",
+                    "gpuMaxCores-8192" => "GPU max cores: 8192",
+                    "gpuMaxMemory-2048" => "GPU max memory: 2GB",
+                    "gpuMaxMemory-4096" => "GPU max memory: 4GB",
+                    "gpuMaxMemory-24576" => "GPU max memory: 24GB",
+                    "server=desktop" => "Server type: desktop",
+                    "server=small" => "Server type: small",
+                    "server=medium" => "Server type: medium",
+                    "server=large" => "Server type: large",
+                    "server=extreme" => "Server type: extreme"
+                ),
+                "options" => array(
+                    "analysis" => "Object analyzer",
+                    "coloc" => "Colocalization analysis",
+                    "chromaticS" => "Chromatic aberration correction",
+                    "floating-license" => "Floating license",
+                    "fusion" => "Light-sheet fusion",
+                    "movie" => "Movie",
+                    "psf" => "PSF distilller",
+                    "stabilizer" => "Object stabilizer",
+                    "stitcher" => "Stitcher",
+                    "time" => "Time",
+                    "tracker" => "Tracker",
+                    "unmixing" => "Unmixing",
+                    "visu" => "Visualization"
+                )
+            );
     }
 
     /**
@@ -367,21 +375,29 @@ class System
      *
      * @return array with all active licenses.
      */
-    public static function getActiveLicenses()
+    public static function getActiveLicenses(): array
     {
-        $db = new DatabaseConnection();
-        $activeLicenses = $db->getActiveLicenses();
-        return $activeLicenses;
+        try {
+            $db = new DatabaseConnection();
+            $all_licenses = $db->getActiveLicenses();
+        } catch (Exception $e) {
+            return array();
+        }
+        return $all_licenses;
     }
 
     /**
      * Checks whether Huygens Core has a valid license.
      * @return bool True if the license is valid, false otherwise.
      */
-    public static function hucoreHasValidLicense()
+    public static function hucoreHasValidLicense(): bool
     {
-        $db = new DatabaseConnection();
-        return $db->hucoreHasValidLicense();
+        try {
+            $db = new DatabaseConnection();
+            return $db->hucoreHasValidLicense();
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -390,27 +406,36 @@ class System
      * wildcards.
      * @return boolean True if the module is supported by the license.
      */
-    public static function hasLicense($feature)
+    public static function hasLicense($feature): bool
     {
-        $db = new DatabaseConnection();
-        return $db->hasLicense($feature);
+        try {
+            $db = new DatabaseConnection();
+            return $db->hasLicense($feature);
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
      * Gets the licensed server type for Huygens Core.
-     * @return string One of desktop, small, medium, large, extreme.
+     * @return string One of desktop, small, medium, large, extreme,
+     * or "" if the connection to the database fails.
      */
-    public static function getHucoreServerType()
+    public static function getHucoreServerType(): string
     {
-        $db = new DatabaseConnection();
-        return $db->hucoreServerType();
+        try {
+            $db = new DatabaseConnection();
+            return $db->hucoreServerType();
+        } catch (Exception $e) {
+            return "";
+        }
     }
 
     /**
      * Returns information about operating system and machine architecture.
      * @return String A string with OS and architecture (e.g. GNU/Linux x86-64).
      */
-    public static function getOperatingSystem()
+    public static function getOperatingSystem(): string
     {
         // Get and interpret some information
         $s = php_uname('s');
@@ -431,7 +456,7 @@ class System
      * Returns the kernel release number.
      * @return string The kernel release number (e.g. 2.6.35).
      */
-    public static function getKernelRelease()
+    public static function getKernelRelease(): string
     {
         // Get and interpret some information
         $s = php_uname('s');
@@ -460,6 +485,14 @@ class System
                         return ($r . " (Yosemite)");
                     case '15':
                         return ($r . " (El Capitan)");
+                    case '16':
+                        return ($r . " (Sierra)");
+                    case '17':
+                        return ($r . " (High Sierra)");
+                    case '18':
+                        return ($r . " (Mojave)");
+                    case '19':
+                        return ($r . " (Catalina)");
                     default:
                         return ($r);
                 }
@@ -475,11 +508,11 @@ class System
      * Returns a string containing the version of the Apache web server.
      * @return string Apache version as a string (e.g. 2.2.14).
      */
-    public static function getApacheVersion()
+    public static function getApacheVersion(): string
     {
-        $apver = "";
-        if (preg_match('|Apache\/(\d+)\.(\d+)\.(\d+)|', apache_get_version(), $apver)) {
-            return "${apver[1]}.${apver[2]}.${apver[3]}";
+        $ap_ver = "";
+        if (preg_match('|Apache/(\d+)\.(\d+)\.(\d+)|', apache_get_version(), $ap_ver)) {
+            return "${ap_ver[1]}.${ap_ver[2]}.${ap_ver[3]}";
         } else {
             return "Unknown";
         }
@@ -490,22 +523,32 @@ class System
      * with HRM it should be one of 'mysql' or 'postgresql'.
      * @return string Database type (e.g. postgresql).
      */
-    public static function getDatabaseType()
+    public static function getDatabaseType(): string
     {
-        $db = new DatabaseConnection();
-        return $db->type();
+        try {
+            $db = new DatabaseConnection();
+            return $db->type();
+        } catch (Exception $e) {
+            return "ERROR!";
+        }
     }
 
     /**
      * Returns the database version.
      * @return string Database version as a string (e.g. 5.1.44).
      */
-    public static function getDatabaseVersion()
+    public static function getDatabaseVersion(): string
     {
-        $dbver = "";
-        $db = new DatabaseConnection();
-        if (preg_match('|(\d+)\.(\d+)\.(\d+)|', $db->version(), $dbver)) {
-            return "${dbver[1]}.${dbver[2]}.${dbver[3]}";
+        $db_ver = "";
+
+        try {
+            $db = new DatabaseConnection();
+        } catch (Exception $e) {
+            return "ERROR!";
+        }
+
+        if (preg_match('|(\d+)\.(\d+)\.(\d+)|', $db->version(), $db_ver)) {
+            return "${db_ver[1]}.${db_ver[2]}.${db_ver[3]}";
         } else {
             return "Unknown";
         }
@@ -515,7 +558,7 @@ class System
      * Returns the php version (for the Apache PHP module).
      * @return string PHP version (e.g. 5.31).
      */
-    public static function getPHPVersion()
+    public static function getPHPVersion(): string
     {
         return phpversion();
     }
@@ -526,7 +569,7 @@ class System
      * Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Memory limit in the requested unit.
      */
-    public static function getMemoryLimit($unit = 'M')
+    public static function getMemoryLimit(string $unit = 'M'): string
     {
         return System::formatMemoryStringByUnit(
             UtilV2::let_to_num(ini_get('memory_limit')), $unit);
@@ -539,7 +582,7 @@ class System
      * @return string Max allowed size for an HTTP post in the requested unit.
      */
 
-    public static function getPostMaxSizeFromIni($unit = 'M')
+    public static function getPostMaxSizeFromIni(string $unit = 'M'): string
     {
         return System::formatMemoryStringByUnit(
             UtilV2::let_to_num(ini_get('post_max_size')), $unit);
@@ -551,7 +594,7 @@ class System
      * Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for an HTTP post in the requested unit.
      */
-    public static function getPostMaxSizeFromConfig($unit = 'M')
+    public static function getPostMaxSizeFromConfig(string $unit = 'M'): string
     {
         global $max_post_limit;
         if (isset($max_post_limit)) {
@@ -562,7 +605,7 @@ class System
                     UtilV2::let_to_num(ini_get('$max_post_limit')), $unit);
             }
         } else {
-            return "Not defined!";
+            return "not defined!";
         }
     }
 
@@ -572,7 +615,7 @@ class System
      * Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for an HTTP post in the requested unit.
      */
-    public static function getPostMaxSize($unit = 'M')
+    public static function getPostMaxSize(string $unit = 'M'): string
     {
         return System::formatMemoryStringByUnit(UtilV2::getMaxPostSize(), $unit);
     }
@@ -582,7 +625,7 @@ class System
      * configuration.
      * @return string 'enabled' if the download is enabled; 'disabled' otherwise.
      */
-    public static function isDownloadEnabledFromConfig()
+    public static function isDownloadEnabledFromConfig(): string
     {
         global $allowHttpTransfer;
         if ($allowHttpTransfer == true) {
@@ -597,7 +640,7 @@ class System
      * configuration.
      * @return string 'enabled' if the upload is enabled; 'disabled' otherwise.
      */
-    public static function isUploadEnabledFromConfig()
+    public static function isUploadEnabledFromConfig(): string
     {
         global $allowHttpUpload;
         if ($allowHttpUpload == true) {
@@ -611,7 +654,7 @@ class System
      * Returns the status of file uploads through HTTP as set in php.ini.
      * @return string 'enabled' if the upload is enabled; 'disabled' otherwise.
      */
-    public static function isUploadEnabledFromIni()
+    public static function isUploadEnabledFromIni(): string
     {
         $upload = ini_get('file_uploads');
         if ($upload == "1") {
@@ -643,7 +686,7 @@ class System
      * Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for a file upload in the requested unit.
      */
-    public static function isUploadMaxFileSizeFromIni($unit = 'M')
+    public static function isUploadMaxFileSizeFromIni(string $unit = 'M'): string
     {
         return System::formatMemoryStringByUnit(
             UtilV2::let_to_num(ini_get('upload_max_filesize')), $unit);
@@ -655,7 +698,7 @@ class System
      * Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for a file upload in the requested unit.
      */
-    public static function isUploadMaxFileSizeFromConfig($unit = 'M')
+    public static function isUploadMaxFileSizeFromConfig(string $unit = 'M'): string
     {
         global $max_upload_limit;
         if (isset($max_upload_limit)) {
@@ -666,7 +709,7 @@ class System
                     UtilV2::let_to_num($max_upload_limit), $unit);
             }
         } else {
-            return "Not defined!";
+            return "not defined!";
         }
     }
 
@@ -676,7 +719,7 @@ class System
      * Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for a file upload in bytes.
      */
-    public static function getUploadMaxFileSize($unit = 'M')
+    public static function getUploadMaxFileSize(string $unit = 'M'): string
     {
         return System::formatMemoryStringByUnit(UtilV2::getMaxUploadFileSize(), $unit);
     }
@@ -685,7 +728,7 @@ class System
      * Max execution time in seconds for scripts as set in php.ini.
      * @return string Max execution time in seconds.
      */
-    public static function getMaxExecutionTimeFromIni()
+    public static function getMaxExecutionTimeFromIni(): string
     {
         $maxExecTime = ini_get('max_execution_time');
         if ($maxExecTime == 0) {
@@ -703,7 +746,7 @@ class System
      * Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Memory amount in the requested unit.
      */
-    private function formatMemoryStringByUnit($value, $unit = 'M')
+    private static function formatMemoryStringByUnit(int $value, string $unit = 'M'): string
     {
         switch ($unit) {
             case 'G' :
@@ -728,10 +771,10 @@ class System
 
     /**
      * Parses an integer HRM version number into its string representation.
-     * @param int $version String representation of the version number.
-     * @return int HRM version as integer.
+     * @param int $version Int representation of the version number.
+     * @return string HRM version as string.
      */
-    private static function parseHRMVersionIntegerToString($version)
+    private static function parseHRMVersionIntegerToString(int $version): string
     {
         $major = floor($version / 1000000);
         $version = $version - $major * 1000000;
@@ -748,10 +791,10 @@ class System
 
     /**
      * Parses an integer HuCore version number into its string representation.
-     * @param string $version String representation of the version number.
+     * @param int $version Int representation of the version number.
      * @return string String representation of the version number.
      */
-    private static function parseHucoreVersionIntegerToString($version)
+    private static function parseHucoreVersionIntegerToString(int $version): string
     {
         $major = floor($version / 1000000);
         $version = $version - $major * 1000000;

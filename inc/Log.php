@@ -10,6 +10,7 @@
 namespace hrm;
 
 // Set up logging
+use Exception;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -39,13 +40,14 @@ class Log
      * Instance of the Monolog::Logger class.
      * @var Logger
      */
-    private static $monologger;
+    private static $mono_logger;
 
     /**
      * Private Log constructor.
      *
      * Instantiates a static instance of the Log class and of the
      * Monolog::Logger class.
+     * @throws Exception If the StreamHandler object cannot be initialized.
      */
     private function __construct()
     {
@@ -64,8 +66,7 @@ class Log
                 $level = Logger::INFO;
                 break;
             default:
-                $level = Logger::WARNING;
-                break;
+                throw new Exception("Invalid log verbosity value.");
         }
 
         // Initialize and configure Monolog::StreamHandler
@@ -74,33 +75,35 @@ class Log
         $handler->setFormatter($formatter);
 
         // Instantiate Monolog::Logger
-        self::$monologger = new Logger('hrm');
-        self::$monologger->pushHandler($handler);
+        self::$mono_logger = new Logger('hrm');
+        self::$mono_logger->pushHandler($handler);
 
         // Log initialization
-        self::$monologger->addInfo("Initialized logging.");
+        self::$mono_logger->addInfo("Initialized logging.");
     }
 
     /**
      * Returns the logger (after initializing it, if needed)
      * @return Logger Monolog::Logger object.
+     * @throws Exception If the Logger cannot be instantiated.
      */
-    private static function getMonoLogger()
+    private static function getMonoLogger(): Logger
     {
         // Initialize if needed
-        if (is_null(self::$instance) && is_null(self::$monologger)) {
+        if (is_null(self::$instance) && is_null(self::$mono_logger)) {
             self::$instance = new self();
         }
 
         // Return the logger instance
-        return self::$monologger;
+        return self::$mono_logger;
     }
 
     /**
      * Log info message.
      * @param string $message Info message.
+     * @throws Exception If the Logger cannot be instantiated.
      */
-    public static function info($message)
+    public static function info(string $message): void
     {
         if (is_array($message)) {
             $message = implode(", ", $message);
@@ -111,8 +114,9 @@ class Log
     /**
      * Log warning message.
      * @param string $message Warning message.
+     * @throws Exception If the Logger cannot be instantiated.
      */
-    public static function warning($message)
+    public static function warning(string $message): void
     {
         if (is_array($message)) {
             $message = implode(", ", $message);
@@ -123,8 +127,9 @@ class Log
     /**
      * Log error message.
      * @param string $message Error message.
+     * @throws Exception If the Logger cannot be instantiated.
      */
-    public static function error($message)
+    public static function error(string $message): void
     {
         if (is_array($message)) {
             $message = implode(", ", $message);

@@ -30,7 +30,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the requested wiki page.
      */
-    public static function linkWikiPage($pageName, $wrapInLiElement = true)
+    public static function linkWikiPage(string $pageName, bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Help",
             "https://svi.nl/$pageName", "images/help.png",
@@ -45,7 +45,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the HRM project website.
      */
-    public static function linkProjectWebsite($wrapInLiElement = true)
+    public static function linkProjectWebsite(bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("HRM Project Website",
             "http://www.huygens-rm.org", "images/logo_small.png",
@@ -60,7 +60,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the HRM mailing list page.
      */
-    public static function linkMailingList($wrapInLiElement = true)
+    public static function linkMailingList(bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Sign up to HRM news",
             "https://lists.sourceforge.net/lists/listinfo/hrm-list",
@@ -75,7 +75,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the SVI wiki.
      */
-    public static function linkSVIWiki($wrapInLiElement = true)
+    public static function linkSVIWiki(bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("SVI wiki",
             "http://www.svi.nl/FrontPage",
@@ -90,7 +90,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the HRM manual.
      */
-    public static function linkManual($wrapInLiElement = true)
+    public static function linkManual(bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("HRM manual",
             "http://huygens-remote-manager.readthedocs.io/en/latest/user/index.html",
@@ -105,7 +105,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the report issue page.
      */
-    public static function linkReportIssue($wrapInLiElement = true)
+    public static function linkReportIssue(bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Feedback",
             "http://hrm.svi.nl:8080/redmine/projects/public/issues/new",
@@ -120,7 +120,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the What's new? page.
      */
-    public static function linkWhatsNew($wrapInLiElement = true)
+    public static function linkWhatsNew(bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("What's new?",
             "https://github.com/aarpon/hrm/releases/latest",
@@ -136,7 +136,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the Credits page.
      */
-    public static function linkCredits($wrapInLiElement = true)
+    public static function linkCredits(bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Credits",
             "credits.php",
@@ -152,7 +152,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the raw images page.
      */
-    public static function linkRawImages($wrapInLiElement = true)
+    public static function linkRawImages(bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Raw images",
             "file_management.php?folder=src",
@@ -168,7 +168,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the results page.
      */
-    public static function linkResults($wrapInLiElement = true)
+    public static function linkResults(bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Results",
             "file_management.php?folder=dest",
@@ -188,7 +188,7 @@ class Nav
      *             Optional, default is true.
      * @return string HTML code to link to the home page.
      */
-    public static function linkHome($currentPage, $wrapInLiElement = true)
+    public static function linkHome(string $currentPage, bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Home",
             $currentPage . "?home=home",
@@ -202,9 +202,13 @@ class Nav
      *
      * @param bool $wrapInLiElement Wrap the link in a <li></li> element.
      *             Optional, default is true.
+     * @param bool $showSignUp If true, show the sign up button.
+     * @param string $req Request.
      * @return string HTML code to the login link.
      */
-    public static function linkLogIn($wrapInLiElement = true, $showSignUp = true, $req = "")
+    public static function linkLogIn(bool $wrapInLiElement = true,
+                                     bool $showSignUp = true,
+                                     string $req = ""): string
     {
         $openingLi = "";
         $closingLi = "";
@@ -250,7 +254,7 @@ EOT;
      * @param string $currentPage URL of the current page.
      * @return string HTML code to the logout link.
      */
-    public static function linkLogOut($currentPage, $wrapInLiElement = true)
+    public static function linkLogOut(string $currentPage, bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Logout",
             $currentPage . "?exited=exited",
@@ -266,7 +270,7 @@ EOT;
      *             Optional, default is true.
      * @return string HTML code to link to the job queue page.
      */
-    public static function linkJobQueue($wrapInLiElement = true)
+    public static function linkJobQueue(bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Queue",
             "job_queue.php",
@@ -283,7 +287,7 @@ EOT;
      *             Optional, default is true.
      * @return string HTML code to display the user name.
      */
-    public static function textUser($userName, $wrapInLiElement = true)
+    public static function textUser(string $userName, bool $wrapInLiElement = true): string
     {
         $openingLi = "";
         $closingLi = "";
@@ -304,7 +308,7 @@ EOT;
      *             Optional, default is true.
      * @return string HTML code to link to the requested page.
      */
-    public static function linkBack($toURL, $wrapInLiElement = true)
+    public static function linkBack(string $toURL, bool $wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Back", $toURL,
             "images/back_small.png", "Back", false,
@@ -318,7 +322,7 @@ EOT;
      *             Optional, default is true.
      * @return string HTML code to link back to the login page.
      */
-    public static function exitToLogin($wrapInLiElement = true)
+    public static function exitToLogin($wrapInLiElement = true): string
     {
         return self::buildLinkHTMLElement("Exit", "login.php",
             "images/exit.png", "Exit", false,
@@ -330,9 +334,9 @@ EOT;
      *
      * @return string HTML code to display the theme selector.
      */
-    public static function actionStyleToggle()
+    public static function actionStyleToggle(): string
     {
-        $html = <<<EOT
+        return <<<EOT
 <li>
 <div class="theme_div">
 <form>
@@ -343,7 +347,6 @@ EOT;
 </div>
 </li>
 EOT;
-        return $html;
     }
 
     /**
@@ -353,7 +356,7 @@ EOT;
      *             Optional, default is true.
      * @return string HTML code to trigger the check for updates action.
      */
-    public static function actionCheckForUpdates($wrapInLiElement = true)
+    public static function actionCheckForUpdates(bool $wrapInLiElement = true): string
     {
         return self::buildActionHTMLElement("Check for updates",
             "images/check_for_update.png", "Check for updates",
@@ -365,7 +368,7 @@ EOT;
      *
      * @return string HTML code to render the documentation pull-down menu.
      */
-    public static function externalSupportLinks()
+    public static function externalSupportLinks(): string
     {
         $linkToSVIWiki = Nav::linkSVIWiki($wrapInLiElement = false);
         $linkToProjectWebsite = Nav::linkProjectWebsite($wrapInLiElement = false);
@@ -373,7 +376,7 @@ EOT;
         $linkToWhatsNew = Nav::linkWhatsNew($wrapInLiElement = false);
         $linkToCredits = Nav::linkCredits($wrapInLiElement = false);
 
-        $html = <<<EOT
+        return <<<EOT
 <li>
     <div class="dropdown">
         <img src="images/resources.png" alt="Resources" />
@@ -399,10 +402,10 @@ EOT;
     window.onclick = function(event) {
         if (!event.target.matches('.dropbtn')) {
 
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            var i;
+            const dropdowns = document.getElementsByClassName("dropdown-content");
+            let i;
             for (i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
+                let openDropdown = dropdowns[i];
                 if (openDropdown.classList.contains('show')) {
                     openDropdown.classList.remove('show');
                 }
@@ -412,7 +415,6 @@ EOT;
 
 </script>
 EOT;
-        return $html;
     }
 
     /**
@@ -431,12 +433,14 @@ EOT;
      *                        The 'onclick=' fragment must be omitted!
      * @return string HTML string to be echoed in the page.
      */
-    private static function buildLinkHTMLElement($text, $url, $img_url,
-                                                 $altText, $extern = false,
-                                                 $wrapInLiElement = true,
-                                                 $onclick = "")
+    private static function buildLinkHTMLElement(string $text,
+                                                 string $url,
+                                                 string $img_url,
+                                                 string $altText,
+                                                 bool $extern = false,
+                                                 bool $wrapInLiElement = true,
+                                                 string $onclick = ""): string
     {
-
         $openingLi = "";
         $closingLi = "";
         if ($wrapInLiElement == true) {
@@ -455,12 +459,10 @@ EOT;
                 $onclick = 'onclick="this.target=\'_blank\';return true;"';
             }
         }
-        $html = $openingLi . '<a href="' . $url . '" ' . $onclick . '>' .
+        return $openingLi . '<a href="' . $url . '" ' . $onclick . '>' .
             '<img src="' . $img_url . '" ' .
             'alt="' . $altText . '" />&nbsp;' .
             $text . '</a>' . $closingLi;
-
-        return $html;
     }
 
     /**
@@ -473,8 +475,11 @@ EOT;
      *             Optional, default is true.
      * @return string HTML string to be echoed in the page.
      */
-    private static function buildActionHTMLElement($text, $img_url, $altText,
-                                                   $action, $wrapInLiElement = true)
+    private static function buildActionHTMLElement(string $text,
+                                                   string $img_url,
+                                                   string $altText,
+                                                   string $action,
+                                                   bool $wrapInLiElement = true): string
     {
         $openingLi = "";
         $closingLi = "";
@@ -484,11 +489,9 @@ EOT;
         }
 
         $onclick = 'onclick="' . $action . '"';
-        $html = $openingLi . '<a href="#" ' . $onclick . '>' .
+        return $openingLi . '<a href="#" ' . $onclick . '>' .
             '<img src="' . $img_url . '" ' .
             'alt="' . $altText . '" />&nbsp;' .
             $text . '</a>' . $closingLi;
-
-        return $html;
     }
 }

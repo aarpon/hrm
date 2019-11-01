@@ -138,6 +138,14 @@ include("header.inc.php");
                 </td>
             </tr>
             <tr>
+                <td class="key">
+                    HuCore server type
+                </td>
+                <td class="value">
+                    <?php echo System::getHucoreServerType(); ?>
+                </td>
+            </tr>
+            <tr>
                 <td class="section">
                     Licenses in use
                 </td>
