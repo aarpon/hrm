@@ -1098,7 +1098,7 @@ class QueueManager
         }
 
 
-        Log::info($licDetails);
+        Log::info($licDetails['license']);
 
         // Store the license details in the database.
         $db = new DatabaseConnection();
