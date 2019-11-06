@@ -295,6 +295,12 @@ class QueueManager
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
                 }
+            } else if (stristr($filename, ".nd")) {
+                $basename = preg_replace(
+                    "/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/",
+                    "$1$6$7", $filename);
+                $name = preg_replace("/(.*)\.nd?$/", "$1", $basename);
+                $batch .= "put \"" . $name . "\"*\n";
             } else {
                 $batch .= "put \"" . $filename . "\"\n";
             }
@@ -309,7 +315,7 @@ class QueueManager
         $batch .= "-mkdir \"" . $image_destination . "\"\n";
         $batch .= "quit\n";
 
-        // Log::info("\nBATCH \n$batch", 2);
+        Log::info("\nBATCH \n$batch", 2);
 
         $batch_filename = $image_folder . "/" . $user->name() . "/" .
             "batchfile_" . $desc->id();

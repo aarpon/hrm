@@ -413,9 +413,9 @@ foreach ($files as $file) {
         <p>As a last step, please choose the output file format for your
             restored images.</p>
 
-        <p>Please notice that some output file formats (specifically all TIFF options)
-            are disabled if you set a time interval larger than 0 or you enabled
-            the "When applicable, load file series automatically" option in Step 1 - Select images.</p>
+        <p>Please notice that some output file formats cannot be selected
+            under specific circumnstances. For example, TIFF is disabled for
+            images with more than 3 channels, and also for time series.</p>
 
         <p>Also, use this as summary to check your parameters. If you spot
             a mistake, use the links on the left to go back and fix it.</p>

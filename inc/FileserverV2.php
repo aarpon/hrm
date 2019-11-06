@@ -163,6 +163,24 @@ class FileserverV2
         $result = -1;
         exec($command, $output, $result);
 
+        Log::info("Decompressing with command: $command, got: " . print_r($output,true)); 
+
+        // It turns out that unzip restores the original permissions of the files
+        // in the zip package, as they were in the client before zipping. Using
+        // umask to set proper HRM permissisions does not help here. Thus, we have 
+        // to at least make sure that the HRM group can read the data so that the 
+        // QM can process the file.
+
+        // First, start with the directories.
+        $chmodCmd = "find " . $destDir . " -type d -exec chmod 0777 {} +";
+        exec($chmodCmd, $chmodOutput, $chmodResult);
+        Log::info("Chmod subdirectories with command: $chmodCmd, got: " . print_r($chmodOutput,true)); 
+
+        // Then, process the files.
+        $chmodCmd = "find " . $destDir . " -type f -exec chmod 0660 {} +";
+        exec($chmodCmd, $chmodOutput, $chmodResult);
+        Log::info("Chmod files with command: $chmodCmd, got: " . print_r($chmodOutput,true));         
+
         // Return the status
         return ($result == 0);
     }

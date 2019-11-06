@@ -46,7 +46,7 @@
   ],
   "require": {
     "php": ">5.5.0",
-    "adodb/adodb-php": "5.20.12",
+    "adodb/adodb-php": "v5.20.14",
     "adldap2/adldap2": "4.0.5",
     "aarpon/php-traditional-server_old": "1.0.2",
     "monolog/monolog": "1.19.0"
@@ -55,8 +55,7 @@
     "phpunit/phpunit": "4.8.24",
     "phpdocumentor/phpdocumentor": "2.8.5",
     "squizlabs/php_codesniffer": "^2.0 || ^3.0.1",
-    "wimg/php-compatibility": "dev-master",
-    "simplyadmire/composer-plugins": "dev-master"
+    "simplyadmire/composer-plugins": "2.1.*"
   },
   "autoload": {
     "psr-4": {

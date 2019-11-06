@@ -359,7 +359,7 @@ function createImageSelection(fileList) {
 
 function addTemplateFile() {
     content = '<div class="inputFile" name="inputFile">'
-        + '<input type="file" name="upfile[]" size="3">'
+        + '<input type="file" class="selection" name="upfile[]" size="3">'
         + '</div>';
 
     changeDiv('upfile_0', content);
