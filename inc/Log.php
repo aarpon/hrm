@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Log
  *
@@ -7,6 +8,7 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
 namespace hrm;
 
 // Set up logging
@@ -25,7 +27,7 @@ require_once dirname(__FILE__) . '/bootstrap.php';
  * Log::info("An info message.");
  * Log::warning("A warning message.");
  * Log::error("An error message.");
- * 
+ *
  * @package hrm
  */
 class Log
@@ -34,13 +36,13 @@ class Log
      * Log instance (singleton)
      * @var Log
      */
-    private static $instance;
+    private static $instance = null;
 
     /**
      * Instance of the Monolog::Logger class.
      * @var Logger
      */
-    private static $mono_logger;
+    private static $mono_logger = null;
 
     /**
      * Private Log constructor.
@@ -83,15 +85,22 @@ class Log
     }
 
     /**
+     * Do not allow the object to be copied.
+     */
+    private function __clone()
+    {
+    }
+
+    /**
      * Returns the logger (after initializing it, if needed)
-     * @return Logger Monolog::Logger object.
+     * @return Logger Logger object.
      * @throws Exception If the Logger cannot be instantiated.
      */
     private static function getMonoLogger(): Logger
     {
         // Initialize if needed
-        if (is_null(self::$instance) && is_null(self::$mono_logger)) {
-            self::$instance = new self();
+        if ((!is_object(self::$instance)) || (!is_object(self::$mono_logger))) {
+            self::$instance = new Log();
         }
 
         // Return the logger instance
@@ -100,40 +109,53 @@ class Log
 
     /**
      * Log info message.
-     * @param string $message Info message.
+     * @param string|array $message Info message.
      * @throws Exception If the Logger cannot be instantiated.
      */
-    public static function info(string $message): void
+    public static function info($message): void
     {
-        if (is_array($message)) {
-            $message = implode(", ", $message);
-        }
-        self::getMonoLogger()->addInfo($message);
+        self::getMonoLogger()->addInfo(self::stringify($message));
     }
 
     /**
      * Log warning message.
-     * @param string $message Warning message.
+     * @param string|array  $message Warning message.
      * @throws Exception If the Logger cannot be instantiated.
      */
-    public static function warning(string $message): void
+    public static function warning($message): void
     {
-        if (is_array($message)) {
-            $message = implode(", ", $message);
-        }
-        self::getMonoLogger()->addWarning($message);
+        self::getMonoLogger()->addWarning(self::stringify($message));
     }
 
     /**
      * Log error message.
-     * @param string $message Error message.
+     * @param string|array $message Error message.
      * @throws Exception If the Logger cannot be instantiated.
      */
-    public static function error(string $message): void
+    public static function error($message): void
     {
-        if (is_array($message)) {
-            $message = implode(", ", $message);
+        self::getMonoLogger()->addError(self::stringify($message));
+    }
+
+    /**
+     * Takes either a string or an array of strings and returns a string.
+     * @param string|array $message Message
+     * @return string Message as a string.
+     * @throws Exception If the input message is neither a string nor an array of strings.
+     */
+    private static function stringify($message): string
+    {
+        // Do we have a string? Nothing to do.
+        if (is_string($message)) {
+            return $message;
         }
-        self::getMonoLogger()->addError($message);
+
+        // Do we have an array? We create a comma-separated expansion of it.
+        if (is_array($message)) {
+            return implode(", ", $message);
+        }
+
+        // Other types are not supported.
+        throw new Exception("Log functions expect a string or an array.");
     }
 }
