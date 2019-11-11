@@ -128,7 +128,7 @@ class System
         if ($version === false) {
             return -1;
         }
-        return $version;
+        return intval($version);
     }
 
     /**
@@ -510,8 +510,13 @@ class System
      */
     public static function getApacheVersion(): string
     {
+        $apache_version = apache_get_version();
+        if ($apache_version === false) {
+            return "Unknown";
+        }
+
         $ap_ver = "";
-        if (preg_match('|Apache/(\d+)\.(\d+)\.(\d+)|', apache_get_version(), $ap_ver)) {
+        if (preg_match('|Apache/(\d+)\.(\d+)\.(\d+)|', $apache_version, $ap_ver)) {
             return "${ap_ver[1]}.${ap_ver[2]}.${ap_ver[3]}";
         } else {
             return "Unknown";
@@ -560,7 +565,12 @@ class System
      */
     public static function getPHPVersion(): string
     {
-        return phpversion();
+        $php_version = phpversion();
+        if ($php_version === false) {
+            return "Unknown";
+        } else {
+            return $php_version;
+        }
     }
 
     /**
