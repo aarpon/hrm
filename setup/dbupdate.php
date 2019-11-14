@@ -5908,7 +5908,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "superY";
-    $record["translation"] = "Super:Y create an image supersampled in Y.";
+    $record["translation"] = "SuperY: create an image supersampled in Y.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
