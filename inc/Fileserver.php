@@ -225,6 +225,10 @@ class Fileserver
     public function checkAgainstFormat($file, $selectedFormat)
     {
 
+        if ($selectedFormat == 'all') {
+           return true;
+        }
+
         // Both variables as in the 'file_extension' table.
         $fileFormat = false;
         $fileExtension = false;

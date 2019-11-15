@@ -249,8 +249,8 @@ $info = "<h3>Quick help</h3>" .
                     onkeyup="this.blur();this.focus();">
 
 
-                <option name='' value='' format=''>
-                    Please choose a file format...
+                <option name="all" value="all">
+                    All files. Please choose a file format...
                 </option>
 
                 <?php
