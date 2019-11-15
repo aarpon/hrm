@@ -249,10 +249,6 @@ $info = "<h3>Quick help</h3>" .
                     onkeyup="this.blur();this.focus();">
 
 
-                <option name="all" value="all">
-                    All files. Please choose a file format...
-                </option>
-
                 <?php
 
                 // File formats support
@@ -268,6 +264,11 @@ $info = "<h3>Quick help</h3>" .
                     } else {
                         $selected = "";
                     }
+
+                    if ($format == "all") {
+                       $translation .= " Please choose a file format ...";
+                    }
+
                     ?>
                     <option <?php echo "name = \"" . $format . "\"  value = \"" .
                         $format . "\"" . $selected ?>><?php echo $translation ?>

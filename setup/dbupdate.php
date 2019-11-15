@@ -5937,6 +5937,47 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
+
+// -----------------------------------------------------------------------------
+// Update to revision 18
+// -----------------------------------------------------------------------------
+$n = 18;
+if ($current_revision < $n) {
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "all";
+    $record["translation"] = "All files (*.*)";
+    $record["isDefault"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE value='" . $record['value'] .
+             "' AND parameter='" . $record['parameter'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+
 fclose($fh);
 
 return;
