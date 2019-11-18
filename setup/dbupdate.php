@@ -35,6 +35,7 @@
 //    it is simply updated to the last revision.
 
 // Include hrm_config.inc.php
+use hrm\DatabaseConnection;
 use hrm\System;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserConstants;
@@ -368,16 +369,17 @@ if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is c
 }
 write_to_error(timestamp());
 
-//  Check if the database exists; if it does not exist, create it
-$dsn = $db_type."://".$db_user.":".$db_password."@".$db_host;
-
-$db = ADONewConnection($dsn);
-if(!$db) {
+// Connect to the database
+$db = null;
+try {
+    $db = (new DatabaseConnection())->connection();
+} catch (Exception $e) {
     $msg = "Cannot connect to database host.";
     write_message($msg);
     write_to_error($msg);
     return;
 }
+
 $datadict = NewDataDictionary($db);   // Build a data dictionary
 $databases = $db->MetaDatabases();
 if (!in_array($db_name, $databases)) {
@@ -394,24 +396,8 @@ if (!in_array($db_name, $databases)) {
     write_to_log($msg);
 }
 
-// Connect to the database
-$dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
-$db = ADONewConnection($dsn);
-if(!$db) {
-    $msg = "Cannot connect to the database, probably creation failed.\n".
-    "Please check that database user '$db_user' exists\n".
-    "and has privileges to administrate databases.";
-    write_message($msg);
-    write_to_error($msg);
-    return;
-}
-
-// Build a data dictionary to automate the creation of tables
-$datadict = NewDataDictionary($db);
-
 // Extract the list of existing tables
 $tables = $db->MetaTables("TABLES");
-
 
 
 // -----------------------------------------------------------------------------
