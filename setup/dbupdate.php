@@ -369,12 +369,11 @@ if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is c
 }
 write_to_error(timestamp());
 
-// Connect to the database
+// Connect to the database server
 $db = ADONewConnection($db_type);
-$success = $db->Connect($db_host, $db_user, $db_password, $db_name);
-
+$success = $db->Connect($db_host, $db_user, $db_password);
 if ($success === false) {
-    $msg = "Cannot connect to database '$db_name' on $db_host.";
+    $msg = "Cannot connect to the database server on $db_host.";
     write_message($msg);
     write_to_error($msg);
     return;
@@ -394,6 +393,16 @@ if (!in_array($db_name, $databases)) {
     $msg = "Executed database creation query.\n";
     write_message($msg);
     write_to_log($msg);
+}
+
+// Connect to the database '$db_name'
+$success = $db->SelectDB($db_name);
+
+if ($success === false) {
+    $msg = "Cannot connect to database '$db_name' on $db_host.";
+    write_message($msg);
+    write_to_error($msg);
+    return;
 }
 
 // Extract the list of existing tables
