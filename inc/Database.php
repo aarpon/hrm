@@ -2325,15 +2325,51 @@ class DatabaseConnection
         return intval($result);
     }
 
+    /**
+     * Return the list of all processing servers.
+     * @return array List of servers.
+     */
     public function getAllServers()
     {
-        $query = "SELECT * FROM server;";
-
-        $result = $this->query($query);
-
-        return $result;
+        return $this->query("SELECT * FROM server;");
     }
 
+    /**
+     * Clean up the database in case of stalled jobs.
+     */
+    public function cleanQueueFromBrokenJobs()
+    {
+        $this->execute(
+            'DELETE FROM job_analysis_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+        );
+        $this->execute(
+            'DELETE FROM job_analysis_setting WHERE name IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+        );
+        $this->execute(
+            'DELETE FROM job_files WHERE job IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+        );
+        $this->execute(
+            'DELETE FROM job_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+        );
+        $this->execute(
+            'DELETE FROM job_parameter_setting WHERE name IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+        );
+        $this->execute(
+            'DELETE FROM job_task_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+        );
+        $this->execute(
+            'DELETE FROM job_task_setting WHERE name IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+        );
+        $this->execute(
+            'DELETE FROM job_task_setting WHERE name IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+        );
+        $this->execute(
+            'DELETE FROM job_queue  WHERE status="broken" OR status="kill";'
+        );
+        $this->execute(
+            'UPDATE server SET status= "free", job = NULL;'
+        );
+    }
 
     /* ------------------------ PRIVATE FUNCTIONS --------------------------- */
 

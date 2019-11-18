@@ -919,8 +919,7 @@ class QueueManager
         $this->waitForDatabaseConnection();
         $this->initializeServers();
 
-        Log::info("Huygens Remote Manager started on "
-            . date("Y-m-d H:i:s") . "\n");
+        Log::info("Huygens Remote Manager started on " . date("Y-m-d H:i:s"));
 
         // Fill admin user information in the database
         if (!$this->fillInSuperAdminInfoInTheDatabase()) {
@@ -933,13 +932,18 @@ class QueueManager
             return;
         }
 
-        // Query the database for processing servers
+        // Instantiate database connection
         $db = new DatabaseConnection();
+
+        // Query the database for processing servers
         $servers = $db->getAllServers();
         if (count($servers) == 0) {
             Log::error("There are no processing servers configured in the database!");
             return;
         }
+
+        // Perform some database maintenance
+        $db->cleanQueueFromBrokenJobs();
 
         // We will use the first server for the following queries.
         // Due to historical reasons, the name field can also contain the GPU ID.
