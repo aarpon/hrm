@@ -370,11 +370,11 @@ if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is c
 write_to_error(timestamp());
 
 // Connect to the database
-$db = null;
-try {
-    $db = (new DatabaseConnection())->connection();
-} catch (Exception $e) {
-    $msg = "Cannot connect to database host.";
+$db = ADONewConnection($db_type);
+$success = $db->Connect($db_host, $db_user, $db_password, $db_name);
+
+if ($success === false) {
+    $msg = "Cannot connect to database '$db_name' on $db_host.";
     write_message($msg);
     write_to_error($msg);
     return;
