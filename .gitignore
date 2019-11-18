@@ -30,3 +30,4 @@ css/custom.css
 
 # macOS finder files 
 *.DS_Store
+*.phpunit.result.cache
