@@ -53,6 +53,11 @@ class DatabaseConnection
     private $parameterNameDictionary;
 
     /**
+     * @var $possibleValuesTableCache Static cache of the possible_value database table.
+     */
+    private static $possibleValuesTableCache = null;
+
+    /**
      * DatabaseConnection constructor: creates a database connection.
      * @throws \Exception if the connection to the database cannot be established.
      */
@@ -62,6 +67,9 @@ class DatabaseConnection
         if (!$this->establishConnection()) {
             throw new \Exception("Could not connect to the database!");
         }
+
+        // Cache the possible_values table
+        $this->cachePossibleValuesTable();
 
         // Set the parameter name dictionary
         $this->parameterNameDictionary = array(
@@ -100,6 +108,32 @@ class DatabaseConnection
         // of too many SQL connections to the server. For this reason,
         // in the destructor of the DatabaseConnection, we specifically
         // do not close() the open connection.
+    }
+
+    /**
+     * Retrieves the content of the possible_values table and caches it 
+     * in an easy to process way.
+     */
+    private function cachePossibleValuesTable()
+    {
+        if (self::$possibleValuesTableCache == null) {
+            // Instantiate the cache
+            self::$possibleValuesTableCache = array();
+
+            // Retrieve the whole possible_values table
+            $result = $this->query("SELECT * from possible_values;");
+
+            // Cache all rows
+            foreach ($result as $param) {
+                // Retrieve parameter name
+                $key = $param["parameter"];
+
+                if (! array_key_exists($key, self::$possibleValuesTableCache)) {
+                    self::$possibleValuesTableCache[$key] = array();
+                }
+                array_push(self::$possibleValuesTableCache[$key], $param);
+            }
+        }
     }
 
     /**
@@ -236,7 +270,7 @@ class DatabaseConnection
         // Create a connection if needed, and execute the query.
         $resultSet = $this->connection()->Execute($queryString);
         if ($resultSet === false) {
-            return False;
+            return false;
         }
         /** @var \ADORecordSet $resultSet */
         $rows = $resultSet->GetRows();
@@ -256,7 +290,7 @@ class DatabaseConnection
         // Create a connection if needed, and execute the query.
         $resultSet = $this->connection()->Execute($sql, $values);
         if ($resultSet === false) {
-            return False;
+            return false;
         }
         /** @var \ADORecordSet $resultSet */
         $rows = $resultSet->GetRows();
@@ -272,7 +306,7 @@ class DatabaseConnection
     {
         $rows = $this->query($queryString);
         if (!$rows) {
-            return False;
+            return false;
         }
         $result = end($rows);
         return $result;
@@ -289,7 +323,7 @@ class DatabaseConnection
     {
         $rows = $this->queryLastRow($queryString);
         if (!$rows) {
-            return False;
+            return false;
         }
         $result = end($rows);
         return $result;
@@ -1260,24 +1294,20 @@ class DatabaseConnection
      */
     public function readPossibleValues($parameter)
     {
-        $name = $parameter->name();
-        $query = "select value from possible_values where parameter = '$name';";
-        $answer = $this->query($query);
-        $result = $this->flatten($answer);
-        return $result;
-    }
+        // The data should be cached, if not retrieve from database and cache
+        if (self::$possibleValuesTableCache == null) {
+            $this->cachePossibleValuesTable();
+        }
 
-    /**
-     * Returns the translated possible values for a given parameter.
-     * @param Parameter $parameter Parameter object.
-     * @return array Flattened array of translated possible values.
-     */
-    public function readTranslatedPossibleValues($parameter)
-    {
-        $name = $parameter->name();
-        $query = "select translation from possible_values where parameter = '$name';";
-        $answer = $this->query($query);
-        $result = $this->flatten($answer);
+        // Get possible values
+        $result = array();
+        if (! array_key_exists($parameter->name(), self::$possibleValuesTableCache)) {
+            return $result;
+        }
+
+        foreach (self::$possibleValuesTableCache[$parameter->name()] as $parameter) {
+            array_push($result, $parameter["value"]);
+        }
         return $result;
     }
 
@@ -1289,9 +1319,23 @@ class DatabaseConnection
      */
     public function translationFor($parameterName, $value)
     {
-        $query = "select translation from possible_values where parameter = '$parameterName' and value = '$value';";
-        $result = $this->queryLastValue($query);
-        return $result;
+        // The data should be cached, if not retrieve from database and cache
+        if (self::$possibleValuesTableCache == null) {
+            $this->cachePossibleValuesTable();
+        }
+
+        if (! array_key_exists($parameterName, self::$possibleValuesTableCache)) {
+            return "";
+        }
+
+        $parameter_array = self::$possibleValuesTableCache[$parameterName];
+        foreach ($parameter_array as $parameter) {
+            if (strcmp($parameter["value"], $value) == 0) {
+                return $parameter["translation"];
+            }
+        }
+
+        return "";
     }
 
     /**
@@ -1465,14 +1509,25 @@ class DatabaseConnection
      */
     public function defaultValue($parameterName)
     {
-        $query = "SELECT value FROM possible_values WHERE " .
-            "parameter='$parameterName' AND isDefault='t'";
-        $result = $this->queryLastValue($query);
-        if ($result === False) {
-            return NULL;
+
+        // The data should be cached, if not retrieve from database and cache
+        if (self::$possibleValuesTableCache == null) {
+            $this->cachePossibleValuesTable();
         }
 
-        return $result;
+        if (! array_key_exists($parameterName, self::$possibleValuesTableCache))
+        {
+            return null;
+        }
+
+        $parameter_array = self::$possibleValuesTableCache[$parameterName];
+        foreach ($parameter_array as $parameter) {
+            if (strcmp($parameter["isDefault"], "t") == 0) {
+                return $parameter["value"];
+            }
+        }
+
+        return null;
     }
 
     /**
