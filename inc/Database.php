@@ -2048,7 +2048,7 @@ class DatabaseConnection
         $result = trim($this->execute($query));
 
         if (!is_numeric($result)) {
-            $result = 5;
+            $result = 6;
         }
 
         return $result;
