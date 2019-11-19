@@ -35,7 +35,6 @@ require_once dirname(__FILE__) . "/bootstrap.php";
  */
 class DatabaseConnection
 {
-
     /**
      * Private ADOConnection object. Do not access directly,
      * always use $this->connection(), since this function
@@ -58,6 +57,11 @@ class DatabaseConnection
     private static $possibleValuesTableCache = null;
 
     /**
+     * @var $boundaryValuesTableCache Static cache of the boundary_values database table.
+     */
+    private static $boundaryValuesTableCache = null;
+
+    /**
      * DatabaseConnection constructor: creates a database connection.
      * @throws \Exception if the connection to the database cannot be established.
      */
@@ -70,6 +74,9 @@ class DatabaseConnection
 
         // Cache the possible_values table
         $this->cachePossibleValuesTable();
+
+        // Cache the boundary_values table
+        $this->cacheBoundaryValuesTable();
 
         // Set the parameter name dictionary
         $this->parameterNameDictionary = array(
@@ -132,6 +139,32 @@ class DatabaseConnection
                     self::$possibleValuesTableCache[$key] = array();
                 }
                 array_push(self::$possibleValuesTableCache[$key], $param);
+            }
+        }
+    }
+
+    /**
+     * Retrieves the content of the boundary_values table and caches it 
+     * in an easy to process way.
+     */
+    private function cacheBoundaryValuesTable()
+    {
+        if (self::$boundaryValuesTableCache == null) {
+            // Instantiate the cache
+            self::$boundaryValuesTableCache = array();
+
+            // Retrieve the whole possible_values table
+            $result = $this->query("SELECT * from boundary_values;");
+
+            // Cache all rows
+            foreach ($result as $param) {
+                // Retrieve parameter name
+                $key = $param["parameter"];
+
+                if (! array_key_exists($key, self::$boundaryValuesTableCache)) {
+                    self::$boundaryValuesTableCache[$key] = array();
+                }
+                array_push(self::$boundaryValuesTableCache[$key], $param);
             }
         }
     }
@@ -1411,13 +1444,16 @@ class DatabaseConnection
      */
     public function readNumericalValueRestrictions(Parameter $parameter)
     {
-        $name = $parameter->name();
-        $query = "select min, max, min_included, max_included, standard from boundary_values where parameter = '$name';";
-        $result = $this->queryLastRow($query);
-        if (!$result) {
-            $result = array(null, null, null, null, null);
+        if (self::$boundaryValuesTableCache == null) {
+            $this->cacheBoundaryValuesTable();
         }
-        return $result;
+
+        if (! array_key_exists($parameter->name(), self::$boundaryValuesTableCache)) {
+            return array(null, null, null, null, null);
+        }
+
+        $param = self::$boundaryValuesTableCache[$parameter->name()][0];
+        return array($param["min"], $param["max"], $param["min_included"], $param["max_included"], $param["standard"]);
     }
 
     /**
@@ -2350,8 +2386,7 @@ class DatabaseConnection
 
 
     /**
-     * Add a server (including GPU info) to the list of processing machines
-       for the queue manager.
+     * Add a server (including GPU info) to the list of processing machines for the queue manager.
      * @return integer > 0 on failure; 0 on success.
      */
     public function addServer($serverName, $huPath, $gpuId)
@@ -2382,8 +2417,7 @@ class DatabaseConnection
 
 
     /**
-     * Remove a server from the list of processing machines for the queue
-       manager.
+     * Remove a server from the list of processing machines for the queue manager.
      * @return integer > 0 on failure; 0 on success.
      */
     public function removeServer($serverName)
