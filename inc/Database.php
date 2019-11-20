@@ -51,12 +51,6 @@ class DatabaseConnection
     private static $connection = null;
 
     /**
-     * Maps the Parameter names between HRM and Huygens.
-     * @var $parameterNameDictionary array
-     */
-    private $parameterNameDictionary;
-
-    /**
      * @var $possibleValuesTableCache Static cache of the possible_value database table.
      */
     private static $possibleValuesTableCache = null;
@@ -67,6 +61,35 @@ class DatabaseConnection
     private static $boundaryValuesTableCache = null;
 
     /**
+     * @var $parameterNameDictionary array Maps the Parameter names between HRM and Huygens.
+     */
+    public static $parameterNameDictionary = array(
+        "CCDCaptorSizeX" => "sampleSizesX",
+        "CCDCaptorSizeY" => "sampleSizesY",       
+        "ZStepSize" => "sampleSizesZ",
+        "TimeInterval" => "sampleSizesT",
+        "PinholeSize" => "pinhole",
+        "NumberOfChannels" => "chanCnt",
+        "PinholeSpacing" => "pinholeSpacing",
+        "ExcitationWavelength" => "lambdaEx",
+        "EmissionWavelength" => "lambdaEm",
+        "MicroscopeType" => "mType",
+        "NumericalAperture" => "NA",
+        "ObjectiveType" => "RILens",
+        "SampleMedium" => "RIMedia",
+        "unused1" => "iFacePrim",          // PSFGenerationDepth?
+        "unused2" => "iFaceScnd",
+        "unused3" => "imagingDir",
+        "unused4" => "objQuality",
+        "unused5" => "photonCnt",
+        "unused6" => "exBeamFill",
+        "StedDepletionMode" => "stedMode",
+        "StedWavelength" => "stedLambda",
+        "StedSaturationFactor" => "stedSatFact",
+        "StedImmunity" => "stedImmunity",
+        "Sted3D" => "sted3D");
+    
+        /**
      * Get static instance of the DatabaseConnection class.
      */
     public static function get()
@@ -95,33 +118,6 @@ class DatabaseConnection
         if (!$this->establishConnection()) {
             throw new \Exception("Could not connect to the database!");
         }
-
-        // Set the parameter name dictionary
-        $this->parameterNameDictionary = array(
-            "CCDCaptorSizeX" => "sampleSizesX",       
-            "CCDCaptorSizeY" => "sampleSizesY",       
-            "ZStepSize" => "sampleSizesZ",
-            "TimeInterval" => "sampleSizesT",
-            "PinholeSize" => "pinhole",
-            "NumberOfChannels" => "chanCnt",
-            "PinholeSpacing" => "pinholeSpacing",
-            "ExcitationWavelength" => "lambdaEx",
-            "EmissionWavelength" => "lambdaEm",
-            "MicroscopeType" => "mType",
-            "NumericalAperture" => "NA",
-            "ObjectiveType" => "RILens",
-            "SampleMedium" => "RIMedia",
-            "unused1" => "iFacePrim",          // PSFGenerationDepth?
-            "unused2" => "iFaceScnd",
-            "unused3" => "imagingDir",
-            "unused4" => "objQuality",
-            "unused5" => "photonCnt",
-            "unused6" => "exBeamFill",
-            "StedDepletionMode" => "stedMode",
-            "StedWavelength" => "stedLambda",
-            "StedSaturationFactor" => "stedSatFact",
-            "StedImmunity" => "stedImmunity",
-            "Sted3D" => "sted3D");
     }
 
     /**
@@ -2543,10 +2539,10 @@ class DatabaseConnection
         }
 
         // Use the mapped file format to retrieve the
-        if (!array_key_exists($parameterName, $this->parameterNameDictionary)) {
+        if (!array_key_exists($parameterName, self::$parameterNameDictionary)) {
             return "default";
         }
-        $query = "SELECT " . $this->parameterNameDictionary[$parameterName] .
+        $query = "SELECT " . self::$parameterNameDictionary[$parameterName] .
             " FROM confidence_levels WHERE fileFormat = '" . $hucoreFileFormat .
             "' LIMIT 1;";
         $confidenceLevel = $this->queryLastValue($query);
