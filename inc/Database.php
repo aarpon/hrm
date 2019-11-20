@@ -61,10 +61,15 @@ class DatabaseConnection
     private static $boundaryValuesTableCache = null;
 
     /**
-     * @var $parameterConfidenceLevelsCache Static cache of the parameter confidence levels.
+     * @var $confidenceLevelsTableCache Static cache of the parameter confidence levels table.
      */
-    private static $parameterConfidenceLevelsCache = null;
+    private static $confidenceLevelsTableCache = null;
 
+    /**
+     * @var $fileFormatTableCache Static cache of the file format table.
+     */
+    private static $fileFormatTableCache = null;
+    
     /**
      * @var $parameterNameDictionary array Maps the Parameter names between HRM and Huygens.
      */
@@ -190,13 +195,14 @@ class DatabaseConnection
 
 
     /**
-     * Caches the confidence levels caches them in an easy to process way.
+     * Retrieves the content of the confidence_levels table and caches it 
+     * in an easy to process way.
      */
-    private function cacheParameterConfidenceLevels()
+    private function cacheConfidenceLevelsTable()
     {
-        if (self::$parameterConfidenceLevelsCache === null) {
+        if (self::$confidenceLevelsTableCache === null) {
             // Instantiate the cache
-            self::$parameterConfidenceLevelsCache = array();
+            self::$confidenceLevelsTableCache = array();
 
             // Retrieve all conficence levels
             $result = $this->query("SELECT * FROM confidence_levels;");
@@ -206,11 +212,34 @@ class DatabaseConnection
 
                 // Use file format as key
                 $key = $row["fileFormat"];
-                self::$parameterConfidenceLevelsCache[$key] = $row;
+                self::$confidenceLevelsTableCache[$key] = $row;
             }
         }
     }
 
+    /**
+     * Retrieves the content of the file_format table and caches it 
+     * in an easy to process way.
+     */
+    private function cacheFileFormatTable()
+    {
+        if (self::$fileFormatTableCache === null) {
+            // Instantiate the cache
+            self::$fileFormatTableCache = array();
+
+            // Retrieve all conficence levels
+            $result = $this->query("SELECT * FROM file_format;");
+
+            // Cache all rows
+            foreach ($result as $row) {
+
+                // Use file format as key
+                $key = $row["name"];
+                self::$fileFormatTableCache[$key] = $row;
+            }
+        }
+    }
+    
     /**
      * Checks whether a connection to the DB is possible.
      *
@@ -2556,12 +2585,16 @@ class DatabaseConnection
      */
     private function huCoreConfidenceLevel($fileFormat, $parameterName)
     {
-        // Cache the confidence levels if needed
-        if (self::$parameterConfidenceLevelsCache === null) {
-            $this->cacheParameterConfidenceLevels();
+        // Cache the confidence_levels table if needed
+        if (self::$confidenceLevelsTableCache === null) {
+            $this->cacheConfidenceLevelsTable();
         }
 
-        // Get the mapped file format
+        // Cache the file_format table if needed
+        if (self::$fileFormatTableCache === null) {
+            $this->cacheFileFormatTable();
+        }
+
         $query = "SELECT hucoreName FROM file_format WHERE name = '" .
             $fileFormat . "' LIMIT 1";
         $hucoreFileFormat = $this->queryLastValue($query);
@@ -2569,6 +2602,9 @@ class DatabaseConnection
             Log::warning("Could not get the mapped file name for " . $fileFormat . "!");
             return "default";
         }
+
+        // Get the mapped file format
+        $hucoreFileFormat = self::$fileFormatTableCache[$fileFormat]["hucoreName"];
 
         // Use the mapped file format to retrieve the
         if (!array_key_exists($parameterName, self::$parameterNameDictionary)) {
@@ -2579,7 +2615,7 @@ class DatabaseConnection
         $name = self::$parameterNameDictionary[$parameterName];
         
         // Return it
-        return self::$parameterConfidenceLevelsCache[$hucoreFileFormat][$name];
+        return self::$confidenceLevelsTableCache[$hucoreFileFormat][$name];
     }
 
     /**
