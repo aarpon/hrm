@@ -71,6 +71,11 @@ class DatabaseConnection
     private static $fileFormatTableCache = null;
     
     /**
+     * @var $fileExtensionsCache Static cache of the file extensions.
+     */
+    private static $fileExtensionsCache = null;
+
+    /**
      * @var $parameterNameDictionary array Maps the Parameter names between HRM and Huygens.
      */
     public static $parameterNameDictionary = array(
@@ -1475,10 +1480,17 @@ class DatabaseConnection
      */
     public function allFileExtensions()
     {
+        // First check if we cached this already
+        if (self::$fileExtensionsCache !== null) {
+            return self::$fileExtensionsCache;
+        }
+
+        // Quesry the database and cache the result
         $query = "select distinct extension from file_extension";
         $answer = $this->query($query);
-        $result = $this->flatten($answer);
-        return $result;
+        self::$fileExtensionsCache = $this->flatten($answer);
+
+        return self::$fileExtensionsCache;
     }
 
     /**
@@ -2585,6 +2597,11 @@ class DatabaseConnection
      */
     private function huCoreConfidenceLevel($fileFormat, $parameterName)
     {
+        // The 'all' file format is forced to have 'default' confidence
+        if (strcmp($fileFormat, "all") == 0) {
+            return "default";
+        }
+
         // Cache the confidence_levels table if needed
         if (self::$confidenceLevelsTableCache === null) {
             $this->cacheConfidenceLevelsTable();
@@ -2595,19 +2612,18 @@ class DatabaseConnection
             $this->cacheFileFormatTable();
         }
 
-        $query = "SELECT hucoreName FROM file_format WHERE name = '" .
-            $fileFormat . "' LIMIT 1";
-        $hucoreFileFormat = $this->queryLastValue($query);
-        if (!$hucoreFileFormat) {
-            Log::warning("Could not get the mapped file name for " . $fileFormat . "!");
+        // The file format must exist in the file format table
+        if (!array_key_exists($fileFormat, self::$fileFormatTableCache)) {
+            Log::error("The file format $fileFormat is not known!");
             return "default";
         }
-
+        
         // Get the mapped file format
         $hucoreFileFormat = self::$fileFormatTableCache[$fileFormat]["hucoreName"];
 
-        // Use the mapped file format to retrieve the
+        // Use the mapped file format to retrieve the parameter confidence
         if (!array_key_exists($parameterName, self::$parameterNameDictionary)) {
+            Log::error("The parameter $parameterName is not known!");
             return "default";
         }
 
