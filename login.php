@@ -173,7 +173,7 @@ include("header.inc.php");
 
 <div id="welcome"><?php
     // Check that the database is reachable
-    $db = new DatabaseConnection();
+    $db = DatabaseConnection::get();
     if (!$db->isReachable()) {
         echo "<div class=\"dbOutDated\">Warning: the database is not reachable!\n";
         echo "<p>Please contact your administrator.</p>" .

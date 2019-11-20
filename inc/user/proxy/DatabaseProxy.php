@@ -132,7 +132,7 @@ class DatabaseProxy extends AbstractProxy {
      * @return string|null Group or Array of groups or NULL if not found.
     */
     public function getEmailAddress($username) {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $sql = "SELECT email FROM username WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($username));
         if ($result === false ) {
@@ -153,7 +153,7 @@ class DatabaseProxy extends AbstractProxy {
      * @return string Group or "" if not found.
     */
     public function getGroup($username) {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $sql = "SELECT research_group FROM username WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($username));
         if ($result === false ) {
@@ -227,7 +227,7 @@ class DatabaseProxy extends AbstractProxy {
      * @return bool True if the new password could be stored, false otherwise.
      */
     private function setPassword($username, $hashedPassword) {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $sql = "update username set password=? where name=?;";
         $result = $db->connection()->Execute(
             $sql, array($hashedPassword, $username)
@@ -248,7 +248,7 @@ class DatabaseProxy extends AbstractProxy {
      * @return string The encrypted password.
      */
     private function retrievePassword($name) {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->queryLastValue("select password from username where name='$name'");
     }
 

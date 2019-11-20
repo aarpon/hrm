@@ -42,7 +42,7 @@ class ExternalProcessFactory
     {
         global $imageProcessingIsOnQueueManager;
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $huscript_path = $db->huscriptPathOn($host);
 
         if ($imageProcessingIsOnQueueManager) {

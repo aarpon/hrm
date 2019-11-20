@@ -184,7 +184,7 @@ class System
      */
     public static function getDBCurrentRevision()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->query(
             "SELECT * FROM global_variables WHERE name LIKE 'dbrevision';");
         if (!$rows) {
@@ -209,7 +209,7 @@ class System
      */
     public static function getHuCoreVersionAsInteger()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT value FROM global_variables WHERE name= 'huversion';";
         $version = $db->queryLastValue($query);
         if ($version == false) {
@@ -254,7 +254,7 @@ class System
      */
     public static function isMinHuCoreVersion()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT value FROM global_variables WHERE name= 'huversion';";
         $version = $db->queryLastValue($query);
         if ($version == false) {
@@ -271,7 +271,7 @@ class System
      */
     public static function setHuCoreVersion($value)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rs = $db->query("SELECT * FROM global_variables WHERE name = 'huversion';");
         if (!$rs) {
             $query = "INSERT INTO global_variables VALUES ('huversion', '" . $value . "');";
@@ -371,7 +371,7 @@ class System
      */
     public static function getActiveLicenses()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $activeLicenses = $db->getActiveLicenses();
         return $activeLicenses;
     }
@@ -382,7 +382,7 @@ class System
      */
     public static function hucoreHasValidLicense()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->hucoreHasValidLicense();
     }
 
@@ -394,7 +394,7 @@ class System
      */
     public static function hasLicense($feature)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->hasLicense($feature);
     }
 
@@ -404,7 +404,7 @@ class System
      */
     public static function getHucoreServerType()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->hucoreServerType();
     }
 
@@ -494,7 +494,7 @@ class System
      */
     public static function getDatabaseType()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->type();
     }
 
@@ -505,7 +505,7 @@ class System
     public static function getDatabaseVersion()
     {
         $dbver = "";
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if (preg_match('|(\d+)\.(\d+)\.(\d+)|', $db->version(), $dbver)) {
             return "${dbver[1]}.${dbver[2]}.${dbver[3]}";
         } else {

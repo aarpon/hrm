@@ -28,7 +28,7 @@ if (!isset($_SESSION['task_setting'])) {
     $_SESSION['task_setting'] = new TaskSetting();
 }
 if ($_SESSION['user']->isAdmin()) {
-    $db = new DatabaseConnection;
+    $db = DatabaseConnection::get();
     $maxChanCnt = $db->getMaxChanCnt();
     $_SESSION['task_setting']->setNumberOfChannels($maxChanCnt);
 } else {

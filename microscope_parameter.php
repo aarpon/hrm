@@ -46,7 +46,7 @@ $message = "";
 /** @var ImageFileFormat $fileFormat */
 $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
 $parameterNames = $_SESSION['setting']->microscopeParameterNames();
-$db = new DatabaseConnection();
+$db = DatabaseConnection::get();
 foreach ($parameterNames as $name) {
     $parameter = $_SESSION['setting']->parameter($name);
     $confidenceLevel = $db->getParameterConfidenceLevel(

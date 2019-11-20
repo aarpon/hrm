@@ -76,7 +76,7 @@ class ProxyFactory {
     public static function getAuthenticationModeForUser($username) {
 
         // Retrieve the information from the database
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         $sql = "SELECT authentication FROM username WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($username));

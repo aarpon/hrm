@@ -37,7 +37,7 @@ class JobQueue
      */
     public function timestampNowString()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $date = $db->now();
         $ms = microtime();
         $ms = explode(" ", $ms);
@@ -51,7 +51,7 @@ class JobQueue
      */
     function availableServer()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->availableServer();
         return $result;
     }
@@ -63,7 +63,7 @@ class JobQueue
      */
     function getContents()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->getQueueContents();
         return $rows;
     }
@@ -75,7 +75,7 @@ class JobQueue
      */
     public function getJobFilesFor($id)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $files = $db->getJobFilesFor($id);
         return $files;
     }
@@ -89,7 +89,7 @@ class JobQueue
     {
         $owner = $jobDescription->owner();
         $ownerName = $owner->name();
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->queueJob($jobDescription->id(), $ownerName);
         return $result;
     }
@@ -101,7 +101,7 @@ class JobQueue
      */
     public function startJob(Job $job)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $pid = $job->pid();
         $result = $db->reserveServer($job->server(), $pid);
         $result = $result && $db->startJob($job);
@@ -114,7 +114,7 @@ class JobQueue
      */
     public function getNextJobDescription()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $id = $db->getNextIdFromQueue();
         if ($id == NULL) {
             return NULL;
@@ -131,7 +131,7 @@ class JobQueue
      */
     public function getCompoundJobs()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $jobDescriptions = array();
         $rows = $db->getQueueJobs();
         foreach ($rows as $row) {
@@ -170,7 +170,7 @@ class JobQueue
         if (count($ids) == 0) {
             return $result;
         }
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         foreach ($ids as $id) {
             // loop through all the jobs selected, which have to be deleted
             if (!$isAdmin && $db->getJobOwner($id) != $owner) {
@@ -196,7 +196,7 @@ class JobQueue
         $result = True;
         if (count($ids) == 0) return $result;
         
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // Loop through all the jobs selected, which have to be killed and
         // deleted.
@@ -230,7 +230,7 @@ class JobQueue
      */
     function killMarkedJobs()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $ids = $db->getJobIdsToKill();
         if ($ids != null && count($ids) > 0) {
             if ($this->killJobs($ids)) {
@@ -251,7 +251,7 @@ class JobQueue
      */
     function removeMarkedJobs()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $ids = $db->getMarkedJobIds();
         foreach ($ids as $id) {
             $this->removeJobWithId($id);
@@ -269,7 +269,7 @@ class JobQueue
      */
     function removeJobWithId($id)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->deleteJobFromTables($id);
     }
 
@@ -280,7 +280,7 @@ class JobQueue
      */
     function stopJob(Job $job)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $db->resetServer($job->server(), $job->pid());
         $this->removeJob($job->description());
         return $this->timestampNowString();
@@ -292,7 +292,7 @@ class JobQueue
      */
     function runningJobs()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $jobs = $db->getRunningJobs();
         return $jobs;
     }
@@ -304,7 +304,7 @@ class JobQueue
      */
     function startTime(Job $job)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $date = $db->startTimeOf($job);
         return $date;
     }
@@ -317,7 +317,7 @@ class JobQueue
      */
     function updateEstimatedEndTime($id, $date)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->setJobEndTime($id, $date);
     }
 
@@ -329,7 +329,7 @@ class JobQueue
      */
     function pauseJob(JobDescription $jobDescription)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->pauseJob($jobDescription->id());
         return $result;
     }
@@ -340,7 +340,7 @@ class JobQueue
      */
     function restartPausedJobs()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->restartPausedJobs();
         return $result;
     }
@@ -352,7 +352,7 @@ class JobQueue
      */
     function isServerBusy($name)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->isServerBusy($name);
         return $result;
     }
@@ -363,7 +363,7 @@ class JobQueue
      */
     function isLocked()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $ans = $db->getSwitchStatus();
         $result = false;
         if ($ans == "lck") {
@@ -378,7 +378,7 @@ class JobQueue
      */
     function lock()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->setSwitchStatus("lck");
         return $result;
     }
@@ -391,7 +391,7 @@ class JobQueue
     {
         $result = false;
         if ($this->isLocked()) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $result = $db->setSwitchStatus("on");
         }
         return $result;

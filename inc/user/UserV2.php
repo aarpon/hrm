@@ -285,7 +285,7 @@ class UserV2 {
      * @return string Institution name of the User.
      */
     public function institution_name() {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $name = $db->queryLastValue("SELECT name FROM institution WHERE id=" . $this->id . ";");
         return $name;
     }
@@ -473,7 +473,7 @@ class UserV2 {
         // If needed, retrieve.
         if ($this->isAdmin === null) {
 
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $res = $db->connection()->Execute(
                 "SELECT role FROM username WHERE name=?;",
                 array($this->name));
@@ -501,7 +501,7 @@ class UserV2 {
         // If needed, retrieve.
         if ($this->isSuperAdmin === null) {
 
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $res = $db->connection()->Execute(
                 "SELECT role FROM username WHERE name=?;", array($this->name));
             if ($res === false) {
@@ -560,7 +560,7 @@ class UserV2 {
     private function load()
     {
         // Instantiate the database connection
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // Load all information for current user
         $result = $db->connection()->Execute(
@@ -642,7 +642,7 @@ class UserV2 {
 
         // The user might not yet exist in the database. This is not
         // necessarily an error.
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if ($db->queryLastValue("SELECT id FROM username WHERE name='$this->name';") === false) {
             return true;
         }

@@ -36,6 +36,11 @@ require_once dirname(__FILE__) . "/bootstrap.php";
 class DatabaseConnection
 {
     /**
+     * Singleton instance.
+     */
+    private static $instance = null;
+
+    /**
      * Private ADOConnection object. Do not access directly,
      * always use $this->connection(), since this function
      * will make sure that a persistent connection exists
@@ -62,10 +67,29 @@ class DatabaseConnection
     private static $boundaryValuesTableCache = null;
 
     /**
-     * DatabaseConnection constructor: creates a database connection.
+     * Get static instance of the DatabaseConnection class.
+     */
+    public static function get()
+    {
+        if (self::$instance === null) {
+            self::$instance = new DatabaseConnection();
+        }
+
+        return self::$instance;
+    }
+
+    /**
+     * Do not allow copies.
+     */
+    private function __clone() {
+
+    }
+
+    /**
+     *  Private DatabaseConnection constructor: creates a database connection.
      * @throws \Exception if the connection to the database cannot be established.
      */
-    public function __construct()
+    private function __construct()
     {
         // Try establishing a connection
         if (!$this->establishConnection()) {
@@ -123,7 +147,7 @@ class DatabaseConnection
      */
     private function cachePossibleValuesTable()
     {
-        if (self::$possibleValuesTableCache == null) {
+        if (self::$possibleValuesTableCache === null) {
             // Instantiate the cache
             self::$possibleValuesTableCache = array();
 
@@ -149,7 +173,7 @@ class DatabaseConnection
      */
     private function cacheBoundaryValuesTable()
     {
-        if (self::$boundaryValuesTableCache == null) {
+        if (self::$boundaryValuesTableCache === null) {
             // Instantiate the cache
             self::$boundaryValuesTableCache = array();
 

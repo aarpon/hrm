@@ -55,7 +55,7 @@ class NumericalArrayParameter extends NumericalParameter
      */
     public function reset()
     {
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
 
         for ($i = 0; $i < $db->getMaxChanCnt(); $i++) {
             $this->value[$i] = NULL;
@@ -71,7 +71,7 @@ class NumericalArrayParameter extends NumericalParameter
     public function setNumberOfChannels($number)
     {
 
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
         if ($number == $this->numberOfChannels) {
@@ -145,7 +145,7 @@ class NumericalArrayParameter extends NumericalParameter
      */
     public function setValue($value)
     {
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
         if (is_array($value)) {

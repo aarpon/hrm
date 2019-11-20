@@ -587,7 +587,7 @@ class QueueManager
                     $job->server());
 
                 // Report information to statistics table
-                $db = new DatabaseConnection();
+                $db = DatabaseConnection::get();
                 $db->updateStatistics($job, $startTime);
 
                 // Clean up server
@@ -823,7 +823,7 @@ class QueueManager
     public function getFreeServer()
     {
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $servers = $db->availableServer();
 
         foreach ($servers as $server) {
@@ -869,7 +869,7 @@ class QueueManager
             return True;
         }
         $this->waitForDatabaseConnection();
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $this->shallStop = !$db->isSwitchOn();
         return $this->shallStop;
     }
@@ -881,7 +881,7 @@ class QueueManager
     {
         $isDatabaseReachable = False;
         while (!$isDatabaseReachable) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             if ($db->isReachable()) {
                 $isDatabaseReachable = True;
             }
@@ -895,7 +895,7 @@ class QueueManager
     {
         $queue = $this->queue;
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         /* Retrieve the list of servers. */
         $servers = $queue->availableServer();
@@ -933,7 +933,7 @@ class QueueManager
         }
 
         // Instantiate database connection
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // Query the database for processing servers
         $servers = $db->getAllServers();
@@ -1105,7 +1105,7 @@ class QueueManager
         Log::info($licDetails);
 
         // Store the license details in the database.
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if (!$db->storeLicenseDetails($licDetails['license'])) {
             Log::error("Could not store license details in the database!");
             return false;
@@ -1140,7 +1140,7 @@ class QueueManager
             $this->parseConfidenceLevelString($confidenceLevelString);
 
         // Store the confidence levels in the database
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if (!$db->storeConfidenceLevels($confidenceLevels)) {
             Log::error("Could not store confidence levels to the database!");
             return false;
@@ -1489,7 +1489,7 @@ class QueueManager
 
         $success = true;
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // This is a corner case: if the QM is started before the
         // database update to version 15, the sql query that relies on the

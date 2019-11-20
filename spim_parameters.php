@@ -42,7 +42,7 @@ $chanCnt = $_SESSION['setting']->numberOfChannels();
 /** @var ImageFileFormat $fileFormat */
 $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
 $parameterNames = $_SESSION['setting']->spimParameterNames();
-$db = new DatabaseConnection();
+$db = DatabaseConnection::get();
 foreach ($parameterNames as $name) {
     /** @var Parameter $parameter */
     $parameter = $_SESSION['setting']->parameter($name);

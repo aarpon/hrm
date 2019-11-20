@@ -38,7 +38,7 @@ $chanCnt = $_SESSION['setting']->numberOfChannels();
 
 $fileFormat = $_SESSION['setting']->parameter("ImageFileFormat");
 $parameterNames = $_SESSION['setting']->stedParameterNames();
-$db = new DatabaseConnection();
+$db = DatabaseConnection::get();
 foreach ($parameterNames as $name) {
     $parameter = $_SESSION['setting']->parameter($name);
     /** @var ImageFileFormat $fileFormat */

@@ -126,7 +126,7 @@ class Fileserver
         $this->imageExtensions = NULL;
 
         // Set the valid image extensions
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $this->validImageExtensions = $db->allFileExtensions();
 
         // Set the multi-image extensions
@@ -2615,7 +2615,7 @@ class Fileserver
             return False;
         }
         $result = False;
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         while ($name = readdir($dir)) {
             $filename = $folder . '/' . $name;
             if (is_dir($filename)) continue;

@@ -230,7 +230,7 @@ abstract class Setting {
      * @return Setting The loaded Setting.
      */
     public function load() {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->loadParameterSettings($this);
         if (!$result) {
             $this->message = "Could not load settings!";
@@ -243,7 +243,7 @@ abstract class Setting {
      * @return bool True if saving was successful, false otherwise.
     */
     public function save() {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->saveParameterSettings($this);
         if (!$result) {
             $this->message = "Could not save settings!";
@@ -257,7 +257,7 @@ abstract class Setting {
      * @return bool True if sharing was successful, false otherwise.
     */
     public function shareWith($username) {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $settings = $db->loadParameterSettings($this);
         $result = $db->saveSharedParameterSettings($settings, $username);
         if (!$result) {

@@ -80,7 +80,7 @@ class UserManager
      */
     public static function existsUserWithName($username)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "select status from username where lower(name) = lower('$username')";
         $result = $db->queryLastValue($query);
         if ($result) {
@@ -151,7 +151,7 @@ class UserManager
      */
     public static function existsUserRegistrationRequestWithSeed($seed)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT seedid FROM username WHERE status=='" .
             UserConstants::STATUS_NEW_ACCOUNT . "' AND seedid = '$seed';";
         $value = $db->queryLastValue($query);
@@ -176,7 +176,7 @@ class UserManager
      */
     public static function existsUserPasswordResetRequestWithSeed($username, $seed)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT seedid FROM username WHERE " .
             "name='" . $username ."' AND status='" .
             UserConstants::STATUS_PASSWORD_RESET . "' AND seedid='$seed';";
@@ -198,7 +198,7 @@ class UserManager
     public static function generateAndSetSeed($name)
     {
         $seed = UserManager::generateUniqueId();
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "UPDATE username SET seedid='$seed' WHERE name = '$name';";
         $value = $db->execute($query);
         if ($value == false) {
@@ -216,7 +216,7 @@ class UserManager
      */
     public static function resetSeed($name)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "UPDATE username SET seedid=NULL WHERE name = '$name';";
         $value = $db->execute($query);
         if ($value == false) {
@@ -232,7 +232,7 @@ class UserManager
      */
     public static function getAllInstitutions() {
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT * FROM institution;";
         $rows = $db->execute($query);
         if ($rows == false) {
@@ -249,7 +249,7 @@ class UserManager
      */
     public static function numberOfJobsInQueue($username)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $username . "';";
         $row = $db->execute($query)->FetchRow();
         return $row[0];
@@ -261,7 +261,7 @@ class UserManager
      */
     public static function getTotalNumberOfQueuedJobs()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT COUNT(id) FROM job_queue;";
         $row = $db->execute($query)->FetchRow();
         return $row[0];
@@ -337,7 +337,7 @@ class UserManager
         }
 
         // If the User already exists, return false
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if ($db->query("select name from username where name='$username'")) {
             return false;
         }
@@ -391,7 +391,7 @@ class UserManager
             return false;
         }
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         if (self::findUserByName($user->name()) == null) {
 
@@ -465,7 +465,7 @@ class UserManager
             array('cost' => UserConstants::HASH_ALGORITHM_COST));
 
         // Store it in the database
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "UPDATE username SET password=? WHERE name=?;";
         $result = $db->connection()->Execute($query,
             array($hashPassword, $username));
@@ -484,7 +484,7 @@ class UserManager
     {
 
         // Delete the user
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // If there are jobs in the queue for the user, we do not delete
         $sql = "SELECT id FROM job_queue WHERE username=?;";
@@ -592,7 +592,7 @@ class UserManager
      */
     public static function setRole($username, $role=UserConstants::ROLE_USER)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $sql = "UPDATE username SET role=? WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($role, $username));
         if ($result === false) {
@@ -625,7 +625,7 @@ class UserManager
         }
 
         // Try updating the user
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $sql = "UPDATE username SET authentication=? WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($mode, $username));
         if ($result === false) {
@@ -698,7 +698,7 @@ class UserManager
      */
     public static function getAllUserDBRows()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->query("SELECT * FROM username ORDER BY name");
         return $rows;
     }
@@ -709,7 +709,7 @@ class UserManager
      */
     public static function getAllActiveUserDBRows()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->query("SELECT * FROM username WHERE (status = '" .
             UserConstants::STATUS_ACTIVE . "' OR status = '" .
             UserConstants::STATUS_OUTDATED . "' OR status = '" .
@@ -726,7 +726,7 @@ class UserManager
      */
     public static function getAllPendingUserDBRows()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->query("SELECT * FROM username WHERE (seedid IS NOT NULL OR length(seedid) > 0)" .
             " AND status='" . UserConstants::STATUS_NEW_ACCOUNT . "' ORDER BY name;");
         return $rows;
@@ -742,7 +742,7 @@ class UserManager
     public static function getAllUserDBRowsByInitialLetter($c)
     {
         $c = strtolower($c);
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->query("SELECT * FROM username WHERE name LIKE '$c%' ORDER BY name;");
         return $rows;
     }
@@ -754,7 +754,7 @@ class UserManager
      */
     public static function getTotalNumberOfUsers()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $count = $db->queryLastValue(
             "SELECT count(*) FROM username WHERE TRUE;");
         return $count;
@@ -769,7 +769,7 @@ class UserManager
     {
 
         // Open database connection
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // Initialize array of counts
         $counts = array();
@@ -832,7 +832,7 @@ class UserManager
      */
     public static function getUserStatus($name)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "select status from username where name = '$name'";
         $result = $db->queryLastValue($query);
         if ($result === false) {
@@ -850,7 +850,7 @@ class UserManager
      */
     public static function setUserStatus($name, $status)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "update username set status='$status' where name='$name'";
         $result = $db->execute($query);
         if ($result) {
@@ -879,7 +879,7 @@ class UserManager
      */
     private static function updateUserStatus($username, $status)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if ($status == UserConstants::STATUS_PASSWORD_RESET) {
             $query = "UPDATE username SET status = '$status' WHERE name = '$username'";
         } else {
@@ -902,7 +902,7 @@ class UserManager
     private static function updateAllUsersStatus($status)
     {
         // Only the super admin is left untouched
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $role = UserConstants::ROLE_SUPERADMIN;
         $query = "UPDATE username SET status = '$status', seedid = '' WHERE role != $role";
         $result = $db->execute($query);

@@ -247,7 +247,7 @@ class FileserverV2
     public static function getImageExtensions() {
 
         // Instantiate a new database connection
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // Return the image extensions
         return $db->allFileExtensions();

@@ -313,7 +313,7 @@ class JobDescription
             $this->processCompoundJobs();
 
             // Assign priorities
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $result = $db->setJobPriorities();
             if (!$result) {
                 Log::error("Could not set job priorities!");
@@ -350,7 +350,7 @@ class JobDescription
         $analysisParameterSetting->copyParameterFrom($this->analysisSetting);
         $result = $result && $analysisParameterSetting->save();
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $result && $db->saveJobFiles($this->id,
                 $this->owner,
                 $this->files,
@@ -386,7 +386,7 @@ class JobDescription
      */
     public function load()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         $parameterSetting = new JobParameterSetting();
         $owner = new UserV2();

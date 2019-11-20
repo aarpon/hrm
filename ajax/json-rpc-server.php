@@ -306,7 +306,7 @@ function jsonGetUserAndTotalNumberOfJobsInQueue() {
     $json = initJSONArray();
 
     // Get the total number of jobs
-    $db = new DatabaseConnection();
+    $db = DatabaseConnection::get();
     $json["numAllJobsInQueue"] = UserManager::getTotalNumberOfQueuedJobs();
 
     // Get the number of jobs for current user
@@ -596,7 +596,7 @@ function jsonGetUserList($username) {
     $json = initJSONArray();
 
     // Retrieve user list from database
-    $db = new DatabaseConnection();
+    $db = DatabaseConnection::get();
 
     // Get the list of users
     $users = $db->getUserList($username);
@@ -686,7 +686,7 @@ function jsonAcceptSharedTemplate($template, $type) {
     $json = initJSONArray();
 
     // Get a database connection
-    $db = new DatabaseConnection();
+    $db = DatabaseConnection::get();
 
     // Copy the setting
     switch ($type) {
@@ -752,7 +752,7 @@ function jsonDeleteSharedTemplate($template, $type) {
     $json = initJSONArray();
 
     // Get a database connection
-    $db = new DatabaseConnection();
+    $db = DatabaseConnection::get();
 
     // Copy the setting
     $success = True;
@@ -816,7 +816,7 @@ function jsonPreviewSharedTemplate($template, $type) {
     $json["preview"] = "";
 
     // Get a database connection
-    $db = new DatabaseConnection();
+    $db = DatabaseConnection::get();
 
     // Read the settings from the shared table and prepare the preview
     /** @var hrm\setting\ParameterSetting $settings */

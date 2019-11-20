@@ -125,7 +125,7 @@ class TaskSetting extends Setting
             return False;
         }
 
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
@@ -580,7 +580,7 @@ class TaskSetting extends Setting
      */
     public static function getTemplatesSharedWith($username)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->getTemplatesSharedWith($username, self::sharedTable());
         return $result;
     }
@@ -592,7 +592,7 @@ class TaskSetting extends Setting
      */
     public static function getTemplatesSharedBy($username)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->getTemplatesSharedBy($username, self::sharedTable());
         return $result;
     }
@@ -610,7 +610,7 @@ class TaskSetting extends Setting
             $huArray[$key] = trim($value, " ");
         }
 
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
         // We only look at the first channel for the decon algorithm.

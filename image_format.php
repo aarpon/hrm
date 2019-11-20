@@ -46,7 +46,7 @@ $message = "";
    file format chosen!
 */
 $parameterNames = $_SESSION['setting']->imageParameterNames();
-$db = new DatabaseConnection();
+$db = DatabaseConnection::get();
 foreach ($parameterNames as $name) {
     $parameter = $_SESSION['setting']->parameter($name);
     $confidenceLevel = $db->getParameterConfidenceLevel('', $name);
