@@ -61,6 +61,11 @@ class DatabaseConnection
     private static $boundaryValuesTableCache = null;
 
     /**
+     * @var $parameterConfidenceLevelsCache Static cache of the parameter confidence levels.
+     */
+    private static $parameterConfidenceLevelsCache = null;
+
+    /**
      * @var $parameterNameDictionary array Maps the Parameter names between HRM and Huygens.
      */
     public static $parameterNameDictionary = array(
@@ -179,6 +184,29 @@ class DatabaseConnection
                     self::$boundaryValuesTableCache[$key] = array();
                 }
                 array_push(self::$boundaryValuesTableCache[$key], $param);
+            }
+        }
+    }
+
+
+    /**
+     * Caches the confidence levels caches them in an easy to process way.
+     */
+    private function cacheParameterConfidenceLevels()
+    {
+        if (self::$parameterConfidenceLevelsCache === null) {
+            // Instantiate the cache
+            self::$parameterConfidenceLevelsCache = array();
+
+            // Retrieve all conficence levels
+            $result = $this->query("SELECT * FROM confidence_levels;");
+
+            // Cache all rows
+            foreach ($result as $row) {
+
+                // Use file format as key
+                $key = $row["fileFormat"];
+                self::$parameterConfidenceLevelsCache[$key] = $row;
             }
         }
     }
@@ -2528,6 +2556,10 @@ class DatabaseConnection
      */
     private function huCoreConfidenceLevel($fileFormat, $parameterName)
     {
+        // Cache the confidence levels if needed
+        if (self::$parameterConfidenceLevelsCache === null) {
+            $this->cacheParameterConfidenceLevels();
+        }
 
         // Get the mapped file format
         $query = "SELECT hucoreName FROM file_format WHERE name = '" .
@@ -2542,17 +2574,12 @@ class DatabaseConnection
         if (!array_key_exists($parameterName, self::$parameterNameDictionary)) {
             return "default";
         }
-        $query = "SELECT " . self::$parameterNameDictionary[$parameterName] .
-            " FROM confidence_levels WHERE fileFormat = '" . $hucoreFileFormat .
-            "' LIMIT 1;";
-        $confidenceLevel = $this->queryLastValue($query);
-        if (!$confidenceLevel) {
-            Log::warning("Could not get the confidence level for " . $fileFormat . "!");
-            return "default";
-        }
 
-        // return the confidence level
-        return $confidenceLevel;
+        // Read the confidence level from the cache
+        $name = self::$parameterNameDictionary[$parameterName];
+        
+        // Return it
+        return self::$parameterConfidenceLevelsCache[$hucoreFileFormat][$name];
     }
 
     /**
