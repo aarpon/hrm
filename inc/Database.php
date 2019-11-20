@@ -96,12 +96,6 @@ class DatabaseConnection
             throw new \Exception("Could not connect to the database!");
         }
 
-        // Cache the possible_values table
-        $this->cachePossibleValuesTable();
-
-        // Cache the boundary_values table
-        $this->cacheBoundaryValuesTable();
-
         // Set the parameter name dictionary
         $this->parameterNameDictionary = array(
             "CCDCaptorSizeX" => "sampleSizesX",       
