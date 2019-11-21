@@ -502,12 +502,12 @@ class QueueManager
         // TODO check if it is necessary
         $queue = $this->queue;
 
-        // First remove all 'broken' jobs that haven't started yet.
+        // First remove all 'delete' jobs that haven't started yet.
         // This way we clean the queue as fast as possible.
         if (! $queue->removeMarkedJobs()) {
 
             // Report
-            Log::error("Failed removing deleted ('broken'), not yet started jobs from the queue.");
+            Log::error("Failed removing deleted, not yet started jobs from the queue.");
 
             // Force maintenance
             DatabaseConnection::get()->cleanQueueFromBrokenJobs();
@@ -517,7 +517,7 @@ class QueueManager
         if (! $queue->killMarkedJobs()) {
 
             // Report
-            Log::error("Failed removing killed,running jobs from the queue.");
+            Log::error("Failed killing running jobs from the queue.");
 
             // Force maintenance
             DatabaseConnection::get()->cleanQueueFromBrokenJobs();

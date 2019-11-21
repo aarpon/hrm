@@ -158,7 +158,7 @@ class JobQueue
     }
 
     /**
-     * Marks Jobs with given ids as 'broken' (i.e. to be removed).
+     * Marks Jobs with given ids as 'delete' (i.e. to be removed).
      * @param array $ids Job ids.
      * @param string $owner Name of the user who owns the Job.
      * @param bool $isAdmin True if the owner is an admin (default = false).
@@ -176,7 +176,7 @@ class JobQueue
             if (!$isAdmin && $db->getJobOwner($id) != $owner) {
                 continue;
             }
-            $result = $result && $db->markJobAsRemoved($id);
+            $result &= $db->markJobAsRemoved($id);
 
             // The front end should NOT try to kill the job, it may not work.
             // The Queue Manager will take care of it.
@@ -244,7 +244,7 @@ class JobQueue
     }
 
     /**
-     * Remove marked Jobs from the Queue (i.e. those with status 'broken').
+     * Remove marked Jobs from the Queue (i.e. those with status 'delete').
      * These are jobs that have been deleted before they started.
      *
      * @return bool True if all marked Jobs were removed, false otherwise.

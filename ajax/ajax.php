@@ -145,7 +145,7 @@ function getJobQueueTable()
         foreach ($rows as $row) {
             if ($row['status'] == "started") {
                 $color = '#99ffcc';
-            } else if ($row['status'] == "broken" || $row['status'] == "kill") {
+            } else if ($row['status'] == "delete" || $row['status'] == "kill") {
                 $color = '#ff9999';
             } else if ($index % 2 == 0) {
                 $color = '#ffccff';
@@ -159,7 +159,7 @@ function getJobQueueTable()
                 $_SESSION['user']->isAdmin()
             ) {
 
-                if ($row['status'] != "broken" && $row['status'] != "kill") {
+                if ($row['status'] != "delete" && $row['status'] != "kill") {
 
                     $data .= '
           <td>

@@ -1251,9 +1251,8 @@ class DatabaseConnection
         // 'Highest' priority (i.e. lowest value) is 0
         $currentPriority = 0;
 
-        // First, we make sure to give the highest priorities to paused and
-        // broken jobs
-        $rs = $this->execute("SELECT id FROM job_queue WHERE status = 'broken' OR status = 'paused';");
+        // First, we make sure to give the highest priorities to paused, 'kill'ed, and 'delete'd jobs
+        $rs = $this->execute("SELECT id FROM job_queue WHERE status = 'delete' OR status = 'kill' OR status = 'paused';");
         if ($rs) {
             while ($row = $rs->FetchRow()) {
 
@@ -2047,14 +2046,14 @@ class DatabaseConnection
     }
 
     /**
-     * Marks a job with given id as 'broken' (i.e. to be removed).
+     * Marks a job with given id as 'delete' (i.e. to be removed).
      * @param string $id Job id.
      * @return array Query result.
      */
     public function markJobAsRemoved($id)
     {
-        $query = "update job_queue set status='broken' where (status='queued' or status='paused') and id='$id';";
-        // $query = "update job_queue set status='broken' where id='" . $id . "'";
+        $query = "update job_queue set status='delete' where (status='queued' or status='paused') and id='$id';";
+        // $query = "update job_queue set status='delete' where id='" . $id . "'";
         $result = $this->execute($query);
         $query = "update job_queue set status='kill' where status='started' and id='$id';";
         $result = $this->execute($query);
@@ -2074,12 +2073,12 @@ class DatabaseConnection
     }
 
     /**
-     * Get all jobs with status 'broken'.
-     * @return array Array of ids for broken jobs.
+     * Get all jobs with status 'delete'.
+     * @return array Array of ids for jobs to delete.
      */
     public function getMarkedJobIds()
     {
-        $conditions['status'] = 'broken';
+        $conditions['status'] = 'delete';
         $ids = $this->retrieveColumnFromTableWhere('id', 'job_queue', $conditions);
         return $ids;
     }
@@ -2526,28 +2525,28 @@ class DatabaseConnection
     public function cleanQueueFromBrokenJobs()
     {
         $this->execute(
-            'DELETE FROM job_analysis_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+            'DELETE FROM job_analysis_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_analysis_setting WHERE name IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+            'DELETE FROM job_analysis_setting WHERE name IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_files WHERE job IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+            'DELETE FROM job_files WHERE job IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+            'DELETE FROM job_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_parameter_setting WHERE name IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+            'DELETE FROM job_parameter_setting WHERE name IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_task_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+            'DELETE FROM job_task_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_task_setting WHERE name IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
+            'DELETE FROM job_task_setting WHERE name IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_queue  WHERE status="broken" OR status="kill";'
+            'DELETE FROM job_queue  WHERE status="delete" OR status="kill";'
         );
         $this->execute(
             'UPDATE server SET status="free", job = NULL;'
