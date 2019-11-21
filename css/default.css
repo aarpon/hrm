@@ -381,6 +381,7 @@ table {
 #logos table tr.caption {
     vertical-align: top;
     text-align: center;
+    color: white;
 }
 
 #logos table td {
@@ -390,7 +391,7 @@ table {
 #logos table td.epfl {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_epfl_neg.png") no-repeat center;
+    background: url("../images/logo_epfl.png") no-repeat center;
     background-size: 130px;
 }
 
