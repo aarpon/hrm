@@ -159,7 +159,7 @@ function getJobQueueTable()
                 $_SESSION['user']->isAdmin()
             ) {
 
-                if ($row['status'] != "broken") {
+                if ($row['status'] != "broken" && $row['status'] != "kill") {
 
                     $data .= '
           <td>

@@ -2,6 +2,9 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+// Do not time out this page
+set_time_limit(0);
+
 use hrm\Fileserver;
 use hrm\DatabaseConnection;
 use hrm\job\JobDescription;

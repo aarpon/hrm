@@ -226,40 +226,48 @@ class JobQueue
 
     /**
      * Kills marked Jobs (i.e. those with status 'kill').
+     * These are jobs that were deleted after they started.
+     *
      * @return bool True if all marked Jobs were killed, false otherwise.
      */
     function killMarkedJobs()
     {
         $db = DatabaseConnection::get();
         $ids = $db->getJobIdsToKill();
-        if ($ids != null && count($ids) > 0) {
-            if ($this->killJobs($ids)) {
-                Log::info("running broken jobs killed and removed");
-                return True;
-            } else {
-                Log::error("killing running broken jobs failed");
-                return False;
-            }
-        } else {
-            return False;
+
+        // If there are no jobs we return success
+        if (count($ids) == 0) {
+            return true;
         }
+
+        return $this->killJobs($ids);
     }
 
     /**
-     * Remove marked Jobs from the Queue (i.e. those 'kill'ed).
+     * Remove marked Jobs from the Queue (i.e. those with status 'broken').
+     * These are jobs that have been deleted before they started.
+     *
      * @return bool True if all marked Jobs were removed, false otherwise.
      */
     function removeMarkedJobs()
     {
         $db = DatabaseConnection::get();
         $ids = $db->getMarkedJobIds();
+
+        // If there are no jobs we return success
+        if (count($ids) == 0) {
+            return true;
+        }
+
+        // There are jobs, lets remove them
+        $success = true;
         foreach ($ids as $id) {
-            $this->removeJobWithId($id);
+            $success &= $this->removeJobWithId($id);
         }
-        if ($ids != null && count($ids) > 0) {
-            return True;
-        }
-        return False;
+
+        // If some removal failed, $success is false;
+        // otherwise we can return success
+        return $success;
     }
 
     /**

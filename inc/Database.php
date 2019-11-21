@@ -2547,14 +2547,13 @@ class DatabaseConnection
             'DELETE FROM job_task_setting WHERE name IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_task_setting WHERE name IN (SELECT id FROM job_queue WHERE status="broken" OR status="kill");'
-        );
-        $this->execute(
             'DELETE FROM job_queue  WHERE status="broken" OR status="kill";'
         );
         $this->execute(
-            'UPDATE server SET status= "free", job = NULL;'
+            'UPDATE server SET status="free", job = NULL;'
         );
+
+        Log::warning("Performed database maintenance and cleanup.");
     }
 
     /* ------------------------ PRIVATE FUNCTIONS --------------------------- */
