@@ -75,6 +75,12 @@ if (isset($_POST["inform"]) && $_POST["inform"] == "Yes") {
  * END OF SANITIZE INPUT
  *
  */
+
+if (isset($_GET['home'])) {
+    header("Location: " . "home.php");
+    exit();
+}
+
 // Add the user
 if (isset($_POST['add'])) {
 
