@@ -12,6 +12,7 @@ namespace hrm;
 
 use ADOConnection;
 use ADORecordSet;
+use Exception;
 use hrm\job\Job;
 use hrm\job\JobDescription;
 use hrm\param\base\Parameter;
@@ -51,27 +52,27 @@ class DatabaseConnection
     private static $connection = null;
 
     /**
-     * @var $possibleValuesTableCache Static cache of the possible_value database table.
+     * @var $possibleValuesTableCache array Static cache of the possible_value database table.
      */
     private static $possibleValuesTableCache = null;
 
     /**
-     * @var $boundaryValuesTableCache Static cache of the boundary_values database table.
+     * @var $boundaryValuesTableCache array Static cache of the boundary_values database table.
      */
     private static $boundaryValuesTableCache = null;
 
     /**
-     * @var $confidenceLevelsTableCache Static cache of the parameter confidence levels table.
+     * @var $confidenceLevelsTableCache array Static cache of the parameter confidence levels table.
      */
     private static $confidenceLevelsTableCache = null;
 
     /**
-     * @var $fileFormatTableCache Static cache of the file format table.
+     * @var $fileFormatTableCache array Static cache of the file format table.
      */
     private static $fileFormatTableCache = null;
     
     /**
-     * @var $fileExtensionsCache Static cache of the file extensions.
+     * @var $fileExtensionsCache array Static cache of the file extensions.
      */
     private static $fileExtensionsCache = null;
 
@@ -80,7 +81,7 @@ class DatabaseConnection
      */
     public static $parameterNameDictionary = array(
         "CCDCaptorSizeX" => "sampleSizesX",
-        "CCDCaptorSizeY" => "sampleSizesY",       
+        "CCDCaptorSizeY" => "sampleSizesY",
         "ZStepSize" => "sampleSizesZ",
         "TimeInterval" => "sampleSizesT",
         "PinholeSize" => "pinhole",
@@ -119,19 +120,19 @@ class DatabaseConnection
     /**
      * Do not allow copies.
      */
-    private function __clone() {
-
+    private function __clone()
+    {
     }
 
     /**
      *  Private DatabaseConnection constructor: creates a database connection.
-     * @throws \Exception if the connection to the database cannot be established.
+     * @throws Exception if the connection to the database cannot be established.
      */
     private function __construct()
     {
         // Try establishing a connection
         if (!$this->establishConnection()) {
-            throw new \Exception("Could not connect to the database!");
+            throw new Exception("Could not connect to the database!");
         }
     }
 
@@ -147,7 +148,7 @@ class DatabaseConnection
     }
 
     /**
-     * Retrieves the content of the possible_values table and caches it 
+     * Retrieves the content of the possible_values table and caches it
      * in an easy to process way.
      */
     private function cachePossibleValuesTable()
@@ -173,7 +174,7 @@ class DatabaseConnection
     }
 
     /**
-     * Retrieves the content of the boundary_values table and caches it 
+     * Retrieves the content of the boundary_values table and caches it
      * in an easy to process way.
      */
     private function cacheBoundaryValuesTable()
@@ -200,7 +201,7 @@ class DatabaseConnection
 
 
     /**
-     * Retrieves the content of the confidence_levels table and caches it 
+     * Retrieves the content of the confidence_levels table and caches it
      * in an easy to process way.
      */
     private function cacheConfidenceLevelsTable()
@@ -214,7 +215,6 @@ class DatabaseConnection
 
             // Cache all rows
             foreach ($result as $row) {
-
                 // Use file format as key
                 $key = $row["fileFormat"];
                 self::$confidenceLevelsTableCache[$key] = $row;
@@ -223,7 +223,7 @@ class DatabaseConnection
     }
 
     /**
-     * Retrieves the content of the file_format table and caches it 
+     * Retrieves the content of the file_format table and caches it
      * in an easy to process way.
      */
     private function cacheFileFormatTable()
@@ -237,7 +237,6 @@ class DatabaseConnection
 
             // Cache all rows
             foreach ($result as $row) {
-
                 // Use file format as key
                 $key = $row["name"];
                 self::$fileFormatTableCache[$key] = $row;
@@ -263,13 +262,12 @@ class DatabaseConnection
      *
      * @return true if the connection could be established, false otherwise.
      */
-    private function establishConnection() {
-
+    private function establishConnection()
+    {
         // Create a persistent connection if none exists. Please notice that
         // the connection object is static. This way if survives across calls
         // to the DatabaseConnection constructor.
         if (self::$connection == null) {
-
             // Get parameters
             global $db_type, $db_host, $db_name, $db_user, $db_password;
 
@@ -306,7 +304,7 @@ class DatabaseConnection
         try {
             $query = "SELECT version( );";
             $version = $this->queryLastValue($query);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $version = "Could not get version information.";
         }
         return $version;
@@ -446,7 +444,7 @@ class DatabaseConnection
      *
      * @param Setting $settings Settings object to be saved.
      * @return bool True if saving was successful, false otherwise.
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveParameterSettings(Setting $settings)
     {
@@ -533,7 +531,7 @@ class DatabaseConnection
      * @param string $targetUserName User name of the user that the Setting is
      * to be shared with.
      * @return bool True if saving was successful, false otherwise.
-     * @throws \Exception
+     * @throws Exception
      */
     public function saveSharedParameterSettings($settings, $targetUserName)
     {
@@ -630,7 +628,7 @@ class DatabaseConnection
      * value at the index 0.
      * @param Setting $settings Setting object to be loaded.
      * @return Setting $settings Setting object with loaded values.
-     * @throws \Exception
+     * @throws Exception
      * @todo Debug the switch blog (possibly buggy!)
      */
     public function loadParameterSettings($settings)
@@ -717,7 +715,7 @@ class DatabaseConnection
      * @param int $id Setting id.
      * @param string $type Setting type (one of "parameter", "task", "analysis").
      * @return Setting object with loaded values.
-     * @throws \Exception
+     * @throws Exception
      * @todo Debug the second switch block (probably buggy!)
      */
     public function loadSharedParameterSettings($id, $type)
@@ -749,7 +747,7 @@ class DatabaseConnection
 
             default:
 
-                throw new \Exception("bad value for type!");
+                throw new Exception("bad value for type!");
         }
 
         // Get the setting info
@@ -1217,14 +1215,40 @@ class DatabaseConnection
     }
 
     /**
+     * Adds file for a given job id and user to the database.
+     * @param string $id Job id.
+     * @param string $owner Name of the user that owns the job.
+     * @param string $file Current file name.
+     * @param bool $autoseries True if the series is to be loaded automatically, false otherwise.
+     * @return bool True if the job file could be saved successfully; false otherwise.
+     */
+    public function addFileToJob($id, $owner, $file, $autoseries)
+    {
+        $result = true;
+        /** @var UserV2 $owner */
+        $username = $owner->name();
+        $sqlAutoSeries = "";
+        if (strcasecmp($autoseries, "TRUE") == 0 || strcasecmp($autoseries, "T") == 0) {
+            $sqlAutoSeries = "T";
+        }
+        $slashesFile = addslashes($file);
+        $query = "insert into job_files values ('$id', '$username', '$slashesFile', '$sqlAutoSeries')";
+        $result = $result && $this->execute($query);
+        return $result;
+    }
+
+    /**
      * Adds a job for a given job id and user to the queue.
      * @param string $id Job id.
+     * @param string $settings_id Settings id.
      * @param string $username Name of the user that owns the job.
      * @return array Query result.
      */
-    public function queueJob($id, $username)
+    public function queueJob($id, $settings_id, $username)
     {
-        $query = "insert into job_queue (id, username, queued, status) values ('$id', '$username', NOW(), 'queued')";
+        $query = "insert into job_queue 
+            (id, settings_id, username, queued, status)
+            values ('$id', '$settings_id', '$username', NOW(), 'queued')";
         return $this->execute($query);
     }
 
@@ -1663,20 +1687,20 @@ class DatabaseConnection
     }
 
     /**
-     * Returns the id for next job from the queue, sorted by priority.
-     * @return string Job id.
+     * Returns the id for next job from the queue, sorted by priority, with the associated settings id.
+     * @return array Job and Settings id.
      */
     public function getNextIdFromQueue()
     {
         // For the query we join job_queue and job_files, since we want to sort also by file name
-        $query = "SELECT id
+        $query = "SELECT id, settings_id
     FROM job_queue, job_files
     WHERE job_queue.id = job_files.job AND job_queue.username = job_files.owner
     AND job_queue.status = 'queued'
     ORDER BY job_queue.priority desc, job_queue.status desc, job_files.file desc;";
-        $result = $this->queryLastValue($query);
+        $result = $this->queryLastRow($query);
         if (!$result) {
-            return NULL;
+            return null;
         }
         return $result;
     }
@@ -1954,13 +1978,16 @@ class DatabaseConnection
     public function getRunningJobs()
     {
         $result = array();
-        $query = "select id, process_info, server from job_queue where status = 'started'";
+        $query = "select id, process_info, server, settings_id from job_queue where status = 'started'";
         $rows = $this->query($query);
-        if (!$rows) return $result;
+        if (!$rows) {
+            return $result;
+        }
 
         foreach ($rows as $row) {
             $desc = new JobDescription();
             $desc->setId($row['id']);
+            $desc->setSettingsId($row['settings_id']);
             $desc->load();
             $job = new Job($desc);
             $job->setServer($row['server']);
@@ -2279,7 +2306,7 @@ class DatabaseConnection
         $query = "SELECT feature FROM hucore_license WHERE " .
             "feature LIKE '$feature' LIMIT 1;";
 
-        if ($this->queryLastValue($query) === FALSE) {
+        if ($this->queryLastValue($query) === false) {
             return false;
         } else {
             return true;

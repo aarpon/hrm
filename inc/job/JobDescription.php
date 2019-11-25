@@ -37,7 +37,13 @@ class JobDescription
      * @var string
      */
     private $id;
-    
+
+    /**
+     * Id of the settings associated to the job.
+     * @var string
+     */
+    private $settingsId;
+
     /**
      * The ID of the GPU card where to run the Job.
      * @var string
@@ -46,19 +52,19 @@ class JobDescription
 
     /**
      * The Job's ParameterSetting.
-     * @var \hrm\setting\ParameterSetting
+     * @var ParameterSetting
      */
     public $parameterSetting;
 
     /**
      * The Job's TaskSetting.
-     * @var \hrm\setting\TaskSetting
+     * @var TaskSetting
      */
     public $taskSetting;
 
     /**
      * The Job's AnalysisSetting.
-     * @var \hrm\setting\AnalysisSetting
+     * @var AnalysisSetting
      */
     public $analysisSetting;
 
@@ -105,9 +111,19 @@ class JobDescription
      */
     public function __construct()
     {
-        $this->id = (string)(uniqid(''));
+        $this->id = self::newID();
+        $this->settingsId = "";
         $this->message = "";
         $this->pass = 1;
+    }
+
+    /**
+     * Generate a unique ID.
+     * @return string Unique Id.
+     */
+    public static function newID()
+    {
+        return (string)(uniqid(''));
     }
 
     /**
@@ -129,12 +145,30 @@ class JobDescription
     }
 
     /**
+     * Returns the id of the settings associated to the Job.
+     * @return string Unique id.
+     */
+    public function settingsId()
+    {
+        return $this->settingsId;
+    }
+
+    /**
      * Sets the (unique) id of the Job.
      * @param  string $id Unique id.
      */
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * Sets the id of the settings associated to the Job.
+     * @param  string $settingsId Id of the settings.
+     */
+    public function setSettingsId($settingsId)
+    {
+        $this->settingsId = $settingsId;
     }
 
     /**
@@ -252,7 +286,7 @@ class JobDescription
      * @param array $files Array of file names.
      * @param bool $autoseries True if the file series should be loaded automatically, false otherwise.
      */
-    public function setFiles($files, $autoseries = FALSE)
+    public function setFiles($files, $autoseries = false)
     {
         $this->files = $files;
         $this->autoseries = $autoseries;
@@ -291,33 +325,65 @@ class JobDescription
      */
     public function addJob()
     {
-        // =========================================================================
-        //
-        // In previous versions of HRM, the web interface would create compound
-        // jobs that the queue manager would then process. Now, this task has become
-        // responsibility of the web interface.
-        //
-        // =========================================================================
+        $result = true;
 
-        $result = True;
-
+        // Create a new JobQueue object
         $lqueue = new JobQueue();
+
+        // Lock the queue
         $lqueue->lock();
 
-        // createJob() function was originally called directly
-        $result = $result && $this->createJob();
+        // Create and save Job Parameter Settings with current Job Description ID
+        $jobParameterSetting = new JobParameterSetting();
+        $jobParameterSetting->setOwner($this->owner);
+        $jobParameterSetting->setName($this->id);
+        $jobParameterSetting->copyParameterFrom($this->parameterSetting);
+        $result &= $jobParameterSetting->save();
 
-        if ($result) {
+        // Create and save Job Task Settings with current Job Description ID
+        $taskParameterSetting = new JobTaskSetting();
+        $taskParameterSetting->setOwner($this->owner);
+        $taskParameterSetting->setName($this->id);
+        $taskParameterSetting->copyParameterFrom($this->taskSetting);
+        $result &= $taskParameterSetting->save();
 
-            // Process compound jobs
-            $this->processCompoundJobs();
+        // Create and save Job Analysis Settings with current Job Description ID
+        $analysisParameterSetting = new JobAnalysisSetting();
+        $analysisParameterSetting->setOwner($this->owner);
+        $analysisParameterSetting->setName($this->id);
+        $analysisParameterSetting->copyParameterFrom($this->analysisSetting);
+        $result &= $analysisParameterSetting->save();
 
-            // Assign priorities
-            $db = DatabaseConnection::get();
-            $result = $db->setJobPriorities();
-            if (!$result) {
-                Log::error("Could not set job priorities!");
-            }
+        // Settings id
+        $settingsId = $this->id;
+
+        // Get the DatabaseConnection object
+        $db = DatabaseConnection::get();
+
+        // Common Job properties
+        $owner = $this->owner();
+        $ownerName = $owner->name();
+
+        // Now add a Job per file to the queue
+        foreach ($this->files() as $file) {
+
+            // Get a new id for the elementary job
+            $id = JobDescription::newID();
+
+            // Add a new Job with the newly generated ID that owns the file
+            // and links to the master id of the compound job.
+            $result &= $db->addFileToJob($id, $this->owner, $file, $this->autoseries);
+
+            // Now add a Job to the queue for this file
+            $result &= $db->queueJob($id, $settingsId, $ownerName);
+        }
+
+        // Assign priorities
+        $db = DatabaseConnection::get();
+        $result &= $db->setJobPriorities();
+
+        if (!$result) {
+            Log::error("Could not add Job to queue!");
         }
 
         $lqueue->unlock();
@@ -326,62 +392,9 @@ class JobDescription
     }
 
     /**
-     * Create a Job from this JobDescription.
-     * @return bool True if the Job could be created, false otherwise.
-     */
-    public function createJob()
-    {
-        $result = True;
-        $jobParameterSetting = new JobParameterSetting();
-        $jobParameterSetting->setOwner($this->owner);
-        $jobParameterSetting->setName($this->id);
-        $jobParameterSetting->copyParameterFrom($this->parameterSetting);
-        $result = $result && $jobParameterSetting->save();
-
-        $taskParameterSetting = new JobTaskSetting();
-        $taskParameterSetting->setOwner($this->owner);
-        $taskParameterSetting->setName($this->id);
-        $taskParameterSetting->copyParameterFrom($this->taskSetting);
-        $result = $result && $taskParameterSetting->save();
-
-        $analysisParameterSetting = new JobAnalysisSetting();
-        $analysisParameterSetting->setOwner($this->owner);
-        $analysisParameterSetting->setName($this->id);
-        $analysisParameterSetting->copyParameterFrom($this->analysisSetting);
-        $result = $result && $analysisParameterSetting->save();
-
-        $db = DatabaseConnection::get();
-        $result = $result && $db->saveJobFiles($this->id,
-                $this->owner,
-                $this->files,
-                $this->autoseries);
-
-        $queue = new JobQueue();
-        $result = $result && $queue->queueJob($this);
-        if (!$result) {
-            $this->message = "Could not create job!";
-        }
-        return $result;
-    }
-
-    /**
-     * Processes compound Jobs to deliver elementary Jobs.
-     *
-     * A compound job contains multiple files.
-     */
-    public function processCompoundJobs()
-    {
-        $queue = new JobQueue();
-        $compoundJobs = $queue->getCompoundJobs();
-        foreach ($compoundJobs as $jobDescription) {
-            $job = new Job($jobDescription);
-            $job->createSubJobsOrHuTemplate();
-        }
-    }
-
-    /**
      * Loads a JobDescription from the database for the user set in
      * this JobDescription.
+     * @todo Retrieve the settings id!
      * @todo Check that the ParameterSetting->numberOfChannels() exists!
      */
     public function load()
@@ -393,26 +406,25 @@ class JobDescription
         $name = $db->userWhoCreatedJob($this->id);
         $owner->setName($name);
         $parameterSetting->setOwner($owner);
-        $parameterSetting->setName($this->id);
+        $parameterSetting->setName($this->settingsId);
         $parameterSetting = $parameterSetting->load();
         $this->setParameterSetting($parameterSetting);
 
         $taskSetting = new JobTaskSetting();
         $taskSetting->setNumberOfChannels($parameterSetting->numberOfChannels());
-        $taskSetting->setName($this->id);
+        $taskSetting->setName($this->settingsId);
         $taskSetting->setOwner($owner);
         $taskSetting = $taskSetting->load();
         $this->setTaskSetting($taskSetting);
 
         $analysisSetting = new JobAnalysisSetting();
         $analysisSetting->setNumberOfChannels($parameterSetting->numberOfChannels());
-        $analysisSetting->setName($this->id);
+        $analysisSetting->setName($this->settingsId);
         $analysisSetting->setOwner($owner);
         $analysisSetting = $analysisSetting->load();
         $this->setAnalysisSetting($analysisSetting);
 
-        $this->setFiles($db->getJobFilesFor($this->id()),
-            $db->getSeriesModeForId($this->id()));
+        $this->setFiles($db->getJobFilesFor($this->id()), $db->getSeriesModeForId($this->id()));
     }
 
     /**

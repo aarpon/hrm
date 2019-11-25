@@ -49,7 +49,7 @@ class JobQueue
      * Get names of all processing servers (independent of their status).
      * @return array Array of server names.
      */
-    function availableServer()
+    public function availableServer()
     {
         $db = DatabaseConnection::get();
         $result = $db->availableServer();
@@ -61,7 +61,7 @@ class JobQueue
      * and the associated file names, ordered by priority.
      * @return array All jobs.
      */
-    function getContents()
+    public function getContents()
     {
         $db = DatabaseConnection::get();
         $rows = $db->getQueueContents();
@@ -115,34 +115,15 @@ class JobQueue
     public function getNextJobDescription()
     {
         $db = DatabaseConnection::get();
-        $id = $db->getNextIdFromQueue();
-        if ($id == NULL) {
-            return NULL;
+        $ids = $db->getNextIdFromQueue();
+        if ($ids == null) {
+            return null;
         }
         $jobDescription = new JobDescription();
-        $jobDescription->setId($id);
+        $jobDescription->setId($ids['id']);
+        $jobDescription->setSettingsId($ids['settings_id']);
         $jobDescription->load();
         return $jobDescription;
-    }
-
-    /**
-     * Gets the compound jobs from the queue.
-     * @return array Array of JobDescriptions for compound Jobs.
-     */
-    public function getCompoundJobs()
-    {
-        $db = DatabaseConnection::get();
-        $jobDescriptions = array();
-        $rows = $db->getQueueJobs();
-        foreach ($rows as $row) {
-            $jobDescription = new JobDescription();
-            $jobDescription->setId($row['id']);
-            $jobDescription->load();
-            if ($jobDescription->isCompound()) {
-                $jobDescriptions[] = $jobDescription;
-            }
-        }
-        return $jobDescriptions;
     }
 
     /**

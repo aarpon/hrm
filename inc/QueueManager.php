@@ -82,7 +82,7 @@ class QueueManager
     {
         $this->runningJobs = array();
         $this->queue = new JobQueue();
-        $this->shallStop = False;
+        $this->shallStop = false;
         $this->nping = array();
     }
 
@@ -161,7 +161,7 @@ class QueueManager
          not, the shell will be released internally, no need to release it
          here. */
         if (!$proc->runShell()) {
-            return False;
+            return false;
         }
 
         Log::info("running shell: $clientTemplatePath$templateName");
@@ -341,31 +341,31 @@ class QueueManager
     public function nextJobFromQueue()
     {
         $queue = $this->queue;
-        $foundExecutableJob = False;
-        $pausedJobs = False;
+        $foundExecutableJob = false;
+        $pausedJobs = false;
         $jobDescription = $queue->getNextJobDescription();
-        while ($jobDescription != NULL && !$foundExecutableJob) {
+        while ($jobDescription != null && !$foundExecutableJob) {
             $user = $jobDescription->owner();
             $username = $user->name();
             $fileserver = new Fileserver($username);
             if ($fileserver->isReachable()) {
-                $foundExecutableJob = True;
+                $foundExecutableJob = true;
             } else {
                 $src = $fileserver->sourceFolder();
                 $dest = $fileserver->destinationFolder();
                 Log::error("fileserver not reachable: $src or $dest" .
                     "do not exist");
-                $pausedJobs = True;
+                $pausedJobs = true;
                 $queue->pauseJob($jobDescription);
-                return NULL;
+                return null;
             }
             $jobDescription = $queue->getNextJobDescription();
         }
         if ($pausedJobs) {
             $queue->restartPausedJobs();
         }
-        if ($jobDescription == NULL) {
-            return NULL;
+        if ($jobDescription == null) {
+            return null;
         }
         $job = new Job($jobDescription);
         $job->setServer($this->freeServer);
@@ -416,8 +416,8 @@ class QueueManager
      * @return bool True on success, false otherwise.
      */
     private function isProcessingServerReachable($server,
-                                                 $outLog = NULL,
-                                                 $errLog = NULL)
+                                                 $outLog = null,
+                                                 $errLog = null)
     {
         if ($outLog) {
             $outLog .= "_";
@@ -446,13 +446,13 @@ class QueueManager
      * @return bool True on enough memory, false otherwise.
      */
     private function hasProcessingServerEnoughFreeMem($server,
-                                                      $outLog = NULL,
-                                                      $errLog = NULL)
+                                                      $outLog = null,
+                                                      $errLog = null)
     {        
         global $min_free_mem_launch_requirement;
         
         /* Initialize. */ 
-        $hasEnoughFreeMem = True;
+        $hasEnoughFreeMem = true;
 
         /* Sanity checks. */
         if (!isset($min_free_mem_launch_requirement) 
@@ -476,7 +476,7 @@ class QueueManager
             $freeMem = $proc->getFreeMem();
             if (is_numeric($freeMem) && $freeMem > 0
                 && $freeMem < $min_free_mem_launch_requirement) {
-                $hasEnoughFreeMem = False;
+                $hasEnoughFreeMem = false;
             }
         }
 
@@ -641,7 +641,7 @@ class QueueManager
     public function assembleJobLogFile($job, $startTime, $logFile, $errorFile)
     {
         global $imageProcessingIsOnQueueManager;
-        $result = False;
+        $result = false;
         $desc = $job->description();
         $imageName = $desc->destinationImageName();
         $id = $desc->id();
@@ -852,7 +852,7 @@ class QueueManager
                         $this->nping[$server] = 0;
                         $this->freeServer = $server;
                         $this->freeGpu = $db->getGPUID($server);
-                        return True;
+                        return true;
                     }
                 } else {
                     $this->incNPing($server);
@@ -863,7 +863,7 @@ class QueueManager
             }
         }
 
-        $this->freeServer = False;
+        $this->freeServer = false;
 
         return $this->freeServer;
     }
@@ -873,7 +873,7 @@ class QueueManager
      */
     public function stop()
     {
-        $this->shallStop = True;
+        $this->shallStop = true;
     }
 
     /**
@@ -883,7 +883,7 @@ class QueueManager
     public function shallStop()
     {
         if ($this->shallStop) {
-            return True;
+            return true;
         }
         $this->waitForDatabaseConnection();
         $db = DatabaseConnection::get();
@@ -896,11 +896,11 @@ class QueueManager
      */
     public function waitForDatabaseConnection()
     {
-        $isDatabaseReachable = False;
+        $isDatabaseReachable = false;
         while (!$isDatabaseReachable) {
             $db = DatabaseConnection::get();
             if ($db->isReachable()) {
-                $isDatabaseReachable = True;
+                $isDatabaseReachable = true;
             }
         }
     }
@@ -988,7 +988,7 @@ class QueueManager
         $queue = $this->queue;
         while (!$this->shallStop()) {
             set_time_limit(0);
-            $result = True;
+            $result = true;
 
             // Reduce the used cycles by going to sleep for one second
             if ($imageProcessingIsOnQueueManager) {
@@ -1001,10 +1001,9 @@ class QueueManager
 
             // Read in a free huygens server
             while (!($queue->isLocked()) && $this->getFreeServer()) {
-
                 $job = $this->nextJobFromQueue();
                 // Exit the loop if no job is queued.
-                if ($job == NULL) {
+                if ($job == null) {
                     break;
                 }
 
@@ -1015,15 +1014,11 @@ class QueueManager
                 $id = $desc->id();
                 Log::info("processing job " . $id . " on " . $job->server());
 
-                // TODO check this <<
-                // If the job is compound create sub jobs and
-                // remove job otherwise create template
-                $result = $job->createSubJobsOrHuTemplate();
-                if (!$result || $desc->isCompound()) {
-                    Log::error("error or compound job");
+                // Create Huygens template
+                if (! $job->buildAndWriteHuygensTemplate()) {
+                    // Error has been logged already. Skipping.
                     continue;
                 }
-                Log::info("template has been created");
 
                 // Execute the template on the Huygens server and
                 // update the database state
@@ -1035,12 +1030,10 @@ class QueueManager
 
                 Log::info("Template has been executed");
                 $result = $result && $queue->startJob($job);
-                Log::info("job has been started ("
-                    . date("Y-m-d H:i:s") . ")");
+                Log::info("job has been started (" . date("Y-m-d H:i:s") . ")");
             }
         }
-        Log::warning("Huygens Remote Manager stopped via database switch on "
-            . date("Y-m-d H:i:s"));
+        Log::warning("Huygens Remote Manager stopped via database switch on " . date("Y-m-d H:i:s"));
     }
 
     /**
