@@ -96,6 +96,8 @@ $script = array("settings.js", "quickhelp/help.js",
 
 include("header.inc.php");
 
+$chanCnt = $_SESSION['task_setting']->numberOfChannels();
+
 ?>
 <!--
   Tooltips
@@ -231,14 +233,14 @@ include("header.inc.php");
                                 $signalNoiseRatioValue = $signalNoiseRatioParam->value();
 
 
-                                for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+                                for ($i = 0; $i < $chanCnt; $i++) {
 
                                     $value = "";
                                     if ($selectedMode == "cmle")
                                         $value = $signalNoiseRatioValue[$i];
 
                                     /* Add a line break after a number of entries. */
-                                    if ($_SESSION['task_setting']->numberOfChannels() == 4) {
+                                    if ($chanCnt == 4) {
                                         if ($i == 2) {
                                             echo "<br />";
                                         }
@@ -318,14 +320,14 @@ include("header.inc.php");
                                 $signalNoiseRatioValue = $signalNoiseRatioParam->value();
 
 
-                                for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+                                for ($i = 0; $i < $chanCnt; $i++) {
 
                                     $value = "";
                                     if ($selectedMode == "gmle")
                                         $value = $signalNoiseRatioValue[$i];
 
                                     /* Add a line break after a number of entries. */
-                                    if ($_SESSION['task_setting']->numberOfChannels() == 4) {
+                                    if ($chanCnt == 4) {
                                         if ($i == 2) {
                                             echo "<br />";
                                         }
@@ -386,7 +388,7 @@ include("header.inc.php");
                             <div class="multichannel">
                                 <?php
 
-                                for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+                                for ($i = 0; $i < $chanCnt; $i++) {
 
                                     ?>
                                     <span class="nowrap">
@@ -624,14 +626,14 @@ for ($j = 1; $j <= 4; $j++) {
                 <div class="multichannel">
                     <?php
 
-                    for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+                    for ($i = 0; $i < $chanCnt; $i++) {
                         $val = "";
                         if ($backgroundOffset[0] != "auto" && $backgroundOffset[0] != "object") {
                             $val = $backgroundOffset[$i];
                         }
 
                         /* Add a line break after a number of entries. */
-                        if ($_SESSION['task_setting']->numberOfChannels() == 4) {
+                        if ($chanCnt == 4) {
                             if ($i == 2) {
                                 echo "<br />";
                             }
