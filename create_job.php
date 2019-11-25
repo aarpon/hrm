@@ -223,17 +223,17 @@ include("header.inc.php");
                 }
 
                 // if 'first visit' is not set, set the OutputFileFormat to the default chosen by the admin.
-                // See config files. 
+                // See config files.
                 if (!isset($_SESSION['first_visit'])) {
                     global $default_output_format;
 
                     /* Fallback. */
-                    if (! in_array($default_output_value, $possibleValues)) {
-                        $default_output_value = "ICS (Image Cytometry Standard)";
-                    }                                   
+                    if (! in_array($default_output_format, $possibleValues)) {
+                        $default_output_format = "ICS (Image Cytometry Standard)";
+                    }
 
-                    $parameter->setValue($default_output_value);
-                    $_SESSION['first_visit'] = False;
+                    $parameter->setValue($default_output_format);
+                    $_SESSION['first_visit'] = false;
                 }
 
                 // Set the OutputFileFormat in the TaskSetting object
