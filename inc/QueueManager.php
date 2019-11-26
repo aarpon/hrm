@@ -7,6 +7,7 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
 namespace hrm;
 
 use hrm\job\Job;
@@ -43,13 +44,6 @@ class QueueManager
      * @var string
      */
     private $freeGpu;
-
-    /**
-     * A Job object.
-     * @todo This seems to be unused. Confirm and remove.
-     * @var Job
-     */
-    private $job;
 
     /**
      * Flag to indicate whether a Job should stop.
@@ -110,17 +104,16 @@ class QueueManager
         $cmd .= "fi";
 
         if ($imageProcessingIsOnQueueManager) {
-            $result = exec($cmd);
+            exec($cmd);
         } else {
             $cmd = "'$cmd'";
-            $result = exec("ssh " . $huygens_user . "@" . $server_hostname .
-                           " " . $cmd);
+            exec("ssh " . $huygens_user . "@" . $server_hostname . " " . $cmd);
         }
     }
 
     /**
      * Executes given Job.
-     * @param Job $job A Job object.
+     * @param $job Job A Job object.
      * @return true if the Job could be executed, false otherwise.
      * @todo  Update templateName variable with templateName
      */
@@ -128,7 +121,6 @@ class QueueManager
     {
         global $imageProcessingIsOnQueueManager;
         global $copy_images_to_huygens_server;
-        global $logdir;
 
         $server = $this->freeServer;
         // server name without proc number
@@ -142,19 +134,19 @@ class QueueManager
         // failed jobs.
         $this->removeHuygensOutputFiles($desc, $server_hostname);
 
-        Log::info(">>>>> Executing template: " .
+        Log::info("Executing template: " .
             $imageProcessingIsOnQueueManager . " " .
             $copy_images_to_huygens_server);
-        if (!$imageProcessingIsOnQueueManager
-            &&  $copy_images_to_huygens_server) {
-            $clientTemplatePath =
-                $this->copyImagesToServer($job, $server_hostname);
+        if (!$imageProcessingIsOnQueueManager &&  $copy_images_to_huygens_server) {
+            $clientTemplatePath = $this->copyImagesToServer($job, $server_hostname);
             Log::info("images copied to IP server");
         }
 
-        $proc = ExternalProcessFactory::getExternalProcess($server,
+        $proc = ExternalProcessFactory::getExternalProcess(
+            $server,
             $server . "_" . $job->id() . "_out.txt",
-            $server . "_" . $job->id() . "_error.txt");
+            $server . "_" . $job->id() . "_error.txt"
+        );
         Log::info("Shell process created");
 
         /* Check whether the shell is ready to accept further execution. If
@@ -272,33 +264,36 @@ class QueueManager
                 $image_source . "/" . $file;
             if (stristr($filename, ".ics")) {
                 $batch .= "put \"" . $filename . "\"\n";
-                $filename = substr($filename, 0,
-                        strrpos($filename, '.ics')) . ".ids";
+                $filename = substr($filename, 0, strrpos($filename, '.ics')) . ".ids";
                 $batch .= "put \"" . $filename . "\"\n";
-            } else if (stristr($filename, ".tif") ||
-                stristr($filename, ".tiff")
-            ) {
+            } elseif (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
                 // TODO: if ImageFileFormat = single TIFF file, do not send
                 // corresponding series
                 $basename = preg_replace(
                     "/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/",
-                    "$1$6$7", $filename);
+                    "$1$6$7",
+                    $filename
+                );
                 $name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
                 $batch .= "put \"" . $name . "\"*\n";
-            } else if (stristr($filename, ".stk")) {
+            } elseif (stristr($filename, ".stk")) {
                 // if ImageFileFormat = STK time series, send all timepoints
                 if (stripos($filename, "_t")) {
                     $basename = preg_replace(
                         "/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/",
-                        "$1", $filename);
+                        "$1",
+                        $filename
+                    );
                     $batch .= "put \"" . $basename . "\"*\n";
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
                 }
-            } else if (stristr($filename, ".nd")) {
+            } elseif (stristr($filename, ".nd")) {
                 $basename = preg_replace(
                     "/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/",
-                    "$1$6$7", $filename);
+                    "$1$6$7",
+                    $filename
+                );
                 $name = preg_replace("/(.*)\.nd?$/", "$1", $basename);
                 $batch .= "put \"" . $name . "\"*\n";
             } else {
@@ -315,7 +310,8 @@ class QueueManager
         $batch .= "-mkdir \"" . $image_destination . "\"\n";
         $batch .= "quit\n";
 
-        Log::info("\nBATCH \n$batch", 2);
+        Log::info("BATCH");
+        Log::info("$batch");
 
         $batch_filename = $image_folder . "/" . $user->name() . "/" .
             "batchfile_" . $desc->id();
@@ -353,8 +349,7 @@ class QueueManager
             } else {
                 $src = $fileserver->sourceFolder();
                 $dest = $fileserver->destinationFolder();
-                Log::error("fileserver not reachable: $src or $dest" .
-                    "do not exist");
+                Log::error("fileserver not reachable: $src or $dest" . " do not exist");
                 $pausedJobs = true;
                 $queue->pauseJob($jobDescription);
                 return null;
@@ -375,11 +370,13 @@ class QueueManager
 
     /**
      * Deletes temporary Job files from the file server
+     *
+     * @TODO If the processing server is not local, the cleaning will have no effect!
      * @param Job $job A Job object.
      */
-    function cleanUpFileServer($job)
+    private function cleanUpFileServer($job)
     {
-        Log::warning("cleaning up file server");
+        Log::warning("Cleaning up file server");
         $server = $job->server();
         // server name without proc number
         $s = explode(" ", $server);
@@ -425,7 +422,11 @@ class QueueManager
             $errLog .= "_";
         }
 
-        $proc = ExternalProcessFactory::getExternalProcess($server, $server . $outLog . "_out.txt",$server . $errLog . "_error.txt");
+        $proc = ExternalProcessFactory::getExternalProcess(
+            $server,
+            $server . $outLog . "_out.txt",
+            $server . $errLog . "_error.txt"
+        );
         $isReachable = $proc->ping();
 
         $proc->release();
@@ -442,16 +443,15 @@ class QueueManager
      * @return bool True on enough memory, false otherwise.
      */
     private function hasProcessingServerEnoughFreeMem($server, $outLog = null, $errLog = null)
-    {        
+    {
         global $min_free_mem_launch_requirement;
         
-        /* Initialize. */ 
+        // Initialize.
         $hasEnoughFreeMem = true;
 
-        /* Sanity checks. */
-        if (!isset($min_free_mem_launch_requirement) 
-            || !is_numeric($min_free_mem_launch_requirement)) {
-                $min_free_mem_launch_requirement = 0;
+        // Sanity checks.
+        if (!isset($min_free_mem_launch_requirement) || !is_numeric($min_free_mem_launch_requirement)) {
+            $min_free_mem_launch_requirement = 0;
         }
         if ($outLog) {
             $outLog .= "_";
@@ -460,14 +460,17 @@ class QueueManager
             $errLog .= "_";
         }
 
-        $proc = ExternalProcessFactory::getExternalProcess($server, $server . $outLog . "_out.txt", $server . $errLog . "_error.txt");
+        $proc = ExternalProcessFactory::getExternalProcess(
+            $server,
+            $server . $outLog . "_out.txt",
+            $server . $errLog . "_error.txt"
+        );
 
         $isReachable = $proc->ping();
 
         if ($isReachable) {
             $freeMem = $proc->getFreeMem();
-            if (is_numeric($freeMem) && $freeMem > 0
-                && $freeMem < $min_free_mem_launch_requirement) {
+            if (is_numeric($freeMem) && $freeMem > 0 && $freeMem < $min_free_mem_launch_requirement) {
                 $hasEnoughFreeMem = false;
             }
         }
@@ -487,11 +490,10 @@ class QueueManager
      */
     public function updateJobAndServerStatus()
     {
-        global $imageProcessingIsOnQueueManager;
         global $send_mail;
         global $logdir;
 
-        // TODO check if it is necessary
+        // Alias
         $queue = $this->queue;
 
         // First remove all 'delete' jobs that haven't started yet.
@@ -623,7 +625,6 @@ class QueueManager
      */
     public function assembleJobLogFile($job, $startTime, $logFile, $errorFile)
     {
-        global $imageProcessingIsOnQueueManager;
         $result = false;
         $desc = $job->description();
         $imageName = $desc->destinationImageName();
@@ -1149,8 +1150,11 @@ class QueueManager
     {
 
         // Break down the string into per-file substrings
-        $confidenceLevelString = str_replace('}}', '}}<CUT_HERE>',
-            $confidenceLevelString);
+        $confidenceLevelString = str_replace(
+            '}}',
+            '}}<CUT_HERE>',
+            $confidenceLevelString
+        );
 
         $groups = explode('<CUT_HERE> ', $confidenceLevelString);
 
@@ -1162,10 +1166,12 @@ class QueueManager
 
         // Process the substrings
         foreach ($groups as $group) {
-
             $match = array();
-            preg_match("/(\A\w{2,16})(\s{1,2})(\{sampleSizes\s\{.+)/",
-                $group, $match);
+            preg_match(
+                "/(\A\w{2,16})(\s{1,2})(\{sampleSizes\s\{.+)/",
+                $group,
+                $match
+            );
 
             // Get the parts
             if ((!isset($match[1])) || (!isset($match[3]))) {
@@ -1506,5 +1512,4 @@ class QueueManager
         }
         return $success;
     }
-
 }
