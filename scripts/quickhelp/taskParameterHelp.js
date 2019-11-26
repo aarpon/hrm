@@ -11,12 +11,11 @@ window.helpText = new Array();
 
 window.helpText[ "method" ] =
   '<p>The Huygens software has different deconvolution algorithms as ' +
-  'restoration methods.  HRM offers the possibility of using the two most ' +
-  'important ones: the <b>CMLE algorithm</b> is optimally suited for ' +
+  'restoration methods. The <b>CMLE algorithm</b> is optimally suited for ' +
   'low-signal images; the <b>QMLE algorithm</b> is faster than CMLE, ' +
   'but it only works well with noise-free images (for example, good quality ' +
   'widefield images). Alternatively, <b>GMLE</b> can be used as a fast, ' +
-  'good-quality algorithm for noisy images.</p>';
+  'good-quality algorithm for noisy images (for example STED or low signal confocal).</p>';
 
 window.helpText[ "snr" ] =
   '<p>The SNR controls the sharpness of the result: only with noise-free ' +

@@ -5975,6 +5975,21 @@ if ($current_revision < $n) {
         return false;
     }
 
+    // Add entry to DeconvolutionAlgorithm.
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "DeconvolutionAlgorithm";
+    $record["value"] = "skip";
+    $record["translation"] = "Skip";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
 
     // Update revision
     if(!update_dbrevision($n))

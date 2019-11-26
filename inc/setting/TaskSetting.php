@@ -119,7 +119,6 @@ class TaskSetting extends Setting
      */
     public function checkPostedTaskParameters(array $postedParameters)
     {
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
@@ -137,27 +136,58 @@ class TaskSetting extends Setting
         // Deconvolution Algorithm - this should always be defined, but since
         // other parameters depend on it, in case it is not defined we return
         // here
-        if (!isset($postedParameters["DeconvolutionAlgorithm"])) {
-            $this->message = 'Please choose a deconvolution algorithm!';
-            return False;
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
+            if (isset($postedParameters["DeconvolutionAlgorithm$i"])) {
+                $value[$i] = $postedParameters["DeconvolutionAlgorithm$i"];
+                unset($postedParameters["DeconvolutionAlgorithm$i"]);
+            }
         }
 
-        // Set the Parameter and check the value
-        $parameter = $this->parameter("DeconvolutionAlgorithm");
-        $parameter->setValue($postedParameters["DeconvolutionAlgorithm"]);
-        $this->set($parameter);
-        if (!$parameter->check()) {
-            $this->message = 'Unknown deconvolution algorithm!';
-            return False;
+        $name = 'DeconvolutionAlgorithm';
+
+        // @todo Correctly process the case where $value is not defined.
+        $valueSet = count(array_filter($value)) > 0;
+    
+        if ($valueSet) {
+    
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+    
+            // Keep the 'deconAlgorithms' so that it can be checked below if any
+            // parameters need to be forced, e.g when 'QMLE'.
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            } else {
+                $deconAlgorithms = $parameter->value();
+            }
+        } else {
+    
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+    
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+    
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Deconvolution Algorithm!";
+                $noErrorsFound = False;
+            }
         }
-        $algorithm = strtoupper($parameter->value());
 
         // Signal-To-Noise Ratio
         // Depending on the choice of the deconvolution algorithm, we will
         // check only the relevant entries
         for ($i = 0; $i < $maxChanCnt; $i++) {
             $value[$i] = null;
-            $name = "SignalNoiseRatio" . $algorithm . "$i";
+            $name = "SignalNoiseRatio" . strtoupper($deconAlgorithms[$i]) . "$i";
             if (isset($postedParameters[$name])) {
                 $value[$i] = $postedParameters[$name];
             }

@@ -659,6 +659,7 @@ class DatabaseConnection
 
             if ($newValue{0} == '#') {
                 switch ($parameterName) {
+                    case "DeconvolutionAlgorithm":
                     case "ExcitationWavelength":
                     case "EmissionWavelength":
                     case "PinholeSize":

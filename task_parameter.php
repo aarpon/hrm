@@ -38,22 +38,26 @@ if ($_SESSION['user']->isAdmin()) {
 
 $message = "";
 
+
 /* *****************************************************************************
  *
- * MAKE SURE TO HAVE THE DECONVOLUTION ALGORITHM SET TO cmle IF WE ARE COMING
- * BACK FROM THE ESTIMATOR
+ * MANAGE THE DECONVOLUTION ALGORITHM
  *
  **************************************************************************** */
 
-if (!(strpos($_SERVER['HTTP_REFERER'],
-            'estimate_snr_from_image.php') === false) ||
-    !(strpos($_SERVER['HTTP_REFERER'],
-            'estimate_snr_from_image_beta.php') === false)) {
-    $algorithmParameter = $_SESSION['task_setting']->parameter(
-        "DeconvolutionAlgorithm");
-    $algorithmParameter->setValue('cmle');
-    $_SESSION['task_setting']->set($algorithmParameter);
+/** @var DeconvolutionAlgorithm $deconAlgorithmParam */
+$chanCnt = $_SESSION['setting']->numberOfChannels();
+$deconAlgorithmParam = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+$deconAlgorithm = $deconAlgorithmParam->value();
+for ($i = 0; $i < $chanCnt; $i++) {
+    $deconAlgorithmKey = "DeconvolutionAlgorithm{$i}";
+    if (isset($_POST[$deconAlgorithmKey])) {
+        $deconAlgorithm[$i] = $_POST[$deconAlgorithmKey];
+    } 
 }
+$deconAlgorithmParam->setValue($deconAlgorithm);
+$_SESSION['task_setting']->set($deconAlgorithmParam);
+
 
 /* *****************************************************************************
  *
@@ -95,8 +99,6 @@ $script = array("settings.js", "quickhelp/help.js",
     "quickhelp/taskParameterHelp.js");
 
 include("header.inc.php");
-
-$chanCnt = $_SESSION['task_setting']->numberOfChannels();
 
 ?>
 <!--
@@ -151,6 +153,16 @@ $chanCnt = $_SESSION['task_setting']->numberOfChannels();
         <h4>How should your images be restored?</h4>
 
         <!-- deconvolution algorithm -->
+        <?php
+        /***************************************************************************
+         *
+         * DeconvolutionAlgorithm
+         ***************************************************************************/
+
+        /** @var DeconvolutionAlgorithm $parameterDeconAlgorithm */
+        $parameterDeconAlgorithm = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+        ?>
+
         <fieldset class="setting provided"
                   onmouseover="changeQuickHelp( 'method' );">
 
@@ -161,39 +173,70 @@ $chanCnt = $_SESSION['task_setting']->numberOfChannels();
                 Deconvolution Algorithm
             </legend>
 
-            <select name="DeconvolutionAlgorithm"
-                    title="Deconvolution algorithm"
-                    class="selection"   
-                    onchange="switchSnrMode(this.value);">
 
-                <?php
+            <div class="DeconvolutionAlgorithmValues">
+                <table class="DeconvolutionAlgorithmValues">
 
-                /*
-                                           DECONVOLUTION ALGORITHM
-                */
-
-                /** @var DeconvolutionAlgorithm $parameter */
-                $parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
-                $possibleValues = $parameter->possibleValues();
-                $selectedMode = $parameter->value();
-                foreach ($possibleValues as $possibleValue) {
-                    $translation = $parameter->translatedValueFor($possibleValue);
-                    if ($possibleValue == $selectedMode) {
-                        $option = "selected=\"selected\"";
-                    } else {
-                        $option = "";
-                    }
-                    ?>
-                    <option <?php echo $option ?>
-                        value="<?php echo $possibleValue ?>">
-                        <?php echo $translation ?>
-                    </option>
                     <?php
-                }
-                ?>
-            </select>
+                    $possibleValues = $parameterDeconAlgorithm->possibleValues();
+
+                    /* Make sure CMLE is first in the list. */
+                    for ($i = 0; $i < count($possibleValues); $i++) {
+                        $arrValue = $possibleValues[0];                    
+                        if (strstr($arrValue, "gmle") || strstr($arrValue, "qmle")) {
+                            array_push($possibleValues, $arrValue);
+                        }
+                    }
+
+                    /* Loop on rows. */
+
+                    for ($chan = 0; $chan < $chanCnt; $chan++) {
+                        ?>
+                        <tr>
+                            <td>Ch<?php echo $chan; ?>:</td>
+
+                            <td>
+                                <select
+                                    name="DeconvolutionAlgorithm<?php echo $chan; ?>"
+                                    title="Deconvolution algorithm for channel <?php echo $chan; ?>"
+                                    onclick="changeDeconEntryProperties(this,<?php echo $chan; ?>)"
+                                    onchange="changeDeconEntryProperties(this,<?php echo $chan; ?>)">
+
+                                    <?php
+                                    /* Loop for select options. */
+
+                                    foreach ($possibleValues as $possibleValue) {
+                                        $translatedValue =
+                                            $parameterDeconAlgorithm->translatedValueFor($possibleValue);
+
+                                        if ($possibleValue == $deconAlgorithm[$chan]) {
+                                            $selected = " selected=\"selected\"";
+                                        } else {
+                                            $selected = "";
+                                        }
+                                        ?>
+                                        <option
+                                            value=<?php echo $possibleValue;
+                                        echo $selected; ?>>
+                                            <?php echo $translatedValue; ?>
+                                        </option>
+                                        <?php
+                                    }                    /* End of loop for select options. */
+                                    ?>
+                                </select>
+                            </td>
+
+                        </tr>
+                        <?php
+                    }                        /* End of loop on rows. */
+                    ?>
+
+                </table> <!-- DeconvolutionAlgorithmValues -->
+            </div> <!-- DeconvolutionAlgorithmValues -->
 
         </fieldset>
+
+
 
         <!-- signal/noise ratio -->
         <fieldset class="setting provided"
@@ -210,7 +253,7 @@ $chanCnt = $_SESSION['task_setting']->numberOfChannels();
                  onmouseover="changeQuickHelp( 'snr' );">
 
                 <?php
-
+                $selectedMode = "cmle";
                 $visibility = " style=\"display: none\"";
                 if ($selectedMode == "cmle") {
                     $visibility = " style=\"display: block\"";
