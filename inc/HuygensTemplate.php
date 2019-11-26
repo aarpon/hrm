@@ -165,7 +165,13 @@ class HuygensTemplate
     private $chromaticArray;
 
     /**
-     * Array with information on the image cmle/qmle/gmle subtask.
+     * Array with information on the available deconvolution algorithms.
+     * @var array
+     */
+    private $deconArray;
+
+    /**
+     * Array with information on the channel cmle/qmle/gmle/skip subtask.
      * @var array
      */
     private $algArray;
@@ -550,6 +556,12 @@ class HuygensTemplate
                   'mType'      => 'generic',
                   'estMethod'  => '2',
                   'listID'     => 'shift');
+
+        /* Supported deconvolution algorithms. */          
+        $this->deconArray = array('cmle'  => 'cmle', 
+                                  'qmle'  => 'qmle',
+                                  'gmle'  => 'gmle',
+                                  'skip'  => 'deconSkip');
 
         /* Options for the 'execute deconvolution' action */
         $this->algArray =
@@ -1893,7 +1905,7 @@ class HuygensTemplate
                     $taskDescr .= $this->getBrMode();
                     break;
                 case 'varPsf':
-                    $taskDescr .= $this->getVarPsf();
+                    $taskDescr .= $this->getVarPsf($channel);
                     break;
                 case 'it':
                     $taskDescr .= $this->getIterations();
@@ -1914,19 +1926,19 @@ class HuygensTemplate
                     $taskDescr .= $this->getPsfPath($channel);
                     break;
                 case 'mode':
-                    if ($this->getAlgorithm() == "cmle") {
+                    if ($this->getAlgorithm($channel) == "cmle") {
                         $taskDescr .= " " . $key . " ";
                         $taskDescr .= $value;
                     }
                     break;
                 case 'itMode':
-                    if ($this->getAlgorithm() == "qmle") {
+                    if ($this->getAlgorithm($channel) == "qmle") {
                         $taskDescr .= " " . $key . " ";
                         $taskDescr .= $value;
                     }
                     break;
                 case 'reduceMode':
-                    if ($this->getAlgorithm() == "cmle") {
+                    if ($this->getAlgorithm($channel) == "cmle") {
                         $taskDescr .= " " . $key . " ";
                         $taskDescr .= $this->getArrDetReductionMode();                        
                     }                    
@@ -1968,9 +1980,10 @@ class HuygensTemplate
 
     /**
      * Gets the varPsf mode.
+     * @param int $channel A channel
      * @return string varPsf mode.
      */
-    private function getVarPsf()
+    private function getVarPsf($channel)
     {
         $SAcorr = $this->getSAcorr();
 
@@ -1985,7 +1998,7 @@ class HuygensTemplate
         }
 
           /* Special case for GMLE where varPsf is always on. */
-        if ($this->getAlgorithm() == "gmle" && $varPsf == "off") {
+        if ($this->getAlgorithm($channel) == "gmle" && $varPsf == "off") {
             $varPsf = "one";
         }
 
@@ -2082,7 +2095,7 @@ class HuygensTemplate
         $snrRate = $deconSetting->parameter("SignalNoiseRatio")->value();
         $snrValue = $snrRate[$channel];
 
-        if ($this->getAlgorithm() == "qmle") {
+        if ($this->getAlgorithm($channel) == "qmle") {
             $indexValues = array(1, 2, 3, 4, 5);
             $snrArray = array("low", "fair", "good", "inf", "auto");
             $snrValue = str_replace($indexValues, $snrArray, $snrValue);
@@ -2149,16 +2162,24 @@ class HuygensTemplate
     }
 
     /**
-     * Gets the deconvolution algorithm.
-     * @param int $chan Channel number. Currently ignored.
+     * Gets the deconvolution algorithm for each channel.
+     * @param int $chan Channel number.
      * @todo Use channel index.
      * @return string Deconvolution algorithm.
      */
     private function getAlgorithm($chan = -1)
-    {
-        // The argument $chan is currently ignored. Later, it will be possible
-        // to assign a different restoration algorithm to different channels!
-        return $this->deconSetting->parameter('DeconvolutionAlgorithm')->value();
+    {   
+        $deconAlg = "";
+
+        $settingAlg = $this->deconSetting->parameter('DeconvolutionAlgorithm')->value();        
+        foreach ($this->deconArray as $key => $value) {
+            if ($settingAlg[$chan] == $key) {
+                $deconAlg = $value;
+                break;
+            }            
+        }        
+        
+        return $deconAlg; 
     }
 
     /**
@@ -2923,7 +2944,7 @@ class HuygensTemplate
         $chanCnt = $this->getChanCnt();
         $algorithms = "";
         for ($chan = 0; $chan < $chanCnt; $chan++) {
-            $algorithms .= $this->getAlgorithm() . ":$chan ";
+            $algorithms .= $this->getAlgorithm($chan) . ":$chan ";
         }
         return trim($algorithms);
     }
