@@ -2513,8 +2513,7 @@ class ParameterSetting extends Setting {
 
         // SPIM Excitation Mode.
         if (strpos($huArray['parState,spimExc'], "default") === FALSE) {
-            $spimExcMode = array_map('floatval',
-                                     explode(' ', $huArray['spimExc']));
+            $spimExcMode = explode(' ', $huArray['spimExc']);
             $this->parameter['SpimExcMode']->setValue($spimExcMode);
         }
 
