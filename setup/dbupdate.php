@@ -5961,6 +5961,20 @@ if ($current_revision < $n) {
        }
     }
 
+    // Correct Imaris' default.
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'OutputFileFormat';
+    $record["value"]       = 'IMS (Imaris Classic)';
+    $record["translation"] = 'Imaris';
+    $record["isDefault"]   = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter='OutputFileFormat' and translation='Imaris'")) {
+        $msg = "Could not correct entry for OutputFileFormat Imaris in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
 
     // Update revision
     if(!update_dbrevision($n))
