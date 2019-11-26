@@ -1455,19 +1455,22 @@ class DatabaseConnection
      */
     public function hucoreTranslation($parameterName, $hucorevalue)
     {
+        $result = "";
+
         // The data should be cached, if not retrieve from database and cache
         if (self::$possibleValuesTableCache == null) {
             $this->cachePossibleValuesTable();
         }
 
         if (! array_key_exists($parameterName, self::$possibleValuesTableCache)) {
-            return "";
+            return $result;
         }
 
         $parameter_array = self::$possibleValuesTableCache[$parameterName];
         foreach ($parameter_array as $parameter) {
             if (strcmp($parameter["translation"], $hucorevalue) == 0) {
-                return $parameter["value"];
+                $result = $parameter["value"];
+                break;
             }
         }
 
