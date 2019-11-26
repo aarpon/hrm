@@ -395,7 +395,7 @@ class JobDescription
     /**
      * Loads a JobDescription from the database for the user set in
      * this JobDescription.
-     * @todo Retrieve the settings id!
+     * @todo Retrieve the settings id if it is empty!
      * @todo Check that the ParameterSetting->numberOfChannels() exists!
      */
     public function load()

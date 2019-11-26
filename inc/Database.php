@@ -1255,6 +1255,17 @@ class DatabaseConnection
     }
 
     /**
+     * Return the Settings ID associated to the specifed Job ID.
+     * @param $id String ID of the Job.
+     * @return string ID of the associated Settings.
+     */
+    public function getSettingsIdForJobId($id) {
+        $query = "SELECT settings_id FROM job_queue WHERE id='$id';";
+        $result = $this->queryLastValue($query);
+        return $result;
+    }
+
+    /**
      * Assigns priorities to the jobs in the queue.
      * @return True if assigning priorities was successful.
      */
@@ -1817,23 +1828,30 @@ class DatabaseConnection
     {
         $result = true;
         $result = $result && $this->execute(
-                "delete from job_analysis_parameter where setting='$settingsId';");
+                "delete from job_analysis_parameter where setting='$settingsId';"
+            );
         $result = $result && $this->execute(
-                "delete from job_analysis_setting where name='$settingsId';");
+                "delete from job_analysis_setting where name='$settingsId';"
+            );
         $result = $result && $this->execute(
-                "delete from job_files where job='$settingsId';");
+                "delete from job_files where job='$settingsId';"
+            );
         $result = $result && $this->execute(
-                "delete from job_parameter where setting='$settingsId';");
+                "delete from job_parameter where setting='$settingsId';"
+            );
         $result = $result && $this->execute(
-                "delete from job_parameter_setting where name='$settingsId';");
+                "delete from job_parameter_setting where name='$settingsId';"
+            );
         $result = $result && $this->execute(
-                "delete from job_queue where id='$settingsId';");
+                "delete from job_queue where id='$settingsId';"
+            );
         $result = $result && $this->execute(
-                "delete from job_task_parameter where setting='$settingsId';");
+                "delete from job_task_parameter where setting='$settingsId';"
+            );
         $result = $result && $this->execute(
-                "delete from job_task_setting where name='$settingsId';");
+                "delete from job_task_setting where name='$settingsId';"
+            );
         return $result;
-
     }
 
     /**
@@ -2567,25 +2585,25 @@ class DatabaseConnection
     public function cleanQueueFromBrokenJobs()
     {
         $this->execute(
-            'DELETE FROM job_analysis_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
+            'DELETE FROM job_analysis_parameter WHERE setting IN (SELECT settings_id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_analysis_setting WHERE name IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
+            'DELETE FROM job_analysis_setting WHERE name IN (SELECT settings_id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
             'DELETE FROM job_files WHERE job IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
+            'DELETE FROM job_parameter WHERE setting IN (SELECT settings_id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_parameter_setting WHERE name IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
+            'DELETE FROM job_parameter_setting WHERE name IN (SELECT settings_id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_task_parameter WHERE setting IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
+            'DELETE FROM job_task_parameter WHERE setting IN (SELECT settings_id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
-            'DELETE FROM job_task_setting WHERE name IN (SELECT id FROM job_queue WHERE status="delete" OR status="kill");'
+            'DELETE FROM job_task_setting WHERE name IN (SELECT settings_id FROM job_queue WHERE status="delete" OR status="kill");'
         );
         $this->execute(
             'DELETE FROM job_queue  WHERE status="delete" OR status="kill";'

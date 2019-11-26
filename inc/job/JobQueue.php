@@ -12,6 +12,7 @@
 namespace hrm\job;
 
 use hrm\DatabaseConnection;
+use hrm\Log;
 use hrm\shell\ExternalProcessFactory;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
@@ -139,7 +140,16 @@ class JobQueue
 
         $result = true;
         if ($this->canJobSettingsBeDeleted($jobDescription)) {
+            Log::info("Jobs settings $settingsId are no longer referenced by any Job and can be removed.");
             $result &= $this->removeJobSettingsWithId($settingsId);
+
+            if ($result) {
+                Log::info("Jobs settings $settingsId successfully removed.");
+            } else {
+                Log::error("Failed removing Job settings $settingsId!");
+            }
+        } else {
+            Log::info("Jobs settings $settingsId cannot be removed yet because they are still referenced.");
         }
         $result &= $this->removeJobWithId($id);
         return $result;
@@ -205,6 +215,10 @@ class JobQueue
 
             // Clean the database and the error file.
             $result = $this->removeJobWithId($id)    && $result;
+            $settingsId = $db->getSettingsIdForJobId($id);
+            if ($this->canJobSettingsBeDeleted($settingsId)) {
+                $result &= $this->removeJobSettingsWithId($settingsId);
+            }
             $result = $db->markServerAsFree($server) && $result;
             $errorFile = $logdir . "/" . $server . "_" . $id . "_error.txt";
             if (file_exists($errorFile)) {
@@ -255,7 +269,28 @@ class JobQueue
         // There are jobs, lets remove them
         $success = true;
         foreach ($ids as $id) {
+            $jobDescription = new JobDescription();
+            $jobDescription->setId($id);
+            $settingsId = DatabaseConnection::get()->getSettingsIdForJobId($id);
+            $jobDescription->setSettingsId($settingsId);
+            $jobDescription->load();
             $success &= $this->removeJobWithId($id);
+            if ($success) {
+                Log::info("Job $id successfully removed.");
+            } else {
+                Log::error("Failed removing Job $id!");
+            }
+            if ($this->canJobSettingsBeDeleted($jobDescription)) {
+                Log::info("Jobs settings $settingsId are no longer referenced by any Job and can be removed.");
+                $success &= $this->removeJobSettingsWithId($settingsId);
+                if ($success) {
+                    Log::info("Jobs settings $settingsId successfully removed.");
+                } else {
+                    Log::error("Failed removing Job settings $settingsId!");
+                }
+            } else {
+                Log::info("Jobs settings $settingsId cannot be removed yet because they are still referenced.");
+            }
         }
 
         // If some removal failed, $success is false;

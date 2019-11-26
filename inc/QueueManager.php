@@ -155,7 +155,7 @@ class QueueManager
         $proc = ExternalProcessFactory::getExternalProcess($server,
             $server . "_" . $job->id() . "_out.txt",
             $server . "_" . $job->id() . "_error.txt");
-        Log::info("shell process created");
+        Log::info("Shell process created");
 
         /* Check whether the shell is ready to accept further execution. If
          not, the shell will be released internally, no need to release it
@@ -164,10 +164,10 @@ class QueueManager
             return false;
         }
 
-        Log::info("running shell: $clientTemplatePath$templateName");
+        Log::info("Running shell: $clientTemplatePath$templateName");
         $pid = $proc->runHuygensTemplate($clientTemplatePath . $templateName);
 
-        Log::info("running template (pid $pid)");
+        Log::info("Running template (pid $pid)");
 
         /* The template in the background will keep running after release. */
         $proc->release();
@@ -822,14 +822,12 @@ class QueueManager
      */
     public function getFreeServer()
     {
-
         $db = DatabaseConnection::get();
         $servers = $db->availableServer();
 
         foreach ($servers as $server) {
             $status = $db->statusOfServer($server);
             if ($status == 'free') {
-
                 if ($this->isProcessingServerReachable($server)) {
                     if ($this->hasProcessingServerEnoughFreeMem($server)) {
                         $this->nping[$server] = 0;
@@ -913,8 +911,6 @@ class QueueManager
     public function run()
     {
         global $imageProcessingIsOnQueueManager;
-        global $logdir;
-
 
         $this->waitForDatabaseConnection();
         $this->initializeServers();
