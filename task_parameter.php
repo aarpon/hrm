@@ -46,7 +46,7 @@ $message = "";
  **************************************************************************** */
 
 /** @var DeconvolutionAlgorithm $deconAlgorithmParam */
-$chanCnt = $_SESSION['setting']->numberOfChannels();
+$chanCnt = $_SESSION['task_setting']->numberOfChannels();
 $deconAlgorithmParam = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
 $deconAlgorithm = $deconAlgorithmParam->value();
 for ($i = 0; $i < $chanCnt; $i++) {
