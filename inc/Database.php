@@ -388,6 +388,9 @@ class DatabaseConnection
 
     /**
      * Executes an SQL query and returns the results.
+     *
+     * @TODO This function appears to be unused.
+     *
      * @param string $sql Prepared SQL query.
      * @param array $values Array of values for the prepared query.
      * @return array|false Result of the query (rows).
@@ -453,14 +456,14 @@ class DatabaseConnection
         $name = $settings->name();
         $settingTable = $settings->table();
         $table = $settings->parameterTable();
-        if ($settings->isDefault())
+        if ($settings->isDefault()) {
             $standard = "t";
-        else
+        } else {
             $standard = "f";
-        $result = True;
+        }
+        $result = true;
         if (!$this->existsSetting($settings)) {
-            $query = "insert into $settingTable values ('$user', '$name'" .
-                ", '$standard')";
+            $query = "insert into $settingTable values ('$user', '$name'" . ", '$standard')";
             $result = $result && $this->execute($query);
         }
         $existsAlready = $this->existsParametersFor($settings);
@@ -504,7 +507,7 @@ class DatabaseConnection
                     "setting='$name' AND name='$parameterName' LIMIT 1;";
                 $newValue = $this->queryLastValue($query);
 
-                if ($newValue != NULL) {
+                if ($newValue != null) {
                     $query = "UPDATE $table SET value = '$parameterValue' " .
                         "WHERE owner='$user' AND setting='$name' " .
                         "AND name='$parameterName';";
@@ -519,7 +522,6 @@ class DatabaseConnection
             // it is an ADORecordSet.
             $result &= ($this->execute($query) !== false);
         }
-
 
         return $result;
     }
@@ -544,7 +546,7 @@ class DatabaseConnection
         /** @var ParameterSetting|TaskSetting|AnalysisSetting $settings */
         $settingTable = $settings->sharedTable();
         $table = $settings->sharedParameterTable();
-        $result = True;
+        $result = true;
         if (!$this->existsSharedSetting($settings)) {
             $query = "insert into $settingTable " .
                 "(owner, previous_owner, sharing_date, name) values " .
@@ -553,7 +555,7 @@ class DatabaseConnection
         }
 
         if (!$result) {
-            return False;
+            return false;
         }
 
         // Get the Id
@@ -562,7 +564,7 @@ class DatabaseConnection
             "AND name='$name'";
         $id = $this->queryLastValue($query);
         if (!$id) {
-            return False;
+            return false;
         }
 
         // Get the parameter names
@@ -645,11 +647,11 @@ class DatabaseConnection
 
             $newValue = $this->queryLastValue($query);
 
-            if ($newValue == NULL) {
+            if ($newValue == null) {
 
                 // See if the Parameter has a usable default
                 $newValue = $parameter->defaultValue();
-                if ($newValue == NULL) {
+                if ($newValue == null) {
                     continue;
                 }
             }
@@ -754,7 +756,7 @@ class DatabaseConnection
         $query = "select * from $settingTable where id=$id;";
         $response = $this->queryLastRow($query);
         if (!$response) {
-            return NULL;
+            return null;
         }
 
         // Fill the setting
@@ -768,10 +770,10 @@ class DatabaseConnection
             $parameter = $settings->parameter($parameterName);
             $query = "select value from $table where setting_id=$id and name='$parameterName'";
             $newValue = $this->queryLastValue($query);
-            if ($newValue == NULL) {
+            if ($newValue == null) {
                 // See if the Parameter has a usable default
                 $newValue = $parameter->defaultValue();
-                if ($newValue == NULL) {
+                if ($newValue == null) {
                     continue;
                 }
             }
@@ -870,8 +872,8 @@ class DatabaseConnection
         // Get the name of the previous owner (the one sharing the setting).
         $query = "select previous_owner, owner, name from $sourceSettingTable where id=$id";
         $rows = $this->queryLastRow($query);
-        if (False === $rows) {
-            return False;
+        if (false === $rows) {
+            return false;
         }
         $previous_owner = $rows["previous_owner"];
         $owner = $rows["owner"];
@@ -904,11 +906,11 @@ class DatabaseConnection
         $query = "select * from $sourceParameterTable where setting_id=$id";
         $rows = $this->query($query);
         if (count($rows) == 0) {
-            return False;
+            return false;
         }
 
         // Now add the rows to the destination table
-        $ok = True;
+        $ok = true;
         $record = array();
         $this->connection()->BeginTrans();
         foreach ($rows as $row) {
@@ -957,25 +959,24 @@ class DatabaseConnection
             $this->connection()->CommitTrans();
         } else {
             $this->connection()->RollbackTrans();
-            return False;
+            return false;
         }
 
         // Now add the setting to the setting table
         $query = "select * from $sourceSettingTable where id=$id";
         $rows = $this->query($query);
         if (count($rows) != 1) {
-            return False;
+            return false;
         }
 
-        $ok = True;
+        $ok = true;
         $this->connection()->BeginTrans();
         $record = array();
         $row = $rows[0];
         $record["owner"] = $row["owner"];
         $record["name"] = $out_setting_name;
         $record["standard"] = 'f';
-        $insertSQL = $this->connection()->GetInsertSQL($destSettingTable,
-            $record);
+        $insertSQL = $this->connection()->GetInsertSQL($destSettingTable, $record);
         $status = $this->connection()->Execute($insertSQL);
         $ok &= !(false === $status);
 
@@ -983,7 +984,7 @@ class DatabaseConnection
             $this->connection()->CommitTrans();
         } else {
             $this->connection()->RollbackTrans();
-            return False;
+            return false;
         }
 
         // Now we can delete the records from the source tables.
@@ -994,20 +995,20 @@ class DatabaseConnection
         $query = "delete from $sourceParameterTable where setting_id=$id";
         $status = $this->connection()->Execute($query);
         if (false === $status) {
-            return False;
+            return false;
         }
 
         // Delete setting entry
         $query = "delete from $sourceSettingTable where id=$id";
         $status = $this->connection()->Execute($query);
         if (false === $status) {
-            return False;
+            return false;
         }
 
         // Commit transaction
         $this->connection()->CommitTrans();
 
-        return True;
+        return true;
     }
 
     /**
@@ -1022,13 +1023,13 @@ class DatabaseConnection
     {
 
         // Initialize success
-        $ok = True;
+        $ok = true;
 
         // Delete shared PSF files if any exist
         if ($sourceParameterTable == "shared_parameter") {
             $query = "select value from $sourceParameterTable where setting_id=$id and name='PSF'";
             $psfFiles = $this->queryLastValue($query);
-            if (NULL != $psfFiles && $psfFiles != "#####") {
+            if (null != $psfFiles && $psfFiles != "#####") {
                 if ($psfFiles[0] == "#") {
                     $psfFiles = substr($psfFiles, 1);
                 }
@@ -1092,7 +1093,7 @@ class DatabaseConnection
         $owner = $settings->owner();
         $user = $owner->name();
         $name = $settings->name();
-        $result = True;
+        $result = true;
         $table = $settings->parameterTable();
         $query = "delete from $table where owner='$user' and setting='$name'";
         $result = $result && $this->execute($query);
@@ -1118,9 +1119,9 @@ class DatabaseConnection
         $name = $settings->name();
         $table = $settings->parameterTable();
         $query = "select name from $table where owner='$user' and setting='$name' LIMIT 1";
-        $result = True;
+        $result = true;
         if (!$this->queryLastValue($query)) {
-            $result = False;
+            $result = false;
         }
         return $result;
     }
@@ -1138,9 +1139,9 @@ class DatabaseConnection
         $name = $settings->name();
         $table = $settings->sharedParameterTable();
         $query = "select name from $table where owner='$user' and setting='$name' LIMIT 1";
-        $result = True;
+        $result = true;
         if (!$this->queryLastValue($query)) {
-            $result = False;
+            $result = false;
         }
         return $result;
     }
@@ -1152,6 +1153,7 @@ class DatabaseConnection
      * existence in the database (the name of the owner must be set in the
      * settings).
      * @return bool True if the settings exist in the database; false otherwise.
+     * @throws Exception
      */
     public function existsSetting(Setting $settings)
     {
@@ -1160,9 +1162,9 @@ class DatabaseConnection
         $name = $settings->name();
         $table = $settings->table();
         $query = "select standard from $table where owner='$user' and name='$name' LIMIT 1";
-        $result = True;
+        $result = true;
         if (!$this->queryLastValue($query)) {
-            $result = False;
+            $result = false;
         }
         return $result;
     }
@@ -1181,9 +1183,9 @@ class DatabaseConnection
         $name = $settings->name();
         $table = $settings->sharedTable();
         $query = "select standard from $table where owner='$user' and name='$name' LIMIT 1";
-        $result = True;
+        $result = true;
         if (!$this->queryLastValue($query)) {
-            $result = False;
+            $result = false;
         }
         return $result;
     }
@@ -1199,7 +1201,7 @@ class DatabaseConnection
      */
     public function saveJobFiles($id, $owner, $files, $autoseries)
     {
-        $result = True;
+        $result = true;
         /** @var UserV2 $owner */
         $username = $owner->name();
         $sqlAutoSeries = "";
@@ -1258,8 +1260,7 @@ class DatabaseConnection
      */
     public function setJobPriorities()
     {
-
-        $result = True;
+        $result = true;
 
         ////////////////////////////////////////////////////////////////////////////
         //
@@ -1287,7 +1288,7 @@ class DatabaseConnection
                 $rs = $this->execute($query);
                 if (!$rs) {
                     Log::error("Could not update priority for key " . $row[0]);
-                    $result = False;
+                    $result = false;
                     return $result;
                 }
 
@@ -1298,7 +1299,6 @@ class DatabaseConnection
         $rs = $this->execute("SELECT id FROM job_queue WHERE status = 'started';");
         if ($rs) {
             while ($row = $rs->FetchRow()) {
-
                 // Update the priority for current job id
                 $query = "UPDATE job_queue SET priority = " . $currentPriority++ .
                     " WHERE id = '" . $row[0] . "';";
@@ -1306,7 +1306,7 @@ class DatabaseConnection
                 $rs = $this->execute($query);
                 if (!$rs) {
                     Log::error("Could not update priority for key " . $row[0]);
-                    $result = False;
+                    $result = false;
                     return $result;
                 }
             }
@@ -1352,7 +1352,7 @@ class DatabaseConnection
                     $rs = $this->execute($query);
                     if (!$rs) {
                         Log::error("Could not update priority for key " . $userJobs[$i][$j]);
-                        $result = False;
+                        $result = false;
                         return $result;
                     }
                     $currentPriority++;
@@ -1589,13 +1589,13 @@ class DatabaseConnection
             $isFixedGeometryValue = 't';
         }
         $conditions = array();
-        if ($isSingleChannel != NULL) {
+        if ($isSingleChannel != null) {
             $conditions['isSingleChannel'] = $isSingleChannelValue;
         }
-        if ($isVariableChannel != NULL) {
+        if ($isVariableChannel != null) {
             $conditions['isVariableChannel'] = $isVariableChannelValue;
         }
-        if ($isFixedGeometry != NULL) {
+        if ($isFixedGeometry != null) {
             $conditions['isFixedGeometry'] = $isFixedGeometryValue;
         }
         return $this->retrieveColumnFromTableWhere('name', 'file_format', $conditions);
@@ -1620,10 +1620,10 @@ class DatabaseConnection
             $isTimeSeriesValue = 't';
         }
         $conditions = array();
-        if ($isThreeDimensional != NULL) {
+        if ($isThreeDimensional != null) {
             $conditions['isThreeDimensional'] = $isThreeDimensionalValue;
         }
-        if ($isTimeSeries != NULL) {
+        if ($isTimeSeries != null) {
             $conditions['isTimeSeries'] = $isTimeSeriesValue;
         }
         return $this->retrieveColumnFromTableWhere("name", "geometry", $conditions);
@@ -1786,7 +1786,7 @@ class DatabaseConnection
         $query = "select username from job_queue where id = '$id';";
         $result = $this->queryLastValue($query);
         if (!$result) {
-            return NULL;
+            return null;
         }
         return $result;
     }
@@ -1798,25 +1798,42 @@ class DatabaseConnection
      */
     public function deleteJobFromTables($id)
     {
-        // TODO: Use foreign keys in the database!
-        $result = True;
+        $result = true;
         $result = $result && $this->execute(
-                "delete from job_analysis_parameter where setting='$id';");
+                "delete from job_files where job='$id';"
+            );
         $result = $result && $this->execute(
-                "delete from job_analysis_setting where name='$id';");
-        $result = $result && $this->execute(
-                "delete from job_files where job='$id';");
-        $result = $result && $this->execute(
-                "delete from job_parameter where setting='$id';");
-        $result = $result && $this->execute(
-                "delete from job_parameter_setting where name='$id';");
-        $result = $result && $this->execute(
-                "delete from job_queue where id='$id';");
-        $result = $result && $this->execute(
-                "delete from job_task_parameter where setting='$id';");
-        $result = $result && $this->execute(
-                "delete from job_task_setting where name='$id';");
+                "delete from job_queue where id='$id';"
+            );
         return $result;
+    }
+
+    /**
+     * Deletes job with specified ID from all job tables.
+     * @param string $id Id of the job.
+     * @return bool True if success, false otherwise.
+     */
+    public function deleteJobSettingsFromTables($settingsId)
+    {
+        $result = true;
+        $result = $result && $this->execute(
+                "delete from job_analysis_parameter where setting='$settingsId';");
+        $result = $result && $this->execute(
+                "delete from job_analysis_setting where name='$settingsId';");
+        $result = $result && $this->execute(
+                "delete from job_files where job='$settingsId';");
+        $result = $result && $this->execute(
+                "delete from job_parameter where setting='$settingsId';");
+        $result = $result && $this->execute(
+                "delete from job_parameter_setting where name='$settingsId';");
+        $result = $result && $this->execute(
+                "delete from job_queue where id='$settingsId';");
+        $result = $result && $this->execute(
+                "delete from job_task_parameter where setting='$settingsId';");
+        $result = $result && $this->execute(
+                "delete from job_task_setting where name='$settingsId';");
+        return $result;
+
     }
 
     /**
@@ -1830,7 +1847,7 @@ class DatabaseConnection
         $query = "SELECT huscript_path FROM server where name = '$host'";
         $result = $this->queryLastValue($query);
         if (!$result) {
-            return NULL;
+            return null;
         }
         return $result;
     }
@@ -1880,9 +1897,9 @@ class DatabaseConnection
         if ($this->doGlobalVariablesExist()) {
             $query = "SELECT value FROM queuemanager WHERE field = 'switch'";
             $answer = $this->queryLastValue($query);
-            $result = True;
+            $result = true;
             if ($answer == 'off') {
-                $result = False;
+                $result = false;
                 Log::warning("$query; returned '$answer'");
                 Util::notifyRuntimeError("hrmd stopped",
                     "$query; returned '$answer'\n\nThe HRM queue manager will stop.");
@@ -1890,9 +1907,9 @@ class DatabaseConnection
         } else {
             $query = "select switch from queuemanager";
             $answer = $this->queryLastValue($query);
-            $result = True;
+            $result = true;
             if ($answer == 'off') {
-                $result = False;
+                $result = false;
                 Log::warning("$query; returned '$answer'");
                 Util::notifyRuntimeError("hrmd stopped",
                     "$query; returned '$answer'\n\nThe HRM queue manager will stop.");
@@ -2464,8 +2481,7 @@ class DatabaseConnection
                 // UPDATE
                 if (!$this->connection()->AutoExecute("confidence_levels",
                     $confidenceLevels[$format], 'UPDATE',
-                    "fileFormat = '$format'")
-                ) {
+                    "fileFormat = '$format'")) {
                     $msg = "Could not update confidence levels for file format $format!";
                     Log::error($msg);
                     exit($msg);
@@ -2476,7 +2492,6 @@ class DatabaseConnection
         }
 
         return true;
-
     }
 
 
@@ -2508,7 +2523,7 @@ class DatabaseConnection
 
         /* This allows for multiple entries for the same machine. */
         /* The queue manager only looks at the machine name, rejecting
-           anything after the blank. */        
+           anything after the blank. */
         if ($gpuId != "") {
             $serverName = "$serverName $gpuId";
             $record['gpuId'] = $gpuId;
@@ -2611,7 +2626,6 @@ class DatabaseConnection
         } else {
             return $level2;
         }
-
     }
 
     /**
@@ -2666,9 +2680,6 @@ class DatabaseConnection
     private function doGlobalVariablesExist()
     {
         $tables = $this->connection()->MetaTables("TABLES");
-        if (in_array("global_variables", $tables)) {
-            $test = True;
-        }
-        return $test;
+        return in_array("global_variables", $tables);
     }
 }

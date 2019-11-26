@@ -7,10 +7,12 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
 namespace hrm\job;
 
 use hrm\DatabaseConnection;
 use hrm\Log;
+use hrm\param\OutputFileFormat;
 use hrm\setting\AnalysisSetting;
 use hrm\setting\JobAnalysisSetting;
 use hrm\setting\JobParameterSetting;
@@ -366,7 +368,6 @@ class JobDescription
 
         // Now add a Job per file to the queue
         foreach ($this->files() as $file) {
-
             // Get a new id for the elementary job
             $id = JobDescription::newID();
 
@@ -441,30 +442,6 @@ class JobDescription
     }
 
     /**
-     * Checks whether the JobDescription describes a compound Job.
-     * @return bool True if the Job is compound (i.e. contains more than one file),
-     * false otherwise.
-     */
-    public function isCompound()
-    {
-        if (count($this->files) > 1) {
-            return True;
-        }
-        return False;
-    }
-
-    /**
-     * Creates elementary Jobs from compound Jobs.
-     * @return bool True if elementary Jobs could be created, false otherwise.
-     */
-    public function createSubJobs()
-    {
-        //$parameterSetting = $this->parameterSetting;
-        //$numberOfChannels = $parameterSetting->numberOfChannels();
-        return $this->createSubJobsforFiles();
-    }
-
-    /**
      * Returns the full file name without redundant slashes.
      * @return string Full file name without redundant slashes.
      * @todo Isn't this redundant? One could use the FileServer class!
@@ -529,8 +506,7 @@ class JobDescription
         //$parameterSetting = $this->parameterSetting;
         //$parameter = $parameterSetting->parameter('ImageFileFormat');
         //$fileFormat = $parameter->value();
-        if (preg_match("/^(.*)\.(lif|lof|czi)\s\((.*)\)/i",
-                       $inputFile[0], $match)) {
+        if (preg_match("/^(.*)\.(lif|lof|czi)\s\((.*)\)/i", $inputFile[0], $match)) {
             $inputFile = $match[1] . '_' . $match[2];
         } else {
             $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
@@ -606,7 +582,7 @@ class JobDescription
         $name = $this->destinationImageName();
         // Append extension
         $taskSetting = $this->taskSetting();
-        /** @var \hrm\param\OutputFileFormat $param */
+        /** @var OutputFileFormat $param */
         $param = $taskSetting->parameter('OutputFileFormat');
         $fileFormat = $param->extension();
         return ($this->relativeSourcePath() . $name . "." . $fileFormat);
@@ -654,43 +630,6 @@ class JobDescription
         $micrType = $this->parameterSetting->microscopeType();
         $timeInterval = $this->parameterSetting->sampleSizeT();
 
-        return $this->taskSetting()->displayString($numChannels,
-                                                   $micrType,
-                                                   $timeInterval);
+        return $this->taskSetting()->displayString($numChannels, $micrType, $timeInterval);
     }
-
-
-    /*
-                                  PRIVATE FUNCTIONS
-    */
-
-    /**
-     * Create elementary Jobs from multi-file compound Jobs
-     * @return bool True if elementary Jobs could be created, false otherwise.
-     */
-    private function createSubJobsforFiles()
-    {
-        $result = True;
-        foreach ($this->files as $file) {
-            // Log::error("file=".$file);
-            $newJobDescription = new JobDescription();
-            $newJobDescription->copyFrom($this);
-            $newJobDescription->setFiles(array($file), $this->autoseries);
-            $result = $result && $newJobDescription->createJob();
-        }
-        return $result;
-    }
-
-    /**
-     * Checks whether a string ends with a number.
-     * @param string $string String to be checked.
-     * @return bool True if the string ends with a number, false otherwise.
-     * @todo This seems to be unused. Can it be removed?
-     */
-    private function endsWithNumber($string)
-    {
-        $last = $string[strlen($string) - 1];
-        return is_numeric($last);
-    }
-
 }

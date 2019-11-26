@@ -405,7 +405,7 @@ class QueueManager
         }
         // remove job
         $this->stopTime = $queue->stopJob($job);
-        Log::info("stopped job (" . date("l d F Y H:i:s") . ")\n");
+        Log::info("Stopped job (" . date("l d F Y H:i:s") . ")\n");
     }
 
     /**
@@ -415,9 +415,7 @@ class QueueManager
      * @param string $errLog A string specific of the error log file name.
      * @return bool True on success, false otherwise.
      */
-    private function isProcessingServerReachable($server,
-                                                 $outLog = null,
-                                                 $errLog = null)
+    private function isProcessingServerReachable($server, $outLog = null, $errLog = null)
     {
         if ($outLog) {
             $outLog .= "_";
@@ -427,9 +425,7 @@ class QueueManager
             $errLog .= "_";
         }
 
-        $proc = ExternalProcessFactory::getExternalProcess($server,
-            $server . $outLog . "_out.txt",
-            $server . $errLog . "_error.txt");
+        $proc = ExternalProcessFactory::getExternalProcess($server, $server . $outLog . "_out.txt",$server . $errLog . "_error.txt");
         $isReachable = $proc->ping();
 
         $proc->release();
@@ -445,9 +441,7 @@ class QueueManager
      * @param string $errLog A string specific of the error log file name.
      * @return bool True on enough memory, false otherwise.
      */
-    private function hasProcessingServerEnoughFreeMem($server,
-                                                      $outLog = null,
-                                                      $errLog = null)
+    private function hasProcessingServerEnoughFreeMem($server, $outLog = null, $errLog = null)
     {        
         global $min_free_mem_launch_requirement;
         
@@ -466,9 +460,7 @@ class QueueManager
             $errLog .= "_";
         }
 
-        $proc = ExternalProcessFactory::getExternalProcess($server,
-            $server . $outLog . "_out.txt",
-            $server . $errLog . "_error.txt");        
+        $proc = ExternalProcessFactory::getExternalProcess($server, $server . $outLog . "_out.txt", $server . $errLog . "_error.txt");
 
         $isReachable = $proc->ping();
 
@@ -505,7 +497,6 @@ class QueueManager
         // First remove all 'delete' jobs that haven't started yet.
         // This way we clean the queue as fast as possible.
         if (! $queue->removeMarkedJobs()) {
-
             // Report
             Log::error("Failed removing deleted, not yet started jobs from the queue.");
 
@@ -515,7 +506,6 @@ class QueueManager
 
         // Then we kill running jobs that have been marked 'kill
         if (! $queue->killMarkedJobs()) {
-
             // Report
             Log::error("Failed killing running jobs from the queue.");
 
@@ -540,47 +530,39 @@ class QueueManager
 
             /** @var UserV2 $user */
             $fileserver = new Fileserver($user->name());
-            if (!$fileserver->isReachable())
+            if (!$fileserver->isReachable()) {
+                Log::error("The file server is not reachable!");
                 continue;
+            }
 
             /** @var Job $job */
-            if (!$this->isProcessingServerReachable($job->server(),
-                $job->id(),
-                $job->id())
-            ) {
+            if (!$this->isProcessingServerReachable($job->server(), $job->id(), $job->id())) {
+                Log::error("The processing server is not reachable!");
                 continue;
             }
 
             // Check finished marker
-            $finished = $job->checkProcessFinished();
-
-            if (!$finished) {
+            if (! $job->checkProcessFinished()) {
                 continue;
             }
 
-            Log::info("checked finished process");
+            Log::info("Huygens process completed successfully.");
 
             // Check result image
             $resultSaved = $job->checkResultImage();
 
-            Log::info("checked result image");
-
             // Notify user
             $startTime = $queue->startTime($job);
-            $errorFile = $logdir . "/" . $job->server() .
-                "_" . $job->id() . "_error.txt";
-            $logFile = $logdir . "/" . $job->server() .
-                "_" . $job->id() . "_out.txt";
+            $errorFile = $logdir . "/" . $job->server() . "_" . $job->id() . "_error.txt";
+            $logFile = $logdir . "/" . $job->server() . "_" . $job->id() . "_out.txt";
 
             if (!$resultSaved) {
-                Log::error("finishing job " . $desc->id() .
-                    " with error on " . $job->server());
+                Log::error("finishing job " . $desc->id() . " with error on " . $job->server());
 
                 // Clean up server
                 $this->cleanUpFileServer($job);
 
-                // Reset server and remove job from the job queue
-                // (update database)
+                // Reset server and remove job from the job queue (update database)
                 $this->stopTime = $queue->stopJob($job);
 
                 // Write email
@@ -600,8 +582,7 @@ class QueueManager
                     unlink($logFile);
                 }
             } else {
-                Log::info("job " . $desc->id() . " completed on " .
-                    $job->server());
+                Log::info("Job " . $desc->id() . " completed on " . $job->server());
 
                 // Report information to statistics table
                 $db = DatabaseConnection::get();
@@ -615,13 +596,15 @@ class QueueManager
                 $this->assembleJobLogFile($job, $startTime, $logFile, $errorFile);
 
                 // Write email
-                if ($send_mail)
+                if ($send_mail) {
                     $this->notifySuccess($job, $startTime);
+                }
                 if (file_exists($errorFile)) {
                     unlink($errorFile);
                 }
-                if (file_exists($logFile))
+                if (file_exists($logFile)) {
                     unlink($logFile);
+                }
             }
         }
     }
@@ -658,12 +641,12 @@ class QueueManager
         $text .= "Job id: $id (pid $pid on $server), started " .
             "at $startTime and finished at " . date("Y-m-d H:i:s") . "\n\n";
 
-        if (file_exists($errorFile))
-            $text .= "- HUYGENS ERROR REPORT (stderr) --------------\n\n" .
-                file_get_contents($errorFile);
-        if (file_exists($logFile))
-            $text .= "- HUYGENS REPORT (stdout) --------------------\n\n" .
-                file_get_contents($logFile);
+        if (file_exists($errorFile)) {
+            $text .= "- HUYGENS ERROR REPORT (stderr) --------------\n\n" . file_get_contents($errorFile);
+        }
+        if (file_exists($logFile)) {
+            $text .= "- HUYGENS REPORT (stdout) --------------------\n\n" . file_get_contents($logFile);
+        }
 
         // Save the log to file
         $parameterFileName = $path . $imageName . '.log.txt';
@@ -1001,7 +984,9 @@ class QueueManager
 
             // Read in a free huygens server
             while (!($queue->isLocked()) && $this->getFreeServer()) {
+                // Get next Job from the queue
                 $job = $this->nextJobFromQueue();
+
                 // Exit the loop if no job is queued.
                 if ($job == null) {
                     break;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * JobQueue
  *
@@ -7,11 +8,11 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
 namespace hrm\job;
 
 use hrm\DatabaseConnection;
 use hrm\shell\ExternalProcessFactory;
-use hrm\Log;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
 
@@ -80,19 +81,19 @@ class JobQueue
         return $files;
     }
 
-    /**
-     * Adds a Job for a JobDescription to the queue.
-     * @param JobDescription $jobDescription A JobDescription object.
-     * @return bool True if queuing the Job succeeded, false otherwise.
-     */
-    public function queueJob(JobDescription $jobDescription)
-    {
-        $owner = $jobDescription->owner();
-        $ownerName = $owner->name();
-        $db = DatabaseConnection::get();
-        $result = $db->queueJob($jobDescription->id(), $ownerName);
-        return $result;
-    }
+//    /**
+//     * Adds a Job for a JobDescription to the queue.
+//     * @param JobDescription $jobDescription A JobDescription object.
+//     * @return bool True if queuing the Job succeeded, false otherwise.
+//     */
+//    public function queueJob(JobDescription $jobDescription)
+//    {
+//        $owner = $jobDescription->owner();
+//        $ownerName = $owner->name();
+//        $db = DatabaseConnection::get();
+//        $result = $db->queueJob($jobDescription->id(), $ownerName);
+//        return $result;
+//    }
 
     /**
      * Starts a Job.
@@ -134,7 +135,13 @@ class JobQueue
     public function removeJob(JobDescription $jobDescription)
     {
         $id = $jobDescription->id();
-        $result = $this->removeJobWithId($id);
+        $settingsId = $jobDescription->settingsId();
+
+        $result = true;
+        if ($this->canJobSettingsBeDeleted($jobDescription)) {
+            $result &= $this->removeJobSettingsWithId($settingsId);
+        }
+        $result &= $this->removeJobWithId($id);
         return $result;
     }
 
@@ -145,9 +152,9 @@ class JobQueue
      * @param bool $isAdmin True if the owner is an admin (default = false).
      * @return bool True if Job the job could be marked, false otherwise.
      */
-    function markJobsAsRemoved(array $ids, $owner, $isAdmin=false)
+    public function markJobsAsRemoved(array $ids, $owner, $isAdmin = false)
     {
-        $result = True;
+        $result = true;
         if (count($ids) == 0) {
             return $result;
         }
@@ -170,24 +177,29 @@ class JobQueue
      * @param array|string $ids Job ids (string or array of strings).
      * @return bool True if all Jobs were killed, false otherwise.
      */
-    function killJobs($ids)
+    public function killJobs($ids)
     {
         global $logdir;
 
-        $result = True;
-        if (count($ids) == 0) return $result;
-        
+        $result = true;
+        if (count($ids) == 0) {
+            return $result;
+        }
+
+        // Get DatabaseConnection object
         $db = DatabaseConnection::get();
 
         // Loop through all the jobs selected, which have to be killed and
         // deleted.
-        foreach ($ids as $id) {            
+        foreach ($ids as $id) {
             $row = $db->getQueueContentsForId($id);
             $pid = $row['process_info'];
             $server = $row['server'];
-            $proc = ExternalProcessFactory::getExternalProcess($server,
+            $proc = ExternalProcessFactory::getExternalProcess(
+                $server,
                 $server . "_" . $id . "_out.txt",
-                $server . "_" . $id . "_error.txt");
+                $server . "_" . $id . "_error.txt"
+            );
             $killed = $proc->killHucoreProcess($pid);
             $result = $killed && $result;
 
@@ -211,7 +223,7 @@ class JobQueue
      *
      * @return bool True if all marked Jobs were killed, false otherwise.
      */
-    function killMarkedJobs()
+    public function killMarkedJobs()
     {
         $db = DatabaseConnection::get();
         $ids = $db->getJobIdsToKill();
@@ -230,7 +242,7 @@ class JobQueue
      *
      * @return bool True if all marked Jobs were removed, false otherwise.
      */
-    function removeMarkedJobs()
+    public function removeMarkedJobs()
     {
         $db = DatabaseConnection::get();
         $ids = $db->getMarkedJobIds();
@@ -256,10 +268,21 @@ class JobQueue
      * @param string $id Job id.
      * @return bool True if the Job were removed, false otherwise.
      */
-    function removeJobWithId($id)
+    public function removeJobWithId($id)
     {
         $db = DatabaseConnection::get();
         return $db->deleteJobFromTables($id);
+    }
+
+    /**
+     * Remove Job with given id from the database.
+     * @param string $settingsId Settings id.
+     * @return bool True if the Job were removed, false otherwise.
+     */
+    public function removeJobSettingsWithId($settingsId)
+    {
+        $db = DatabaseConnection::get();
+        return $db->deleteJobSettingsFromTables($settingsId);
     }
 
     /**
@@ -267,7 +290,7 @@ class JobQueue
      * @param Job $job Job object.
      * @return bool True if the Job were removed, false otherwise.
      */
-    function stopJob(Job $job)
+    public function stopJob(Job $job)
     {
         $db = DatabaseConnection::get();
         $db->resetServer($job->server(), $job->pid());
@@ -276,14 +299,29 @@ class JobQueue
     }
 
     /**
+     * Check whether the settings referenced by the Job are still needed
+     * by at least another Job.
+     * @param $jobDescription JobDescription object.
+     * @return True if the referenced settings can be deleted, false otherwise.
+     */
+    private function canJobSettingsBeDeleted($jobDescription)
+    {
+        $jobId = $jobDescription->id();
+        $settingsId = $jobDescription->settingsId();
+        $db = DatabaseConnection::get();
+        $query = "SELECT id FROM job_queue WHERE settings_id='$settingsId' AND id!='$jobId';";
+        $result = $db->query($query);
+        return count($result) == 0;
+    }
+
+    /**
      * Returns all running jobs from the database.
      * @return array Array of Job objects.
      */
-    function runningJobs()
+    public function runningJobs()
     {
         $db = DatabaseConnection::get();
-        $jobs = $db->getRunningJobs();
-        return $jobs;
+        return $db->getRunningJobs();
     }
 
     /**
@@ -291,20 +329,19 @@ class JobQueue
      * @param Job $job Job object.
      * @return string Start time.
      */
-    function startTime(Job $job)
+    public function startTime(Job $job)
     {
         $db = DatabaseConnection::get();
-        $date = $db->startTimeOf($job);
-        return $date;
+        return $db->startTimeOf($job);
     }
 
     /**
      * Updates the estimated end time in the database.
      * @param string $id Job id.
      * @param  string $date Estimated end time (string).
-     * @return \ADORecordSet_empty|\ADORecordSet_mysql|False Query result.
+     * @return array|False Query result.
      */
-    function updateEstimatedEndTime($id, $date)
+    public function updateEstimatedEndTime($id, $date)
     {
         $db = DatabaseConnection::get();
         return $db->setJobEndTime($id, $date);
@@ -314,43 +351,41 @@ class JobQueue
     /**
      * Pauses the Job described by the given JobDescription.
      * @param JobDescription $jobDescription JobDescription object.
-     * @return \ADORecordSet_empty|\ADORecordSet_mysql|False Query result.
+     * @return array|False Query result.
      */
-    function pauseJob(JobDescription $jobDescription)
+    public function pauseJob(JobDescription $jobDescription)
     {
         $db = DatabaseConnection::get();
-        $result = $db->pauseJob($jobDescription->id());
-        return $result;
+        return $db->pauseJob($jobDescription->id());
     }
 
     /**
      * Restarts all paused Jobs.
-     * @return \ADORecordSet_empty|\ADORecordSet_mysql|False Query result.
+     * @return array|False Query result.
      */
-    function restartPausedJobs()
+    public function restartPausedJobs()
     {
         $db = DatabaseConnection::get();
-        $result = $db->restartPausedJobs();
-        return $result;
+        return $db->restartPausedJobs();
     }
 
     /**
      * Checks whether server is busy.
+     * @TODO This function seems to be unused.
      * @param string $name Name of the server.
      * @return bool True if the server is busy, false otherwise.
      */
-    function isServerBusy($name)
+    public function isServerBusy($name)
     {
         $db = DatabaseConnection::get();
-        $result = $db->isServerBusy($name);
-        return $result;
+        return $db->isServerBusy($name);
     }
 
     /**
      * Checks whether the QueueManager is locked.
      * @return bool True if the QueueManager is locked, false otherwise.
      */
-    function isLocked()
+    public function isLocked()
     {
         $db = DatabaseConnection::get();
         $ans = $db->getSwitchStatus();
@@ -363,20 +398,19 @@ class JobQueue
 
     /**
      * Locks the QueueManager.
-     * @return    \ADORecordSet_empty|\ADORecordSet_mysql|False Query result.
+     * @return array|False Query result.
      */
-    function lock()
+    public function lock()
     {
         $db = DatabaseConnection::get();
-        $result = $db->setSwitchStatus("lck");
-        return $result;
+        return $db->setSwitchStatus("lck");
     }
 
     /**
      * Unlocks the QueueManager.
-     * @return \ADORecordSet_empty|\ADORecordSet_mysql|False Query result.
+     * @return array|False Query result.
      */
-    function unlock()
+    public function unlock()
     {
         $result = false;
         if ($this->isLocked()) {
@@ -385,5 +419,4 @@ class JobQueue
         }
         return $result;
     }
-
 }
