@@ -1468,6 +1468,11 @@ class DatabaseConnection
 
         $parameter_array = self::$possibleValuesTableCache[$parameterName];
         foreach ($parameter_array as $parameter) {
+
+            // There's no microscope analog for 'two photon' in Huygens. 
+            // Therefore, avoid falling in this case.
+            if ($parameter["value"] == "two photon") continue;
+            
             if (strcmp($parameter["translation"], $hucorevalue) == 0) {
                 $result = $parameter["value"];
                 break;

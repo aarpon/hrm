@@ -2374,9 +2374,9 @@ class ParameterSetting extends Setting {
         }
 
         // Multiphoton.
-        if (strpos($huArray['parState,photonCnt'], "default") === FALSE) {
-            $photonCnt = explode(" ", $huArray['photonCnt'], 5);
-            if ($photonCnt > 1) {
+        if (strpos($huArray['parState,pcnt'], "default") === FALSE) {
+            $photonCnt = array_map('floatval', explode(' ', $huArray['pcnt']));
+            if ($photonCnt[0] > 1) {
                 $hrmMicrType->setValue('two photon');
             }
         }
