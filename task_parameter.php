@@ -279,7 +279,7 @@ include("header.inc.php");
                                 for ($i = 0; $i < $chanCnt; $i++) {
 
                                     $value = "";
-                                    if ($selectedMode == "cmle")
+                                    //if ($selectedMode == "cmle")
                                         $value = $signalNoiseRatioValue[$i];
 
                                     /* Add a line break after a number of entries. */
@@ -329,16 +329,6 @@ include("header.inc.php");
                 </div>
 
 
-
-
-
-
-
-
-
-
-
-
                 <?php
 
                 $visibility = " style=\"display: none\"";
@@ -366,7 +356,7 @@ include("header.inc.php");
                                 for ($i = 0; $i < $chanCnt; $i++) {
 
                                     $value = "";
-                                    if ($selectedMode == "gmle")
+                                    // if ($selectedMode == "gmle")
                                         $value = $signalNoiseRatioValue[$i];
 
                                     /* Add a line break after a number of entries. */
@@ -416,7 +406,88 @@ include("header.inc.php");
                 </div>
 
 
+
+                <?php
+                            /* !!!!!!!!!!!!!!!!!!!!!!!!! TODO: BEGIN REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!! */
+                $visibility = " style=\"display: none\"";
+                if ($selectedMode == "skip") {
+                    $visibility = " style=\"display: block\"";
+                }
+
+                ?>
+                <div id="skip-snr"
+                     class="multichannel"<?php echo $visibility ?>>
+                    <ul>
+                        <li>SNR:
+                            <div class="multichannel">
+                                <?php
+
+                                /*
+                                                           SIGNAL-TO-NOISE RATIO
+                                */
+
+                                $signalNoiseRatioParam =
+                                    $_SESSION['task_setting']->parameter("SignalNoiseRatio");
+                                $signalNoiseRatioValue = $signalNoiseRatioParam->value();
+
+
+                                for ($i = 0; $i < $chanCnt; $i++) {
+
+                                    $value = "";
+                                    // if ($selectedMode == "gmle")
+                                        $value = $signalNoiseRatioValue[$i];
+
+                                    /* Add a line break after a number of entries. */
+                                    if ($chanCnt == 4) {
+                                        if ($i == 2) {
+                                            echo "<br />";
+                                        }
+                                    } else {
+                                        if ($i == 3) {
+                                            echo "<br />";
+                                        }
+                                    }
+
+
+                                    ?>
+                                    <span class="nowrap">Ch<?php echo $i; ?>:
+        &nbsp;&nbsp;&nbsp;
+                              <span class="multichannel">
+                                  <input
+                                      id="SignalNoiseRatioSKIP<?php echo $i; ?>"
+                                      name="SignalNoiseRatioSKIP<?php echo $i; ?>"
+                                      title="Signal-to-noise ratio (Skip)"
+                                      type="text"
+                                      size="8"
+                                      value="<?php echo $value; ?>"
+                                      class="multichannelinput"/>
+                                        </span>&nbsp;
+                                    </span>
+                                    <?php
+
+                                }
+
+                                ?>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <p><a href="#"
+                          onmouseover="TagToTip('ttEstimateSnr' )"
+                          onmouseout="UnTip()"
+                          onclick="storeValuesAndRedirect(
+                            'estimate_snr_from_image.php');">
+                            <img src="images/calc_small.png" alt=""/>
+                            Estimate SNR from image</a>
+                    </p>
+
+                </div>            
+
+
+
+
               <?php
+                /* !!!!!!!!!!!!!!!!!!!!!!!!! TODO: END REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!! */
 
                 $visibility = " style=\"display: none\"";
                 if ($selectedMode == "qmle") {
