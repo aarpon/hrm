@@ -2373,6 +2373,14 @@ class ParameterSetting extends Setting {
             $hrmMicrType->setValue($micrVal);
         }
 
+        // Multiphoton.
+        if (strpos($huArray['parState,photonCnt'], "default") === FALSE) {
+            $photonCnt = explode(" ", $huArray['photonCnt'], 5);
+            if ($photonCnt > 1) {
+                $hrmMicrType->setValue('two photon');
+            }
+        }
+
         // Number of channels.
         if (isset($huMicrType)) {
             $chanCnt = count($huMicrType);
