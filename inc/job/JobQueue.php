@@ -54,8 +54,7 @@ class JobQueue
     public function availableServer()
     {
         $db = DatabaseConnection::get();
-        $result = $db->availableServer();
-        return $result;
+        return $db->availableServer();
     }
 
     /**
@@ -66,8 +65,7 @@ class JobQueue
     public function getContents()
     {
         $db = DatabaseConnection::get();
-        $rows = $db->getQueueContents();
-        return $rows;
+        return $db->getQueueContents();
     }
 
     /**
@@ -78,23 +76,8 @@ class JobQueue
     public function getJobFilesFor($id)
     {
         $db = DatabaseConnection::get();
-        $files = $db->getJobFilesFor($id);
-        return $files;
+        return $db->getJobFilesFor($id);
     }
-
-//    /**
-//     * Adds a Job for a JobDescription to the queue.
-//     * @param JobDescription $jobDescription A JobDescription object.
-//     * @return bool True if queuing the Job succeeded, false otherwise.
-//     */
-//    public function queueJob(JobDescription $jobDescription)
-//    {
-//        $owner = $jobDescription->owner();
-//        $ownerName = $owner->name();
-//        $db = DatabaseConnection::get();
-//        $result = $db->queueJob($jobDescription->id(), $ownerName);
-//        return $result;
-//    }
 
     /**
      * Starts a Job.
@@ -214,12 +197,16 @@ class JobQueue
             $result = $killed && $result;
 
             // Clean the database and the error file.
-            $result = $this->removeJobWithId($id)    && $result;
             $settingsId = $db->getSettingsIdForJobId($id);
-            if ($this->canJobSettingsBeDeleted($settingsId)) {
+            $result &= $this->removeJobWithId($id);
+            $jobDescription = new JobDescription();
+            $jobDescription->setId($id);
+            $jobDescription->setSettingsId($settingsId);
+            $jobDescription->load();
+            if ($this->canJobSettingsBeDeleted($jobDescription)) {
                 $result &= $this->removeJobSettingsWithId($settingsId);
             }
-            $result = $db->markServerAsFree($server) && $result;
+            $result &= $db->markServerAsFree($server);
             $errorFile = $logdir . "/" . $server . "_" . $id . "_error.txt";
             if (file_exists($errorFile)) {
                 unlink($errorFile);
