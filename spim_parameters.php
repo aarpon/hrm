@@ -731,7 +731,7 @@ include("header.inc.php");
                 <table class="SpimDirValues">
 
                     <?php
-                    $possibleValues = $parameterSpimDir->possibleValues();
+                    $possibleValues = $parameterSpimDir->possibleValues();                
 
                     /* Loop on rows. */
                     for ($chan = 0; $chan < $chanCnt; $chan++) {
@@ -746,15 +746,28 @@ include("header.inc.php");
                                         id="SpimDir<?php echo $chan; ?>">
 
                                     <?php
-                                    /* Loop for select options. */
-
+                                    /* Loop for select options. */                                    
                                     foreach ($possibleValues as $possibleValue) {
-
-                                        if ($possibleValue == $spimDir[$chan]) {
-                                            $selected = " selected=\"selected\"";
-                                        } else {
-                                            $selected = "";
+                                        $translatedValue =
+                                            $parameterSpimDir->translatedValueFor($possibleValue);
+                                    
+                                        /* Some directions have the same 'translation' for MuVi and for regular systems,
+                                        but different 'value' (see DB, table 'possible_values'). Make sure that the correct
+                                        'value' gets displayed for the correct systems. */                                            
+                                        if ($spimExcMode[$chan] == "gaussMuVi" && strpos($possibleValue, "+") !== FALSE) {
+                                            if (intval($translatedValue) == intval($spimDir[$chan])) {
+                                                $selected = " selected=\"selected\"";                                            
+                                            } else {
+                                                $selected = "";
+                                            }   
                                         }
+                                        if ($spimExcMode[$chan] != "gaussMuVi" && strpos($possibleValue, "+") === FALSE) {
+                                            if (intval($translatedValue) == intval($spimDir[$chan])) {
+                                                $selected = " selected=\"selected\"";                                            
+                                            } else {
+                                                $selected = "";
+                                            }   
+                                        }    
                                         ?>
                                         <option
                                                 value=<?php echo("\"$possibleValue\"");
