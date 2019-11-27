@@ -477,6 +477,10 @@ class TaskSetting extends Setting
     {
         $result = '';
 
+        if ($numberOfChannels == 0) {
+            $numberOfChannels = $this->numberOfChannels();
+        }
+
         // These parameters are important to properly display other parameters.
         $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
         $TStabilization = $this->parameter('TStabilization')->value();   
