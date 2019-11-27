@@ -510,6 +510,7 @@ include("header.inc.php");
                             <select class="snrselect"
                                     title="Signal-to-noise ration (QMLE)"
                                     class="selection"
+                                    id="SignalNoiseRatioQMLE<?php echo $i ?>"
                                     name="SignalNoiseRatioQMLE<?php echo $i ?>">
 <?php
 
@@ -989,6 +990,10 @@ for ($j = 1; $j <= 4; $j++) {
     </div>
 
 </div> <!-- rightpanel -->
+
+<script type="text/javascript">
+    setDeconEntryProperties();
+</script>
 
 <?php
 

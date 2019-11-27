@@ -278,6 +278,46 @@ function changeChromaticChannelReference(selectObj) {
     setChromaticChannelReference( selectObj.value );
 }
 
+
+function setDeconEntryProperties( ) {
+    var tag = "DeconvolutionAlgorithm";
+    
+    for (var chan = 0; chan < 6; chan++) {
+        var name = tag.concat(chan);
+
+        var inputElement = document.getElementsByName(name);
+        changeDeconEntryProperties(inputElement[0], chan);
+    }
+}
+
+
+// Grey out the decon input fields of a specific channel if the
+// corresponding decon algorithm is set to 'skip'.
+function changeDeconEntryProperties(selectObj, channel) {
+    var tagArray = ["SignalNoiseRatioCMLE",
+                    "SignalNoiseRatioQMLE",
+                    "SignalNoiseRatioGMLE",
+                    "SignalNoiseRatioSKIP"];
+
+    for (var i = 0; i < tagArray.length; i++) {
+        var tag = tagArray[i];
+        var id = tag.concat(channel);
+
+        var inputElement = document.getElementById(id);
+        
+        if ( selectObj.value == 'skip' ) {
+            inputElement.readOnly = true;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="#888";
+        } else {
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";
+        }
+    }
+}
+
+
 // Grey out the STED input fields of a specific channel if the
 // corresponding depletion mode is set to 'confocal'.
 function changeStedEntryProperties(selectObj, channel) {
@@ -304,10 +344,11 @@ function changeStedEntryProperties(selectObj, channel) {
     }
 }
 
+
 function setStedEntryProperties( ) {
     var tag = "StedDepletionMode";
     
-    for (var chan = 0; chan < 5; chan++) {
+    for (var chan = 0; chan < 6; chan++) {
         var name = tag.concat(chan);
 
         var inputElement = document.getElementsByName(name);
@@ -400,7 +441,7 @@ function changeSpimEntryProperties(selectObj, channel) {
 function setSpimEntryProperties( ) {
     var tag = "SpimExcMode";
     
-    for (var chan = 0; chan < 5; chan++) {
+    for (var chan = 0; chan < 6; chan++) {
         var name = tag.concat(chan);
 
         inputElement = document.getElementsByName(name);
