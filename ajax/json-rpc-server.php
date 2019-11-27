@@ -259,11 +259,16 @@ switch ($method) {
     default:
 
         // Unknown method
-        die("Unknown method.");
+        $json = "Unknown method.";
+        header("Content-Type: application/json", true, 405);
+        echo $json;
+
+        return true;
+
 }
 
 // Return the JSON object
-header("Content-Type: application/json", true);
+header("Content-Type: application/json", true, 200);
 echo $json;
 
 return true;
