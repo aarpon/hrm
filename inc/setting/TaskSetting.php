@@ -136,12 +136,17 @@ class TaskSetting extends Setting
         // Deconvolution Algorithm - this should always be defined, but since
         // other parameters depend on it, in case it is not defined we return
         // here
+        $skipDeconAll = true;
         for ($i = 0; $i < $maxChanCnt; $i++) {
             $value[$i] = null;
             if (isset($postedParameters["DeconvolutionAlgorithm$i"])) {
                 $value[$i] = $postedParameters["DeconvolutionAlgorithm$i"];
                 unset($postedParameters["DeconvolutionAlgorithm$i"]);
-            }
+
+                if ($value[$i] != "skip") {
+                    $skipDeconAll = false;
+                }
+            }            
         }
 
         $name = 'DeconvolutionAlgorithm';
@@ -196,7 +201,7 @@ class TaskSetting extends Setting
         $parameter = $this->parameter("SignalNoiseRatio");
         $parameter->setValue($value);
         $this->set($parameter);
-        if (!$parameter->check()) {
+        if (!$skipDeconAll && !$parameter->check()) {
             $this->message = $parameter->message();
             $noErrorsFound = False;
         }
@@ -238,7 +243,7 @@ class TaskSetting extends Setting
             $parameter = $this->parameter("BackgroundOffsetPercent");
             $parameter->setValue($value);
             $this->set($parameter);
-            if (!$parameter->check()) {
+            if (!$skipDeconAll && !$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
@@ -251,7 +256,7 @@ class TaskSetting extends Setting
             $parameter = $this->parameter("NumberOfIterations");
             $parameter->setValue($postedParameters["NumberOfIterations"]);
             $this->set($parameter);
-            if (!$parameter->check()) {
+            if (!$skipDeconAll && !$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
@@ -264,7 +269,7 @@ class TaskSetting extends Setting
             $parameter = $this->parameter("QualityChangeStoppingCriterion");
             $parameter->setValue($postedParameters["QualityChangeStoppingCriterion"]);
             $this->set($parameter);
-            if (!$parameter->check()) {
+            if (!$skipDeconAll && !$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
