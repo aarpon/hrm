@@ -199,8 +199,8 @@ include("header.inc.php");
                                 <select
                                     name="DeconvolutionAlgorithm<?php echo $chan; ?>"
                                     title="Deconvolution algorithm for channel <?php echo $chan; ?>"
-                                    onclick="changeDeconEntryProperties(this,<?php echo $chan; ?>)"
-                                    onchange="changeDeconEntryProperties(this,<?php echo $chan; ?>)">
+                                    onclick="setDeconEntryProperties()"
+                                    onchange="setDeconEntryProperties()">
 
                                     <?php
                                     /* Loop for select options. */

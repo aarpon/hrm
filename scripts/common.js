@@ -281,12 +281,38 @@ function changeChromaticChannelReference(selectObj) {
 
 function setDeconEntryProperties( ) {
     var tag = "DeconvolutionAlgorithm";
-    
+
+    var skipAllChannels = true;    
     for (var chan = 0; chan < 6; chan++) {
         var name = tag.concat(chan);
 
         var inputElement = document.getElementsByName(name);
-        changeDeconEntryProperties(inputElement[0], chan);
+
+        if (inputElement[0] === undefined) continue;
+        
+        alg = changeDeconEntryProperties(inputElement[0], chan);
+
+        if (alg != 'skip') {
+            skipAllChannels = false;
+        }
+    }
+
+    var tagArray = ["QualityChangeStoppingCriterion",
+                    "NumberOfIterations"];
+    for (var i = 0; i < tagArray.length; i++) {
+        var id = tagArray[i];
+
+        var inputElement = document.getElementById(id);
+
+        if (skipAllChannels) {
+            inputElement.readOnly = true;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="#888";
+        } else {
+            inputElement.readOnly = false;
+            inputElement.style.color="#000";
+            inputElement.style.backgroundColor="";
+        }
     }
 }
 
@@ -297,7 +323,8 @@ function changeDeconEntryProperties(selectObj, channel) {
     var tagArray = ["SignalNoiseRatioCMLE",
                     "SignalNoiseRatioQMLE",
                     "SignalNoiseRatioGMLE",
-                    "SignalNoiseRatioSKIP"];
+                    "SignalNoiseRatioSKIP",
+                    "BackgroundOffsetPercent"];
 
     for (var i = 0; i < tagArray.length; i++) {
         var tag = tagArray[i];
@@ -315,6 +342,8 @@ function changeDeconEntryProperties(selectObj, channel) {
             inputElement.style.backgroundColor="";
         }
     }
+
+    return selectObj.value
 }
 
 
