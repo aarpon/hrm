@@ -178,6 +178,7 @@ include("header.inc.php");
                 <table class="DeconvolutionAlgorithmValues">
 
                     <?php
+                    $selectedAlgArr = $parameterDeconAlgorithm->value();
                     $possibleValues = $parameterDeconAlgorithm->possibleValues();
 
                     /* Make sure CMLE is first in the list. */
@@ -198,17 +199,15 @@ include("header.inc.php");
                             <td>
                                 <select
                                     name="DeconvolutionAlgorithm<?php echo $chan; ?>"
-                                    title="Deconvolution algorithm for channel <?php echo $chan; ?>"
-                                    onclick="setDeconEntryProperties()"
-                                    onchange="setDeconEntryProperties()">
+                                    title="Deconvolution algorithm for channel <?php echo $chan; ?>"                                    
+                                    onchange="updateDeconEntryProperties()">
 
                                     <?php
-                                    /* Loop for select options. */
-
+                                    /* Loop for select options. */                                   
                                     foreach ($possibleValues as $possibleValue) {
                                         $translatedValue =
                                             $parameterDeconAlgorithm->translatedValueFor($possibleValue);
-
+                                            
                                         if ($possibleValue == $deconAlgorithm[$chan]) {
                                             $selected = " selected=\"selected\"";
                                         } else {
@@ -252,55 +251,44 @@ include("header.inc.php");
             <div id="snr"
                  onmouseover="changeQuickHelp( 'snr' );">
 
+                <!-- start the SNR table-->
+                <table><tr>    
+                 
+
                 <?php
-                $selectedMode = "cmle";
-                $visibility = " style=\"display: none\"";
-                if ($selectedMode == "cmle") {
-                    $visibility = " style=\"display: block\"";
-                }
 
-                ?>
-                <div id="cmle-snr"
+                /*                SIGNAL-TO-NOISE RATIO                    */
+
+                $signalNoiseRatioParam =
+                    $_SESSION['task_setting']->parameter("SignalNoiseRatio");
+                $signalNoiseRatioValue = $signalNoiseRatioParam->value();
+                
+                
+
+                for ($ch = 0; $ch < $chanCnt; $ch++) {
+
+                    $visibility = " style=\"display: none\"";
+                    if ($selectedAlgArr[$ch] == "cmle") {
+                        $visibility = " style=\"display: block\"";
+                    }
+
+                    $value = "";
+                    if ($selectedAlgArr[$ch] == "cmle")
+                        $value = $signalNoiseRatioValue[$ch];
+                 ?>
+
+                    <!-- A new table cell for the SNR of this channel-->
+                    <td>
+
+                    <div id="cmle-snr-<?php echo $ch;?>"
                      class="multichannel"<?php echo $visibility ?>>
-                    <ul>
-                        <li>SNR:
-                            <div class="multichannel">
-                                <?php
-
-                                /*
-                                                           SIGNAL-TO-NOISE RATIO
-                                */
-
-                                $signalNoiseRatioParam =
-                                    $_SESSION['task_setting']->parameter("SignalNoiseRatio");
-                                $signalNoiseRatioValue = $signalNoiseRatioParam->value();
-
-
-                                for ($i = 0; $i < $chanCnt; $i++) {
-
-                                    $value = "";
-                                    //if ($selectedMode == "cmle")
-                                        $value = $signalNoiseRatioValue[$i];
-
-                                    /* Add a line break after a number of entries. */
-                                    if ($chanCnt == 4) {
-                                        if ($i == 2) {
-                                            echo "<br />";
-                                        }
-                                    } else {
-                                        if ($i == 3) {
-                                            echo "<br />";
-                                        }
-                                    }
-
-
-                                    ?>
-                                    <span class="nowrap">Ch<?php echo $i; ?>:
-        &nbsp;&nbsp;&nbsp;
+                     
+                     <span class="nowrap">Ch<?php echo $ch; ?>:
+                        &nbsp;&nbsp;&nbsp;
                               <span class="multichannel">
                                   <input
-                                      id="SignalNoiseRatioCMLE<?php echo $i; ?>"
-                                      name="SignalNoiseRatioCMLE<?php echo $i; ?>"
+                                      id="SignalNoiseRatioCMLE<?php echo $ch; ?>"
+                                      name="SignalNoiseRatioCMLE<?php echo $ch; ?>"
                                       title="Signal-to-noise ratio (CMLE)"
                                       type="text"
                                       size="8"
@@ -308,169 +296,125 @@ include("header.inc.php");
                                       class="multichannelinput"/>
                                         </span>&nbsp;
                                     </span>
-                                    <?php
 
-                                }
-
-                                ?>
-                            </div>
-                        </li>
-                    </ul>
-
-                    <p><a href="#"
-                          onmouseover="TagToTip('ttEstimateSnr' )"
-                          onmouseout="UnTip()"
-                          onclick="storeValuesAndRedirect(
-                            'estimate_snr_from_image.php');">
-                            <img src="images/calc_small.png" alt=""/>
-                            Estimate SNR from image</a>
-                    </p>
-
-                </div>
+                    </div>
 
 
                 <?php
 
-                $visibility = " style=\"display: none\"";
-                if ($selectedMode == "gmle") {
-                    $visibility = " style=\"display: block\"";
-                }
+                    $visibility = " style=\"display: none\"";
+                    if ($selectedAlgArr[$ch] == "gmle") {
+                        $visibility = " style=\"display: block\"";
+                    }
 
+                    $value = "";
+                    if ($selectedAlgArr[$ch] == "gmle")
+                        $value = $signalNoiseRatioValue[$ch];
                 ?>
-                <div id="gmle-snr"
+
+                    <div id="gmle-snr-<?php echo $ch;?>"
                      class="multichannel"<?php echo $visibility ?>>
-                    <ul>
-                        <li>SNR:
-                            <div class="multichannel">
-                                <?php
+ 
+                    <span class="nowrap">Ch<?php echo $ch; ?>:
+                        &nbsp;&nbsp;&nbsp;
+                            <span class="multichannel">
+                                <input
+                                    id="SignalNoiseRatioGMLE<?php echo $ch; ?>"
+                                    name="SignalNoiseRatioGMLE<?php echo $ch; ?>"
+                                    title="Signal-to-noise ratio (GMLE)"
+                                    type="text"
+                                    size="8"
+                                    value="<?php echo $value; ?>"
+                                    class="multichannelinput"/>
+                                    </span>&nbsp;
+                                </span>
 
-                                /*
-                                                           SIGNAL-TO-NOISE RATIO
-                                */
-
-                                $signalNoiseRatioParam =
-                                    $_SESSION['task_setting']->parameter("SignalNoiseRatio");
-                                $signalNoiseRatioValue = $signalNoiseRatioParam->value();
-
-
-                                for ($i = 0; $i < $chanCnt; $i++) {
-
-                                    $value = "";
-                                    // if ($selectedMode == "gmle")
-                                        $value = $signalNoiseRatioValue[$i];
-
-                                    /* Add a line break after a number of entries. */
-                                    if ($chanCnt == 4) {
-                                        if ($i == 2) {
-                                            echo "<br />";
-                                        }
-                                    } else {
-                                        if ($i == 3) {
-                                            echo "<br />";
-                                        }
-                                    }
-
-
-                                    ?>
-                                    <span class="nowrap">Ch<?php echo $i; ?>:
-        &nbsp;&nbsp;&nbsp;
-                              <span class="multichannel">
-                                  <input
-                                      id="SignalNoiseRatioGMLE<?php echo $i; ?>"
-                                      name="SignalNoiseRatioGMLE<?php echo $i; ?>"
-                                      title="Signal-to-noise ratio (GMLE)"
-                                      type="text"
-                                      size="8"
-                                      value="<?php echo $value; ?>"
-                                      class="multichannelinput"/>
-                                        </span>&nbsp;
-                                    </span>
-                                    <?php
-
-                                }
-
-                                ?>
-                            </div>
-                        </li>
-                    </ul>
-
-                    <p><a href="#"
-                          onmouseover="TagToTip('ttEstimateSnr' )"
-                          onmouseout="UnTip()"
-                          onclick="storeValuesAndRedirect(
-                            'estimate_snr_from_image.php');">
-                            <img src="images/calc_small.png" alt=""/>
-                            Estimate SNR from image</a>
-                    </p>
-
-                </div>
-
+                    </div>
 
 
                 <?php
-                            /* !!!!!!!!!!!!!!!!!!!!!!!!! TODO: BEGIN REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!! */
-                $visibility = " style=\"display: none\"";
-                if ($selectedMode == "skip") {
-                    $visibility = " style=\"display: block\"";
-                }
 
+                    $visibility = " style=\"display: none\"";
+                    if ($selectedAlgArr[$ch] == "qmle") {
+                        $visibility = " style=\"display: block\"";
+                    }
+
+                    $value = "";
+                    if ($selectedAlgArr[$ch] == "qmle")
+                        $value = $signalNoiseRatioValue[$ch];
                 ?>
-                <div id="skip-snr"
-                     class="multichannel"<?php echo $visibility ?>>
-                    <ul>
-                        <li>SNR:
-                            <div class="multichannel">
-                                <?php
 
-                                /*
-                                                           SIGNAL-TO-NOISE RATIO
-                                */
+                    <div id="qmle-snr-<?php echo $ch;?>"
+                    class="multichannel"<?php echo $visibility ?>>
 
-                                $signalNoiseRatioParam =
-                                    $_SESSION['task_setting']->parameter("SignalNoiseRatio");
-                                $signalNoiseRatioValue = $signalNoiseRatioParam->value();
+                    <span class="nowrap">Ch<?php echo $ch; ?>:
+                        &nbsp;&nbsp;&nbsp;
+                            <span class="multichannel">
+                                <input
+                                    id="SignalNoiseRatioQMLE<?php echo $ch; ?>"
+                                    name="SignalNoiseRatioQMLE<?php echo $ch; ?>"
+                                    title="Signal-to-noise ratio (QMLE)"
+                                    type="text"
+                                    size="8"
+                                    value="<?php echo $value; ?>"
+                                    class="multichannelinput"/>
+                                    </span>&nbsp;
+                                </span>
 
-
-                                for ($i = 0; $i < $chanCnt; $i++) {
-
-                                    $value = "";
-                                    // if ($selectedMode == "gmle")
-                                        $value = $signalNoiseRatioValue[$i];
-
-                                    /* Add a line break after a number of entries. */
-                                    if ($chanCnt == 4) {
-                                        if ($i == 2) {
-                                            echo "<br />";
-                                        }
-                                    } else {
-                                        if ($i == 3) {
-                                            echo "<br />";
-                                        }
-                                    }
+                    </div>
 
 
-                                    ?>
-                                    <span class="nowrap">Ch<?php echo $i; ?>:
-        &nbsp;&nbsp;&nbsp;
-                              <span class="multichannel">
-                                  <input
-                                      id="SignalNoiseRatioSKIP<?php echo $i; ?>"
-                                      name="SignalNoiseRatioSKIP<?php echo $i; ?>"
-                                      title="Signal-to-noise ratio (Skip)"
-                                      type="text"
-                                      size="8"
-                                      value="<?php echo $value; ?>"
-                                      class="multichannelinput"/>
-                                        </span>&nbsp;
-                                    </span>
-                                    <?php
+                <?php
 
-                                }
+                    $visibility = " style=\"display: none\"";
+                    if ($selectedAlgArr[$ch] == "skip") {
+                        $visibility = " style=\"display: block\"";
+                    }
 
-                                ?>
-                            </div>
-                        </li>
-                    </ul>
+                    $value = "";
+                    if ($selectedAlgArr[$ch] == "skip")
+                        $value = $signalNoiseRatioValue[$ch];
+                ?>
+
+                    <div id="skip-snr-<?php echo $ch;?>"
+                    class="multichannel"<?php echo $visibility ?>>
+
+                    <span class="nowrap">Ch<?php echo $ch; ?>:
+                        &nbsp;&nbsp;&nbsp;
+                            <span class="multichannel">
+                                <input
+                                    id="SignalNoiseRatioSKIP<?php echo $ch; ?>"
+                                    name="SignalNoiseRatioSKIP<?php echo $ch; ?>"
+                                    title="Signal-to-noise ratio (SKIP)"
+                                    type="text"
+                                    size="8"
+                                    value="<?php echo $value; ?>"
+                                    class="multichannelinput"/>
+                                    </span>&nbsp;
+                                </span>
+
+                    </div>
+
+                <!-- Close the table cell for the SNR of this channel-->
+                </td>    
+
+                    <?php    
+                    /* Start a new table row after a number of entries. */
+                    if ($chanCnt == 4) {
+                        if ($ch == 2) {
+                            echo "</tr><tr>";
+                        }
+                    } else {
+                        if ($ch == 2) {
+                            echo "</tr><tr>";
+                        }
+                    }
+                }                     
+                ?>
+
+                <!-- Close the last row and table-->
+                </tr></table>
+                
 
                     <p><a href="#"
                           onmouseover="TagToTip('ttEstimateSnr' )"
@@ -481,84 +425,10 @@ include("header.inc.php");
                             Estimate SNR from image</a>
                     </p>
 
-                </div>            
+            </div> <!-- snr div -->
+        </fieldset> <!-- signal/noise ratio fieldset-->
 
 
-
-
-              <?php
-                /* !!!!!!!!!!!!!!!!!!!!!!!!! TODO: END REMOVE !!!!!!!!!!!!!!!!!!!!!!!!!! */
-
-                $visibility = " style=\"display: none\"";
-                if ($selectedMode == "qmle") {
-                    $visibility = " style=\"display: block\"";
-                }
-
-                ?>
-                <div id="qmle-snr"
-                     class="multichannel"<?php echo $visibility ?>>
-                    <ul>
-                        <li>SNR:
-                            <div class="multichannel">
-                                <?php
-
-                                for ($i = 0; $i < $chanCnt; $i++) {
-
-                                    ?>
-                                    <span class="nowrap">
-                            Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
-                            <select class="snrselect"
-                                    title="Signal-to-noise ration (QMLE)"
-                                    class="selection"
-                                    id="SignalNoiseRatioQMLE<?php echo $i ?>"
-                                    name="SignalNoiseRatioQMLE<?php echo $i ?>">
-<?php
-
-for ($j = 1; $j <= 4; $j++) {
-    $option = "                                <option ";
-    if (isset($signalNoiseRatioValue)) {
-        if ($signalNoiseRatioValue[$i] >= 1 &&
-            $signalNoiseRatioValue[$i] <= 4
-        ) {
-            if ($j == $signalNoiseRatioValue[$i])
-                $option .= "selected=\"selected\" ";
-        } else {
-            if ($j == 2)
-                $option .= "selected=\"selected\" ";
-        }
-    } else {
-        if ($j == 2)
-            $option .= "selected=\"selected\" ";
-    }
-    $option .= "value=\"" . $j . "\">";
-    if ($j == 1)
-        $option .= "low</option>";
-    else if ($j == 2)
-        $option .= "fair</option>";
-    else if ($j == 3)
-        $option .= "good</option>";
-    else if ($j == 4)
-        $option .= "inf</option>";
-    echo $option;
-}
-
-?>
-                            </select>
-                        </span><br/>
-                                    <?php
-
-                                }
-
-                                ?>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-            </div>
-
-
-        </fieldset>
 
         <div id="Autocrop">
             <fieldset class="setting provided"
@@ -992,7 +862,7 @@ for ($j = 1; $j <= 4; $j++) {
 </div> <!-- rightpanel -->
 
 <script type="text/javascript">
-    setDeconEntryProperties();
+    updateDeconEntryProperties();
 </script>
 
 <?php

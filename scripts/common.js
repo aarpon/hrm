@@ -280,7 +280,7 @@ function changeChromaticChannelReference(selectObj) {
 
 
 // Grey out selected input fields when the decon algorithm is set to 'skip'.
-function setDeconEntryProperties( ) {
+function updateDeconEntryProperties( ) {
     var deconTag             =  "DeconvolutionAlgorithm";
 
     var paramAllChanTagArray = ["QualityChangeStoppingCriterion",
@@ -302,15 +302,15 @@ function setDeconEntryProperties( ) {
         var deconAlgorithm    = deconInputElement[0];
 
         if (deconAlgorithm === undefined) continue;
-        if (deconAlgorithm != 'skip') skipAllChannels = false;
-
+        if (deconAlgorithm.value !== "skip") skipAllChannels = false;        
+        
         for (var tagIdx = 0; tagIdx < paramChanTagArray.length; tagIdx++) {
             var tag = paramChanTagArray[tagIdx];
             var id = tag.concat(chan);
     
             var paramInputElement = document.getElementById(id);
             
-            if ( deconAlgorithm == 'skip' ) {
+            if ( deconAlgorithm.value === "skip" ) {
                 paramInputElement.readOnly = true;
                 paramInputElement.style.color="#000";
                 paramInputElement.style.backgroundColor="#888";
@@ -320,6 +320,9 @@ function setDeconEntryProperties( ) {
                 paramInputElement.style.backgroundColor="";
             }
         }
+
+        // QMLE vs CMLE/GMLE.
+        switchSnrMode(deconAlgorithm, chan);
     }
     
     // Then, the channel-independent parameters. These are changed when all 
