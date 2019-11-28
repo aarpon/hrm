@@ -279,72 +279,68 @@ function changeChromaticChannelReference(selectObj) {
 }
 
 
+// Grey out selected input fields when the decon algorithm is set to 'skip'.
 function setDeconEntryProperties( ) {
-    var tag = "DeconvolutionAlgorithm";
+    var deconTag             =  "DeconvolutionAlgorithm";
+
+    var paramAllChanTagArray = ["QualityChangeStoppingCriterion",
+                                "NumberOfIterations"];
+
+    var paramChanTagArray    = ["SignalNoiseRatioCMLE",
+                                "SignalNoiseRatioQMLE",
+                                "SignalNoiseRatioGMLE",
+                                "SignalNoiseRatioSKIP",
+                                "BackgroundOffsetPercent"];
 
     var skipAllChannels = true;    
+
+    // First, the channel-dependent parameters.
     for (var chan = 0; chan < 6; chan++) {
-        var name = tag.concat(chan);
+        var deconChan = deconTag.concat(chan);
 
-        var inputElement = document.getElementsByName(name);
+        var deconInputElement = document.getElementsByName(deconChan);
+        var deconAlgorithm    = deconInputElement[0];
 
-        if (inputElement[0] === undefined) continue;
-        
-        alg = changeDeconEntryProperties(inputElement[0], chan);
+        if (deconAlgorithm === undefined) continue;
+        if (deconAlgorithm != 'skip') skipAllChannels = false;
 
-        if (alg != 'skip') {
-            skipAllChannels = false;
+        for (var tagIdx = 0; tagIdx < paramChanTagArray.length; tagIdx++) {
+            var tag = paramChanTagArray[tagIdx];
+            var id = tag.concat(channel);
+    
+            var paramInputElement = document.getElementById(id);
+            
+            if ( deconAlgorithm == 'skip' ) {
+                paramInputElement.readOnly = true;
+                paramInputElement.style.color="#000";
+                paramInputElement.style.backgroundColor="#888";
+            } else {
+                paramInputElement.readOnly = false;
+                paramInputElement.style.color="#000";
+                paramInputElement.style.backgroundColor="";
+            }
         }
     }
+    
+    // Then, the channel-independent parameters. These are changed when all 
+    // channels are skipped.
+    for (var tagIdx = 0; tagIdx < paramAllChanTagArray.length; tagIdx++) {
+        var id = paramAllChanTagArray[tagIdx];
 
-    var tagArray = ["QualityChangeStoppingCriterion",
-                    "NumberOfIterations"];
-    for (var i = 0; i < tagArray.length; i++) {
-        var id = tagArray[i];
-
-        var inputElement = document.getElementById(id);
+        var paramInputElement = document.getElementById(id);
 
         if (skipAllChannels) {
-            inputElement.readOnly = true;
-            inputElement.style.color="#000";
-            inputElement.style.backgroundColor="#888";
+            paramInputElement.readOnly = true;
+            paramInputElement.style.color="#000";
+            paramInputElement.style.backgroundColor="#888";
         } else {
-            inputElement.readOnly = false;
-            inputElement.style.color="#000";
-            inputElement.style.backgroundColor="";
+            paramInputElement.readOnly = false;
+            paramInputElement.style.color="#000";
+            paramInputElement.style.backgroundColor="";
         }
     }
 }
 
-
-// Grey out the decon input fields of a specific channel if the
-// corresponding decon algorithm is set to 'skip'.
-function changeDeconEntryProperties(selectObj, channel) {
-    var tagArray = ["SignalNoiseRatioCMLE",
-                    "SignalNoiseRatioQMLE",
-                    "SignalNoiseRatioGMLE",
-                    "SignalNoiseRatioSKIP",
-                    "BackgroundOffsetPercent"];
-
-    for (var i = 0; i < tagArray.length; i++) {
-        var tag = tagArray[i];
-        var id = tag.concat(channel);
-
-        var inputElement = document.getElementById(id);
-        
-        if ( selectObj.value == 'skip' ) {
-            inputElement.readOnly = true;
-            inputElement.style.color="#000";
-            inputElement.style.backgroundColor="#888";
-        } else {
-            inputElement.readOnly = false;
-            inputElement.style.color="#000";
-            inputElement.style.backgroundColor="";
-        }
-    }
-
-    return selectObj.value
-}
 
 
 // Grey out the STED input fields of a specific channel if the
