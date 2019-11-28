@@ -295,7 +295,7 @@ function updateDeconEntryProperties( ) {
     var skipAllChannels = true;    
 
     // First, the channel-dependent parameters.
-    for (var chan = 0; chan < 6; chan++) {
+    for (var chan = 0; chan < 6; chan++) {      
         var deconChanTag = deconTag.concat(chan);
 
         var deconInputElement = document.getElementsByName(deconChanTag);
@@ -303,26 +303,27 @@ function updateDeconEntryProperties( ) {
 
         if (deconAlgorithm === undefined) continue;
         if (deconAlgorithm.value !== "skip") skipAllChannels = false;        
+
+        // QMLE vs CMLE/GMLE.
+        switchSnrMode(deconAlgorithm, chan);
         
         for (var tagIdx = 0; tagIdx < paramChanTagArray.length; tagIdx++) {
             var tag = paramChanTagArray[tagIdx];
             var id = tag.concat(chan);
     
+            if (document.getElementById(id) == null) continue;
             var paramInputElement = document.getElementById(id);
             
             if ( deconAlgorithm.value === "skip" ) {
                 paramInputElement.readOnly = true;
                 paramInputElement.style.color="#000";
                 paramInputElement.style.backgroundColor="#888";
-            } else {
+            } else {                                    
                 paramInputElement.readOnly = false;
                 paramInputElement.style.color="#000";
-                paramInputElement.style.backgroundColor="";
+                paramInputElement.style.backgroundColor="";         
             }
-        }
-
-        // QMLE vs CMLE/GMLE.
-        switchSnrMode(deconAlgorithm, chan);
+        }    
     }
     
     // Then, the channel-independent parameters. These are changed when all 

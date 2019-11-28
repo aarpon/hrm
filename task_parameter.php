@@ -264,7 +264,7 @@ include("header.inc.php");
                 $signalNoiseRatioValue = $signalNoiseRatioParam->value();
                 
                 
-
+                    /* Loop over the channels. */
                 for ($ch = 0; $ch < $chanCnt; $ch++) {
 
                     $visibility = " style=\"display: none\"";
@@ -297,7 +297,7 @@ include("header.inc.php");
                                         </span>&nbsp;
                                     </span>
 
-                    </div>
+                    </div><!-- cmle-snr-channelNumber-->
 
 
                 <?php
@@ -329,7 +329,7 @@ include("header.inc.php");
                                     </span>&nbsp;
                                 </span>
 
-                    </div>
+                    </div><!-- gmle-snr-channelNumber-->
 
 
                 <?php
@@ -345,23 +345,45 @@ include("header.inc.php");
                 ?>
 
                     <div id="qmle-snr-<?php echo $ch;?>"
-                    class="multichannel"<?php echo $visibility ?>>
+                     class="multichannel"<?php echo $visibility ?>>
 
-                    <span class="nowrap">Ch<?php echo $ch; ?>:
-                        &nbsp;&nbsp;&nbsp;
-                            <span class="multichannel">
-                                <input
-                                    id="SignalNoiseRatioQMLE<?php echo $ch; ?>"
-                                    name="SignalNoiseRatioQMLE<?php echo $ch; ?>"
+                     <span class="nowrap">Ch<?php echo $ch; ?>:                            
+                            <select class="snrselect"
                                     title="Signal-to-noise ratio (QMLE)"
-                                    type="text"
-                                    size="8"
-                                    value="<?php echo $value; ?>"
-                                    class="multichannelinput"/>
-                                    </span>&nbsp;
-                                </span>
+                                    class="selection"
+                                    name="SignalNoiseRatioQMLE<?php echo $ch ?>">
+                        <?php
 
-                    </div>
+                            for ($optionIdx = 1; $optionIdx <= 4; $optionIdx++) {
+                                $option = "                                <option ";
+                                if (isset($signalNoiseRatioValue)) {
+                                    if ($signalNoiseRatioValue[$ch] >= 1 
+                                       && $signalNoiseRatioValue[$ch] <= 4) {
+                                        if ($optionIdx == $signalNoiseRatioValue[$ch])
+                                            $option .= "selected=\"selected\" ";
+                                    } else {
+                                        if ($optionIdx == 2)
+                                            $option .= "selected=\"selected\" ";
+                                    }
+                                } else {
+                                    if ($optionIdx == 2)
+                                        $option .= "selected=\"selected\" ";
+                                }
+                                $option .= "value=\"" . $optionIdx . "\">";
+                                if ($optionIdx == 1)
+                                    $option .= "low</option>";
+                                else if ($optionIdx == 2)
+                                    $option .= "fair</option>";
+                                else if ($optionIdx == 3)
+                                    $option .= "good</option>";
+                                else if ($optionIdx == 4)
+                                    $option .= "inf</option>";
+                                echo $option;
+                            }
+
+                            ?>
+                            </select>
+                    </div><!-- qmle-snr-channelNumber-->
 
 
                 <?php
@@ -393,7 +415,7 @@ include("header.inc.php");
                                     </span>&nbsp;
                                 </span>
 
-                    </div>
+                    </div><!-- skip-snr-channelNumber-->
 
                 <!-- Close the table cell for the SNR of this channel-->
                 </td>    

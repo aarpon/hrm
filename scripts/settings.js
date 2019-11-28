@@ -96,7 +96,6 @@ function seek(channel) {
 window.onunload = function() {if (snitch != null) snitch.close()};
 
 function switchSnrMode(algorithm, channel) {
-    
     if (algorithm == 'cmle') {
         $('#cmle-snr-' + channel).show();
         $('#gmle-snr-' + channel).hide();
@@ -107,7 +106,7 @@ function switchSnrMode(algorithm, channel) {
         $('#gmle-snr-' + channel).show();
         $('#qmle-snr-' + channel).hide();
         $('#skip-snr-' + channel).hide();
-    } else if (algorithm == 'qmle') {
+    } else if (algorithm == 'qmle') {        
         $('#cmle-snr-' + channel).hide();
         $('#gmle-snr-' + channel).hide();
         $('#qmle-snr-' + channel).show();
