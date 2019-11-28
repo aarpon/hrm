@@ -296,9 +296,9 @@ function setDeconEntryProperties( ) {
 
     // First, the channel-dependent parameters.
     for (var chan = 0; chan < 6; chan++) {
-        var deconChan = deconTag.concat(chan);
+        var deconChanTag = deconTag.concat(chan);
 
-        var deconInputElement = document.getElementsByName(deconChan);
+        var deconInputElement = document.getElementsByName(deconChanTag);
         var deconAlgorithm    = deconInputElement[0];
 
         if (deconAlgorithm === undefined) continue;
@@ -306,7 +306,7 @@ function setDeconEntryProperties( ) {
 
         for (var tagIdx = 0; tagIdx < paramChanTagArray.length; tagIdx++) {
             var tag = paramChanTagArray[tagIdx];
-            var id = tag.concat(channel);
+            var id = tag.concat(chan);
     
             var paramInputElement = document.getElementById(id);
             
