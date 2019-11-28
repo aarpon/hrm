@@ -1,4 +1,5 @@
 <?php
+
 /**
  * json-rpc-server
  *
@@ -146,23 +147,29 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 
 // Check that we have a valid request
 if (!isset($_POST)) {
-    die("Nothing POSTed!");
+    // No request received.
+    $json = "No request received.";
+    header("Content-Type: application/json", true, 405);
+    echo $json;
+    return true;
 }
 
 // Do we jave a JSON-RPC 2.0 request? We do NOT test for the value of id.
-if (!(isset($_POST['id']) &&
-    isset($_POST['jsonrpc']) && $_POST['jsonrpc'] == "2.0")
-) {
-
+if (!(isset($_POST['id']) && isset($_POST['jsonrpc']) && $_POST['jsonrpc'] == "2.0")) {
     // Invalid JSON-RPC 2.0 call
-    die("Invalid JSON-RPC 2.0 call.");
-};
+    $json = "Invalid JSON-RPC 2.0 call.";
+    header("Content-Type: application/json", true, 405);
+    echo $json;
+    return true;
+}
 
 // Do we have a method with params?
 if (!isset($_POST['method']) && !isset($_POST['params'])) {
-
     // Expected 'method' and 'params'
-    die("Expected 'method' and 'params'.");
+    $json = "Expected 'method' and 'params'.";
+    header("Content-Type: application/json", true, 405);
+    echo $json;
+    return true;
 }
 
 // Get the method
@@ -176,24 +183,19 @@ if (isset($_POST['params'])) {
 
 // Call the requested method and collect the JSON-encoded response
 switch ($method) {
-
     case 'jsonGetUserAndTotalNumberOfJobsInQueue':
-
         $json = jsonGetUserAndTotalNumberOfJobsInQueue();
         break;
 
     case 'jsonCheckForUpdates':
-
         $json = jsonCheckForUpdates();
         break;
 
     case 'jsonSendTestEmail':
-
         $json = jsonSendTestEmail();
         break;
 
     case 'jsonGetParameter':
-
         // Get the Parameter name
         $paramName = null;
         if (isset($params['parameterName'])) {
@@ -203,7 +205,6 @@ switch ($method) {
         break;
 
     case 'jsonGetImageParameterFromSession':
-
         // Get the Parameter name
         $paramName = null;
         if (isset($params['parameterName'])) {
@@ -213,53 +214,78 @@ switch ($method) {
         break;
 
     case 'jsonGetAllImageParameters':
-
         $json = jsonGetAllImageParameters();
         break;
 
     case 'jsonGetAllImageParametersFromSession':
-
         $json = jsonGetAllImageParametersFromSession();
         break;
 
     case 'jsonGetUserList':
-
         $username = $params[0];
         $json = jsonGetUserList($username);
         break;
 
     case 'jsonGetSharedTemplateList':
-
         $username = $params[0];
         $type = $params[1];
         $json = jsonGetSharedTemplateList($username, $type);
         break;
 
     case 'jsonAcceptSharedTemplate':
-
         $template = $params[0];
         $type = $params[1];
         $json = jsonAcceptSharedTemplate($template, $type);
         break;
 
     case 'jsonDeleteSharedTemplate':
-
         $template = $params[0];
         $type = $params[1];
         $json = jsonDeleteSharedTemplate($template, $type);
         break;
 
     case 'jsonPreviewSharedTemplate':
-
         $template = $params[0];
         $type = $params[1];
         $json = jsonPreviewSharedTemplate($template, $type);
         break;
 
-    default:
+    case 'jsonScanSourceFiles':
+        $format = $params[0];
+        $autoseries = $params[1];
+        $json = jsonScanSourceFiles($format, $autoseries);
+        break;
 
+    case 'jsonGetFileFormats':
+        $json = jsonGetFileFormats();
+        break;
+
+    case 'jsonGetSelectedFiles':
+        $json = jsonGetSelectedFiles();
+        break;
+
+    case 'jsonResetSourceFiles':
+        $json = jsonResetSourceFiles();
+        break;
+
+    case 'jsonAddFilesToSelection':
+        $fileList = $params[0];
+        $format = $params[1];
+        $json = jsonAddFilesToSelection($fileList, $format);
+        break;
+
+    case 'jsonRemoveFilesFromSelection':
+        $fileList = $params[0];
+        $format = $params[1];
+        $json = jsonRemoveFilesFromSelection($fileList, $format);
+        break;
+
+    default:
         // Unknown method
-        die("Unknown method.");
+        $json = "Unknown method.";
+        header("Content-Type: application/json", true, 405);
+        echo $json;
+        return true;
 }
 
 // Return the JSON object
@@ -287,8 +313,8 @@ return true;
  *
  * @return array (PHP) with "success" = "true" and "message" = "" properties.
  */
-function initJSONArray() {
-
+function initJSONArray()
+{
     // Initialize the JSON array with success
     return (array("success" => "true", "message" => ""));
 }
@@ -300,13 +326,12 @@ function initJSONArray() {
  * @return string JSON-encoded array with keys 'numAllJobsInQueue' and
  * 'numUserJobsInQueue'
  */
-function jsonGetUserAndTotalNumberOfJobsInQueue() {
-
+function jsonGetUserAndTotalNumberOfJobsInQueue()
+{
     // Prepare the output array
     $json = initJSONArray();
 
     // Get the total number of jobs
-    $db = DatabaseConnection::get();
     $json["numAllJobsInQueue"] = UserManager::getTotalNumberOfQueuedJobs();
 
     // Get the number of jobs for current user
@@ -331,13 +356,12 @@ function jsonGetUserAndTotalNumberOfJobsInQueue() {
  * Check whether there is an update for HRM.
  * @return string JSON-encoded array with key 'newerVersionExist' and 'newVersion'
  */
-function jsonCheckForUpdates() {
-
+function jsonCheckForUpdates()
+{
     // Prepare the output array
     $json = initJSONArray();
 
     try {
-
         // Check if there is a newer version
         $isNew = System::isThereNewHRMRelease();
 
@@ -348,7 +372,6 @@ function jsonCheckForUpdates() {
             $json["newerVersionExist"] = "false";
             $json["newVersion"] = "";
         }
-
     } catch (Exception $e) {
         $json["success"] = "false";
         $json["message"] = $e->getMessage();
@@ -365,8 +388,8 @@ function jsonCheckForUpdates() {
  * up properly.
  * @return string JSON-encoded array with key 'success' and 'message'
  */
-function jsonSendTestEmail() {
-
+function jsonSendTestEmail()
+{
     global $email_sender;
     global $email_admin;
 
@@ -411,26 +434,22 @@ function jsonSendTestEmail() {
  *
  * @return string JSON-encoded Parameter string.
  */
-function jsonGetParameter($parameterName) {
-
+function jsonGetParameter($parameterName)
+{
     // Prepare the output array
     $json = initJSONArray();
 
     try {
-
         // Try to instantiate the requested parameter
-        $param = new $parameterName;
+        $param = new $parameterName();
 
         // Get the JSON data
         /** @var $param Parameter */
         $json = $param->getJsonData();
-
     } catch (Exception $e) {
-
         // Return failure
         $json['success'] = "false";
         $json['message'] = "Failed retrieving parameter " . $parameterName . "!";
-
     }
 
     // Return as a JSON string
@@ -450,8 +469,8 @@ function jsonGetParameter($parameterName) {
  *
  * @todo Implement corresponding method for restoration and processing Parameters.
  */
-function jsonGetImageParameterFromSession($parameterName) {
-
+function jsonGetImageParameterFromSession($parameterName)
+{
     // Prepare the output array
     $json = initJSONArray();
 
@@ -461,7 +480,6 @@ function jsonGetImageParameterFromSession($parameterName) {
 
     // Check that we are asking for an image Parameter
     if (!in_array($parameterName, $names)) {
-
         // Return failure
         $json['success'] = "false";
         $json['message'] = "Parameter " . $parameterName . " is not " .
@@ -469,21 +487,17 @@ function jsonGetImageParameterFromSession($parameterName) {
 
         // Return as a JSON string
         return (json_encode($json));
-
     }
 
     // Is the session active?
     if (isset($_SESSION['setting'])) {
-
         // Get the Parameter from the session
         $param = $_SESSION['setting']->parameter($parameterName);
 
         // Get the JSON data
         /** @var $param Parameter */
         $json = $param->getJsonData();
-
     } else {
-
         // Return failure
         $json['success'] = "false";
         $json['message'] = "Failed retrieving parameter " . $parameterName . "!";
@@ -507,13 +521,12 @@ function jsonGetImageParameterFromSession($parameterName) {
  *
  * @todo Implement corresponding method for restoration and processing Parameters.
  */
-function jsonGetAllImageParameters() {
-
+function jsonGetAllImageParameters()
+{
     // Prepare the output array
     $json = initJSONArray();
 
     try {
-
         // Get all image parameters
         $setting = new ParameterSetting();
         $names = $setting->parameterNames();
@@ -523,13 +536,10 @@ function jsonGetAllImageParameters() {
 
         // Now serialize the Parameters
         foreach ($names as $name) {
-
             // Get and encode the JSON data
             $json["parameters"][$name] =
                 $setting->parameter($name)->getJsonData();
-
         }
-
     } catch (Exception $e) {
         $json['success'] = "false";
         $json['message'] = "Failed retrieving parameters!";
@@ -547,14 +557,13 @@ function jsonGetAllImageParameters() {
  *
  * @return String JSON-encoded array of Parameters.
  */
-function jsonGetAllImageParametersFromSession() {
-
+function jsonGetAllImageParametersFromSession()
+{
     // Prepare the output array
     $json = initJSONArray();
 
     // Is the session active?
     if (isset($_SESSION["setting"])) {
-
         // Retrieve the settings from the session
         $setting = $_SESSION["setting"];
 
@@ -566,19 +575,14 @@ function jsonGetAllImageParametersFromSession() {
 
         // Now serialize the Parameters
         foreach ($names as $name) {
-
             // Get and encode the JSON data
             $json["parameters"][$name] =
                 $setting->parameter($name)->getJsonData();
-
         }
-
     } else {
-
         // Return failure
         $json['success'] = "false";
         $json['message'] = "Failed retrieving parameters!";
-
     }
 
     // Return as a JSON string
@@ -590,8 +594,8 @@ function jsonGetAllImageParametersFromSession() {
  * @param  String User name to filter out from the list (optional).
  * @return String JSON-encoded array of user names.
  */
-function jsonGetUserList($username) {
-
+function jsonGetUserList($username)
+{
     // Prepare the output array
     $json = initJSONArray();
 
@@ -601,11 +605,9 @@ function jsonGetUserList($username) {
     // Get the list of users
     $users = $db->getUserList($username);
     if ($users == null) {
-
         // Return failure
         $json['success'] = "false";
         $json['message'] = "Failed retrieving user list!";
-
     }
     $json["users"] = $users;
 
@@ -619,57 +621,46 @@ function jsonGetUserList($username) {
  * @param string $type Template type: one of 'parameter', 'task', analysis'.
  * @return string $type JSON-encoded array of shared templates.
  */
-function jsonGetSharedTemplateList($username, $type) {
-
+function jsonGetSharedTemplateList($username, $type)
+{
     // Prepare the output array
     $json = initJSONArray();
 
     // Retrieve list of shared templates
     $sharedTemplatesWith = "";
     $sharedTemplatesBy = "";
-    $success = True;
+    $success = true;
     switch ($type) {
-
         case "parameter":
-
             $sharedTemplatesWith = ParameterSetting::getTemplatesSharedWith($username);
             $sharedTemplatesBy   = ParameterSetting::getTemplatesSharedBy($username);
             break;
 
         case "task":
-
             $sharedTemplatesWith = TaskSetting::getTemplatesSharedWith($username);
             $sharedTemplatesBy = TaskSetting::getTemplatesSharedBy($username);
             break;
 
         case "analysis":
-
             $sharedTemplatesWith = AnalysisSetting::getTemplatesSharedWith($username);
             $sharedTemplatesBy = AnalysisSetting::getTemplatesSharedBy($username);
             break;
 
-        default;
-
+        default:
             // Return failure
-            $success = False;
-
+            $success = false;
     }
 
     if (! $success) {
-
         // Return failure
         $json['success'] = "false";
         $json['message'] = "Could not accept selected template.";
         $json["sharedTemplatesWith"] = "";
         $json["sharedTemplatesBy"] = "";
-
     } else {
-
         $json["sharedTemplatesWith"] = $sharedTemplatesWith;
         $json["sharedTemplatesBy"] = $sharedTemplatesBy;
-
     }
-
     // Return as a JSON string
     return (json_encode($json));
 }
@@ -680,8 +671,8 @@ function jsonGetSharedTemplateList($username, $type) {
  * @param  string $type Type of the template: 'parameter', 'task', 'analysis'.
  * @return string JSON-encoded array with 'success' and 'message' fields.
  */
-function jsonAcceptSharedTemplate($template, $type) {
-
+function jsonAcceptSharedTemplate($template, $type)
+{
     // Prepare the output array
     $json = initJSONArray();
 
@@ -690,47 +681,44 @@ function jsonAcceptSharedTemplate($template, $type) {
 
     // Copy the setting
     switch ($type) {
-
         case "parameter":
-
             // Copy the template
-            $success = $db->copySharedTemplate($template["id"],
+            $success = $db->copySharedTemplate(
+                $template["id"],
                 ParameterSetting::sharedTable(),
                 ParameterSetting::sharedParameterTable(),
                 ParameterSetting::table(),
-                ParameterSetting::parameterTable());
-
+                ParameterSetting::parameterTable()
+            );
             break;
 
         case "task":
-
             // Copy the template
-            $success = $db->copySharedTemplate($template["id"],
+            $success = $db->copySharedTemplate(
+                $template["id"],
                 TaskSetting::sharedTable(),
                 TaskSetting::sharedParameterTable(),
                 TaskSetting::table(),
-                TaskSetting::parameterTable());
-
+                TaskSetting::parameterTable()
+            );
             break;
 
         case "analysis":
-
             // Copy the template
-            $success = $db->copySharedTemplate($template["id"],
+            $success = $db->copySharedTemplate(
+                $template["id"],
                 AnalysisSetting::sharedTable(),
                 AnalysisSetting::sharedParameterTable(),
                 AnalysisSetting::table(),
-                AnalysisSetting::parameterTable());
+                AnalysisSetting::parameterTable()
+            );
             break;
 
-        default;
-
+        default:
             // Return failure
-            $success = False;
-
+            $success = false;
     }
     if (! $success) {
-
         // Return failure
         $json['success'] = "false";
         $json['message'] = "Could not accept selected template.";
@@ -746,8 +734,8 @@ function jsonAcceptSharedTemplate($template, $type) {
  * @param  string $type Type of the template: 'parameter', 'task', 'analysis'.
  * @return string JSON-encoded array with 'success' and 'message' fields.
  */
-function jsonDeleteSharedTemplate($template, $type) {
-
+function jsonDeleteSharedTemplate($template, $type)
+{
     // Prepare the output array
     $json = initJSONArray();
 
@@ -755,43 +743,42 @@ function jsonDeleteSharedTemplate($template, $type) {
     $db = DatabaseConnection::get();
 
     // Copy the setting
-    $success = True;
+    $success = true;
     switch ($type) {
-
         case "parameter":
-
             // Delete the template
-            $success = $db->deleteSharedTemplate($template["id"],
+            $success = $db->deleteSharedTemplate(
+                $template["id"],
                 ParameterSetting::sharedTable(),
-                ParameterSetting::sharedParameterTable());
+                ParameterSetting::sharedParameterTable()
+            );
 
             break;
 
         case "task":
-
             // Delete the template
-            $success = $db->deleteSharedTemplate($template["id"],
+            $success = $db->deleteSharedTemplate(
+                $template["id"],
                 TaskSetting::sharedTable(),
-                TaskSetting::sharedParameterTable());
+                TaskSetting::sharedParameterTable()
+            );
             break;
 
         case "analysis":
-
             // Delete the template
-            $success = $db->deleteSharedTemplate($template["id"],
+            $success = $db->deleteSharedTemplate(
+                $template["id"],
                 AnalysisSetting::sharedTable(),
-                AnalysisSetting::sharedParameterTable());
+                AnalysisSetting::sharedParameterTable()
+            );
             break;
 
-        default;
-
+        default:
             // Return failure
             $json['success'] = "false";
             $json['message'] = "Unknown template type!";
-
     }
     if (! $success) {
-
         // Return failure
         $json['success'] = "false";
         $json['message'] = "Could not delete selected template.";
@@ -803,12 +790,13 @@ function jsonDeleteSharedTemplate($template, $type) {
 
 /**
  * Preview the shared template.
- * @param  string $template Id of the template.
- * @param  string $type Type of the template: 'parameter', 'task', 'analysis'.
- * @return string JSON-encoded array with .
+ * @param string $template Id of the template.
+ * @param string $type Type of the template: 'parameter', 'task', 'analysis'.
+ * @return string JSON-encoded array.
+ * @throws Exception
  */
-function jsonPreviewSharedTemplate($template, $type) {
-
+function jsonPreviewSharedTemplate($template, $type)
+{
     // Prepare the output array
     $json = initJSONArray();
 
@@ -822,28 +810,341 @@ function jsonPreviewSharedTemplate($template, $type) {
     /** @var hrm\setting\ParameterSetting $settings */
     $settings = $db->loadSharedParameterSettings($template["id"], $type);
     if (! $settings) {
-
         // Return failure
         $json['success'] = "false";
         $json['message'] = "Could not preview selected template.";
         $json['preview'] = "";
-
     } else {
-
         // Get the parameters into a string
         $paramStr = $settings->displayString();
 
         // Prepare the string for display
-        $paramStr = "<small><b>" . str_replace("\n","\n<b>",$paramStr);
-        $paramStr = str_replace(": ",":</b> ",$paramStr) . "</small>";
+        $paramStr = "<small><b>" . str_replace("\n", "\n<b>", $paramStr);
+        $paramStr = str_replace(": ", ":</b> ", $paramStr) . "</small>";
         $paramStr = "<h3>Shared template preview</h3>" . nl2br($paramStr);
 
         // Add the preview to the json array
         $json['preview'] = $paramStr;
-
     }
 
     // Return as a JSON string
     return (json_encode($json));
+}
 
+/**
+ * Scan the source folder and filter/condense as requested.
+ * @return string JSON-encoded response.
+ */
+function jsonScanSourceFiles($format, $autoseries)
+{
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Is the session active?
+    if (!isset($_SESSION) || !isset($_SESSION['fileserver']) || !isset($_SESSION['parametersetting'])) {
+        $json['success'] = "false";
+        $json['message'] = "The session is not properly initialized!";
+        $json['files'] = array();
+        return (json_encode($json));
+    }
+
+    // Store the new file format
+    $parameterFileFormat = $_SESSION['parametersetting']->parameter("ImageFileFormat");
+    $parameterFileFormat->setValue($format);
+    $_SESSION['parametersetting']->set($parameterFileFormat);
+
+    // Get the Fileserver object
+    $fileServer = $_SESSION['fileserver'];
+
+    // Store the autoseries flag
+    if ($autoseries === "true" || $autoseries === true) {
+        $fileServer->setAutoSeries(true);
+    } else {
+        $fileServer->setAutoSeries(false);
+    }
+
+    // Should we condense the files in the source folder?
+    if ($fileServer->autoSeries() == true) {
+        $allFiles = $fileServer->condenseSeries();
+    } else {
+        if ($fileServer->hasFiles()) {
+            $allFiles = $fileServer->getCurrentFileList();
+        } else {
+            $allFiles = $fileServer->scanAndStoreFiles(true);
+        }
+    }
+
+    // Get already selected files
+    $selectedFiles = $fileServer->selectedFiles();
+
+    // Are the selected files compatible with the current format?
+    if (count($selectedFiles) > 0 && !$fileServer->checkAgainstFormat($selectedFiles[0], $format)) {
+        $fileServer->removeAllFilesFromSelection();
+        $selectedFiles = [];
+    }
+
+    // Sanitize and filter the file names.
+    $keyArr = array();
+    if ($allFiles != null) {
+        // Filter by file type
+        foreach ($allFiles as $key => $file) {
+            if ($fileServer->checkAgainstFormat($file, $format)) {
+                // Consecutive spaces are collapsed into one space in HTML.
+                // Hence '&#32;' to correct this when the file has more spaces.
+                $filteredFile = str_replace(' ', '&#32;', $file);
+                $exists = false;
+                foreach ($selectedFiles as $skey => $sfile) {
+                    if (strcmp($sfile, $file) == 0) {
+                        $exists = true;
+                    }
+                }
+                if (!$exists) {
+                    $keyArr[$filteredFile] = $key;
+                }
+            }
+        }
+    }
+
+    // Add the file list to the result json object
+    $json["files"] = $keyArr;
+    $json["selected_files"] = $selectedFiles;
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Returns the list of file formats
+ * @return string JSON-encoded response.
+ */
+function jsonGetFileFormats()
+{
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // If the ParameterSetting object already exists, avoid recreating it
+    if (isset($_SESSION) && isset($_SESSION['parametersetting'])) {
+        $parameterSetting = $_SESSION['parametersetting'];
+    } else {
+        $parameterSetting = new ParameterSetting();
+    }
+
+    $fileFormat = $parameterSetting->parameter("ImageFileFormat");
+    $formats = $fileFormat->possibleValues();
+    sort($formats);
+
+    $keyArr = array();
+    foreach ($formats as $key => $format) {
+        $translation = $fileFormat->translatedValueFor($format);
+
+        if ($format == "all") {
+            $translation .= " Please choose a file format ...";
+        }
+
+        $keyArr[$format] = $translation;
+    }
+
+    // Add the file list to the result json object
+    $json["formats"] = $keyArr;
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Retrieve the current list of selected files.
+ * @return string JSON-encoded response.
+ */
+function jsonGetSelectedFiles()
+{
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Is the session active?
+    if (!isset($_SESSION) || !isset($_SESSION['fileserver'])) {
+        $json['success'] = "false";
+        $json['message'] = "Could not access Fileserver object in session!";
+        $json['files'] = array();
+        return (json_encode($json));
+    }
+
+    // Get the Fileserver object
+    $fileServer = $_SESSION['fileserver'];
+
+    // Get already selected files
+    $selectedFiles = $fileServer->selectedFiles();
+
+    // Add the file list to the result json object
+    $json["selected_files"] = $selectedFiles;
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Reset the list of source files and rescan on request.
+ * @param $rescan bool If true, rescan; otherwise, leave the list empty.
+ * @return string JSON-encoded response.
+ */
+function jsonResetSourceFiles()
+{
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Is the session active?
+    if (!isset($_SESSION) || !isset($_SESSION['fileserver'])) {
+        $json['success'] = "false";
+        $json['message'] = "Could not access Fileserver object in session!";
+        $json['files'] = array();
+        return (json_encode($json));
+    }
+
+    // Get the Fileserver object
+    $fileServer = $_SESSION['fileserver'];
+
+    // Reset the list of files
+    $fileServer->resetFiles();
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Add list of files to current selection.
+ * @param $fileList array List of file names.
+ * @return string JSON-encoded response.
+ */
+function jsonAddFilesToSelection($fileList, $format)
+{
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Initialize output
+    $json["files"] = [];
+    $json["selected_files"] = [];
+
+    // Are there files to add?
+    if (count($fileList) == 0) {
+        // We still consider this a success
+        return json_encode($json);
+    }
+
+    // Is the session active?
+    if (!isset($_SESSION) || !isset($_SESSION['fileserver'])) {
+        $json['success'] = "false";
+        $json['message'] = "Could not access Fileserver object in session!";
+        $json['files'] = array();
+        return (json_encode($json));
+    }
+
+    // Get the Fileserver object
+    $fileServer = $_SESSION['fileserver'];
+
+    // Add the new files to the selection
+    $fileServer ->addFilesToSelection($fileList);
+
+    // Get updated selection list
+    $selectedFiles = $fileServer->selectedFiles();
+
+    // Remove the selected files from the complete list
+    $filteredFiles = array_diff($fileServer->getCurrentFileList(), $selectedFiles);
+
+    // Sanitize and filter the file names.
+    $keyArr = array();
+    if ($filteredFiles != null) {
+        // Filter by file type
+        foreach ($filteredFiles as $key => $file) {
+            if ($fileServer->checkAgainstFormat($file, $format)) {
+                // Consecutive spaces are collapsed into one space in HTML.
+                // Hence '&#32;' to correct this when the file has more spaces.
+                $filteredFile = str_replace(' ', '&#32;', $file);
+                $exists = false;
+                foreach ($selectedFiles as $skey => $sfile) {
+                    if (strcmp($sfile, $file) == 0) {
+                        $exists = true;
+                    }
+                }
+                if (!$exists) {
+                    $keyArr[$filteredFile] = $key;
+                }
+            }
+        }
+    }
+
+    // Return them
+    $json["files"] = $keyArr;
+    $json["selected_files"] = $selectedFiles;
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Remove list of files from current selection.
+ * @param $fileList array List of file names.
+ * @return string JSON-encoded response.
+ */
+function jsonRemoveFilesFromSelection($fileList, $format)
+{
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Initialize output
+    $json["files"] = [];
+    $json["selected_files"] = [];
+
+    // Are there files to remove?
+    if (count($fileList) == 0) {
+        // We still consider this a success
+        return json_encode($json);
+    }
+
+    // Is the session active?
+    if (!isset($_SESSION) || !isset($_SESSION['fileserver'])) {
+        $json['success'] = "false";
+        $json['message'] = "Could not access Fileserver object in session!";
+        $json['files'] = array();
+        return (json_encode($json));
+    }
+
+    // Get the Fileserver object
+    $fileServer = $_SESSION['fileserver'];
+
+    // Add the new files to the selection
+    $fileServer ->removeFilesFromSelection($fileList);
+
+    // Get updated selection list
+    $selectedFiles = $fileServer->selectedFiles();
+
+    // Remove the selected files from the complete list
+    $filteredFiles = array_diff($fileServer->getCurrentFileList(), $selectedFiles);
+
+    // Sanitize and filter the file names.
+    $keyArr = array();
+    if ($filteredFiles != null) {
+        // Filter by file type
+        foreach ($filteredFiles as $key => $file) {
+            if ($fileServer->checkAgainstFormat($file, $format)) {
+                // Consecutive spaces are collapsed into one space in HTML.
+                // Hence '&#32;' to correct this when the file has more spaces.
+                $filteredFile = str_replace(' ', '&#32;', $file);
+                $exists = false;
+                foreach ($selectedFiles as $skey => $sfile) {
+                    if (strcmp($sfile, $file) == 0) {
+                        $exists = true;
+                    }
+                }
+                if (!$exists) {
+                    $keyArr[$filteredFile] = $key;
+                }
+            }
+        }
+    }
+
+    // Return them
+    $json["files"] = $keyArr;
+    $json["selected_files"] = $selectedFiles;
+
+    // Return as a JSON string
+    return (json_encode($json));
 }

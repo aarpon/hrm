@@ -40,133 +40,29 @@ $goNextMessage = "Continue to step $nextStep/$numberSteps - ";
 $goNextMessage .= "Select image template.";
 $name = $_SESSION['user']->name();
 
+
+if (!isset($_SESSION['fileserver']) || $_SESSION['fileserver'] == null) {
+    // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
+    $_SESSION['fileserver'] = new Fileserver($name);
+}
 if (!isset($_SESSION['parametersetting'])) {
     $_SESSION['parametersetting'] = new ParameterSetting();
 }
 $fileFormat = $_SESSION['parametersetting']->parameter("ImageFileFormat");
 
-if (isset($_POST['autoseries'])) {
-    $_SESSION['autoseries'] = $_POST['autoseries'];
-} else {
-    $_SESSION['autoseries'] = "";
-}
-
 $message = "";
-if (isset($_POST['down'])) {
-    if (isset($_POST['userfiles']) && is_array($_POST['userfiles'])) {
-        $indices = array_values($_POST['userfiles']);
-        $files = $_SESSION['fileserver']->getCurrentFileList();
-        $selection = array();
-        foreach ($indices as $i) {
-            $selection[] = $files[$i];
-        }
-        $_SESSION['fileserver']->addFilesToSelection($selection);
-    }
-} else if (isset($_POST['up'])) {
-    if (isset($_POST['selectedfiles']) && is_array($_POST['selectedfiles'])) {
-        $selectedFiles = array_values($_POST['selectedfiles']);
-        $_SESSION['fileserver']->removeFilesFromSelection($selectedFiles);
-    }
-} else if (isset($_POST['update'])) {
-    $_SESSION['fileserver']->resetFiles();
-} else if (isset($_POST['OK'])) {
+
+if (isset($_POST['OK'])) {
     if (!$_SESSION['fileserver']->hasSelection()) {
         $message = "Please add at least one image to your selection";
     } else {
         header("Location: " . "select_parameter_settings.php");
         exit();
     }
-} else if (!isset($_SESSION['fileserver']) || $_SESSION['fileserver'] == null) {
-    // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
-    $_SESSION['fileserver'] = new Fileserver($name);
-    $_SESSION['autoseries'] = "TRUE";
 }
 
-$script = array("settings.js", "ajax_utils.js");
-
-// All the user's files in the server.
-if ($_SESSION['fileserver']->hasFiles()) {
-    $allFiles = $_SESSION['fileserver']->getCurrentFileList();
-} else {
-    $allFiles = $_SESSION['fileserver']->scanAndStoreFiles(TRUE);
-}
-
-$generatedScript = "
-function storeFileFormatSelection(sel,series) {
-   // Get current selection
-   var format = $('#' + sel.id + ' :selected').attr(\"name\");
-
-   // Store it
-   ajaxSetFileFormat(format, function(data){ document.getElementById('select').submit(); });
-};
-";
-
-// display only relevant files.
-if ($allFiles != null) {
-
-    $generatedScript .= "
-function imageAction (list) {
-
-    var n = list.selectedIndex;     // Which item is the first selected one
-
-    if( undefined === window.lastSelectedImgs ){
-        window.lastSelectedImgs = [];
-        window.lastSelectedImgsKey = [];
-        window.lastShownIndex = -1;
-    }
-
-    var snew = 0;
-
-    var count = 0;
-    for (var i=0; i<list.options.length; i++) {
-        if (list.options[i].selected) {
-            if( undefined === window.lastSelectedImgsKey[i] ){
-                // New selected item
-                snew = 1;
-                n = i;
-            }
-            count++;
-        }
-    }
-
-    if (snew == 0) {
-        // deselected image
-        for (var i=0; i<window.lastSelectedImgs.length; i++) {
-            key = window.lastSelectedImgs[i];
-            if ( !list.options[key].selected ) {
-                snew = -1
-                    n = key;
-            }
-        }
-    }
-
-    window.lastSelectedImgs = [];
-    window.lastSelectedImgsKey = [];
-    count = 0;
-    for (var i=0; i<list.options.length; i++) {
-        if (list.options[i].selected) {
-            window.lastSelectedImgs[count] = i;
-            window.lastSelectedImgsKey[i] = true;
-            count++;
-        }
-    }
-
-    if (count == 0 ) {
-        window.previewSelected = -1;
-    }
-
-    if ( n == window.lastShownIndex ) {
-        return
-    }
-    window.lastShownIndex = n;
-
-    index = parseInt(list[n].value)
-    filename = list[n].text
-    
-    ajaxGetImgPreview(filename, index, 'src');    
-};
-";
-}
+// Add needed JS scripts
+$script = array("settings.js", "ajax_utils.js", "json-rpc-client.js");
 
 include("header.inc.php");
 
@@ -222,8 +118,7 @@ $info = "<h3>Quick help</h3>" .
 </div>
 
 <div id="content">
-    <h3><img alt="SelectImages" src="./images/select_images.png"
-             width="40"/>
+    <h3><img alt="SelectImages" src="./images/select_images.png" width="40"/>
         &nbsp;Step
         <?php echo $currentStep . "/" . $numberSteps; ?>
         - Select images
@@ -231,10 +126,8 @@ $info = "<h3>Quick help</h3>" .
 
     <form method="post" action="" id="select">
         <fieldset class="setting">
-
             <legend>
-                <a href="javascript:openWindow(
-                       'http://www.svi.nl/FileFormats')">
+                <a href="javascript:openWindow('http://www.svi.nl/FileFormats')">
                     <img src="images/help.png" alt="?"/>
                 </a>
                 Image file format
@@ -245,183 +138,73 @@ $info = "<h3>Quick help</h3>" .
                     id="ImageFileFormat"
                     title="Supported image file formats"
                     size="1"                    
-                    onchange="storeFileFormatSelection(this,autoseries);"
+                    onchange='setFileFormat($("#ImageFileFormat").val())'
                     onkeyup="this.blur();this.focus();">
-
-
-                <?php
-
-                // File formats support
-                $formats = $fileFormat->possibleValues();
-                sort($formats);
-
-
-                foreach ($formats as $key => $format) {
-                    $translation = $fileFormat->translatedValueFor($format);
-
-                    if ($format == $fileFormat->value()) {
-                        $selected = " selected=\"selected\"";
-                    } else {
-                        $selected = "";
-                    }
-
-                    if ($format == "all") {
-                       $translation .= " Please choose a file format ...";
-                    }
-
-                    ?>
-                    <option <?php echo "name = \"" . $format . "\"  value = \"" .
-                        $format . "\"" . $selected ?>><?php echo $translation ?>
-                    </option>
-                    <?php
-
-                }
-
-                ?>
-
             </select>
         </fieldset>
 
         <fieldset>
             <legend>Images available on server</legend>
             <div id="userfiles" onmouseover="showPreview()">
-                <?php
-
-                $flag = "";
-                if ($allFiles == null) {
-                    $flag = " disabled=\"disabled\"";
-                    $message .= "";
-                }
-
-                ?>
-
                 <select id="filesPerFormat"
                         name="userfiles[]"
                         class="selection"
                         title="List of available images"
                         size="10"
-                        multiple="multiple"<?php echo $flag ?>
+                        multiple="multiple"
                         onchange="imageAction(this)">
-                    <?php
-                    $keyArr = array();
-                    if ($allFiles == null) {
-                        echo "                        <option>&nbsp;</option>\n";
-                    } else {
-                        if ($fileFormat->value() != "") {
-                            $format = $fileFormat->value();
-
-                            if (isset($_SESSION['autoseries']) && $_SESSION['autoseries'] == "TRUE") {
-                                $files = $_SESSION['fileserver']->condenseSeries();
-                            } else {
-                                $files = $allFiles;
-                            }
-                            $selectedFiles = $_SESSION['fileserver']->selectedFiles();
-
-                            foreach ($files as $key => $file) {
-                                if ($_SESSION['fileserver']->checkAgainstFormat($file, $format)) {
-                                    // Consecutive spaces are collapsed into one space in HTML.
-                                    // Hence '&#32;' to correct this when the file has more spaces.
-                                    $filteredFile = str_replace(' ', '&#32;', $file);
-                                    $exists = false;
-                                    foreach ($selectedFiles as $skey => $sfile) {
-                                        if (strcmp($sfile, $file) == 0) {
-                                            $exists = true;
-                                        }
-                                    }
-                                    if (!$exists) {
-                                        echo "<option value=\"" . $key . "\">" . $filteredFile . "</option>\n";
-                                        $keyArr[$file] = $key;
-                                    }
-                                    $keyArr[$file] = $key;
-                                }
-                            }
-                        }
-                    }
-
-                    ?>
                 </select>
             </div>
 
             <label id="autoseries_label">
-
                 <input type="checkbox"
                        name="autoseries"
                        class="autoseries"
                        id="autoseries"
                        value="TRUE"
-                    <?php
-                    if (isset($_SESSION['autoseries']) &&
-                        $_SESSION['autoseries'] == "TRUE"
-                    ) {
-                        echo " checked=\"checked\" ";
-                    }
-                    ?>                       
-                       onclick="storeFileFormatSelection(ImageFileFormat,this)"
-                       onchange="storeFileFormatSelection(ImageFileFormat,this);this.form.submit();"
+                       onclick='setAutoSeriesFlag($("#autoseries").is(":checked"));'
+                       onchange='setAutoSeriesFlag($("#autoseries").is(":checked"));'
                 />
-
                 When applicable, load file series automatically
-
             </label>
-
         </fieldset>
 
         <div id="selection">
-
             <input name="down"
-                   type="submit"
+                   id="down"
+                   type="button"
                    value=""
                    class="icon down"
                    onmouseover="TagToTip('ttSpanDown')"
                    onmouseout="UnTip()"/>
 
             <input name="up"
-                   type="submit"
+                   id="up"
+                   type="button"
                    value=""
                    class="icon remove"
                    onmouseover="TagToTip('ttSpanUp')"
                    onmouseout="UnTip()"/>
-
         </div>
 
         <fieldset>
             <legend>Selected images</legend>
             <div id="selectedfiles" onmouseover="showPreview()">
-                <?php
-
-                $selectedFiles = $_SESSION['fileserver']->selectedFiles();
-
-                $flag = "";
-                if ($selectedFiles == null) {
-                    $flag = " disabled=\"disabled\"";
-                }
-
-                ?>
-
                 <select id="selectedimages"
                         name="selectedfiles[]"
                         class="selection"                        
                         title="List of selected images"
                         size="5"
-                        multiple="multiple"<?php echo $flag ?>
+                        multiple="multiple"
                         onclick="imageAction(this)"
                         onchange="imageAction(this)">
-                    <?php
-                    if ($selectedFiles != null) {
-                        foreach ($selectedFiles as $filename) {                            
-                                echo "<option value=\"" . $filename . "\">" . $filename . "</option>\n";                                                   
-                        }
-                    } else echo "                        <option>&nbsp;</option>\n";
-
-                    ?>
                 </select>
             </div>
         </fieldset>
 
-        <div id="actions" class="imageselection"
-             onmouseover="showInstructions()">
+        <div id="actions" class="imageselection" onmouseover="showInstructions()">
             <input name="update"
-                   type="submit"
+                   id = "update"
                    value=""
                    class="icon update"
                    onmouseover="TagToTip('ttSpanRefresh')"
@@ -471,3 +254,374 @@ $info = "<h3>Quick help</h3>" .
 include("footer.inc.php");
 
 ?>
+
+
+<!-- Ajax functions -->
+<script type="text/javascript">
+
+    // Assign an action to each image
+    function imageAction (list) {
+
+        var n = list.selectedIndex;     // Which item is the first selected one
+
+        if( undefined === window.lastSelectedImgs ){
+            window.lastSelectedImgs = [];
+            window.lastSelectedImgsKey = [];
+            window.lastShownIndex = -1;
+        }
+
+        var snew = 0;
+
+        var count = 0;
+        for (var i=0; i<list.options.length; i++) {
+            if (list.options[i].selected) {
+                if( undefined === window.lastSelectedImgsKey[i] ){
+                    // New selected item
+                    snew = 1;
+                    n = i;
+                }
+                count++;
+            }
+        }
+
+        if (snew == 0) {
+            // deselected image
+            for (var i=0; i<window.lastSelectedImgs.length; i++) {
+                key = window.lastSelectedImgs[i];
+                if ( !list.options[key].selected ) {
+                    snew = -1
+                    n = key;
+                }
+            }
+        }
+
+        window.lastSelectedImgs = [];
+        window.lastSelectedImgsKey = [];
+        count = 0;
+        for (var i=0; i<list.options.length; i++) {
+            if (list.options[i].selected) {
+                window.lastSelectedImgs[count] = i;
+                window.lastSelectedImgsKey[i] = true;
+                count++;
+            }
+        }
+
+        if (count == 0 ) {
+            window.previewSelected = -1;
+        }
+
+        if ( n == window.lastShownIndex ) {
+            return
+        }
+        window.lastShownIndex = n;
+
+        index = parseInt(list[n].value);
+        filename = list[n].text;
+
+        ajaxGetImgPreview(filename, index, 'src');
+    }
+
+    /**
+     * Update the file format and retrieve a new file list if needed.
+     * $param format: new file format.
+     */
+    function setFileFormat(format) {
+        // Only retrieve a new file list (and update the autoseries flag)
+        // if the value really changed
+        if (format !== window.selectImagesPageVariables.format) {
+            window.selectImagesPageVariables.format = format;
+            retrieveFileList(window.selectImagesPageVariables.format,
+                window.selectImagesPageVariables.autoseries)
+        }
+    }
+
+    /**
+     * Update the autoseries flag and retrieve a new file list if needed.
+     * $param autoseries: whether to condense series or not.
+     */
+    function setAutoSeriesFlag(autoseries) {
+        // Only retrieve a new file list (and update the autoseries flag)
+        // if the value really changed
+        if (autoseries !== window.selectImagesPageVariables.autoseries) {
+            window.selectImagesPageVariables.autoseries = autoseries;
+            retrieveFileList(window.selectImagesPageVariables.format,
+                window.selectImagesPageVariables.autoseries)
+        }
+    }
+
+    /**
+     * Reset the source file list on the server.
+     */
+    function reset() {
+        // Call jsonGetFileFormats on the server
+        JSONRPCRequest({
+            method: 'jsonResetSourceFiles',
+            params: []
+        }, function (response) {
+            if (response["success"] === "false") {
+                // Display error message
+                $("#message p").text(response["message"]);
+
+            } else {
+                // Rescan
+                retrieveFileList(window.selectImagesPageVariables.format,
+                window.selectImagesPageVariables.autoseries);
+            }
+        });
+    }
+
+    /**
+     * Remove current selection from selected files
+     */
+    function removeFromSelection(format) {
+        // Get selected files from filesPerFormat
+        var listOfSelectedFiles = [];
+        $("#selectedimages option:selected").each(function() {
+            listOfSelectedFiles.push($(this).text());
+        });
+
+        // Call jsonGetFileFormats on the server
+        JSONRPCRequest({
+            method: 'jsonRemoveFilesFromSelection',
+            params: [listOfSelectedFiles, format]
+
+        }, function (response) {
+            // Update relevant fields
+            updateFilesAndSelectedFiles(response);
+        });
+    }
+
+    /**
+     * Remove everything from selected files
+     */
+    function removeAllFromSelection(format) {
+        // Get selected files from filesPerFormat
+        var listOfSelectedFiles = [];
+        $("#selectedimages option").each(function() {
+            listOfSelectedFiles.push($(this).text());
+        });
+
+        // Call jsonGetFileFormats on the server
+        JSONRPCRequest({
+            method: 'jsonRemoveFilesFromSelection',
+            params: [listOfSelectedFiles, format]
+
+        }, function (response) {
+            // Update relevant fields
+            updateFilesAndSelectedFiles(response);
+        });
+    }
+
+    // Update bot files and selected files elements
+    function updateFilesAndSelectedFiles(response) {
+        if (response["success"] === "false") {
+
+            // Display error message
+            $("#message p").text(response["message"]);
+
+        } else {
+
+            // Get the 'selectedimages' select element
+            var selectedImages = $("#selectedimages");
+
+            // Remove all options
+            selectedImages.empty();
+
+            // Add the new files
+            $.each(response["selected_files"], function (value, filename) {
+                selectedImages.append($('<option>', {
+                    value: filename,
+                    text: filename
+                }));
+            });
+
+            // Enable/disable select element
+            selectedImages.prop('disabled', response["selected_files"].length === 0);
+
+            // Get the 'filesPerFormat' select element
+            var filesPerFormat = $("#filesPerFormat");
+
+            // Remove all options
+            filesPerFormat.empty();
+
+            // Add the new files
+            $.each(response["files"], function (filteredFilename, value) {
+                filesPerFormat.append($('<option>', {
+                    value: value,
+                    text: filteredFilename
+                }));
+            });
+
+            // Enable/disable select element
+            filesPerFormat.prop('disabled', response["files"].length === 0);
+        }
+    }
+
+    /**
+     * Add files to selection
+     */
+    function addToSelection(format) {
+        // Get selected files from filesPerFormat
+        var listOfSelectedFiles = [];
+        $("#filesPerFormat option:selected").each(function() {
+            listOfSelectedFiles.push($(this).text());
+        });
+
+        // Call jsonGetFileFormats on the server
+        JSONRPCRequest({
+            method: 'jsonAddFilesToSelection',
+            params: [listOfSelectedFiles, format]
+        }, function (response) {
+            if (response["success"] === "false") {
+                // Display error message
+                $("#message p").text(response["message"]);
+
+            } else {
+                // Update relevant fields
+                updateFilesAndSelectedFiles(response);
+            }
+        });
+    }
+
+    /**
+     * Retrieve the list of file formats from the server
+     * @param format: File format
+     */
+    function retrieveFileFormatsList(format) {
+        // Call jsonGetFileFormats on the server
+        JSONRPCRequest({
+            method: 'jsonGetFileFormats',
+            params: []
+        }, function (response) {
+            if (response["success"] === "false") {
+                // Display error message
+                $("#message p").text(response["message"]);
+
+            } else {
+                // Get the 'ImageFileFormat' select element
+                var imageFileFormat = $("#ImageFileFormat");
+
+                // Remove all options
+                imageFileFormat.empty();
+
+                // Add the new files
+                $.each(response["formats"], function (value, translation) {
+                    imageFileFormat.append($('<option>', {
+                        name: value,
+                        value: value,
+                        text : translation
+                    }));
+                });
+
+                // Select current format
+                $("#ImageFileFormat").val(window.selectImagesPageVariables.format);
+            }
+        });
+    }
+
+    /**
+     * Retrieve the file list from the server
+     * @param format: File format
+     * @param autoseries: whether to condense series or not.
+     */
+    function retrieveFileList(format, autoseries) {
+        // Call jsonScanSourceFiles on the server
+        JSONRPCRequest({
+            method: 'jsonScanSourceFiles',
+            params: [format, autoseries]
+        }, function (response) {
+            if (response["success"] === "false") {
+                // Display error message
+                $("#message p").text(response["message"]);
+
+            } else {
+                // Update relevant fields
+                updateFilesAndSelectedFiles(response);
+            }
+        });
+    }
+
+    /**
+     * Retrieve the list of selected files from the server
+     */
+    function retrieveSelectedFileList() {
+        // Call jsonGetFileFormats on the server
+        JSONRPCRequest({
+            method: 'jsonGetSelectedFiles',
+            params: []
+        }, function (response) {
+
+            if (response["success"] === "false") {
+
+                // Display error message
+                $("#message p").text(response["message"]);
+
+            } else {
+
+                // Get the 'selectedimages' select element
+                var selectedImages = $("#selectedimages");
+
+                // Remove all options
+                selectedImages.empty();
+
+                // Add the new files
+                $.each(response["selected_files"], function (value, filename) {
+                    console.log(filename);
+                    selectedImages.append($('<option>', {
+                        value: filename,
+                        text : filename
+                    }));
+                });
+
+                // Enable/disable select element
+                selectedImages.prop('disabled', response["selected_files"].length === 0);
+            }
+        });
+    }
+
+    // Set everything up and retrieve the file list from the server
+    $(document).ready(function () {
+
+        <?php
+        if (isset($_SESSION['fileserver'])) {
+            $autoseries = json_encode($_SESSION['fileserver']->autoSeries());
+        } else {
+            $autoseries = json_encode(false);
+        }
+        ?>
+
+        // Initialize some variables. They will we used to
+        // keep track of user selections in the page.
+        window.selectImagesPageVariables = {
+          "autoseries": <?php echo $autoseries; ?>,
+          "format": "<?php echo $fileFormat->value(); ?>"
+        };
+
+        // Add callbacks
+        $("#update").click(function() {
+            reset();
+        });
+
+        $("#down").click(function() {
+            addToSelection(window.selectImagesPageVariables.format);
+        });
+
+        $("#up").click(function() {
+            removeFromSelection(window.selectImagesPageVariables.format);
+        });
+
+        // Set the autoseries flag
+        $("#autoseries").prop('checked', selectImagesPageVariables.autoseries);
+
+        // Retrieve the list of formats
+        retrieveFileFormatsList(window.selectImagesPageVariables.format);
+
+        // Retrieve the file list from the server
+        retrieveFileList(window.selectImagesPageVariables.format,
+            window.selectImagesPageVariables.autoseries);
+
+        // Retrieve the selected file list from the server
+        retrieveSelectedFileList();
+    })
+
+</script>
