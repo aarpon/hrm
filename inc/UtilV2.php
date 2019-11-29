@@ -1,4 +1,5 @@
 <?php
+
 /**
  * UtilV2
  *
@@ -7,6 +8,9 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
+//declare(strict_types=1);
+
 namespace hrm;
 
 require_once dirname(__FILE__) . '/bootstrap.php';
@@ -21,7 +25,7 @@ class UtilV2
      * Return the relative path to the file uploader.
      * @return string relative path.
      */
-    public static function getRelativePathToFileUploader()
+    public static function getRelativePathToFileUploader(): string
     {
 
         global $hrm_url;
@@ -39,7 +43,7 @@ class UtilV2
      * Report maximum upload size, in bytes, for concurrent upload.
      * @return int maximum upload size in bytes.
      */
-    public static function getNumberConcurrentUploads()
+    public static function getNumberConcurrentUploads(): int
     {
 
         global $httpNumberOfConcurrentUploads;
@@ -69,7 +73,7 @@ class UtilV2
      *                                (optional, default is 4).
      * @return int maximum upload size in bytes.
      */
-    public static function getMaxConcurrentUploadSize($nConcurrentUploads = 4)
+    public static function getMaxConcurrentUploadSize(int $nConcurrentUploads = 4): int
     {
 
         global $max_post_limit;
@@ -104,25 +108,29 @@ class UtilV2
      * @param string @v Memory amount in php.ini notation
      * @return int Integer version in bytes
      */
-    public static function let_to_num($v)
+    public static function let_to_num(string $v): int
     {
         // Extract the unit
         $l = substr($v, -1);
 
         // Extract the amount
-        $ret = substr($v, 0, -1);
+        $ret = intval(substr($v, 0, -1));
 
         // Notice that the switch cases do not have a break statement to
         // cause cascade multiplication all the way down to bytes.
         switch (strtoupper($l)) {
             case 'P':
                 $ret *= 1024;
+                // Allow fall-through to next case
             case 'T':
                 $ret *= 1024;
+                // Allow fall-through to next case
             case 'G':
                 $ret *= 1024;
+                // Allow fall-through to next case
             case 'M':
                 $ret *= 1024;
+                // Allow fall-through to next case
             case 'K':
                 $ret *= 1024;
                 break;
@@ -145,7 +153,7 @@ class UtilV2
      * @todo Does the php.ini value play a role in the chunk uploader
      * (i.e., does it apply to the file **chunk** size)?
      */
-    public static function getMaxUploadFileSize()
+    public static function getMaxUploadFileSize(): int
     {
         global $max_upload_limit;
 
@@ -173,7 +181,7 @@ class UtilV2
      *
      * @return int Maximum upload post in bytes.
      */
-    public static function getMaxPostSize()
+    public static function getMaxPostSize(): int
     {
         global $max_post_limit;
 
@@ -195,13 +203,14 @@ class UtilV2
      * Report maximum upload size, in bytes.
      * @return int Maximum upload size in bytes.
      */
-    public static function getMaxSingleUploadSize()
+    public static function getMaxSingleUploadSize(): int
     {
 
-        $max_upload_size = min(self::let_to_num(ini_get('post_max_size')),
-            self::let_to_num(ini_get('upload_max_filesize')));
+        $max_upload_size = min(
+            self::let_to_num(ini_get('post_max_size')),
+            self::let_to_num(ini_get('upload_max_filesize'))
+        );
 
         return $max_upload_size;
     }
-
 }

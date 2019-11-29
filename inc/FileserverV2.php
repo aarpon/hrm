@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FileserverV2
  *
@@ -7,6 +8,8 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
+//declare(strict_types=1);
 
 namespace hrm;
 
@@ -23,12 +26,16 @@ class FileserverV2
     /**
      * Get the compression command (with %DEST% placeholder for the source)
      *
+     * Note: the only supported compressor is zip.
+     *
      * Note: when serving a compressed file for download, remember to set the
      * MIME type to "application/x-force-download".
-     * 
+     *
      * @return array Array with the command for each supported compressor (currently only zip).
+     *
+     * @deprecated
      */
-    private static function getCompressor()
+    private static function getCompressor(): array
     {
         // Replace the array of compression options from the
         // (deprecated) configuration files with the only supported
@@ -39,9 +46,14 @@ class FileserverV2
 
     /**
      * Get the decompression command (with %DEST% placeholder for the target)
+     *
+     * Note: the only supported decompressor is zip.
+     *
      * @return array Array with the command for each supported decompressor (currently only zip).
+     *
+     * @deprecated
      */
-    private static function getDecompressor()
+    private static function getDecompressor(): array
     {
         // Replace the array of decompression options from the
         // (deprecated) configuration files with the only supported
@@ -59,8 +71,10 @@ class FileserverV2
      * @param string $destDir Full path to the destination directory.
      * @param string $errorMessage Reference to a string to store error messages.
      * @return bool True if moving was successful, false otherwise.
+     * @throws \Exception
      */
-    public static function moveUploadedFile($file, $destDir, &$errorMessage) {
+    public static function moveUploadedFile(string $file, string $destDir, string &$errorMessage): bool
+    {
 
         // Does the file exist?
         if (!is_file($file)) {
@@ -82,13 +96,11 @@ class FileserverV2
 
         // Is the file an archive?
         if (FileserverV2::isArchiveFile($file)) {
-
             // Get the output folder where to store the archive
             $destDecDir = FileserverV2::getValidFileOrDirName($destDir, $destBodyName);
 
             // Did we get a valid destination folder name?
             if ($destDecDir == "") {
-
                 // We ran out of suffixes. We return false.
                 $errorMessage = "Too many folders with the same base name. Aborting...";
                 return false;
@@ -116,7 +128,6 @@ class FileserverV2
 
         // Did we get a valid destination file name?
         if ($destDecFile == "") {
-
             // We ran out of suffixes. We return false.
             $errorMessage = "Too many files with the same base name. Aborting...";
             return false;
@@ -130,7 +141,6 @@ class FileserverV2
         }
 
         return $status;
-
     }
 
     /**
@@ -138,8 +148,10 @@ class FileserverV2
      * @param string $file Archive file with full path.
      * @param string $destDir Destination folder where the archive will be extracted.
      * @return bool True if the decompression was successful, false otherwise.
+     * @throws \Exception
      */
-    public static function decompressArchive($file, $destDir) {
+    public static function decompressArchive(string $file, string $destDir): bool
+    {
 
         // Replace the array of decompression options from the
         // (deprecated) configuration files with the only supported
@@ -156,30 +168,30 @@ class FileserverV2
         $extension = strtolower(FileserverV2::getFileNameExtension($file));
 
         // Build the system command to execute
-        $command = str_replace("%DEST%", "\"" . $destDir . "\"", $decompressBin[$extension]). " \"$file\"";
+        $command = str_replace("%DEST%", "\"" . $destDir . "\"", $decompressBin[$extension]) . " \"$file\"";
 
         // Run the command and collect the output
         $output = array();
         $result = -1;
         exec($command, $output, $result);
 
-        Log::info("Decompressing with command: $command, got: " . print_r($output,true)); 
+        Log::info("Decompressing with command: $command, got: " . print_r($output, true));
 
         // It turns out that unzip restores the original permissions of the files
         // in the zip package, as they were in the client before zipping. Using
-        // umask to set proper HRM permissisions does not help here. Thus, we have 
-        // to at least make sure that the HRM group can read the data so that the 
+        // umask to set proper HRM permissisions does not help here. Thus, we have
+        // to at least make sure that the HRM group can read the data so that the
         // QM can process the file.
 
         // First, start with the directories.
         $chmodCmd = "find " . $destDir . " -type d -exec chmod 0777 {} +";
         exec($chmodCmd, $chmodOutput, $chmodResult);
-        Log::info("Chmod subdirectories with command: $chmodCmd, got: " . print_r($chmodOutput,true)); 
+        Log::info("Chmod subdirectories with command: $chmodCmd, got: " . print_r($chmodOutput, true));
 
         // Then, process the files.
         $chmodCmd = "find " . $destDir . " -type f -exec chmod 0660 {} +";
         exec($chmodCmd, $chmodOutput, $chmodResult);
-        Log::info("Chmod files with command: $chmodCmd, got: " . print_r($chmodOutput,true));         
+        Log::info("Chmod files with command: $chmodCmd, got: " . print_r($chmodOutput, true));
 
         // Return the status
         return ($result == 0);
@@ -191,7 +203,8 @@ class FileserverV2
      * @param string $fileName File Full file name of the file to check.
      * @return bool True if the file is an a supported archive, false otherwise.
      */
-    public static function isArchiveFile($fileName) {
+    public static function isArchiveFile(string $fileName): bool
+    {
 
         // Get the archive file extensions from the configuration files.
         // Replace the array of decompression options from the
@@ -205,7 +218,6 @@ class FileserverV2
 
         // Is the extension one of the supported archive extensions
         return array_key_exists($extension, $decompressBin);
-
     }
 
     /**
@@ -215,7 +227,8 @@ class FileserverV2
      * @param bool $withLeadingDot Set to true to return the extensions with a leading 'dot'.
      * @return array of extensions.
      */
-    public static function getAllValidExtensions($withLeadingDot = false) {
+    public static function getAllValidExtensions(bool $withLeadingDot = false): array
+    {
 
         // Image extensions
         $validImageExtensions = FileserverV2::getImageExtensions();
@@ -231,23 +244,27 @@ class FileserverV2
 
         // Should we append the leading dot?
         if ($withLeadingDot) {
-            array_walk($allExtensions, function(&$value) {
+            array_walk($allExtensions, function (&$value) {
                 $value = "." . $value;
             });
         }
 
         return $allExtensions;
-
     }
 
     /**
      * Return all valid image extensions.
      * @return array of image extensions.
      */
-    public static function getImageExtensions() {
+    public static function getImageExtensions(): array
+    {
 
         // Instantiate a new database connection
-        $db = new DatabaseConnection();
+        try {
+            $db = new DatabaseConnection();
+        } catch (\Exception $e) {
+            return array();
+        }
 
         // Return the image extensions
         return $db->allFileExtensions();
@@ -257,7 +274,8 @@ class FileserverV2
      * Return all archive extensions.
      * @return array of archive extensions.
      */
-    public static function getArchiveExtensions() {
+    public static function getArchiveExtensions(): array
+    {
 
         // Replace the array of decompression options from the
         // (deprecated) configuration files with the only supported
@@ -275,7 +293,8 @@ class FileserverV2
      *
      * TODO: Add them to the database.
      */
-    public static function getImageExtrasExtensions() {
+    public static function getImageExtrasExtensions(): array
+    {
 
         // Return the image extras extensions
         return array("ids", 'idx.gz');
@@ -287,7 +306,8 @@ class FileserverV2
      * @param bool $alsoExtras If true consider also "ids" and "ids.gx" as supported formats.
      * @return bool True if the file name is supported, false otherwise.
      */
-    public static function isValidImage($filename, $alsoExtras = false) {
+    public static function isValidImage(string $filename, bool $alsoExtras = false): bool
+    {
 
         // Extract the file extension
         $extension = strtolower(FileserverV2::getFileNameExtension($filename));
@@ -309,7 +329,6 @@ class FileserverV2
 
         // Return
         return $status;
-
     }
 
     /**
@@ -323,7 +342,8 @@ class FileserverV2
      * @return string Complete extension.
      *
      */
-    public static function getFileNameExtension($filename) {
+    public static function getFileNameExtension(string $filename): string
+    {
 
         // Process the path information
         $info = pathinfo($filename);
@@ -352,7 +372,8 @@ class FileserverV2
      * @return string Base name.
      *
      */
-    public static function getFileBaseName($filename) {
+    public static function getFileBaseName(string $filename): string
+    {
 
         // Drop path info
         $filename = basename($filename);
@@ -378,16 +399,17 @@ class FileserverV2
      * Recursively delete a folder and all its content.
      * @param string $dir Directory to be deleted.
      */
-    public static function removeDirAndContent($dir)
+    public static function removeDirAndContent(string $dir): void
     {
         if (is_dir($dir)) {
             $objects = scandir($dir);
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
-                    if (is_dir($dir . "/" . $object))
+                    if (is_dir($dir . "/" . $object)) {
                         FileserverV2::removeDirAndContent($dir . "/" . $object);
-                    else
+                    } else {
                         unlink($dir . "/" . $object);
+                    }
                 }
             }
             rmdir($dir);
@@ -412,7 +434,11 @@ class FileserverV2
      * @param string $extension (optional) Extension for a file; omit for a folder.
      * @return string full path to the file or folder or "" if all attempts failed.
      */
-    private static function getValidFileOrDirName($destDir, $fileOrDirBodyName, $extension = "") {
+    private static function getValidFileOrDirName(
+        string $destDir,
+        string $fileOrDirBodyName,
+        string $extension = ""
+    ): string {
 
         // Make the function robust against $extension with or without a leading dot.
         if ($extension != "") {
@@ -431,7 +457,6 @@ class FileserverV2
 
         // If the file/folder already exists, we try with incremental numeric suffixes
         while (file_exists($testExpand)) {
-
             // Increment the suffix
             $zSuffix++;
 
@@ -440,7 +465,6 @@ class FileserverV2
 
             // Have we tried too many suffixes?
             if ($zSuffix > $zMaxSuffix) {
-
                 // We ran out of suffixes. We return an empty string.
                 return "";
             }
@@ -453,7 +477,6 @@ class FileserverV2
 
         // Complete destination folder
         return $destDir . "/" . $fileOrDirBodyName . $extension;
-
     }
 
     /**
@@ -461,7 +484,8 @@ class FileserverV2
      *
      * The folder paths are taken from inc/hrm_config.inc.php (advanced parameters).
      */
-    public static function createUpDownloadFolderIfMissing() {
+    public static function createUpDownloadFolderIfMissing(): bool
+    {
 
         global $allowHttpTransfer, $allowHttpUpload;
         global $httpDownloadTempFilesDir, $httpUploadTempChunksDir, $httpUploadTempFilesDir;
@@ -476,17 +500,14 @@ class FileserverV2
 
         // Are downloads active?
         if (isset($allowHttpTransfer) && $allowHttpTransfer == true) {
-
             // Does the download directory exist?
             if (!is_dir($httpDownloadTempFilesDir)) {
-
                 // Try creating it
                 $result &= mkdir($httpDownloadTempFilesDir, 0775);
                 if (! $result) {
                     // @todo Report!
                     return false;
                 }
-
             }
 
             // Check that the download directory is writable
@@ -504,19 +525,16 @@ class FileserverV2
 
         // Are uploads active?
         if (isset($allowHttpUpload) && $allowHttpUpload == true) {
-
             // Chunk upload directory
 
             // Does the chunk upload directory exist?
             if (!is_dir($httpUploadTempChunksDir)) {
-
                 // Try creating it
                 $result &= mkdir($httpUploadTempChunksDir, 0775);
                 if (! $result) {
                     // @todo Report!
                     return false;
                 }
-
             }
 
             // Check that the chunk upload directory is writable
@@ -533,14 +551,12 @@ class FileserverV2
 
             // Does the file upload directory exist?
             if (!is_dir($httpUploadTempFilesDir)) {
-
                 // Try creating it
                 $result &= mkdir($httpUploadTempFilesDir, 0775);
                 if (! $result) {
                     // @todo Report!
                     return false;
                 }
-
             }
 
             // Check that the file upload directory is writable
@@ -552,12 +568,9 @@ class FileserverV2
                 unlink("$httpUploadTempFilesDir/$fname");
                 $result &= true;
             }
-
         }
 
         // Return global result
         return $result;
     }
-
-
 }

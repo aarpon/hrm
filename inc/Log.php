@@ -9,6 +9,8 @@
  * Copyright and license notice: see license.txt
  */
 
+//declare(strict_types=1);
+
 namespace hrm;
 
 // Set up logging

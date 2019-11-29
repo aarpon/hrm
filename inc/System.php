@@ -1,4 +1,5 @@
 <?php
+
 /**
  * System
  *
@@ -7,6 +8,8 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
+//declare(strict_types=1);
 
 namespace hrm;
 
@@ -28,67 +31,76 @@ class System
 
     /**
      * Current HRM major version. This value has to be set by the developers!
+     *
      * @var int
      */
-    const HRM_VERSION_MAJOR = 3;
+    public const HRM_VERSION_MAJOR = 3;
 
     /**
      * Current HRM minor version. This value has to be set by the developers!
+     *
      * @var int
      */
-    const HRM_VERSION_MINOR = 6;
+    public const HRM_VERSION_MINOR = 6;
 
     /**
      * Current HRM maintenance (patch) version. This value has to be set by the
      * developers!
+     *
      * @var int
      */
-    const HRM_VERSION_MAINTENANCE = 0;
+    public const HRM_VERSION_MAINTENANCE = 0;
 
     /**
      * Database revision needed by current HRM version. This value has to be
      * set by the developers!
+     *
      * @var int
      */
-    const DB_LAST_REVISION = 17;
+    public const DB_LAST_REVISION = 17;
 
     /**
      * Minimum HuCore (major) version number to be compatible with HRM.
      * This value has to be set by the developers!
+     *
      * @var int
      */
-    const MIN_HUCORE_VERSION_MAJOR = 14;
+    public const MIN_HUCORE_VERSION_MAJOR = 14;
 
     /**
      * Minimum HuCore (minor) version number to be compatible with HRM.
      * This value has to be set by the developers!
+     *
      * @var int
      */
-    const MIN_HUCORE_VERSION_MINOR = 6;
+    public const MIN_HUCORE_VERSION_MINOR = 6;
 
     /**
      * Minimum HuCore (maintenance) version number to be compatible with HRM.
      * This value has to be set by the developers!
+     *
      * @var int
      */
-    const MIN_HUCORE_VERSION_MAINTENANCE = 1;
+    public const MIN_HUCORE_VERSION_MAINTENANCE = 1;
 
     /**
      * Minimum HuCore (patch) version number to be compatible with HRM.
      * This value has to be set by the developers!
+     *
      * @var int
      */
-    const MIN_HUCORE_VERSION_PATCH = 7;
+    public const MIN_HUCORE_VERSION_PATCH = 7;
 
     /**
      * Returns the HRM version.
+     *
      * @param int $version (Optional) Version as integer to be converted to its
-     * string counterpart. If not passed, current HRM version is returned.
-     * @return  string The HRM version number as string (e.g. 3.3)
+     *                     string counterpart. If not passed, current HRM version is returned.
+     *
+     * @return string The HRM version number as string (e.g. 3.3)
      */
     public static function getHRMVersionAsString(int $version = -1): string
     {
-
         if ($version == -1) {
             // Return current HRM version
             $version = self::HRM_VERSION_MAJOR . "." . self::HRM_VERSION_MINOR;
@@ -132,7 +144,6 @@ class System
     }
 
     /**
-     *
      * Returns the latest HRM version in its string representation.
      *
      * The huygens-rm.org server is queried.
@@ -173,6 +184,7 @@ class System
 
     /**
      * Returns the DB revision expected by this version of HRM.
+     *
      * @return int DB_LAST_REVISION expected DB revision (e.g. 14).
      */
     public static function getDBLastRevision(): int
@@ -182,6 +194,7 @@ class System
 
     /**
      * Returns current DB revision from the database.
+     *
      * @return int DB revision from the database (e.g. 14). If the revision number
      * cannot be queried, the function returns -1.
      */
@@ -193,16 +206,18 @@ class System
             return -1;
         }
         $rows = $db->query(
-            "SELECT * FROM global_variables WHERE name LIKE 'dbrevision';");
+            "SELECT * FROM global_variables WHERE name LIKE 'dbrevision';"
+        );
         if (!$rows) {
             return 0;
         } else {
-            return $rows[0]['value'];
+            return intval($rows[0]['value']);
         }
     }
 
     /**
      * Checks whether the database is up-to-date.
+     *
      * @return bool True if the database is up-to-date, false otherwise.
      * @throws Exception If the database query fails.
      */
@@ -213,6 +228,7 @@ class System
 
     /**
      * Returns the HuCore version in integer notation
+     *
      * @rreturn int HuCore version as an integer (e.g. 4010002)
      */
     public static function getHuCoreVersionAsInteger(): int
@@ -229,6 +245,7 @@ class System
 
     /**
      * Returns the minimum acceptable HuCore version in string notation.
+     *
      * @return string Minimum HuCore version as a string (e.g. 4.1.0-p2).
      */
     public static function getMinHuCoreVersionAsString(): string
@@ -244,6 +261,7 @@ class System
 
     /**
      * Returns the minimum acceptable HuCore version in integer notation.
+     *
      * @return int Minimum HuCore version as an integer (e.g. 4010002)
      */
     public static function getMinHuCoreVersionAsInteger(): int
@@ -257,6 +275,7 @@ class System
 
     /**
      * Checks whether the HuCore version is recent enough.
+     *
      * @return bool True if HuCore is recent enough to run HRM, false otherwise.
      * @throws Exception If the database query fails.
      */
@@ -274,7 +293,8 @@ class System
 
     /**
      * Stores the HuCore version in integer notation into the DB.
-     * @param int $value HuCore version in integer notation (e.g. 4010002)
+     *
+     * @param  int $value HuCore version in integer notation (e.g. 4010002)
      * @return bool true if success, false otherwise.
      * @throws Exception If the database query fails.
      */
@@ -296,8 +316,9 @@ class System
 
     /**
      * Returns the hucore version as its string representation.
-     * @param int $version (Optional) Version as integer to be converted to its
-     * string counterpart. If not passed, current Hucore version is returned.
+     *
+     * @param  int $version (Optional) Version as integer to be converted to its
+     *                      string counterpart. If not passed, current Hucore version is returned.
      * @return string The version number as string (e.g. 4.1.0-p2)
      */
     public static function getHucoreVersionAsString(int $version = -1): string
@@ -388,6 +409,7 @@ class System
 
     /**
      * Checks whether Huygens Core has a valid license.
+     *
      * @return bool True if the license is valid, false otherwise.
      */
     public static function hucoreHasValidLicense(): bool
@@ -402,8 +424,9 @@ class System
 
     /**
      * Finds out whether a Huygens module is supported by the license.
-     * @param string $feature The module to find out about. It can use (SQL)
-     * wildcards.
+     *
+     * @param  string $feature The module to find out about. It can use (SQL)
+     *                         wildcards.
      * @return boolean True if the module is supported by the license.
      */
     public static function hasLicense($feature): bool
@@ -418,6 +441,7 @@ class System
 
     /**
      * Gets the licensed server type for Huygens Core.
+     *
      * @return string One of desktop, small, medium, large, extreme,
      * or "" if the connection to the database fails.
      */
@@ -433,6 +457,7 @@ class System
 
     /**
      * Returns information about operating system and machine architecture.
+     *
      * @return String A string with OS and architecture (e.g. GNU/Linux x86-64).
      */
     public static function getOperatingSystem(): string
@@ -454,6 +479,7 @@ class System
 
     /**
      * Returns the kernel release number.
+     *
      * @return string The kernel release number (e.g. 2.6.35).
      */
     public static function getKernelRelease(): string
@@ -506,6 +532,7 @@ class System
 
     /**
      * Returns a string containing the version of the Apache web server.
+     *
      * @return string Apache version as a string (e.g. 2.2.14).
      */
     public static function getApacheVersion(): string
@@ -526,6 +553,7 @@ class System
     /**
      * Returns the database type as reported by ADOdb. To be compatible
      * with HRM it should be one of 'mysql' or 'postgresql'.
+     *
      * @return string Database type (e.g. postgresql).
      */
     public static function getDatabaseType(): string
@@ -540,6 +568,7 @@ class System
 
     /**
      * Returns the database version.
+     *
      * @return string Database version as a string (e.g. 5.1.44).
      */
     public static function getDatabaseVersion(): string
@@ -561,6 +590,7 @@ class System
 
     /**
      * Returns the php version (for the Apache PHP module).
+     *
      * @return string PHP version (e.g. 5.31).
      */
     public static function getPHPVersion(): string
@@ -575,33 +605,40 @@ class System
 
     /**
      * Memory limit as set in php.ini.
-     * @param string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
-     * Gigabytes. Default is 'M'. Omit the parameter to use the default.
+     *
+     * @param  string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
+     *                      Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Memory limit in the requested unit.
      */
     public static function getMemoryLimit(string $unit = 'M'): string
     {
         return System::formatMemoryStringByUnit(
-            UtilV2::let_to_num(ini_get('memory_limit')), $unit);
+            UtilV2::let_to_num(ini_get('memory_limit')),
+            $unit
+        );
     }
 
     /**
      * Max allowed size for an HTTP post as set in php.ini.
-     * @param string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
-     * Gigabytes. Default is 'M'. Omit the parameter to use the default.
+     *
+     * @param  string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
+     *                      Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for an HTTP post in the requested unit.
      */
 
     public static function getPostMaxSizeFromIni(string $unit = 'M'): string
     {
         return System::formatMemoryStringByUnit(
-            UtilV2::let_to_num(ini_get('post_max_size')), $unit);
+            UtilV2::let_to_num(ini_get('post_max_size')),
+            $unit
+        );
     }
 
     /**
      * Max allowed size for an HTTP post as set in the HRM configuration files.
-     * @param string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
-     * Gigabytes. Default is 'M'. Omit the parameter to use the default.
+     *
+     * @param  string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
+     *                      Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for an HTTP post in the requested unit.
      */
     public static function getPostMaxSizeFromConfig(string $unit = 'M'): string
@@ -612,7 +649,9 @@ class System
                 return "limited by php.ini.";
             } else {
                 return System::formatMemoryStringByUnit(
-                    UtilV2::let_to_num(ini_get('$max_post_limit')), $unit);
+                    UtilV2::let_to_num(ini_get('$max_post_limit')),
+                    $unit
+                );
             }
         } else {
             return "not defined!";
@@ -621,8 +660,9 @@ class System
 
     /**
      * Max allowed size for an HTTP post currently in use.
-     * @param string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
-     * Gigabytes. Default is 'M'. Omit the parameter to use the default.
+     *
+     * @param  string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
+     *                      Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for an HTTP post in the requested unit.
      */
     public static function getPostMaxSize(string $unit = 'M'): string
@@ -633,6 +673,7 @@ class System
     /**
      * Returns the status of file downloads through HTTP as set in the HRM
      * configuration.
+     *
      * @return string 'enabled' if the download is enabled; 'disabled' otherwise.
      */
     public static function isDownloadEnabledFromConfig(): string
@@ -648,6 +689,7 @@ class System
     /**
      * Returns the status of file uploads through HTTP as set in the HRM
      * configuration.
+     *
      * @return string 'enabled' if the upload is enabled; 'disabled' otherwise.
      */
     public static function isUploadEnabledFromConfig(): string
@@ -662,6 +704,7 @@ class System
 
     /**
      * Returns the status of file uploads through HTTP as set in php.ini.
+     *
      * @return string 'enabled' if the upload is enabled; 'disabled' otherwise.
      */
     public static function isUploadEnabledFromIni(): string
@@ -677,12 +720,14 @@ class System
     /**
      * Returns the status of file uploads through HTTP as set in php.ini
      * and the HRM configuration.
+     *
      * @return string 'enabled' if the upload is enabled; 'disabled' otherwise.
      */
     public static function isUploadEnabled()
     {
-        if (System::isUploadEnabledFromConfig() == "enabled" &&
-            System::isUploadEnabledFromIni() == "enabled"
+        if (
+            System::isUploadEnabledFromConfig() == "enabled"
+            && System::isUploadEnabledFromIni() == "enabled"
         ) {
             return "enabled";
         } else {
@@ -692,20 +737,24 @@ class System
 
     /**
      * Max allowed size for a file upload as set in php.ini
-     * @param string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
-     * Gigabytes. Default is 'M'. Omit the parameter to use the default.
+     *
+     * @param  string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
+     *                      Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for a file upload in the requested unit.
      */
     public static function isUploadMaxFileSizeFromIni(string $unit = 'M'): string
     {
         return System::formatMemoryStringByUnit(
-            UtilV2::let_to_num(ini_get('upload_max_filesize')), $unit);
+            UtilV2::let_to_num(ini_get('upload_max_filesize')),
+            $unit
+        );
     }
 
     /**
      * Max allowed size for a file upload as set in the HRM configuration files.
-     * @param string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
-     * Gigabytes. Default is 'M'. Omit the parameter to use the default.
+     *
+     * @param  string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
+     *                      Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for a file upload in the requested unit.
      */
     public static function isUploadMaxFileSizeFromConfig(string $unit = 'M'): string
@@ -716,7 +765,9 @@ class System
                 return "limited by php.ini.";
             } else {
                 return System::formatMemoryStringByUnit(
-                    UtilV2::let_to_num($max_upload_limit), $unit);
+                    UtilV2::let_to_num($max_upload_limit),
+                    $unit
+                );
             }
         } else {
             return "not defined!";
@@ -725,8 +776,9 @@ class System
 
     /**
      * Max allowed size for a file upload currently in use.
-     * @param string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
-     * Gigabytes. Default is 'M'. Omit the parameter to use the default.
+     *
+     * @param  string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
+     *                      Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Max allowed size for a file upload in bytes.
      */
     public static function getUploadMaxFileSize(string $unit = 'M'): string
@@ -736,6 +788,7 @@ class System
 
     /**
      * Max execution time in seconds for scripts as set in php.ini.
+     *
      * @return string Max execution time in seconds.
      */
     public static function getMaxExecutionTimeFromIni(): string
@@ -751,20 +804,22 @@ class System
      * Formats a number (in bytes) into a string with the desired unit.
      * For example, System::formatMemoryStringByUnit( 134, $unit = 'M' )
      * returns '128 MB'.
-     * @param int $value Memory amount in bytes.
-     * @param string $unit One of 'B' for bytes, 'M' for Megabytes, or 'G' for
-     * Gigabytes. Default is 'M'. Omit the parameter to use the default.
+     *
+     * @param  int    $value Memory amount in bytes.
+     * @param  string $unit  One of 'B' for bytes, 'M' for Megabytes, or 'G' for
+     *                       Gigabytes. Default is 'M'. Omit the parameter to
+     *                       use the default.
      * @return string Memory amount in the requested unit.
      */
     private static function formatMemoryStringByUnit(int $value, string $unit = 'M'): string
     {
         switch ($unit) {
-            case 'G' :
+            case 'G':
                 $factor = 1024 * 1024 * 1024;
                 $digits = 3;
                 $unit_string = "GB";
                 break;
-            case 'B' :
+            case 'B':
                 $factor = 1;
                 $digits = 0;
                 $unit_string = " bytes";
@@ -781,7 +836,8 @@ class System
 
     /**
      * Parses an integer HRM version number into its string representation.
-     * @param int $version Int representation of the version number.
+     *
+     * @param  int $version Int representation of the version number.
      * @return string HRM version as string.
      */
     private static function parseHRMVersionIntegerToString(int $version): string
@@ -801,7 +857,8 @@ class System
 
     /**
      * Parses an integer HuCore version number into its string representation.
-     * @param int $version Int representation of the version number.
+     *
+     * @param  int $version Int representation of the version number.
      * @return string String representation of the version number.
      */
     private static function parseHucoreVersionIntegerToString(int $version): string
@@ -821,5 +878,4 @@ class System
         }
         return $versionString;
     }
-
 }

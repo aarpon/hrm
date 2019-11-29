@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mail
  *
@@ -7,6 +8,8 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
+//declare(strict_types=1);
 
 namespace hrm;
 
@@ -149,6 +152,5 @@ class Mail
             }
             return false;
         }
-
     }
 }

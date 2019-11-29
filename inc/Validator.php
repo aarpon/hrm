@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Validator
  *
@@ -7,6 +8,8 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
+//declare(strict_types=1);
 
 namespace hrm;
 
@@ -19,7 +22,7 @@ require_once dirname(__FILE__) . '/bootstrap.php';
  * attacks. Here, no SQL escape functions are (explicitly) called!
  *
  * This is the initial implementation and might require additional checks.
- * 
+ *
  * @package hrm
  */
 class Validator
@@ -31,15 +34,13 @@ class Validator
      * is not meant to be input to the database.
      * @return bool True if the string is sanitized, false otherwise.
      */
-    public static function isStringSanitized($string)
+    public static function isStringSanitized(string $string): bool
     {
-
         // Clean the string
         $tmp = filter_var($string, FILTER_SANITIZE_STRING);
 
         // Check if the input passed all tests
         return (strcmp($tmp, $string) == 0);
-
     }
 
     /**
@@ -49,9 +50,8 @@ class Validator
      * @param string $inputUserName User name input through some login form.
      * @return bool True if the user name is valid, false otherwise.
      */
-    public static function isUserNameValid($inputUserName)
+    public static function isUserNameValid(string $inputUserName): bool
     {
-
         // Force the username to be lowercase
         $inputUserName = strtolower($inputUserName);
 
@@ -70,7 +70,6 @@ class Validator
 
         // Check if the input passed all tests
         return (strcmp($tmp, $inputUserName) == 0);
-
     }
 
     /**
@@ -78,13 +77,12 @@ class Validator
      *
      * It must be a valid e-mail address.
      * @param string $inputEmail E-mail input through some login form.
-     * @return mixed Returns the filtered e-mail, or false.
+     * @return bool True if the e-mail is valid, false otherwise.
      */
-    public static function isEmailValid($inputEmail)
+    public static function isEmailValid(string $inputEmail): bool
     {
-
-        return (filter_var($inputEmail, FILTER_VALIDATE_EMAIL));
-
+        // If validation failed, we leave the input variable untouched
+        return (filter_var($inputEmail, FILTER_VALIDATE_EMAIL) != false);
     }
 
     /**
@@ -94,11 +92,9 @@ class Validator
      * @param string $inputGroupName Group name input through some login form.
      * @return bool True if the group name is valid, false otherwise.
      */
-    public static function isGroupNameValid($inputGroupName)
+    public static function isGroupNameValid(string $inputGroupName): bool
     {
-
         return self::isStringSanitized($inputGroupName);
-
     }
 
     /**
@@ -108,9 +104,8 @@ class Validator
      * @param string $inputPassword Password input through some login form.
      * @return bool True if the group password is valid, false otherwise.
      */
-    public static function isPasswordValid($inputPassword)
+    public static function isPasswordValid(string $inputPassword): bool
     {
-
         // Clean the string
         $tmp = filter_var($inputPassword, FILTER_SANITIZE_STRING);
 
@@ -121,7 +116,6 @@ class Validator
 
         // Check if the input passed all tests
         return (strcmp($tmp, $inputPassword) == 0);
-
     }
 
     /**
@@ -131,11 +125,8 @@ class Validator
      * @param string $inputNote Generic text input through some login form.
      * @return bool True if the group name is valid, false otherwise.
      */
-    public static function isNoteValid($inputNote)
+    public static function isNoteValid(string $inputNote): bool
     {
-
         return self::isStringSanitized($inputNote);
-
     }
-
 }

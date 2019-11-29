@@ -1,4 +1,5 @@
 <?php
+
 /**
  * FileUploader
  *
@@ -37,7 +38,6 @@
  */
 
 use hrm\FileserverV2;
-use hrm\UtilV2;
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 require_once dirname(__FILE__) . '/../vendor/aarpon/php-traditional-server_old/handler.php';
@@ -70,7 +70,6 @@ if ($method == "POST") {
     // Assumes you have a chunking.success.endpoint set to point here with a query parameter of "done".
     // For example: /myserver/handlers/endpoint.php?done
     if (isset($_GET["done"])) {
-
         $result["success"] = true;
 
         // Make sure that we actually had chunks
@@ -81,7 +80,6 @@ if ($method == "POST") {
         }
 
         if ($result["success"] == true) {
-
             // Retrieve the final destination for the file
             $finalDir = $_SERVER["HTTP_DESTINATIONFOLDER"];
 
@@ -93,7 +91,6 @@ if ($method == "POST") {
             $b = FileserverV2::moveUploadedFile($fileToMove, $finalDir, $errorMessage);
 
             if (! $b) {
-
                 // If moving failed, inform the client.
                 $result["success"] = false;
 
@@ -103,12 +100,10 @@ if ($method == "POST") {
 
             // Clean up
             FileserverV2::removeDirAndContent($filesDir . "/" . $_POST["qquuid"]);
-
         }
+    } else {
+        // Handles upload requests
 
-    }
-    // Handles upload requests
-    else {
         // Call handleUpload() with the name of the folder, relative to PHP's getcwd()
         $result = $uploader->handleUpload($filesDir);
 
@@ -117,12 +112,11 @@ if ($method == "POST") {
     }
 
     echo json_encode($result);
-}
-// for delete file requests
-else if ($method == "DELETE") {
+} elseif ($method == "DELETE") {
+    // Delete file requests
+
     $result = $uploader->handleDelete($filesDir);
     echo json_encode($result);
-}
-else {
+} else {
     header("HTTP/1.0 405 Method Not Allowed");
 }
