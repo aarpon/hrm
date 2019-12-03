@@ -1656,7 +1656,8 @@ select {
 }
 
 select.snrselect {
-    width: 30%;
+    width: 80px;    
+    margin-left: 7px;
 }
 
 span.multichannel {
