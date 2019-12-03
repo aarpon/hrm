@@ -20,7 +20,7 @@ class SignalNoiseRatio extends NumericalArrayParameter
 {
 
     /**
-     * The deconvolution algorithm chosen.
+     * The array of chosen deconvolution algorithms. One per channel.
      * @var string
      */
     private $algorithm;
@@ -58,7 +58,7 @@ class SignalNoiseRatio extends NumericalArrayParameter
 
     /**
      * Sets the deconvolution algorithm.
-     * @param string $algorithm Sets the algorithm, 'cmle'/'qmle'/'gmle'.
+     * @param string $algorithm Sets the algorithm, 'cmle'/'qmle'/'gmle/skip'.
      */
     public function setAlgorithm($algorithm)
     {
@@ -77,24 +77,38 @@ class SignalNoiseRatio extends NumericalArrayParameter
      */
     public function displayString($numberOfChannels = 0)
     {
-        switch ($this->algorithm) {
-            case "qmle":
-                $snr = array("1" => "low", "2" => "fair", "3" => "good", "4" => "inf");
-                $value = array_slice($this->value, 0, $numberOfChannels);
-                $val = array();
-                for ($i = 0; $i < $numberOfChannels; $i++) {
-                    $val[$i] = $snr[$value[$i]];
-                }
-                $value = implode(", ", $val);
-                $result = $this->formattedName();
-                return $result . $value . "\n";
-                break;
-            case "gmle":
-            case "cmle" :
-            default:
-                return (parent::displayString($numberOfChannels));
-                break;
-        }
-    }
+        $snrQMLEArray = array("1" => "low", "2" => "fair", "3" => "good", "4" => "inf");
 
+        $result = $this->formattedName();
+
+        for ($ch = 0; $ch < $numberOfChannels; $ch++) {            
+            $snrChan = "*not set*";
+
+            switch ($this->algorithm[$ch]) {
+                case "skip":
+                    $snrChan = "-";
+                break;
+                case "qmle":        
+                    if (array_key_exists($this->value[$ch], $snrQMLEArray)) {
+                        $snrChan = $snrQMLEArray[$this->value[$ch]];                    
+                    }
+                break;                
+                case "gmle":
+                case "cmle" :                
+                default:
+                    if (isset($this->value[$ch]) && $this->value[$ch] != "") {
+                        $snrChan = $this->value[$ch];
+                    }                 
+            }
+
+            $result .= $snrChan;            
+            if ($ch != $numberOfChannels - 1) {
+                $result .= ", ";
+            }
+        }
+
+        $result .= "\n";
+
+        return $result;
+    }
 }
