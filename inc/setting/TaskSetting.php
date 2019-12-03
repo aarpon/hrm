@@ -194,9 +194,18 @@ class TaskSetting extends Setting
             $value[$i] = null;
             $name = "SignalNoiseRatio" . strtoupper($deconAlgorithms[$i]) . "$i";
             if (isset($postedParameters[$name])) {
-                $value[$i] = $postedParameters[$name];
+                
+                // We need to set a default value in case of skipped channels 
+                // so that the parameter can get processed. Unfortunately, 
+                // there's no default for this parameter in the DB.
+                if ($deconAlgorithms[$i] == "skip") {
+                    $value[$i] = 40;
+                } else {
+                    $value[$i] = $postedParameters[$name];
+                }
             }
         }
+
         /** @var SignalNoiseRatio $parameter */
         $parameter = $this->parameter("SignalNoiseRatio");
         $parameter->setValue($value);
