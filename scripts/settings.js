@@ -95,23 +95,23 @@ function seek(channel) {
 
 window.onunload = function() {if (snitch != null) snitch.close()};
 
-function switchSnrMode(algorithm, channel) {
-    if (algorithm == 'cmle') {
+function switchSnrMode(algorithm, channel) {    
+    if (algorithm.value === "cmle") {
         $('#cmle-snr-' + channel).show();
         $('#gmle-snr-' + channel).hide();
         $('#qmle-snr-' + channel).hide();
         $('#skip-snr-' + channel).hide();
-    } else if (algorithm == 'gmle') {
+    } else if (algorithm.value === "gmle") {
         $('#cmle-snr-' + channel).hide();
         $('#gmle-snr-' + channel).show();
         $('#qmle-snr-' + channel).hide();
         $('#skip-snr-' + channel).hide();
-    } else if (algorithm == 'qmle') {        
+    } else if (algorithm.value === "qmle") {                
         $('#cmle-snr-' + channel).hide();
         $('#gmle-snr-' + channel).hide();
         $('#qmle-snr-' + channel).show();
         $('#skip-snr-' + channel).hide();
-    } else if (algorithm == 'skip') {
+    } else if (algorithm.value === "skip") {
         $('#cmle-snr-' + channel).hide();
         $('#gmle-snr-' + channel).hide();
         $('#qmle-snr-' + channel).hide();
