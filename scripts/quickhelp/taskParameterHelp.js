@@ -16,6 +16,11 @@ window.helpText[ "method" ] =
   'but it only works well with noise-free images (for example, good quality ' +
   'widefield images). Alternatively, <b>GMLE</b> can be used as a fast, ' +
   'good-quality algorithm for noisy images (for example STED or low signal confocal).</p>' +
+  '<p>Different algorithms can be selected for different channels. ' +
+  'This is mostly relevant when mixing channels from different microscope ' +
+  'types in the same data set. For example, Confocal and Widefield channels ' + 
+  'from the same field of view, or two confocal channels ' +
+  'with different pinhole sizes. </p>' + 
   '<p>Choose <b>Skip</b> on selected channels to skip the deconvolution. ' +
   'This can also be useful for stabilization, chromatic aberration, ' +
   'correction or colocalization analysis of previously deconvolved data. ' +
