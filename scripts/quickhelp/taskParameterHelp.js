@@ -15,7 +15,13 @@ window.helpText[ "method" ] =
   'low-signal images; the <b>QMLE algorithm</b> is faster than CMLE, ' +
   'but it only works well with noise-free images (for example, good quality ' +
   'widefield images). Alternatively, <b>GMLE</b> can be used as a fast, ' +
-  'good-quality algorithm for noisy images (for example STED or low signal confocal).</p>';
+  'good-quality algorithm for noisy images (for example STED or low signal confocal).</p>' +
+  '<p>Choose <b>Skip</b> on selected channels to skip the deconvolution. ' +
+  'This can also be useful for stabilization, chromatic aberration, ' +
+  'correction or colocalization analysis of previously deconvolved data. ' +
+  'In order to accomplish this, set all channels to <b>Skip</b>, then set ' +
+  'the parameters of the stabilization, chromactic aberration or ' +
+  'colocalization tasks.</p>';
 
 window.helpText[ "snr" ] =
   '<p>The SNR controls the sharpness of the result: only with noise-free ' +
