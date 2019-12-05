@@ -151,8 +151,7 @@ $info = "<h3>Quick help</h3>" .
                         class="selection"
                         title="List of available images"
                         size="10"
-                        multiple="multiple"
-                        onchange="imageAction(this)">
+                        multiple="multiple">
                 </select>
             </div>
 
@@ -195,9 +194,7 @@ $info = "<h3>Quick help</h3>" .
                         class="selection"                        
                         title="List of selected images"
                         size="5"
-                        multiple="multiple"
-                        onclick="imageAction(this)"
-                        onchange="imageAction(this)">
+                        multiple="multiple">
                 </select>
             </div>
         </fieldset>
@@ -260,65 +257,14 @@ include("footer.inc.php");
 <script type="text/javascript">
 
     // Assign an action to each image
-    function imageAction (list) {
-
-        var n = list.selectedIndex;     // Which item is the first selected one
-
-        if( undefined === window.lastSelectedImgs ){
-            window.lastSelectedImgs = [];
-            window.lastSelectedImgsKey = [];
-            window.lastShownIndex = -1;
+    function imageAction(item) {
+        if (undefined === item) {
+            return;
         }
-
-        var snew = 0;
-
-        var count = 0;
-        for (var i=0; i<list.options.length; i++) {
-            if (list.options[i].selected) {
-                if( undefined === window.lastSelectedImgsKey[i] ){
-                    // New selected item
-                    snew = 1;
-                    n = i;
-                }
-                count++;
-            }
-        }
-
-        if (snew == 0) {
-            // deselected image
-            for (var i=0; i<window.lastSelectedImgs.length; i++) {
-                key = window.lastSelectedImgs[i];
-                if ( !list.options[key].selected ) {
-                    snew = -1
-                    n = key;
-                }
-            }
-        }
-
-        window.lastSelectedImgs = [];
-        window.lastSelectedImgsKey = [];
-        count = 0;
-        for (var i=0; i<list.options.length; i++) {
-            if (list.options[i].selected) {
-                window.lastSelectedImgs[count] = i;
-                window.lastSelectedImgsKey[i] = true;
-                count++;
-            }
-        }
-
-        if (count == 0 ) {
-            window.previewSelected = -1;
-        }
-
-        if ( n == window.lastShownIndex ) {
-            return
-        }
-        window.lastShownIndex = n;
-
-        index = parseInt(list[n].value);
-        filename = list[n].text;
-
+        var filename = item.text();
+        var index = parseInt(item.val());
         ajaxGetImgPreview(filename, index, 'src');
+        window.previewSelected = 1;
     }
 
     /**
@@ -332,6 +278,10 @@ include("footer.inc.php");
             window.selectImagesPageVariables.format = format;
             retrieveFileList(window.selectImagesPageVariables.format,
                 window.selectImagesPageVariables.autoseries)
+
+            // Hide any thumbnail
+            window.previewSelected = -1;
+            showInstructions();
         }
     }
 
@@ -346,6 +296,10 @@ include("footer.inc.php");
             window.selectImagesPageVariables.autoseries = autoseries;
             retrieveFileList(window.selectImagesPageVariables.format,
                 window.selectImagesPageVariables.autoseries)
+
+            // Hide any thumbnail
+            window.previewSelected = -1;
+            showInstructions();
         }
     }
 
@@ -353,6 +307,10 @@ include("footer.inc.php");
      * Reset the source file list on the server.
      */
     function reset() {
+        // Hide any thumbnail
+        window.previewSelected = -1;
+        showInstructions();
+
         // Call jsonGetFileFormats on the server
         JSONRPCRequest({
             method: 'jsonResetSourceFiles',
@@ -380,6 +338,10 @@ include("footer.inc.php");
             listOfSelectedFiles.push($(this).text());
         });
 
+        if (listOfSelectedFiles.length == 0) {
+            return;
+        }
+
         // Call jsonGetFileFormats on the server
         JSONRPCRequest({
             method: 'jsonRemoveFilesFromSelection',
@@ -400,6 +362,10 @@ include("footer.inc.php");
         $("#selectedimages option").each(function() {
             listOfSelectedFiles.push($(this).text());
         });
+
+        if (listOfSelectedFiles.length === 0) {
+            return;
+        }
 
         // Call jsonGetFileFormats on the server
         JSONRPCRequest({
@@ -429,10 +395,11 @@ include("footer.inc.php");
 
             // Add the new files
             $.each(response["selected_files"], function (value, filename) {
-                selectedImages.append($('<option>', {
-                    value: filename,
-                    text: filename
-                }));
+                var opt = $('<option>');
+                opt.val(filename);
+                opt.text(filename);
+                opt.click(function() { imageAction(opt); } );
+                selectedImages.append(opt);
             });
 
             // Enable/disable select element
@@ -446,10 +413,11 @@ include("footer.inc.php");
 
             // Add the new files
             $.each(response["files"], function (filteredFilename, value) {
-                filesPerFormat.append($('<option>', {
-                    value: value,
-                    text: filteredFilename
-                }));
+                var opt = $('<option>');
+                opt.val(value);
+                opt.text(filteredFilename);
+                opt.click(function() { imageAction(opt); } );
+                filesPerFormat.append(opt);
             });
 
             // Enable/disable select element
@@ -607,6 +575,8 @@ include("footer.inc.php");
         });
 
         $("#up").click(function() {
+            window.previewSelected = -1;
+            showInstructions();
             removeFromSelection(window.selectImagesPageVariables.format);
         });
 
