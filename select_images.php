@@ -24,6 +24,10 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     exit();
 }
 
+if (isset($_SESSION['jobcreated'])) {
+    unset($_SESSION['jobcreated']);
+}
+
 if (System::hasLicense("coloc")) {
     $numberSteps = 5;
 } else {
