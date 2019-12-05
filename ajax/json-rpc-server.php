@@ -260,12 +260,9 @@ switch ($method) {
         $json = jsonGetFileFormats();
         break;
 
-    case 'jsonGetSelectedFiles':
-        $json = jsonGetSelectedFiles();
-        break;
-
     case 'jsonResetSourceFiles':
-        $json = jsonResetSourceFiles();
+        $format = $params[0];
+        $json = jsonResetSourceFiles($format);
         break;
 
     case 'jsonAddFilesToSelection':
@@ -833,8 +830,8 @@ function jsonPreviewSharedTemplate($template, $type)
 
 /**
  * Scan the source folder and filter/condense as requested.
- * @param $format File format.
- * @param $autoseries True if possibe series should be condensed, false otherwise.
+ * @param $format string File format to use for filtering.
+ * @param $autoseries boolean True if series should be condensed, false otherwise.
  * @return string JSON-encoded response.
  */
 function jsonScanSourceFiles($format, $autoseries)
@@ -878,40 +875,14 @@ function jsonScanSourceFiles($format, $autoseries)
         }
     }
 
-    // Get already selected files
     $selectedFiles = $fileServer->selectedFiles();
 
-    // Are the selected files compatible with the current format?
-    if (count($selectedFiles) > 0 && !$fileServer->checkAgainstFormat($selectedFiles[0], $format)) {
-        $fileServer->removeAllFilesFromSelection();
-        $selectedFiles = [];
-    }
-
-    // Sanitize and filter the file names.
-    $keyArr = array();
-    if ($allFiles != null) {
-        // Filter by file type
-        foreach ($allFiles as $key => $file) {
-            if ($fileServer->checkAgainstFormat($file, $format)) {
-                // Consecutive spaces are collapsed into one space in HTML.
-                // Hence '&#32;' to correct this when the file has more spaces.
-                $filteredFile = str_replace(' ', '&#32;', $file);
-                $exists = false;
-                foreach ($selectedFiles as $skey => $sfile) {
-                    if (strcmp($sfile, $file) == 0) {
-                        $exists = true;
-                    }
-                }
-                if (!$exists) {
-                    $keyArr[$filteredFile] = $key;
-                }
-            }
-        }
-    }
+    // Prepare the lists to be returned to the client
+    $preparedLists = processFilesAndSelectedFilesLists($allFiles, $selectedFiles, $fileServer, $format);
 
     // Add the file list to the result json object
-    $json["files"] = $keyArr;
-    $json["selected_files"] = $selectedFiles;
+    $json["files"] = $preparedLists["files"];
+    $json["selected_files"] = $preparedLists["selected_files"];
 
     // Return as a JSON string
     return (json_encode($json));
@@ -956,41 +927,11 @@ function jsonGetFileFormats()
 }
 
 /**
- * Retrieve the current list of selected files.
- * @return string JSON-encoded response.
- */
-function jsonGetSelectedFiles()
-{
-    // Prepare the output array
-    $json = initJSONArray();
-
-    // Is the session active?
-    if (!isset($_SESSION) || !isset($_SESSION['fileserver'])) {
-        $json['success'] = "false";
-        $json['message'] = "Could not access Fileserver object in session!";
-        $json['files'] = array();
-        return (json_encode($json));
-    }
-
-    // Get the Fileserver object
-    $fileServer = $_SESSION['fileserver'];
-
-    // Get already selected files
-    $selectedFiles = $fileServer->selectedFiles();
-
-    // Add the file list to the result json object
-    $json["selected_files"] = $selectedFiles;
-
-    // Return as a JSON string
-    return (json_encode($json));
-}
-
-/**
  * Reset the list of source files and rescan on request.
- * @param $rescan bool If true, rescan; otherwise, leave the list empty.
+ * @param $format String File format.
  * @return string JSON-encoded response.
  */
-function jsonResetSourceFiles()
+function jsonResetSourceFiles($format)
 {
     // Prepare the output array
     $json = initJSONArray();
@@ -1008,6 +949,21 @@ function jsonResetSourceFiles()
 
     // Reset the list of files
     $fileServer->resetFiles();
+
+    // Reset the selection
+    $fileServer->removeAllFilesFromSelection();
+
+    // Prepare the lists to be returned to the client
+    $preparedLists = processFilesAndSelectedFilesLists(
+        $fileServer->getCurrentFileList(),
+        $fileServer->selectedFiles(),
+        $fileServer,
+        $format
+    );
+
+    // Add the file list to the result json object
+    $json["files"] = $preparedLists["files"];
+    $json["selected_files"] = $preparedLists["selected_files"];
 
     // Return as a JSON string
     return (json_encode($json));
@@ -1044,40 +1000,28 @@ function jsonAddFilesToSelection($fileList, $format)
     // Get the Fileserver object
     $fileServer = $_SESSION['fileserver'];
 
+//    // Sanitize file names
+//    for ($i = 0; $i < count($fileList); $i++) {
+//        $fileList[$i] = str_replace('\xa0', ' ', $fileList[$i]);
+//    }
+
     // Add the new files to the selection
     $fileServer ->addFilesToSelection($fileList);
 
     // Get updated selection list
     $selectedFiles = $fileServer->selectedFiles();
 
-    // Remove the selected files from the complete list
-    $filteredFiles = array_diff($fileServer->getCurrentFileList(), $selectedFiles);
+    // Prepare the lists to be returned to the client
+    $preparedLists = processFilesAndSelectedFilesLists(
+        $fileServer->getCurrentFileList(),
+        $selectedFiles,
+        $fileServer,
+        $format
+    );
 
-    // Sanitize and filter the file names.
-    $keyArr = array();
-    if ($filteredFiles != null) {
-        // Filter by file type
-        foreach ($filteredFiles as $key => $file) {
-            if ($fileServer->checkAgainstFormat($file, $format)) {
-                // Consecutive spaces are collapsed into one space in HTML.
-                // Hence '&#32;' to correct this when the file has more spaces.
-                $filteredFile = str_replace(' ', '&#32;', $file);
-                $exists = false;
-                foreach ($selectedFiles as $skey => $sfile) {
-                    if (strcmp($sfile, $file) == 0) {
-                        $exists = true;
-                    }
-                }
-                if (!$exists) {
-                    $keyArr[$filteredFile] = $key;
-                }
-            }
-        }
-    }
-
-    // Return them
-    $json["files"] = $keyArr;
-    $json["selected_files"] = $selectedFiles;
+    // Add the file list to the result json object
+    $json["files"] = $preparedLists["files"];
+    $json["selected_files"] = $preparedLists["selected_files"];
 
     // Return as a JSON string
     return (json_encode($json));
@@ -1103,6 +1047,11 @@ function jsonRemoveFilesFromSelection($fileList, $format)
         return json_encode($json);
     }
 
+//    // Sanitize file names
+//    for ($i = 0; $i < count($fileList); $i++) {
+//        $fileList[$i] = str_replace('\xa0', ' ', $fileList[$i]);
+//    }
+
     // Is the session active?
     if (!isset($_SESSION) || !isset($_SESSION['fileserver'])) {
         $json['success'] = "false";
@@ -1120,35 +1069,62 @@ function jsonRemoveFilesFromSelection($fileList, $format)
     // Get updated selection list
     $selectedFiles = $fileServer->selectedFiles();
 
+    // Prepare the lists to be returned to the client
+    $preparedLists = processFilesAndSelectedFilesLists(
+        $fileServer->getCurrentFileList(),
+        $selectedFiles,
+        $fileServer,
+        $format
+    );
+
+    // Add the file list to the result json object
+    $json["files"] = $preparedLists["files"];
+    $json["selected_files"] = $preparedLists["selected_files"];
+
+    // Return as a JSON string
+    return (json_encode($json));
+}
+
+/*
+ *
+ * SUPPORT FUNCTIONS
+ *
+ */
+
+function processFilesAndSelectedFilesLists($allFiles, $selectedFiles, $fileServer, $format)
+{
+    // Are the selected files compatible with the current format?
+    if (count($selectedFiles) > 0 && !$fileServer->checkAgainstFormat($selectedFiles[0], $format)) {
+        $fileServer->removeAllFilesFromSelection();
+        $selectedFiles = [];
+    }
+
     // Remove the selected files from the complete list
-    $filteredFiles = array_diff($fileServer->getCurrentFileList(), $selectedFiles);
+    $allFiles = array_diff($allFiles, $selectedFiles);
 
     // Sanitize and filter the file names.
-    $keyArr = array();
-    if ($filteredFiles != null) {
+    $files = array();
+    if ($allFiles != null) {
         // Filter by file type
-        foreach ($filteredFiles as $key => $file) {
+        foreach ($allFiles as $key => $file) {
             if ($fileServer->checkAgainstFormat($file, $format)) {
                 // Consecutive spaces are collapsed into one space in HTML.
-                // Hence '&#32;' to correct this when the file has more spaces.
-                $filteredFile = str_replace(' ', '&#32;', $file);
-                $exists = false;
-                foreach ($selectedFiles as $skey => $sfile) {
-                    if (strcmp($sfile, $file) == 0) {
-                        $exists = true;
-                    }
-                }
-                if (!$exists) {
-                    $keyArr[$filteredFile] = $key;
-                }
+                // Hence '\xa0' to correct this when the file has more spaces.
+//                $filteredFile = str_replace(' ', '\xa0', $file);
+//                $files[] = $filteredFile;
+                $files[] = $file;
             }
         }
     }
 
-    // Return them
-    $json["files"] = $keyArr;
-    $json["selected_files"] = $selectedFiles;
+//    // Sanitize and filter the file names.
+//    for ($i = 0; $i < count($selectedFiles); $i++) {
+//        $selectedFiles[$i] = str_replace(' ', '\xa0', $selectedFiles[$i]);
+//    }
 
-    // Return as a JSON string
-    return (json_encode($json));
+    // Returned the two lists
+    $preparedLists["files"] = $files;
+    $preparedLists["selected_files"] = $selectedFiles;
+
+    return $preparedLists;
 }

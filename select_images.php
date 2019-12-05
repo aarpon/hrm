@@ -302,7 +302,7 @@ include("footer.inc.php");
     /**
      * Reset the source file list on the server.
      */
-    function reset() {
+    function reset(format) {
         // Hide any thumbnail
         window.previewSelected = -1;
         showInstructions();
@@ -310,7 +310,7 @@ include("footer.inc.php");
         // Call jsonGetFileFormats on the server
         JSONRPCRequest({
             method: 'jsonResetSourceFiles',
-            params: []
+            params: [format]
         }, function (response) {
             if (response["success"] === "false") {
                 // Display error message
@@ -408,10 +408,10 @@ include("footer.inc.php");
             filesPerFormat.empty();
 
             // Add the new files
-            $.each(response["files"], function (filteredFilename, value) {
+            $.each(response["files"], function (value, filename) {
                 var opt = $('<option>');
-                opt.val(value);
-                opt.text(filteredFilename);
+                opt.val(filename);
+                opt.text(filename);
                 opt.click(function() { imageAction(opt); } );
                 filesPerFormat.append(opt);
             });
@@ -505,44 +505,6 @@ include("footer.inc.php");
         });
     }
 
-    /**
-     * Retrieve the list of selected files from the server
-     */
-    function retrieveSelectedFileList() {
-        // Call jsonGetFileFormats on the server
-        JSONRPCRequest({
-            method: 'jsonGetSelectedFiles',
-            params: []
-        }, function (response) {
-
-            if (response["success"] === "false") {
-
-                // Display error message
-                $("#message p").text(response["message"]);
-
-            } else {
-
-                // Get the 'selectedimages' select element
-                var selectedImages = $("#selectedimages");
-
-                // Remove all options
-                selectedImages.empty();
-
-                // Add the new files
-                $.each(response["selected_files"], function (value, filename) {
-                    console.log(filename);
-                    selectedImages.append($('<option>', {
-                        value: filename,
-                        text : filename
-                    }));
-                });
-
-                // Enable/disable select element
-                selectedImages.prop('disabled', response["selected_files"].length === 0);
-            }
-        });
-    }
-
     // Set everything up and retrieve the file list from the server
     $(document).ready(function () {
 
@@ -563,7 +525,7 @@ include("footer.inc.php");
 
         // Add callbacks
         $("#update").click(function() {
-            reset();
+            reset(window.selectImagesPageVariables.format);
         });
 
         $("#down").click(function() {
@@ -585,9 +547,6 @@ include("footer.inc.php");
         // Retrieve the file list from the server
         retrieveFileList(window.selectImagesPageVariables.format,
             window.selectImagesPageVariables.autoseries);
-
-        // Retrieve the selected file list from the server
-        retrieveSelectedFileList();
     })
 
 </script>
