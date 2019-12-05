@@ -833,10 +833,21 @@ function jsonPreviewSharedTemplate($template, $type)
 
 /**
  * Scan the source folder and filter/condense as requested.
+ * @param $format File format.
+ * @param $autoseries True if possibe series should be condensed, false otherwise.
  * @return string JSON-encoded response.
  */
 function jsonScanSourceFiles($format, $autoseries)
 {
+    // Make sure to store autoseries in the session
+    if (strtolower($autoseries) === "true" || $autoseries === true) {
+        $_SESSION["autoseries"] = "TRUE";
+        $autoseries = true;
+    } else {
+        $_SESSION["autoseries"] = "FALSE";
+        $autoseries = false;
+    }
+
     // Prepare the output array
     $json = initJSONArray();
 
@@ -856,15 +867,8 @@ function jsonScanSourceFiles($format, $autoseries)
     // Get the Fileserver object
     $fileServer = $_SESSION['fileserver'];
 
-    // Store the autoseries flag
-    if ($autoseries === "true" || $autoseries === true) {
-        $fileServer->setAutoSeries(true);
-    } else {
-        $fileServer->setAutoSeries(false);
-    }
-
     // Should we condense the files in the source folder?
-    if ($fileServer->autoSeries() == true) {
+    if ($autoseries === true) {
         $allFiles = $fileServer->condenseSeries();
     } else {
         if ($fileServer->hasFiles()) {

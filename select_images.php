@@ -24,10 +24,6 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     exit();
 }
 
-if (isset($_SESSION['jobcreated'])) {
-    unset($_SESSION['jobcreated']);
-}
-
 if (System::hasLicense("coloc")) {
     $numberSteps = 5;
 } else {
@@ -551,8 +547,8 @@ include("footer.inc.php");
     $(document).ready(function () {
 
         <?php
-        if (isset($_SESSION['fileserver'])) {
-            $autoseries = json_encode($_SESSION['fileserver']->autoSeries());
+        if (isset($_SESSION['autoseries'])) {
+            $autoseries = json_encode($_SESSION['autoseries']);
         } else {
             $autoseries = json_encode(false);
         }

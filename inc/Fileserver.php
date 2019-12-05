@@ -78,12 +78,6 @@ class Fileserver
     private $expandSubImages = true;
 
     /**
-     * Toggles whether series should be automatically condensed.
-     * @var bool
-     */
-    private $autoSeries = false;
-
-    /**
      * Array of valid image extensions.
      * @var array
      */
@@ -196,24 +190,6 @@ class Fileserver
     {
         $folder = $this->destinationFolder() . "/" . $desc->relativeSourcePath();
         return $folder;
-    }
-
-    /**
-     * Returns the autoSeries flag.
-     * @return bool
-     */
-    public function autoSeries()
-    {
-        return $this->autoSeries;
-    }
-
-    /**
-     * Sets the autoSeries flag.
-     * @param autoseries bool Autoseries flag.
-     */
-    public function setAutoSeries($autoseries)
-    {
-        $this->autoSeries = $autoseries;
     }
 
     /**
