@@ -135,7 +135,7 @@ class DatabaseProxy extends AbstractProxy {
         $db = DatabaseConnection::get();
         $sql = "SELECT email FROM username WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($username));
-        if ($result === false ) {
+        if ($result === false) {
             Log::error("Could not retrieve e-mail address for user $username.");
             return null;
         }
@@ -156,7 +156,7 @@ class DatabaseProxy extends AbstractProxy {
         $db = DatabaseConnection::get();
         $sql = "SELECT research_group FROM username WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($username));
-        if ($result === false ) {
+        if ($result === false) {
             Log::error("Could not retrieve research group for user $username.");
             return null;
         }
