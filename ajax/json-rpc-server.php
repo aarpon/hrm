@@ -148,25 +148,25 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 // Check that we have a valid request
 if (!isset($_POST)) {
     // No request received.
-    $json = "No request received.";
+    $json = array("success" => "false", "message" => "No request received.");
     header("Content-Type: application/json", true, 405);
-    echo $json;
+    echo json_encode($json);
     return true;
 }
 
 // Do we jave a JSON-RPC 2.0 request? We do NOT test for the value of id.
 if (!(isset($_POST['id']) && isset($_POST['jsonrpc']) && $_POST['jsonrpc'] == "2.0")) {
     // Invalid JSON-RPC 2.0 call
-    $json = "Invalid JSON-RPC 2.0 call.";
+    $json = array("success" => "false", "message" => "Invalid JSON-RPC 2.0 call.");
     header("Content-Type: application/json", true, 405);
-    echo $json;
+    echo json_encode($json);
     return true;
 }
 
 // Do we have a method with params?
 if (!isset($_POST['method']) && !isset($_POST['params'])) {
     // Expected 'method' and 'params'
-    $json = "Expected 'method' and 'params'.";
+    $json = array("success" => "false", "message" => "Expected 'method' and 'params'.");
     header("Content-Type: application/json", true, 405);
     echo $json;
     return true;
@@ -977,7 +977,7 @@ function jsonResetSourceFiles($format)
 
 /**
  * Add list of files to current selection.
- * @param $fileList array List of file names.
+ * @param $fileList String JSON encoded (stringified) list of file names.
  * @return string JSON-encoded response.
  */
 function jsonAddFilesToSelection($fileList, $format)
@@ -988,6 +988,9 @@ function jsonAddFilesToSelection($fileList, $format)
     // Initialize output
     $json["files"] = [];
     $json["selected_files"] = [];
+
+    // The $fileList was stringified on the client; so we need to decode it first
+    $fileList = json_decode($fileList);
 
     // Are there files to add?
     if (count($fileList) == 0) {
@@ -1036,7 +1039,7 @@ function jsonAddFilesToSelection($fileList, $format)
 
 /**
  * Remove list of files from current selection.
- * @param $fileList array List of file names.
+ * @param $fileList String JSON encoded (stringified) list of file names.
  * @return string JSON-encoded response.
  */
 function jsonRemoveFilesFromSelection($fileList, $format)
@@ -1047,6 +1050,9 @@ function jsonRemoveFilesFromSelection($fileList, $format)
     // Initialize output
     $json["files"] = [];
     $json["selected_files"] = [];
+
+    // The $fileList was stringified on the client; so we need to decode it first
+    $fileList = json_decode($fileList);
 
     // Are there files to remove?
     if (count($fileList) == 0) {

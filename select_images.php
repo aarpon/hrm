@@ -144,7 +144,7 @@ $info = "<h3>Quick help</h3>" .
         </fieldset>
 
         <fieldset>
-            <legend>Images available on server</legend>
+            <legend id="images_legend">Images available on server</legend>
             <div id="userfiles" onmouseover="showPreview()">
                 <select id="filesPerFormat"
                         name="userfiles[]"
@@ -187,7 +187,7 @@ $info = "<h3>Quick help</h3>" .
         </div>
 
         <fieldset>
-            <legend>Selected images</legend>
+            <legend id="selection_legend">Selected images</legend>
             <div id="selectedfiles" onmouseover="showPreview()">
                 <select id="selectedimages"
                         name="selectedfiles[]"
@@ -332,6 +332,10 @@ include("footer.inc.php");
      * Remove current selection from selected files
      */
     function removeFromSelection(format) {
+
+        // Inform
+        $("#selection_legend").text("Selected images: updating...");
+
         // Get selected files from filesPerFormat
         var listOfSelectedFiles = [];
         $("#selectedimages option:selected").each(function() {
@@ -339,17 +343,27 @@ include("footer.inc.php");
         });
 
         if (listOfSelectedFiles.length == 0) {
+            // Restore legend text
+            $("#selection_legend").text("Selected images");
+
             return;
         }
+
+        // Since the array can be large, we stringify it to prevent
+        // that the ajax post truncates it.
+        var listOfSelectedFilesString = JSON.stringify(listOfSelectedFiles);
 
         // Call jsonGetFileFormats on the server
         JSONRPCRequest({
             method: 'jsonRemoveFilesFromSelection',
-            params: [listOfSelectedFiles, format]
+            params: [listOfSelectedFilesString, format]
 
         }, function (response) {
             // Update relevant fields
             updateFilesAndSelectedFiles(response);
+
+            // Restore legend text
+            $("#selection_legend").text("Selected images");
         });
     }
 
@@ -357,6 +371,10 @@ include("footer.inc.php");
      * Remove everything from selected files
      */
     function removeAllFromSelection(format) {
+
+        // Inform
+        $("#selection_legend").text("Selected images: updating...");
+
         // Get selected files from filesPerFormat
         var listOfSelectedFiles = [];
         $("#selectedimages option").each(function() {
@@ -364,17 +382,27 @@ include("footer.inc.php");
         });
 
         if (listOfSelectedFiles.length === 0) {
+            // Restore legend text
+            $("#selection_legend").text("Selected images");
+
             return;
         }
+
+        // Since the array can be large, we stringify it to prevent
+        // that the ajax post truncates it.
+        var listOfSelectedFilesString = JSON.stringify(listOfSelectedFiles);
 
         // Call jsonGetFileFormats on the server
         JSONRPCRequest({
             method: 'jsonRemoveFilesFromSelection',
-            params: [listOfSelectedFiles, format]
+            params: [listOfSelectedFilesString, format]
 
         }, function (response) {
             // Update relevant fields
             updateFilesAndSelectedFiles(response);
+
+            // Restore legend text
+            $("#selection_legend").text("Selected images");
         });
     }
 
@@ -429,16 +457,31 @@ include("footer.inc.php");
      * Add files to selection
      */
     function addToSelection(format) {
+
+        // Inform
+        $("#selection_legend").text("Selected images: updating...");
+
         // Get selected files from filesPerFormat
         var listOfSelectedFiles = [];
         $("#filesPerFormat option:selected").each(function() {
             listOfSelectedFiles.push($(this).text());
         });
 
+        if (listOfSelectedFiles.length === 0) {
+            // Restore legend text
+            $("#selection_legend").text("Selected images");
+
+            return;
+        }
+
+        // Since the array can be large, we stringify it to prevent
+        // that the ajax post truncates it.
+        var listOfSelectedFilesString = JSON.stringify(listOfSelectedFiles);
+
         // Call jsonGetFileFormats on the server
         JSONRPCRequest({
             method: 'jsonAddFilesToSelection',
-            params: [listOfSelectedFiles, format]
+            params: [listOfSelectedFilesString, format]
         }, function (response) {
             if (response["success"] === "false") {
                 // Display error message
@@ -447,6 +490,9 @@ include("footer.inc.php");
             } else {
                 // Update relevant fields
                 updateFilesAndSelectedFiles(response);
+
+                // Restore legend text
+                $("#selection_legend").text("Selected images");
             }
         });
     }
@@ -493,6 +539,9 @@ include("footer.inc.php");
      * @param autoseries: whether to condense series or not.
      */
     function retrieveFileList(format, autoseries) {
+        // Inform
+        $("#images_legend").text("Images available on server: loading...");
+
         // Call jsonScanSourceFiles on the server
         JSONRPCRequest({
             method: 'jsonScanSourceFiles',
@@ -505,12 +554,18 @@ include("footer.inc.php");
             } else {
                 // Update relevant fields
                 updateFilesAndSelectedFiles(response);
+
+                // Reset text
+                $("#images_legend").text("Images available on server");
             }
         });
     }
 
     // Set everything up and retrieve the file list from the server
     $(document).ready(function () {
+        // Reset texts
+        $("#images_legend").text("Images available on server");
+        $("#selection_legend").text("Selected images");
 
         <?php
         if (isset($_SESSION['autoseries'])) {
