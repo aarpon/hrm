@@ -2327,3 +2327,7 @@ div.StedDeplModeValues {
     margin-right: 5px;
     border: 1px solid lightgray;
 }
+
+.highlighted {
+    color: red;
+}

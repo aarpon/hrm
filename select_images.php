@@ -8,7 +8,6 @@ use hrm\setting\ParameterSetting;
 use hrm\System;
 use hrm\Util;
 
-
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 session_start();
@@ -373,7 +372,7 @@ include("footer.inc.php");
     function removeAllFromSelection(format) {
 
         // Inform
-        $("#selection_legend").text("Selected images: updating...");
+        addToLegend($("#selection_legend"), "Selected images", "Updating...", "highlighted");
 
         // Get selected files from filesPerFormat
         var listOfSelectedFiles = [];
@@ -383,7 +382,7 @@ include("footer.inc.php");
 
         if (listOfSelectedFiles.length === 0) {
             // Restore legend text
-            $("#selection_legend").text("Selected images");
+            revertLegend($("#selection_legend"), "Selected images");
 
             return;
         }
@@ -402,7 +401,7 @@ include("footer.inc.php");
             updateFilesAndSelectedFiles(response);
 
             // Restore legend text
-            $("#selection_legend").text("Selected images");
+            revertLegend($("#selection_legend"), "Selected images");
         });
     }
 
@@ -459,7 +458,7 @@ include("footer.inc.php");
     function addToSelection(format) {
 
         // Inform
-        $("#selection_legend").text("Selected images: updating...");
+        addToLegend($("#selection_legend"), "Selected images", "Updating...", "highlighted");
 
         // Get selected files from filesPerFormat
         var listOfSelectedFiles = [];
@@ -469,8 +468,7 @@ include("footer.inc.php");
 
         if (listOfSelectedFiles.length === 0) {
             // Restore legend text
-            $("#selection_legend").text("Selected images");
-
+            revertLegend($("#selection_legend"), "Selected images");
             return;
         }
 
@@ -492,7 +490,7 @@ include("footer.inc.php");
                 updateFilesAndSelectedFiles(response);
 
                 // Restore legend text
-                $("#selection_legend").text("Selected images");
+                revertLegend($("#selection_legend"), "Selected images");
             }
         });
     }
@@ -539,8 +537,9 @@ include("footer.inc.php");
      * @param autoseries: whether to condense series or not.
      */
     function retrieveFileList(format, autoseries) {
+
         // Inform
-        $("#images_legend").text("Images available on server: loading...");
+        addToLegend($("#images_legend"), "Images available on server", "Loading...", "highlighted");
 
         // Call jsonScanSourceFiles on the server
         JSONRPCRequest({
@@ -556,9 +555,19 @@ include("footer.inc.php");
                 updateFilesAndSelectedFiles(response);
 
                 // Reset text
-                $("#images_legend").text("Images available on server");
+                revertLegend($("#images_legend"), "Images available on server");
             }
         });
+    }
+
+    // Add an highlighted message to a given legend for long-running processes
+    function addToLegend(divObj, baseText, extendedText, className) {
+        divObj.html(baseText + ": " + "<span class='" + className + "'>" + extendedText + "</span>");
+    }
+
+    // Revert a given legend text
+    function revertLegend(divObj, baseText) {
+        divObj.text(baseText);
     }
 
     // Set everything up and retrieve the file list from the server
@@ -607,5 +616,4 @@ include("footer.inc.php");
         retrieveFileList(window.selectImagesPageVariables.format,
             window.selectImagesPageVariables.autoseries);
     })
-
 </script>
