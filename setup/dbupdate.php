@@ -5969,8 +5969,24 @@ if ($current_revision < $n) {
     $record["value"]       = 'IMS (Imaris Classic)';
     $record["translation"] = 'Imaris';
     $record["isDefault"]   = 'f';
-    if (!$db->AutoExecute($tabname, $record, 'UPDATE', "parameter='OutputFileFormat' and translation='Imaris'")) {
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', 
+        "parameter='OutputFileFormat' and translation='Imaris'")) {
         $msg = "Could not correct entry for OutputFileFormat Imaris in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Correct CZI translation for alphabetical sorts.
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'ImageFileFormat';
+    $record["value"]       = 'czi';
+    $record["translation"] = 'Zeiss CZI (*.czi)';
+    $record["isDefault"]   = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE',
+        "parameter='ImageFileFormat' and value='czi'")) {
+        $msg = "Could not correct entry for InputFileFormat CZI in possible_values.";
         write_message($msg);
         write_to_error($msg);
         return false;

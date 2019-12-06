@@ -906,11 +906,17 @@ function jsonGetFileFormats()
 
     $fileFormat = $parameterSetting->parameter("ImageFileFormat");
     $formats = $fileFormat->possibleValues();
-    sort($formats);
+
+    // We want to sort the fields alphabetically on their translations.
+    $translations = array();
+    foreach ($formats as $key => $format) {
+        $translations[$key] = $fileFormat->translatedValueFor($format);
+    }
+    sort($translations);
 
     $keyArr = array();
-    foreach ($formats as $key => $format) {
-        $translation = $fileFormat->translatedValueFor($format);
+    foreach ($translations as $key => $translation) {
+        $format = $formats[$key];        
 
         if ($format == "all") {
             $translation .= " Please choose a file format ...";
