@@ -522,6 +522,10 @@ if (isset($_GET['home'])) {
     exit();
 }
 
+// Keep track of where we are coming from
+$_SESSION['filemanager_referer'] = $_SERVER['HTTP_REFERER'];
+$_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
+
 // Ask the user to login if necessary.
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     header("Location: " . "login.php");
