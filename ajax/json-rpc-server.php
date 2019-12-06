@@ -1000,10 +1000,11 @@ function jsonAddFilesToSelection($fileList, $format)
     // Get the Fileserver object
     $fileServer = $_SESSION['fileserver'];
 
-//    // Sanitize file names
-//    for ($i = 0; $i < count($fileList); $i++) {
-//        $fileList[$i] = str_replace('\xa0', ' ', $fileList[$i]);
-//    }
+    // // Sanitize file names
+    // @TODO Disabled for now.
+    // for ($i = 0; $i < count($fileList); $i++) {
+    //     $fileList[$i] = str_replace('&nbsp;', ' ', $fileList[$i]);
+    // }
 
     // Add the new files to the selection
     $fileServer ->addFilesToSelection($fileList);
@@ -1047,10 +1048,11 @@ function jsonRemoveFilesFromSelection($fileList, $format)
         return json_encode($json);
     }
 
-//    // Sanitize file names
-//    for ($i = 0; $i < count($fileList); $i++) {
-//        $fileList[$i] = str_replace('\xa0', ' ', $fileList[$i]);
-//    }
+    // // Sanitize file names
+    // @TODO Disabled for now.
+    // for ($i = 0; $i < count($fileList); $i++) {
+    //     $fileList[$i] = str_replace('&nbsp;', ' ', $fileList[$i]);
+    // }
 
     // Is the session active?
     if (!isset($_SESSION) || !isset($_SESSION['fileserver'])) {
@@ -1109,18 +1111,21 @@ function processFilesAndSelectedFilesLists($allFiles, $selectedFiles, $fileServe
         foreach ($allFiles as $key => $file) {
             if ($fileServer->checkAgainstFormat($file, $format)) {
                 // Consecutive spaces are collapsed into one space in HTML.
-                // Hence '\xa0' to correct this when the file has more spaces.
-//                $filteredFile = str_replace(' ', '\xa0', $file);
-//                $files[] = $filteredFile;
+                // Hence '&nbsp;' to correct this when the file has more spaces.
+                // @TODO Disabled for now.
+                // $filteredFile = str_replace(' ', '&nbsp;', $file);
+                // $files[] = $filteredFile;
                 $files[] = $file;
             }
         }
     }
 
-//    // Sanitize and filter the file names.
-//    for ($i = 0; $i < count($selectedFiles); $i++) {
-//        $selectedFiles[$i] = str_replace(' ', '\xa0', $selectedFiles[$i]);
-//    }
+
+    // // Sanitize and filter the file names.
+    // @TODO Disabled for now.
+    // for ($i = 0; $i < count($selectedFiles); $i++) {
+    //     $selectedFiles[$i] = str_replace(' ', '&nbsp;', $selectedFiles[$i]);
+    // }
 
     // Returned the two lists
     $preparedLists["files"] = $files;
