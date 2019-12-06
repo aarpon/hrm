@@ -912,7 +912,9 @@ function jsonGetFileFormats()
     foreach ($formats as $key => $format) {
         $translations[$key] = $fileFormat->translatedValueFor($format);
     }
-    sort($translations);
+
+    // This sort function maintains the key/value associations.
+    natcasesort($translations);
 
     $keyArr = array();
     foreach ($translations as $key => $translation) {
