@@ -23,13 +23,15 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  *
  * @package hrm
  */
-class DatabaseProxy extends AbstractProxy {
-
+class DatabaseProxy extends AbstractProxy
+{
     /**
      * Constructor: instantiates an DatabaseProxy object.
      * No parameters are passed to the constructor.
      */
-    public function __construct() { }
+    public function __construct()
+    {
+    }
 
     /**
      * Return a friendly name for the proxy to be displayed in the ui.
@@ -44,19 +46,28 @@ class DatabaseProxy extends AbstractProxy {
      * Return whether the proxy allows changing the e-mail address.
      * @return bool True if the e-mail address can be changed, false otherwise.
      */
-    public function canModifyEmailAddress() { return true; }
+    public function canModifyEmailAddress()
+    {
+        return true;
+    }
 
     /**
      * Return whether the proxy allows changing the group.
      * @return bool True if the group can be changed, false otherwise.
      */
-    public function canModifyGroup() { return true; }
+    public function canModifyGroup()
+    {
+        return true;
+    }
 
     /**
      * Return whether the proxy allows changing the password.
      * @return bool True if the password can be changed, false otherwise.
      */
-    public function canModifyPassword() { return true; }
+    public function canModifyPassword()
+    {
+        return true;
+    }
 
     /**
      * Authenticates the User with given username and password against the
@@ -65,8 +76,8 @@ class DatabaseProxy extends AbstractProxy {
      * @param string $password Plain password for authentication.
      * @return bool True if authentication succeeded, false otherwise.
     */
-    public function authenticate($username, $password) {
-
+    public function authenticate($username, $password)
+    {
         // Get the User password hash
         $dbPassword = $this->retrievePassword($username);
         if (!$dbPassword) {
@@ -75,7 +86,6 @@ class DatabaseProxy extends AbstractProxy {
 
         // If the User's status is 'outdated', we need to upgrade its password.
         if ($this->isOutdated($username)) {
-
             // First try authenticating against the old md5-encrypted password
             $success = ($dbPassword == md5($password));
 
@@ -88,9 +98,11 @@ class DatabaseProxy extends AbstractProxy {
             // logs in to upgrade the database from revision 14 to 15!
             // @TODO Remove this at next database revision 16.
             if (System::getDBCurrentRevision() >= 15) {
-                $newHashedPassword = password_hash($password,
+                $newHashedPassword = password_hash(
+                    $password,
                     UserConstants::HASH_ALGORITHM,
-                    array('cost' => UserConstants::HASH_ALGORITHM_COST));
+                    array('cost' => UserConstants::HASH_ALGORITHM_COST)
+                );
                 $this->setPassword($username, $newHashedPassword);
             }
 
@@ -112,14 +124,16 @@ class DatabaseProxy extends AbstractProxy {
         }
 
         // Re-hash password if necessary
-        if (password_needs_rehash($dbPassword,
-            UserConstants::HASH_ALGORITHM,
-            array('cost' => UserConstants::HASH_ALGORITHM_COST)) === true) {
-
+        if (
+            password_needs_rehash(
+                $dbPassword,
+                UserConstants::HASH_ALGORITHM,
+                array('cost' => UserConstants::HASH_ALGORITHM_COST)
+            ) === true
+        ) {
             // Update the password hash
             $newHashedPassword = $this->hashPassword($password);
             $this->setPassword($username, $newHashedPassword);
-
         }
 
         // Return successful login
@@ -131,11 +145,12 @@ class DatabaseProxy extends AbstractProxy {
      * @param string $username Username for which to query the group(s).
      * @return string|null Group or Array of groups or NULL if not found.
     */
-    public function getEmailAddress($username) {
+    public function getEmailAddress($username)
+    {
         $db = DatabaseConnection::get();
         $sql = "SELECT email FROM username WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($username));
-        if ($result === false ) {
+        if ($result === false) {
             Log::error("Could not retrieve e-mail address for user $username.");
             return null;
         }
@@ -152,11 +167,12 @@ class DatabaseProxy extends AbstractProxy {
      * @param string $username Username for which to query the group.
      * @return string Group or "" if not found.
     */
-    public function getGroup($username) {
+    public function getGroup($username)
+    {
         $db = DatabaseConnection::get();
         $sql = "SELECT research_group FROM username WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($username));
-        if ($result === false ) {
+        if ($result === false) {
             Log::error("Could not retrieve research group for user $username.");
             return null;
         }
@@ -179,8 +195,8 @@ class DatabaseProxy extends AbstractProxy {
      * @param string $username String Username for which to query the status.
      * @return bool True if the user is outdated, false otherwise.
      */
-    public function isOutdated($username) {
-
+    public function isOutdated($username)
+    {
         // Workaround for a corner case: when the admin tries to
         // log in to upgrade the database between revision 14
         // and 15, his information is OUTDATED, but this cannot
@@ -197,7 +213,8 @@ class DatabaseProxy extends AbstractProxy {
      * @param string $username User name.
      * @return void.
      */
-    public function setOutdated($username) {
+    public function setOutdated($username)
+    {
         UserManager::setUserStatus($username, UserConstants::STATUS_OUTDATED);
     }
 
@@ -208,16 +225,17 @@ class DatabaseProxy extends AbstractProxy {
      * @param string $password Plain-text password.
      * @return string Hashed password.
      */
-    public function hashPassword($password) {
-
+    public function hashPassword($password)
+    {
         // Hash he password
-        $hashedPassword = password_hash($password,
+        $hashedPassword = password_hash(
+            $password,
             UserConstants::HASH_ALGORITHM,
-            array('cost' => UserConstants::HASH_ALGORITHM_COST));
+            array('cost' => UserConstants::HASH_ALGORITHM_COST)
+        );
 
         // Return the hashed password
         return $hashedPassword;
-
     }
 
     /**
@@ -226,12 +244,11 @@ class DatabaseProxy extends AbstractProxy {
      * @param string $hashedPassword Hashed password.
      * @return bool True if the new password could be stored, false otherwise.
      */
-    private function setPassword($username, $hashedPassword) {
+    private function setPassword($username, $hashedPassword)
+    {
         $db = DatabaseConnection::get();
         $sql = "update username set password=? where name=?;";
-        $result = $db->connection()->Execute(
-            $sql, array($hashedPassword, $username)
-        );
+        $result = $db->connection()->Execute($sql, array($hashedPassword, $username));
 
         if ($result === false) {
             Log::error("Could not update user $username in the database!");
@@ -247,7 +264,8 @@ class DatabaseProxy extends AbstractProxy {
      * @param string $name User name.
      * @return string The encrypted password.
      */
-    private function retrievePassword($name) {
+    private function retrievePassword($name)
+    {
         $db = DatabaseConnection::get();
         return $db->queryLastValue("select password from username where name='$name'");
     }
@@ -258,8 +276,8 @@ class DatabaseProxy extends AbstractProxy {
      * @return string|void Return seed.
      * @throws \Exception if the method is not reimplemented.
      */
-    public function markPasswordReset($username) {
+    public function markPasswordReset($username)
+    {
         throw new \Exception("Re-implement this method!");
     }
-
-};
+}

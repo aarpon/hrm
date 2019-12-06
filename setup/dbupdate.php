@@ -5939,6 +5939,7 @@ if ($current_revision < $n) {
 $n = 18;
 if ($current_revision < $n) {
 
+    // Add All files to possible image file formats
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "ImageFileFormat";
@@ -5990,6 +5991,22 @@ if ($current_revision < $n) {
         return;
     }
 
+    // Add a settings_id column to the job_queue table
+    $tabname   = "job_queue";
+    $newcolumn = "settings_id";
+    $type = "C(30)";
+
+    // Add new column 'settings_id' to job_queue
+    $allcolumns = $db->MetaColumnNames($tabname);
+    if (! array_key_exists(strtoupper($newcolumn), $allcolumns)) {
+        if ( !insert_column($tabname, $newcolumn . " " . $type) ) {
+            $msg = "Error adding new column $newcolumn to table $tabname!";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
 
     // Update revision
     if(!update_dbrevision($n))

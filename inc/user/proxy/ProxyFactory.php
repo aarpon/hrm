@@ -23,15 +23,15 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  *
  * @package hrm
  */
-class ProxyFactory {
-
+class ProxyFactory
+{
     /**
      * Return the default authentication mode for all users.
      * @return string Default authentication mode (one of 'integrated',
      * 'active_dir', 'ldap', auth0).
      */
-    public static function getDefaultAuthenticationMode() {
-
+    public static function getDefaultAuthenticationMode()
+    {
         global $authenticateAgainst;
 
         // Fall back
@@ -43,7 +43,6 @@ class ProxyFactory {
 
         // Initialize the authenticator
         switch ($authMode) {
-
             case "integrated":
             case "MYSQL":
                 return "integrated";
@@ -73,15 +72,14 @@ class ProxyFactory {
      * @param string $username name of the User to query.
      * @return string Authentication mechanism.
      */
-    public static function getAuthenticationModeForUser($username) {
-
+    public static function getAuthenticationModeForUser($username)
+    {
         // Retrieve the information from the database
         $db = DatabaseConnection::get();
 
         $sql = "SELECT authentication FROM username WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($username));
         if ($result === false) {
-
             // This is a corner case: if the admin is logging in before the
             // database update to version 15, there will be no authentication
             // mode set for him and the default authentication mode could be
@@ -97,7 +95,7 @@ class ProxyFactory {
         $authMode = null;
         if (count($rows) == 0) {
             return self::getDefaultAuthenticationMode();
-        } else if (count($rows) == 1) {
+        } elseif (count($rows) == 1) {
             $authMode = $rows[0]['authentication'];
         } else {
             Log::error("Unexpected number of entries retrieved for " .
@@ -123,7 +121,6 @@ class ProxyFactory {
 
         // Return the requested proxy
         switch ($authMode) {
-
             case 'integrated':
                 return new DatabaseProxy();
                 break;
@@ -157,7 +154,6 @@ class ProxyFactory {
 
         // Return the proxy
         switch ($authMode) {
-
             case "integrated":
                 return new DatabaseProxy();
 
@@ -185,8 +181,8 @@ class ProxyFactory {
      *
      * @return array List of configured authentication modes.
      */
-    public static function getAllConfiguredAuthenticationModes() {
-
+    public static function getAllConfiguredAuthenticationModes()
+    {
         global $authenticateAgainst;
 
         // Do not modify the original variable
@@ -196,7 +192,7 @@ class ProxyFactory {
             $allAuthModes  = array($authenticateAgainst);
         } else {
             $allAuthModes = array();
-            foreach($authenticateAgainst as $mode) {
+            foreach ($authenticateAgainst as $mode) {
                 $allAuthModes[] = $mode;
             }
         }
@@ -204,27 +200,16 @@ class ProxyFactory {
         // Now build the final output with the new, official nomenclature
         $authModeMap = array();
         for ($i = 0; $i < count($allAuthModes); $i++) {
-
-            if ($allAuthModes[$i] == "MYSQL" ||
-                $allAuthModes[$i] == "integrated") {
-
+            if ($allAuthModes[$i] == "MYSQL" || $allAuthModes[$i] == "integrated") {
                 $authModeMap["integrated"] = "Integrated authentication";
-
-            } else if ($allAuthModes[$i] == "ACTIVE_DIR" ||
-                $allAuthModes[$i] == "active_dir") {
-
+            } elseif ($allAuthModes[$i] == "ACTIVE_DIR" || $allAuthModes[$i] == "active_dir") {
                 $authModeMap["active_dir"] = "Active Directory authentication";
-
-            } else if ($allAuthModes[$i] == "LDAP" ||
-                $allAuthModes[$i] == "ldap") {
-
+            } elseif ($allAuthModes[$i] == "LDAP" || $allAuthModes[$i] == "ldap") {
                 $authModeMap["ldap"] = "Generic LDAP authentication";
-
             } else {
                 Log::error("Unknown authentication mode $allAuthModes[$i].");
             }
         }
-
         return $authModeMap;
     }
-};
+}

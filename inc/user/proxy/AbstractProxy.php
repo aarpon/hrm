@@ -10,6 +10,7 @@
 
 namespace hrm\user\proxy;
 
+use Exception;
 use hrm\user\UserManager;
 use hrm\user\UserConstants;
 
@@ -25,8 +26,8 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  *
  * @package hrm
  */
-abstract class AbstractProxy {
-
+abstract class AbstractProxy
+{
     /**
      * Return a friendly name for the proxy to be displayed in the ui.
      *
@@ -39,19 +40,28 @@ abstract class AbstractProxy {
      * Return whether the proxy allows changing the e-mail address.
      * @return bool True if the e-mail address can be changed, false otherwise.
      */
-    public function canModifyEmailAddress() { return false; }
+    public function canModifyEmailAddress()
+    {
+        return false;
+    }
 
     /**
      * Return whether the proxy allows changing the group.
      * @return bool True if the group can be changed, false otherwise.
      */
-    public function canModifyGroup() { return false; }
+    public function canModifyGroup()
+    {
+        return false;
+    }
 
     /**
      * Return whether the proxy allows changing the password.
      * @return bool True if the password can be changed, false otherwise.
      */
-    public function canModifyPassword() { return false; }
+    public function canModifyPassword()
+    {
+        return false;
+    }
 
     /**
      * Authenticates the User with given username and password.
@@ -81,11 +91,13 @@ abstract class AbstractProxy {
      * @return bool True if the user is active, false otherwise.
      * @override
      */
-    public function isActive($username) {
+    public function isActive($username)
+    {
         return (
             UserManager::getUserStatus($username) == UserConstants::STATUS_ACTIVE ||
             UserManager::getUserStatus($username) == UserConstants::STATUS_OUTDATED ||
-            UserManager::getUserStatus($username) == UserConstants::STATUS_PASSWORD_RESET);
+            UserManager::getUserStatus($username) == UserConstants::STATUS_PASSWORD_RESET
+        );
     }
 
     /**
@@ -94,7 +106,8 @@ abstract class AbstractProxy {
      * @param string $username String Username for which to query the status.
      * @return bool True if the user was disabled, false otherwise.
      */
-    public function isDisabled($username) {
+    public function isDisabled($username)
+    {
         return (UserManager::getUserStatus($username) == UserConstants::STATUS_DISABLED);
     }
 
@@ -107,14 +120,17 @@ abstract class AbstractProxy {
      * @param string $username User name.
      * @return bool True if the User must be updated, false otherwise.
      */
-    public function isOutdated($username) { return false; }
-
+    public function isOutdated($username)
+    {
+        return false;
+    }
 
     /**
      * Set the User status to active.
      * @param string $username User name.
      */
-    public function setActive($username) {
+    public function setActive($username)
+    {
         UserManager::setUserStatus($username, UserConstants::STATUS_ACTIVE);
     }
 
@@ -122,7 +138,8 @@ abstract class AbstractProxy {
      * Set the User status to disabled.
      * @param string $username User name.
      */
-    public function setDisabled($username) {
+    public function setDisabled($username)
+    {
         UserManager::setUserStatus($username, UserConstants::STATUS_DISABLED);
     }
 
@@ -134,7 +151,9 @@ abstract class AbstractProxy {
      * @param string $username User name.
      * @return void.
      */
-    public function setOutdated($username) {}
+    public function setOutdated($username)
+    {
+    }
 
     /**
      * Mark password reset.
@@ -143,9 +162,10 @@ abstract class AbstractProxy {
      * returns true!
      * @param string $username Name of the user to mark for password update.
      * @return string string
-     * @throws \Exception The base implementation of this method throws an exception.
+     * @throws Exception The base implementation of this method throws an exception.
      */
-    public function markPasswordReset($username) {
-        throw new \Exception("Re-implement this method!");
+    public function markPasswordReset($username)
+    {
+        throw new Exception("Re-implement this method!");
     }
-};
+}
