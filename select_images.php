@@ -364,9 +364,6 @@ include("footer.inc.php");
             return;
         }
 
-        // Sort filesPerFormat's options
-        sortOptions("filesPerFormat");
-
         // Since the array can be large, we stringify it to prevent
         // that the ajax post truncates it.
         var listOfSelectedFilesString = JSON.stringify(listOfSelectedFiles);
@@ -393,6 +390,9 @@ include("footer.inc.php");
                 revertLegend($("#selection_legend"), "Selected images");
             }
         });
+
+        // Sort filesPerFormat's options
+        sortOptions("filesPerFormat");
     }
 
     // Update bot files and selected files elements
@@ -474,9 +474,6 @@ include("footer.inc.php");
             $(this).remove();
         });
 
-        // Sort the options
-        sortOptions("selectedimages");
-
         if (listOfSelectedFiles.length === 0) {
             // Restore legend text
             revertLegend($("#selection_legend"), "Selected images");
@@ -508,6 +505,9 @@ include("footer.inc.php");
                 revertLegend($("#selection_legend"), "Selected images");
             }
         });
+
+        // Sort the options
+        sortOptions("selectedimages");
     }
 
     /**
