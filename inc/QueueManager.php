@@ -430,6 +430,15 @@ class QueueManager
         $s = explode(" ", $jobServer);
         $jobHostname = $s[0];
 
+        // Sanity check. 
+        // In case something goes wrong with the configuration. Make sure we
+        // are dealing with a remote server. If the remote server is equal to 
+        // the machine running the QM, then there must have been a mistake.
+        $qmHostname = gethostname();
+        if (strcasecmp($jobHostname, $qmHostname) == 0) {
+            return;            
+        }
+
         // List of registered servers.
         $db = DatabaseConnection::get();
         $servers = $db->availableServer();
@@ -466,8 +475,9 @@ class QueueManager
         Log::info("Shell process created");
 
         // Check whether the shell is ready to accept further execution. If not,
-        // the shell will be released internally, no need to release it here.
-        if (!$proc->runShell()) {            
+        // not, the shell will be released internally, no need to release it
+        // here.
+        if (!$proc->runShell()) {
             return;
         }
         
