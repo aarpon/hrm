@@ -405,6 +405,81 @@ class QueueManager
         Log::info("Stopped job (" . date("l d F Y H:i:s") . ")\n");
     }
 
+
+    /**
+     * Deletes source and destination files of all users from the remote server.
+     *
+     * CAUTION! Never run a similar piece of code on the file server as 
+     * it would remove all files from the images folder. 
+     * @param Job $job A Job object.
+     */
+    public function cleanUpRemoteServer($job)
+    {
+        global $imageProcessingIsOnQueueManager;
+        global $copy_images_to_huygens_server;
+        global $huygens_server_image_folder;
+        
+
+        if ($imageProcessingIsOnQueueManager || !$copy_images_to_huygens_server) {
+            // There's no remote server. Nothing to do.
+            return;
+        }        
+
+        // Hostname == registered server entry without GPU tag.
+        $jobServer = $job->server();        
+        $s = explode(" ", $jobServer);
+        $jobHostname = $s[0];
+
+        // List of registered servers.
+        $db = DatabaseConnection::get();
+        $servers = $db->availableServer();
+
+        // Check if any of the other registered servers runs on the same host and is busy.
+        // We'll want to clean up the remote server when there's no other job running there.
+        // This is because, as a consequence of using SFTP for transfering data to the 
+        // remote servers, the same raw files can be used for different jobs, in parallel.         
+        foreach ($servers as $server) {
+            $s = explode(" ", $server);
+            $hostname = $s[0];
+            $status = $db->statusOfServer($server);            
+
+            // Search for other servers registered on the same host and running a job now. 
+            // Example, 2 GPUs on the same machine are seen as 2 different servers on the same host.    
+            if (strcasecmp($hostname, $jobHostname) == 0
+                 && strcasecmp($server, $jobServer) != 0
+                 && $status == 'busy') {
+                // Other job is being run by a different server in this host right now.
+                // Nothing to do. The last job will do the cleaning.
+                return;
+            }
+        }   
+        
+        // If we get here then there's no second job running on the remote host right now.
+        // It's should be safe to remove the data. Additionally, this operation is 
+        // "protected" by the SSH keys. Only if the user has set that up correctly, will
+        // the file deletion take place.
+        $proc = ExternalProcessFactory::getExternalProcess(
+            $jobServer,
+            $jobServer . "_remote_cleanup_out.txt",
+            $jobServer . "_remote_cleanup_error.txt"
+        );
+        Log::info("Shell process created");
+
+        // Check whether the shell is ready to accept further execution. If not,
+        // the shell will be released internally, no need to release it here.
+        if (!$proc->runShell()) {            
+            return;
+        }
+        
+        // Clean up the HRM images folder at the remote location.
+        $imageFolder = $huygens_server_image_folder;  
+        $cmd = "rm -rfv \"" . $imageFolder . "\"*;";                        
+        $proc->execute($cmd);
+
+        $proc->release();
+    }
+
+
     /**
      * Checks whether the processing server reacts on 'ping'.
      * @param string $server The server's name.
@@ -590,8 +665,11 @@ class QueueManager
                 $db = DatabaseConnection::get();
                 $db->updateStatistics($job, $startTime);
 
-                // Clean up server
+                // Clean up temporary job files in the file server.
                 $this->cleanUpFileServer($job);
+
+                // Remove all the transferred files from the processing server.
+                $this->cleanUpRemoteServer($job);
 
                 // Reset server and remove job from the job queue
                 $this->stopTime = $queue->stopJob($job);
@@ -816,6 +894,7 @@ class QueueManager
         $mail->send();
     }
 
+
     /**
      * Report (and internally store) the name of a free server that
      * can accept a Job.
@@ -833,7 +912,7 @@ class QueueManager
                     if ($this->hasProcessingServerEnoughFreeMem($server)) {
                         $this->nping[$server] = 0;
                         $this->freeServer = $server;
-                        $this->freeGpu = $db->getGPUID($server);
+                        $this->freeGpu = $db->getGPUID($server);                        
                         return true;
                     }
                 } else {
@@ -985,7 +1064,7 @@ class QueueManager
                 $job = $this->nextJobFromQueue();
 
                 // Exit the loop if no job is queued.
-                if ($job == null) {
+                if ($job == null) {                    
                     break;
                 }
 
