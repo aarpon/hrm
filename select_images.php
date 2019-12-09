@@ -251,7 +251,6 @@ include("footer.inc.php");
 
 ?>
 
-
 <!-- Ajax functions -->
 <script type="text/javascript">
 
@@ -330,62 +329,43 @@ include("footer.inc.php");
     /**
      * Remove current selection from selected files
      */
-    function removeFromSelection(format) {
-
-        // Inform
-        $("#selection_legend").text("Selected images: updating...");
-
-        // Get selected files from filesPerFormat
-        var listOfSelectedFiles = [];
-        $("#selectedimages option:selected").each(function() {
-            listOfSelectedFiles.push($(this).text());
-        });
-
-        if (listOfSelectedFiles.length == 0) {
-            // Restore legend text
-            $("#selection_legend").text("Selected images");
-
-            return;
-        }
-
-        // Since the array can be large, we stringify it to prevent
-        // that the ajax post truncates it.
-        var listOfSelectedFilesString = JSON.stringify(listOfSelectedFiles);
-
-        // Call jsonGetFileFormats on the server
-        JSONRPCRequest({
-            method: 'jsonRemoveFilesFromSelection',
-            params: [listOfSelectedFilesString, format]
-
-        }, function (response) {
-            // Update relevant fields
-            updateFilesAndSelectedFiles(response);
-
-            // Restore legend text
-            $("#selection_legend").text("Selected images");
-        });
-    }
-
-    /**
-     * Remove everything from selected files
-     */
-    function removeAllFromSelection(format) {
+    function removeFromSelection() {
 
         // Inform
         addToLegend($("#selection_legend"), "Selected images", "Updating...", "highlighted");
 
-        // Get selected files from filesPerFormat
+        // Get the filesPerFormat select
+        var filesPerFormat = $("#filesPerFormat");
+
+        // Get the selectedimages select
+        var selectedImages = $("#selectedimages");
+
+        // Get selected files from selectedimages
         var listOfSelectedFiles = [];
-        $("#selectedimages option").each(function() {
+        $("#selectedimages option:selected").each(function() {
             listOfSelectedFiles.push($(this).text());
+
+            // Add the file to #filesPerFormat
+            var opt = $('<option>');
+            opt.val($(this).val());
+            opt.text($(this).text());
+            opt.click(function() { imageAction(opt); } );
+            filesPerFormat.append(opt);
+
+            // Remove the file from #filesPerFormat
+            $(this).remove();
+
         });
 
-        if (listOfSelectedFiles.length === 0) {
+        if (listOfSelectedFiles.length == 0) {
             // Restore legend text
             revertLegend($("#selection_legend"), "Selected images");
 
             return;
         }
+
+        // Sort filesPerFormat's options
+        sortOptions("filesPerFormat");
 
         // Since the array can be large, we stringify it to prevent
         // that the ajax post truncates it.
@@ -394,14 +374,24 @@ include("footer.inc.php");
         // Call jsonGetFileFormats on the server
         JSONRPCRequest({
             method: 'jsonRemoveFilesFromSelection',
-            params: [listOfSelectedFilesString, format]
+            params: [listOfSelectedFilesString]
 
         }, function (response) {
-            // Update relevant fields
-            updateFilesAndSelectedFiles(response);
+            if (response["success"] === "false") {
+                // Display error message
+                $("#message p").text(response["message"]);
 
-            // Restore legend text
-            revertLegend($("#selection_legend"), "Selected images");
+                // Restore legend text
+                revertLegend($("#selection_legend"), "Selected images");
+
+            } else {
+                // Enable/disable select elements
+                filesPerFormat.prop('disabled', $("#filesPerFormat option").length === 0);
+                selectedImages.prop('disabled', $("#selectedimages option").length === 0);
+
+                // Restore legend text
+                revertLegend($("#selection_legend"), "Selected images");
+            }
         });
     }
 
@@ -455,16 +445,37 @@ include("footer.inc.php");
     /**
      * Add files to selection
      */
-    function addToSelection(format) {
+    function addToSelection() {
 
         // Inform
         addToLegend($("#selection_legend"), "Selected images", "Updating...", "highlighted");
 
+        // Get the selectedimages select
+        var selectedImages = $("#selectedimages");
+
+        // Get the filesPerFormat select
+        var filesPerFormat = $("#filesPerFormat");
+
         // Get selected files from filesPerFormat
         var listOfSelectedFiles = [];
         $("#filesPerFormat option:selected").each(function() {
+
+            // Add the file name to the list of files to send to the server
             listOfSelectedFiles.push($(this).text());
+
+            // Add the file to #selectedImages
+            var opt = $('<option>');
+            opt.val($(this).val());
+            opt.text($(this).text());
+            opt.click(function() { imageAction(opt); } );
+            selectedImages.append(opt);
+
+            // Remove the file from #filesPerFormat
+            $(this).remove();
         });
+
+        // Sort the options
+        sortOptions("selectedimages");
 
         if (listOfSelectedFiles.length === 0) {
             // Restore legend text
@@ -479,15 +490,19 @@ include("footer.inc.php");
         // Call jsonGetFileFormats on the server
         JSONRPCRequest({
             method: 'jsonAddFilesToSelection',
-            params: [listOfSelectedFilesString, format]
+            params: [listOfSelectedFilesString]
         }, function (response) {
             if (response["success"] === "false") {
                 // Display error message
                 $("#message p").text(response["message"]);
 
+                // Restore legend text
+                revertLegend($("#selection_legend"), "Selected images");
+
             } else {
-                // Update relevant fields
-                updateFilesAndSelectedFiles(response);
+                // Enable/disable select elements
+                filesPerFormat.prop('disabled', $("#filesPerFormat option").length === 0);
+                selectedImages.prop('disabled', $("#selectedimages option").length === 0);
 
                 // Restore legend text
                 revertLegend($("#selection_legend"), "Selected images");
@@ -560,6 +575,24 @@ include("footer.inc.php");
         });
     }
 
+    // Sort the options in the passed select object
+    function sortOptions(selectObjId) {
+        var options = $("#" + selectObjId + " option");
+        var arr = options.map(function(_, o) {
+            return {
+                t: $(o).text(),
+                v: o.value
+            };
+        }).get();
+        arr.sort(function(o1, o2) {
+            return o1.t > o2.t ? 1 : o1.t < o2.t ? -1 : 0;
+        });
+        options.each(function(i, o) {
+            o.value = arr[i].v;
+            $(o).text(arr[i].t);
+        });
+    }
+
     // Add an highlighted message to a given legend for long-running processes
     function addToLegend(divObj, baseText, extendedText, className) {
         divObj.html(baseText + ": " + "<span class='" + className + "'>" + extendedText + "</span>");
@@ -597,13 +630,13 @@ include("footer.inc.php");
         });
 
         $("#down").click(function() {
-            addToSelection(window.selectImagesPageVariables.format);
+            addToSelection();
         });
 
         $("#up").click(function() {
             window.previewSelected = -1;
             showInstructions();
-            removeFromSelection(window.selectImagesPageVariables.format);
+            removeFromSelection();
         });
 
         // Set the autoseries flag

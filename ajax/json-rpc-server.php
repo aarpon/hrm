@@ -267,14 +267,12 @@ switch ($method) {
 
     case 'jsonAddFilesToSelection':
         $fileList = $params[0];
-        $format = $params[1];
-        $json = jsonAddFilesToSelection($fileList, $format);
+        $json = jsonAddFilesToSelection($fileList);
         break;
 
     case 'jsonRemoveFilesFromSelection':
         $fileList = $params[0];
-        $format = $params[1];
-        $json = jsonRemoveFilesFromSelection($fileList, $format);
+        $json = jsonRemoveFilesFromSelection($fileList);
         break;
 
     default:
@@ -918,7 +916,7 @@ function jsonGetFileFormats()
 
     $keyArr = array();
     foreach ($translations as $key => $translation) {
-        $format = $formats[$key];        
+        $format = $formats[$key];
 
         if ($format == "all") {
             $translation .= " Please choose a file format ...";
@@ -982,14 +980,10 @@ function jsonResetSourceFiles($format)
  * @param $fileList String JSON encoded (stringified) list of file names.
  * @return string JSON-encoded response.
  */
-function jsonAddFilesToSelection($fileList, $format)
+function jsonAddFilesToSelection($fileList)
 {
     // Prepare the output array
     $json = initJSONArray();
-
-    // Initialize output
-    $json["files"] = [];
-    $json["selected_files"] = [];
 
     // The $fileList was stringified on the client; so we need to decode it first
     $fileList = json_decode($fileList);
@@ -1020,21 +1014,6 @@ function jsonAddFilesToSelection($fileList, $format)
     // Add the new files to the selection
     $fileServer ->addFilesToSelection($fileList);
 
-    // Get updated selection list
-    $selectedFiles = $fileServer->selectedFiles();
-
-    // Prepare the lists to be returned to the client
-    $preparedLists = processFilesAndSelectedFilesLists(
-        $fileServer->getCurrentFileList(),
-        $selectedFiles,
-        $fileServer,
-        $format
-    );
-
-    // Add the file list to the result json object
-    $json["files"] = $preparedLists["files"];
-    $json["selected_files"] = $preparedLists["selected_files"];
-
     // Return as a JSON string
     return (json_encode($json));
 }
@@ -1044,14 +1023,10 @@ function jsonAddFilesToSelection($fileList, $format)
  * @param $fileList String JSON encoded (stringified) list of file names.
  * @return string JSON-encoded response.
  */
-function jsonRemoveFilesFromSelection($fileList, $format)
+function jsonRemoveFilesFromSelection($fileList)
 {
     // Prepare the output array
     $json = initJSONArray();
-
-    // Initialize output
-    $json["files"] = [];
-    $json["selected_files"] = [];
 
     // The $fileList was stringified on the client; so we need to decode it first
     $fileList = json_decode($fileList);
@@ -1081,21 +1056,6 @@ function jsonRemoveFilesFromSelection($fileList, $format)
 
     // Add the new files to the selection
     $fileServer ->removeFilesFromSelection($fileList);
-
-    // Get updated selection list
-    $selectedFiles = $fileServer->selectedFiles();
-
-    // Prepare the lists to be returned to the client
-    $preparedLists = processFilesAndSelectedFilesLists(
-        $fileServer->getCurrentFileList(),
-        $selectedFiles,
-        $fileServer,
-        $format
-    );
-
-    // Add the file list to the result json object
-    $json["files"] = $preparedLists["files"];
-    $json["selected_files"] = $preparedLists["selected_files"];
 
     // Return as a JSON string
     return (json_encode($json));
