@@ -70,6 +70,15 @@ class QueueManager
     private $runningJobs;
 
     /**
+     * Number of seconds since the Unix Epoch until the last 
+     * time the 'onceAnHourLog()' function logged the status
+     * of the queue.
+     * @var int 
+     */
+    private $onceAnHourLastTimeLog;
+    
+
+    /**
      * QueueManager constructor.
      */
     public function __construct()
@@ -367,6 +376,54 @@ class QueueManager
         $job->setGPU($this->freeGpu);
         return $job;
     }
+
+
+    /**
+     * Prints the status of the queue to the HRM log.
+     * This can be useful to spot problems in stalled queues.
+     */
+    public function onceAnHourLog()
+    {
+        // Check that an hour went by since the last status log. 
+        // Otherwise return, we don't want to clog the log.
+        if (isset($this->onceAnHourLastTimeLog)
+            && $this->onceAnHourLastTimeLog - time() < 3600) {
+            return;
+        }
+
+        $queue      = $this->queue;
+        $isLocked   = $queue->isLocked();
+        $freeServer = $this->getFreeServer();
+
+        $db         = DatabaseConnection::get();
+        $nextJobId  = $db->getNextIdFromQueue();
+        
+        $this->onceAnHourLastTimeLog = time();
+
+        $msg = "Queue status -> locked: " ;
+        if ($isLocked === True) {
+            $msg .= "true";
+        } else {
+            $msg .= "false";
+        }
+        
+        $msg .= ", free server: ";
+        if ($freeServer === True) {
+            $msg .= "true";
+        } else {
+            $msg .= "false";
+        }
+
+        $msg .= ", nextJobId: ";
+        if (isset($nextJobId[0])) {
+            $msg .= $nextJobId[0];
+        } else {
+            $msg .= "null";
+        }
+
+        Log::info($msg);        
+    }
+
 
     /**
      * Deletes temporary Job files from the file server
@@ -1063,6 +1120,9 @@ class QueueManager
             // Check if jobs finished and update the database. Inform the
             // user via email.
             $this->updateJobAndServerStatus();
+
+            // Log useful stuff to spot problematic situations with the queue.
+            $this->onceAnHourLog();
 
             // Read in a free huygens server
             while (!($queue->isLocked()) && $this->getFreeServer()) {
