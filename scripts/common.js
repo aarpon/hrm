@@ -234,8 +234,7 @@ function setChromaticChannelReference( chan ) {
         id = id.concat(component);
         
         inputElement = document.getElementById(id);
-        inputElement.readOnly = true;
-        inputElement.style.color="#000";
+        inputElement.readOnly = true;        
         inputElement.style.backgroundColor="#888";
         
         if (component == 4) {
@@ -266,8 +265,7 @@ function removeChromaticChannelReference( ) {
             id = id.concat(component);
 
             inputElement = document.getElementById(id);
-            inputElement.readOnly = false;
-            inputElement.style.color="#000";
+            inputElement.readOnly = false;            
             inputElement.style.backgroundColor="";    
         }
     }
@@ -315,12 +313,10 @@ function updateDeconEntryProperties( ) {
             var paramInputElement = document.getElementById(id);
             
             if ( deconAlgorithm.value === "skip" ) {
-                paramInputElement.readOnly = true;
-                paramInputElement.style.color="#000";
+                paramInputElement.readOnly = true;                
                 paramInputElement.style.backgroundColor="#888";
             } else {                                    
-                paramInputElement.readOnly = false;
-                paramInputElement.style.color="#000";
+                paramInputElement.readOnly = false;                
                 paramInputElement.style.backgroundColor="";         
             }
         }    
@@ -334,12 +330,10 @@ function updateDeconEntryProperties( ) {
         var paramInputElement = document.getElementById(id);
 
         if (skipAllChannels) {
-            paramInputElement.readOnly = true;
-            paramInputElement.style.color="#000";
+            paramInputElement.readOnly = true;            
             paramInputElement.style.backgroundColor="#888";
         } else {
-            paramInputElement.readOnly = false;
-            paramInputElement.style.color="#000";
+            paramInputElement.readOnly = false;            
             paramInputElement.style.backgroundColor="";
         }
     }
@@ -355,6 +349,7 @@ function changeStedEntryProperties(selectObj, channel) {
                     "StedImmunity",
                     "Sted3D"];
 
+
     for (var i = 0; i < tagArray.length; i++) {
         var tag = tagArray[i];
         var id = tag.concat(channel);
@@ -362,12 +357,10 @@ function changeStedEntryProperties(selectObj, channel) {
         var inputElement = document.getElementById(id);
         
         if ( selectObj.value == 'off-confocal' ) {
-            inputElement.readOnly = true;
-            inputElement.style.color="#000";
+            inputElement.readOnly = true;            
             inputElement.style.backgroundColor="#888";
         } else {
-            inputElement.readOnly = false;
-            inputElement.style.color="#000";
+            inputElement.readOnly = false;            
             inputElement.style.backgroundColor="";
         }
     }
