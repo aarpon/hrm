@@ -38,7 +38,7 @@ class ParameterSettingEditor extends SettingEditor
      * are stored.
      * @return string The table name.
      */
-    function table()
+    public function table()
     {
         return "parameter_setting";
     }
@@ -66,9 +66,9 @@ class ParameterSettingEditor extends SettingEditor
      */
     public function image2hrmTemplate(ParameterSetting $setting, $dirName, $fileName)
     {
-        $result = False;
+        $result = false;
 
-        if ($setting == NULL) {
+        if ($setting == null) {
             return $result;
         }
 
@@ -78,7 +78,7 @@ class ParameterSettingEditor extends SettingEditor
         $data = HuygensTools::askHuCore('getMetaDataFromImage', $opts);
         if ($data == null) {
             $this->message = "Could not retrieve metadata!";
-            return False;
+            return false;
         }
 
         $setting->parseParamsFromHuCore($data);
@@ -86,5 +86,4 @@ class ParameterSettingEditor extends SettingEditor
 
         return $result;
     }
-
 }

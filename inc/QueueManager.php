@@ -188,7 +188,7 @@ class QueueManager
         $desc = $job->description();
         $user = $desc->owner();
 
-        // TODO substitute spaces by underscores in image name to avoid
+        // @TODO substitute spaces by underscores in image name to avoid
         // processing problems with Huygens
 
         $batch = "cd \"" . $huygens_server_image_folder . "\"\n";
@@ -409,8 +409,8 @@ class QueueManager
     /**
      * Deletes source and destination files of all users from the remote server.
      *
-     * CAUTION! Never run a similar piece of code on the file server as 
-     * it would remove all files from the images folder. 
+     * CAUTION! Never run a similar piece of code on the file server as
+     * it would remove all files from the images folder.
      * @param Job $job A Job object.
      */
     public function cleanUpRemoteServer($job)
@@ -423,20 +423,20 @@ class QueueManager
         if ($imageProcessingIsOnQueueManager || !$copy_images_to_huygens_server) {
             // There's no remote server. Nothing to do.
             return;
-        }        
+        }
 
         // Hostname == registered server entry without GPU tag.
-        $jobServer = $job->server();        
+        $jobServer = $job->server();
         $s = explode(" ", $jobServer);
         $jobHostname = $s[0];
 
-        // Sanity check. 
+        // Sanity check.
         // In case something goes wrong with the configuration. Make sure we
         // are dealing with a remote server. If the remote server is equal to 
         // the machine running the QM, then there must have been a mistake.
         $qmHostname = gethostname();
         if (strcasecmp($jobHostname, $qmHostname) == 0) {
-            return;            
+            return;
         }
 
         // List of registered servers.
@@ -445,26 +445,24 @@ class QueueManager
 
         // Check if any of the other registered servers runs on the same host and is busy.
         // We'll want to clean up the remote server when there's no other job running there.
-        // This is because, as a consequence of using SFTP for transfering data to the 
-        // remote servers, the same raw files can be used for different jobs, in parallel.         
+        // This is because, as a consequence of using SFTP for transfering data to the
+        // remote servers, the same raw files can be used for different jobs, in parallel.
         foreach ($servers as $server) {
             $s = explode(" ", $server);
             $hostname = $s[0];
-            $status = $db->statusOfServer($server);            
+            $status = $db->statusOfServer($server);
 
-            // Search for other servers registered on the same host and running a job now. 
-            // Example, 2 GPUs on the same machine are seen as 2 different servers on the same host.    
-            if (strcasecmp($hostname, $jobHostname) == 0
-                 && strcasecmp($server, $jobServer) != 0
-                 && $status == 'busy') {
+            // Search for other servers registered on the same host and running a job now.
+            // Example, 2 GPUs on the same machine are seen as 2 different servers on the same host.
+            if (strcasecmp($hostname, $jobHostname) == 0 && strcasecmp($server, $jobServer) != 0 && $status == 'busy') {
                 // Other job is being run by a different server in this host right now.
                 // Nothing to do. The last job will do the cleaning.
                 return;
             }
-        }   
+        }
         
         // If we get here then there's no second job running on the remote host right now.
-        // It's should be safe to remove the data. Additionally, this operation is 
+        // It's should be safe to remove the data. Additionally, this operation is
         // "protected" by the SSH keys. Only if the user has set that up correctly, will
         // the file deletion take place.
         $proc = ExternalProcessFactory::getExternalProcess(
@@ -482,8 +480,8 @@ class QueueManager
         }
         
         // Clean up the HRM images folder at the remote location.
-        $imageFolder = $huygens_server_image_folder;  
-        $cmd = "rm -rfv \"" . $imageFolder . "\"*;";                        
+        $imageFolder = $huygens_server_image_folder;
+        $cmd = "rm -rfv \"" . $imageFolder . "\"*;";
         $proc->execute($cmd);
 
         $proc->release();
@@ -570,8 +568,6 @@ class QueueManager
      *
      * This methods kills all Jobs that are marked to be killed, checks whether
      * Jobs are completed and create report files, write Parameter files,...
-     *
-     * @todo    This method is a mess!
      */
     public function updateJobAndServerStatus()
     {
@@ -922,7 +918,7 @@ class QueueManager
                     if ($this->hasProcessingServerEnoughFreeMem($server)) {
                         $this->nping[$server] = 0;
                         $this->freeServer = $server;
-                        $this->freeGpu = $db->getGPUID($server);                        
+                        $this->freeGpu = $db->getGPUID($server);
                         return true;
                     }
                 } else {
@@ -1074,7 +1070,7 @@ class QueueManager
                 $job = $this->nextJobFromQueue();
 
                 // Exit the loop if no job is queued.
-                if ($job == null) {                    
+                if ($job == null) {
                     break;
                 }
 
