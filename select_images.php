@@ -331,9 +331,6 @@ include("footer.inc.php");
      */
     function removeFromSelection() {
 
-        // Inform
-        addToLegend($("#selection_legend"), "Selected images", "Updating...", "highlighted");
-
         // Get the filesPerFormat select
         var filesPerFormat = $("#filesPerFormat");
 
@@ -358,9 +355,6 @@ include("footer.inc.php");
         });
 
         if (listOfSelectedFiles.length == 0) {
-            // Restore legend text
-            revertLegend($("#selection_legend"), "Selected images");
-
             return;
         }
 
@@ -385,9 +379,6 @@ include("footer.inc.php");
                 // Enable/disable select elements
                 filesPerFormat.prop('disabled', $("#filesPerFormat option").length === 0);
                 selectedImages.prop('disabled', $("#selectedimages option").length === 0);
-
-                // Restore legend text
-                revertLegend($("#selection_legend"), "Selected images");
             }
         });
 
@@ -447,9 +438,6 @@ include("footer.inc.php");
      */
     function addToSelection() {
 
-        // Inform
-        addToLegend($("#selection_legend"), "Selected images", "Updating...", "highlighted");
-
         // Get the selectedimages select
         var selectedImages = $("#selectedimages");
 
@@ -475,8 +463,6 @@ include("footer.inc.php");
         });
 
         if (listOfSelectedFiles.length === 0) {
-            // Restore legend text
-            revertLegend($("#selection_legend"), "Selected images");
             return;
         }
 
@@ -500,9 +486,6 @@ include("footer.inc.php");
                 // Enable/disable select elements
                 filesPerFormat.prop('disabled', $("#filesPerFormat option").length === 0);
                 selectedImages.prop('disabled', $("#selectedimages option").length === 0);
-
-                // Restore legend text
-                revertLegend($("#selection_legend"), "Selected images");
             }
         });
 
@@ -630,13 +613,32 @@ include("footer.inc.php");
         });
 
         $("#down").click(function() {
-            addToSelection();
+            // Inform
+            addToLegend($("#selection_legend"), "Selected images", "Updating...", "highlighted");
+
+            setTimeout(function() {
+                // Add files to selection
+                addToSelection();
+
+                // Inform
+                revertLegend($("#selection_legend"), "Selected images");
+            }, 50);
         });
 
         $("#up").click(function() {
             window.previewSelected = -1;
             showInstructions();
-            removeFromSelection();
+
+            // Inform
+            addToLegend($("#selection_legend"), "Selected images", "Updating...", "highlighted");
+
+            setTimeout(function() {
+                // Remove files from selection
+                removeFromSelection();
+
+                // Inform
+                revertLegend($("#selection_legend"), "Selected images");
+            }, 50);
         });
 
         // Set the autoseries flag
