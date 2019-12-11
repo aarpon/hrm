@@ -910,6 +910,7 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
             snrArray = [];
             for (var i = 0; i < 32; i++) {
                 snrArray.push('SignalNoiseRatioCMLE' + i);
+                snrArray.push('SignalNoiseRatioGMLE' + i);
             }
             $(document).ready(retrieveValues(snrArray));
         </script>"
