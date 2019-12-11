@@ -70,13 +70,13 @@ class QueueManager
     private $runningJobs;
 
     /**
-     * Number of seconds since the Unix Epoch until the last 
+     * Number of seconds since the Unix Epoch until the last
      * time the 'onceAnHourLog()' function logged the status
      * of the queue.
-     * @var int 
+     * @var int
      */
     private $onceAnHourLastTimeLog;
-    
+
 
     /**
      * QueueManager constructor.
@@ -146,6 +146,7 @@ class QueueManager
         Log::info("Executing template: " .
             $imageProcessingIsOnQueueManager . " " .
             $copy_images_to_huygens_server);
+
         if (!$imageProcessingIsOnQueueManager &&  $copy_images_to_huygens_server) {
             $clientTemplatePath = $this->copyImagesToServer($job, $server_hostname);
             Log::info("images copied to IP server");
@@ -200,13 +201,17 @@ class QueueManager
         // @TODO substitute spaces by underscores in image name to avoid
         // processing problems with Huygens
 
-        $batch = "cd \"" . $huygens_server_image_folder . "\"\n";
+        $file   = $image_folder . "/" . $user->name() . "/" .
+            $image_source . "/" . $job->huTemplateName();
+        $batch  = "cd \"" . $huygens_server_image_folder . "\"\n";
         $batch .= "-mkdir \"" . $user->name() . "\"\n";
         $batch .= "cd \"" . $user->name() . "\"\n";
         $batch .= "-mkdir \"" . $image_source . "\"\n";
         $batch .= "cd \"" . $image_source . "\"\n";
-        $batch .= "put \"" . $image_folder . "/" . $user->name() . "/" .
-            $image_source . "/" . $job->huTemplateName() . "\"\n";
+        $batch .= "put \"" . $file . "\"\n";
+
+        // Bookkeeping.
+        $job->registerRemoteFiles($file);
 
         // Transfer the experimental PSF(s)
         $parameterSetting = $desc->parameterSetting;
@@ -226,10 +231,20 @@ class QueueManager
                     $image_source . "/" . $value;
                 if (stristr($filename, ".ics")) {
                     $batch .= "put \"" . $filename . "\"\n";
+
+                    // Bookkeeping.
+                    $job->registerRemoteFiles($filename);
+
                     $filename = preg_replace("/.ics/", ".ids", $filename);
                     $batch .= "put \"" . $filename . "\"\n";
+
+                    // Bookkeeping.
+                    $job->registerRemoteFiles($filename);
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
+
+                    // Bookkeeping.
+                    $job->registerRemoteFiles($filename);
                 }
                 if (sizeof($path) > 0) {
                     for ($i = 0; $i < sizeof($path) - 1; $i++) {
@@ -273,8 +288,15 @@ class QueueManager
                 $image_source . "/" . $file;
             if (stristr($filename, ".ics")) {
                 $batch .= "put \"" . $filename . "\"\n";
+
+                // Bookkeeping.
+                $job->registerRemoteFiles($filename);
+
                 $filename = substr($filename, 0, strrpos($filename, '.ics')) . ".ids";
                 $batch .= "put \"" . $filename . "\"\n";
+
+                // Bookkeeping.
+                $job->registerRemoteFiles($filename);
             } elseif (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
                 // TODO: if ImageFileFormat = single TIFF file, do not send
                 // corresponding series
@@ -285,6 +307,10 @@ class QueueManager
                 );
                 $name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
                 $batch .= "put \"" . $name . "\"*\n";
+
+                // Bookkeeping.
+                $remoteImages = glob($name . "*");
+                $job->registerRemoteFiles($remoteImages);
             } elseif (stristr($filename, ".stk")) {
                 // if ImageFileFormat = STK time series, send all timepoints
                 if (stripos($filename, "_t")) {
@@ -294,8 +320,15 @@ class QueueManager
                         $filename
                     );
                     $batch .= "put \"" . $basename . "\"*\n";
+
+                    // Bookkeeping.
+                    $remoteImages = glob($basename . "*");
+                    $job->registerRemoteFiles($remoteImages);
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
+
+                    // Bookkeeping.
+                    $job->registerRemoteFiles($filename);   
                 }
             } elseif (stristr($filename, ".nd")) {
                 $basename = preg_replace(
@@ -305,8 +338,15 @@ class QueueManager
                 );
                 $name = preg_replace("/(.*)\.nd?$/", "$1", $basename);
                 $batch .= "put \"" . $name . "\"*\n";
+
+                // Bookkeeping.
+                $remoteImages = glob($name . "*");
+                $job->registerRemoteFiles($remoteImages);
             } else {
                 $batch .= "put \"" . $filename . "\"\n";
+
+                // Bookkeeping.
+                $job->registerRemoteFiles($filename);
             }
             if (sizeof($path) > 0) {
                 for ($i = 0; $i < sizeof($path) - 1; $i++) {
@@ -334,6 +374,7 @@ class QueueManager
             $server_hostname);
         exec("rm -f " . $batch_filename);
         // >>
+
 
         return $huygens_server_image_folder . "/" . $user->name() . "/" .
         $image_source . "/";
@@ -384,7 +425,7 @@ class QueueManager
      */
     public function onceAnHourLog()
     {
-        // Check that an hour went by since the last status log. 
+        // Check that an hour went by since the last status log.
         // Otherwise return, we don't want to clog the log.
         if (isset($this->onceAnHourLastTimeLog)
             && $this->onceAnHourLastTimeLog - time() < 3600) {
@@ -397,7 +438,7 @@ class QueueManager
 
         $db         = DatabaseConnection::get();
         $nextJobId  = $db->getNextIdFromQueue();
-        
+
         $this->onceAnHourLastTimeLog = time();
 
         $msg = "Queue status -> locked: " ;
@@ -406,7 +447,7 @@ class QueueManager
         } else {
             $msg .= "false";
         }
-        
+
         $msg .= ", free server: ";
         if ($freeServer === True) {
             $msg .= "true";
@@ -421,7 +462,7 @@ class QueueManager
             $msg .= "null";
         }
 
-        Log::info($msg);        
+        Log::info($msg);
     }
 
 
@@ -464,10 +505,8 @@ class QueueManager
 
 
     /**
-     * Deletes source and destination files of all users from the remote server.
+     * Deletes the job source and destination files from the remote server.
      *
-     * CAUTION! Never run a similar piece of code on the file server as
-     * it would remove all files from the images folder.
      * @param Job $job A Job object.
      */
     public function cleanUpRemoteServer($job)
@@ -475,7 +514,7 @@ class QueueManager
         global $imageProcessingIsOnQueueManager;
         global $copy_images_to_huygens_server;
         global $huygens_server_image_folder;
-        
+
 
         if ($imageProcessingIsOnQueueManager || !$copy_images_to_huygens_server) {
             // There's no remote server. Nothing to do.
@@ -487,40 +526,17 @@ class QueueManager
         $s = explode(" ", $jobServer);
         $jobHostname = $s[0];
 
-        // Sanity check.
-        // In case something goes wrong with the configuration. Make sure we
-        // are dealing with a remote server. If the remote server is equal to 
-        // the machine running the QM, then there must have been a mistake.
+        // Sanity check just in case something goes wrong with the configuration.
+        // Make sure we are dealing with a remote server. If the remote server
+        // is equal to the machine running the QM, then there must have been a
+        // mistake.
         $qmHostname = gethostname();
         if (strcasecmp($jobHostname, $qmHostname) == 0) {
             return;
         }
 
-        // List of registered servers.
-        $db = DatabaseConnection::get();
-        $servers = $db->availableServer();
-
-        // Check if any of the other registered servers runs on the same host and is busy.
-        // We'll want to clean up the remote server when there's no other job running there.
-        // This is because, as a consequence of using SFTP for transfering data to the
-        // remote servers, the same raw files can be used for different jobs, in parallel.
-        foreach ($servers as $server) {
-            $s = explode(" ", $server);
-            $hostname = $s[0];
-            $status = $db->statusOfServer($server);
-
-            // Search for other servers registered on the same host and running a job now.
-            // Example, 2 GPUs on the same machine are seen as 2 different servers on the same host.
-            if (strcasecmp($hostname, $jobHostname) == 0 && strcasecmp($server, $jobServer) != 0 && $status == 'busy') {
-                // Other job is being run by a different server in this host right now.
-                // Nothing to do. The last job will do the cleaning.
-                return;
-            }
-        }
-        
-        // If we get here then there's no second job running on the remote host right now.
-        // It's should be safe to remove the data. Additionally, this operation is
-        // "protected" by the SSH keys. Only if the user has set that up correctly, will
+        // It should be safe to remove the data now. Additionally, this operation is
+        // "protected" by the SSH keys. Only if HRM has been configured correctly, will
         // the file deletion take place.
         $proc = ExternalProcessFactory::getExternalProcess(
             $jobServer,
@@ -535,10 +551,10 @@ class QueueManager
         if (!$proc->runShell()) {
             return;
         }
-        
+
         // Clean up the HRM images folder at the remote location.
-        $imageFolder = $huygens_server_image_folder;
-        $cmd = "rm -rfv \"" . $imageFolder . "\"*;";
+        $remoteFilesArr = $job->getRemoteFilesList();
+        $cmd = "rm -rfv '" . implode("' '", $remoteFilesArr) . "';";
         $proc->execute($cmd);
 
         $proc->release();
@@ -585,7 +601,7 @@ class QueueManager
     private function hasProcessingServerEnoughFreeMem($server, $outLog = null, $errLog = null)
     {
         global $min_free_mem_launch_requirement;
-        
+
         // Initialize.
         $hasEnoughFreeMem = true;
 
