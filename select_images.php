@@ -259,8 +259,8 @@ include("footer.inc.php");
         if (undefined === item) {
             return;
         }
-        var filename = item.text();
-        var index = parseInt(item.val());
+        var filename = item.val();
+        var index = -1; // This is not used to create src 2D/3D thumbnails
         ajaxGetImgPreview(filename, index, 'src');
         window.previewSelected = 1;
     }
