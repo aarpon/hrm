@@ -50,7 +50,8 @@ function JSONRPCRequest(data, callback) {
     
     // Disable caching
     $.ajaxSetup({
-        cache: false
+        cache: false,
+        timeout: 0
     });
     
     // Submit the asyncronous Ajax call

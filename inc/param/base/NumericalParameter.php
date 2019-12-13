@@ -76,7 +76,7 @@ class NumericalParameter extends Parameter
 
         // Gets the Parameter's possible values, default value and all
         // boundary values from the database and sets them
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $values = $db->readNumericalValueRestrictions($this);
         $min = intval($values[0]);
         $max = intval($values[1]);

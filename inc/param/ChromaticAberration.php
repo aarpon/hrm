@@ -59,7 +59,7 @@ class ChromaticAberration extends Parameter
         /* 5 components for shift x, y, z, rotation and scale. */
         $this->componentCnt = 5;
 
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $this->chanCnt = $db->getMaxChanCnt();
 
         // Add a NumericalVectorParameter per channel
@@ -107,7 +107,7 @@ class ChromaticAberration extends Parameter
         $result = "";
 
         if (!is_numeric($chanCnt)) {
-            $db = new DatabaseConnection;
+            $db = DatabaseConnection::get();
             $chanCnt = $db->getMaxChanCnt();
         }
 
@@ -191,7 +191,7 @@ class ChromaticAberration extends Parameter
      */
     public function defaultValue()
     {
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $name = $this->name();
         $default = $db->defaultValue($name);
         return ($default);

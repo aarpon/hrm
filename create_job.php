@@ -2,10 +2,15 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+// Do not time out this page
+set_time_limit(0);
+
 use hrm\Fileserver;
-use hrm\DatabaseConnection;
 use hrm\job\JobDescription;
 use hrm\Nav;
+use hrm\param\NumberOfChannels;
+use hrm\param\OutputFileFormat;
+use hrm\param\TimeInterval;
 use hrm\System;
 use hrm\Util;
 
@@ -45,7 +50,7 @@ $goBackMessage = "Go back to step $previousStep/$currentStep - " . $goBackMessag
 $message = "";
 
 if (isset($_POST['create'])) {
-    /** @var \hrm\param\OutputFileFormat $parameter */
+    /** @var OutputFileFormat $parameter */
     $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
     $parameter->setValue($_POST['OutputFileFormat']);
     $_SESSION['task_setting']->set($parameter);
@@ -59,16 +64,18 @@ if (isset($_POST['create'])) {
         $job->setFiles($_SESSION['fileserver']->selectedFiles(), $_SESSION['autoseries']);
 
         if ($job->addJob()) {
-            $_SESSION['jobcreated'] = True;
+            $_SESSION['jobcreated'] = true;
             $_SESSION['numberjobadded'] = count($job->files());
             header("Location: " . "home.php");
             exit();
         } else {
             $message = $job->message();
         }
-    } else $message = "An unknown error has occurred. " .
+    } else {
+        $message = "An unknown error has occurred. " .
         "Please inform the administrator";
-} else if (isset($_POST['OK'])) {
+    }
+} elseif (isset($_POST['OK'])) {
     header("Location: " . "select_parameter_settings.php");
     exit();
 }
@@ -130,23 +137,23 @@ include("header.inc.php");
 
             <?php
 
-            /** @var \hrm\param\OutputFileFormat $parameter */
+            /** @var OutputFileFormat $parameter */
             $parameter = $_SESSION['task_setting']->parameter("OutputFileFormat");
             $value = $parameter->value();
 
-            /** @var \hrm\param\TimeInterval $timeParameter */
+            /** @var TimeInterval $timeParameter */
             $timeParameter = $_SESSION['setting']->parameter("TimeInterval");
             $timeValue = $timeParameter->value();
 
             // Make sure that if we had TIFF (8 or 16 bit) as output file format and a
             // multichannel dataset, we reset the value to ics
             if (($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')) {
-                /** @var \hrm\param\NumberOfChannels $nChannelsParameter */
+                /** @var NumberOfChannels $nChannelsParameter */
                 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
                 $numberOfChannels = $nChannelsParameter->value();
                 if ($numberOfChannels > 1) {
                     $parameter->setValue("ICS (Image Cytometry Standard)");
-                    $_SESSION['first_visit'] = False;
+                    $_SESSION['first_visit'] = false;
                 }
             }
 
@@ -157,19 +164,20 @@ include("header.inc.php");
                 $numberOfChannels = $nChannelsParameter->value();
                 if (($numberOfChannels == 1 || $numberOfChannels > 3)) {
                     $parameter->setValue("ICS (Image Cytometry Standard)");
-                    $_SESSION['first_visit'] = False;
+                    $_SESSION['first_visit'] = false;
                 }
             }
 
             // Make sure that if we had Imaris Classic, TIFF 8, or TIFF 16
             // as output file format and a time-series dataset, we reset
             // the value to ics
-            if (($value == 'IMS (Imaris Classic)') ||
+            if (
+                ($value == 'IMS (Imaris Classic)') ||
                 ($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')
             ) {
                 if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0)) {
                     $parameter->setValue("ICS (Image Cytometry Standard)");
-                    $_SESSION['first_visit'] = False;
+                    $_SESSION['first_visit'] = false;
                 }
             }
 
@@ -190,7 +198,7 @@ include("header.inc.php");
                 // If the dataset is multi-channel, we remove the TIFF-16 bit
                 // options from the list
 
-                /** @var \hrm\param\NumberOfChannels $nChannelsParameter */
+                /** @var NumberOfChannels $nChannelsParameter */
                 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
                 $numberOfChannels = $nChannelsParameter->value();
                 if ($numberOfChannels > 1) {
@@ -220,17 +228,17 @@ include("header.inc.php");
                 }
 
                 // if 'first visit' is not set, set the OutputFileFormat to the default chosen by the admin.
-                // See config files. 
+                // See config files.
                 if (!isset($_SESSION['first_visit'])) {
                     global $default_output_format;
 
                     /* Fallback. */
-                    if (! in_array($default_output_value, $possibleValues)) {
-                        $default_output_value = "ICS (Image Cytometry Standard)";
-                    }                                   
+                    if (! in_array($default_output_format, $possibleValues)) {
+                        $default_output_format = "ICS (Image Cytometry Standard)";
+                    }
 
-                    $parameter->setValue($default_output_value);
-                    $_SESSION['first_visit'] = False;
+                    $parameter->setValue($default_output_format);
+                    $_SESSION['first_visit'] = false;
                 }
 
                 // Set the OutputFileFormat in the TaskSetting object
@@ -248,7 +256,6 @@ include("header.inc.php");
                         <?php echo $possibleValue ?>
                     </option>
                     <?php
-
                 }
 
                 ?>
@@ -321,9 +328,9 @@ echo $_SESSION['task_setting']->displayString($numberOfChannels, $micrType, $tim
 
             <?php if (System::hasLicense("coloc")) { ?>
             <a href="select_analysis_settings.php">
-                <?php } else { ?>
+            <?php } else { ?>
                 <a>
-                    <?php } ?>
+            <?php } ?>
                     Analysis parameters
                 </a>: <?php echo $_SESSION['analysis_setting']->name() ?>
         </legend>
@@ -379,7 +386,6 @@ foreach ($files as $file) {
             <?php
 
             if (!isset($_SESSION['jobcreated'])) {
-
                 ?>
                 <input type="button" name="previous" value=""
                        class="icon previous"
@@ -394,7 +400,6 @@ foreach ($files as $file) {
 
 
                 <?php
-
             }
 
             ?>
@@ -413,9 +418,9 @@ foreach ($files as $file) {
         <p>As a last step, please choose the output file format for your
             restored images.</p>
 
-        <p>Please notice that some output file formats (specifically all TIFF options)
-            are disabled if you set a time interval larger than 0 or you enabled
-            the "When applicable, load file series automatically" option in Step 1 - Select images.</p>
+        <p>Please notice that some output file formats cannot be selected
+            under specific circumnstances. For example, TIFF is disabled for
+            images with more than 3 channels, and also for time series.</p>
 
         <p>Also, use this as summary to check your parameters. If you spot
             a mistake, use the links on the left to go back and fix it.</p>
@@ -463,7 +468,7 @@ foreach ($files as $file) {
     // Check if the user is quitting it
     window.onbeforeunload = function (e) {
         if (!canLeave) {
-            document.forms['createjob'].is
+            document.forms['createjob'].is;
             return 'You did not submit the job. Are you sure you want to exit?';
         }
     };

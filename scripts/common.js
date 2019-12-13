@@ -234,8 +234,7 @@ function setChromaticChannelReference( chan ) {
         id = id.concat(component);
         
         inputElement = document.getElementById(id);
-        inputElement.readOnly = true;
-        inputElement.style.color="#000";
+        inputElement.readOnly = true;        
         inputElement.style.backgroundColor="#888";
         
         if (component == 4) {
@@ -266,8 +265,7 @@ function removeChromaticChannelReference( ) {
             id = id.concat(component);
 
             inputElement = document.getElementById(id);
-            inputElement.readOnly = false;
-            inputElement.style.color="#000";
+            inputElement.readOnly = false;            
             inputElement.style.backgroundColor="";    
         }
     }
@@ -278,6 +276,71 @@ function changeChromaticChannelReference(selectObj) {
     setChromaticChannelReference( selectObj.value );
 }
 
+
+// Grey out selected input fields when the decon algorithm is set to 'skip'.
+function updateDeconEntryProperties( ) {
+    var deconTag             =  "DeconvolutionAlgorithm";
+
+    var paramAllChanTagArray = ["QualityChangeStoppingCriterion",
+                                "NumberOfIterations"];
+
+    var paramChanTagArray    = ["SignalNoiseRatioCMLE",
+                                "SignalNoiseRatioQMLE",
+                                "SignalNoiseRatioGMLE",
+                                "SignalNoiseRatioSKIP",
+                                "BackgroundOffsetPercent"];
+
+    var skipAllChannels = true;    
+
+    // First, the channel-dependent parameters.
+    for (var chan = 0; chan < 6; chan++) {      
+        var deconChanTag = deconTag.concat(chan);
+
+        var deconInputElement = document.getElementsByName(deconChanTag);
+        var deconAlgorithm    = deconInputElement[0];
+
+        if (deconAlgorithm === undefined) continue;
+        if (deconAlgorithm.value !== "skip") skipAllChannels = false;        
+
+        // QMLE vs CMLE/GMLE.
+        switchSnrMode(deconAlgorithm, chan);
+        
+        for (var tagIdx = 0; tagIdx < paramChanTagArray.length; tagIdx++) {
+            var tag = paramChanTagArray[tagIdx];
+            var id = tag.concat(chan);
+    
+            if (document.getElementById(id) == null) continue;
+            var paramInputElement = document.getElementById(id);
+            
+            if ( deconAlgorithm.value === "skip" ) {
+                paramInputElement.readOnly = true;                
+                paramInputElement.style.backgroundColor="#888";
+            } else {                                    
+                paramInputElement.readOnly = false;                
+                paramInputElement.style.backgroundColor="";         
+            }
+        }    
+    }
+    
+    // Then, the channel-independent parameters. These are changed when all 
+    // channels are skipped.
+    for (var tagIdx = 0; tagIdx < paramAllChanTagArray.length; tagIdx++) {
+        var id = paramAllChanTagArray[tagIdx];
+
+        var paramInputElement = document.getElementById(id);
+
+        if (skipAllChannels) {
+            paramInputElement.readOnly = true;            
+            paramInputElement.style.backgroundColor="#888";
+        } else {
+            paramInputElement.readOnly = false;            
+            paramInputElement.style.backgroundColor="";
+        }
+    }
+}
+
+
+
 // Grey out the STED input fields of a specific channel if the
 // corresponding depletion mode is set to 'confocal'.
 function changeStedEntryProperties(selectObj, channel) {
@@ -286,6 +349,7 @@ function changeStedEntryProperties(selectObj, channel) {
                     "StedImmunity",
                     "Sted3D"];
 
+
     for (var i = 0; i < tagArray.length; i++) {
         var tag = tagArray[i];
         var id = tag.concat(channel);
@@ -293,21 +357,20 @@ function changeStedEntryProperties(selectObj, channel) {
         var inputElement = document.getElementById(id);
         
         if ( selectObj.value == 'off-confocal' ) {
-            inputElement.readOnly = true;
-            inputElement.style.color="#000";
+            inputElement.readOnly = true;            
             inputElement.style.backgroundColor="#888";
         } else {
-            inputElement.readOnly = false;
-            inputElement.style.color="#000";
+            inputElement.readOnly = false;            
             inputElement.style.backgroundColor="";
         }
     }
 }
 
+
 function setStedEntryProperties( ) {
     var tag = "StedDepletionMode";
     
-    for (var chan = 0; chan < 5; chan++) {
+    for (var chan = 0; chan < 6; chan++) {
         var name = tag.concat(chan);
 
         var inputElement = document.getElementsByName(name);
@@ -400,7 +463,7 @@ function changeSpimEntryProperties(selectObj, channel) {
 function setSpimEntryProperties( ) {
     var tag = "SpimExcMode";
     
-    for (var chan = 0; chan < 5; chan++) {
+    for (var chan = 0; chan < 6; chan++) {
         var name = tag.concat(chan);
 
         inputElement = document.getElementsByName(name);
@@ -410,6 +473,10 @@ function setSpimEntryProperties( ) {
 
 function checkAgainstFormat(file, selectedFormat) {
 
+    if (selectedFormat == 'all') {
+        return true;
+    }
+    
         // Both variables as in the 'file_extension' table.
     var fileFormat    = '';
     var fileExtension = '';

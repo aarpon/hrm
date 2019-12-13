@@ -74,12 +74,16 @@ session_start();
 
 if (isset($_POST['password']) && isset($_POST['username'])) {
     if ($clean['password'] != "" && $clean['username'] != "") {
-
         // Create a user
-        $tentativeUser = new UserV2($clean['username']);
+        try {
+            $tentativeUser = new UserV2($clean['username']);
+        } catch (Exception $e) {
+            Log::error("Failed instantiating User.");
+            echo("Error. Please contact your administrator.");
+            exit();
+        }
 
         if ($tentativeUser->logIn($clean['password'])) {
-
             // If the user does not exist yet in the system, we add it
             if (!UserManager::existsUser($tentativeUser)) {
                 UserManager::addUser($tentativeUser, $clean['password']);
@@ -120,7 +124,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                 }
             }
 
-        } else if (UserManager::isLoginRestrictedToAdmin()) {
+        } elseif (UserManager::isLoginRestrictedToAdmin()) {
             if ($tentativeUser->isAdmin()) {
                 $message = "Wrong password";
             } else {
@@ -173,7 +177,7 @@ include("header.inc.php");
 
 <div id="welcome"><?php
     // Check that the database is reachable
-    $db = new DatabaseConnection();
+    $db = DatabaseConnection::get();
     if (!$db->isReachable()) {
         echo "<div class=\"dbOutDated\">Warning: the database is not reachable!\n";
         echo "<p>Please contact your administrator.</p>" .

@@ -49,11 +49,10 @@ body {
     background-color: #fff;
 }
 
-#logos table td.epfl {
-    height: 100px;
-    cursor: pointer;
-    background: url("../../images/logo_epfl.jpg") no-repeat center;
-    background-size: 130px;
+#logos table tr.caption {
+    vertical-align: top;
+    text-align: center;
+    color: black;
 }
 
 #logos table td.bsse {

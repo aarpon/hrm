@@ -370,7 +370,7 @@ abstract class Parameter {
      * @return mixed Translated possible value.
     */
     public function translatedValueFor($possibleValue) {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->translationFor($this->name, $possibleValue);
     }
 

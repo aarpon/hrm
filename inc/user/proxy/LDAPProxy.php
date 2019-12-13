@@ -10,6 +10,7 @@
 
 namespace hrm\user\proxy;
 
+use Exception;
 use hrm\Log;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
@@ -24,8 +25,8 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  *
  * @package hrm
  */
-class LDAPProxy extends AbstractProxy {
-
+class LDAPProxy extends AbstractProxy
+{
     /**
      * LDAP connection object
      * @var resource
@@ -119,9 +120,10 @@ class LDAPProxy extends AbstractProxy {
     /**
      * LDAPProxy constructor: : instantiates an LDAPProxy object
      * with the settings specified in the configuration file.
+     * @throws Exception If the LDAP configuration file could not be found.
      */
-    public function __construct() {
-
+    public function __construct()
+    {
         global $ldap_host, $ldap_port, $ldap_use_ssl, $ldap_use_tls, $ldap_root,
                $ldap_manager_base_DN, $ldap_manager, $ldap_password, $ldap_user_search_DN,
                $ldap_manager_ou, $ldap_valid_groups, $ldap_authorized_groups;
@@ -131,7 +133,7 @@ class LDAPProxy extends AbstractProxy {
         if (! is_file($conf)) {
             $msg = "The LDAP configuration file 'ldap_config.inc' is missing!";
             Log::error($msg);
-            throw new \Exception($msg);
+            throw new Exception($msg);
         }
         /** @noinspection PhpIncludeInspection */
         include($conf);
@@ -169,20 +171,17 @@ class LDAPProxy extends AbstractProxy {
 
         // Connect
         if ($this->m_LDAP_Use_SSL == true) {
-            $ds = @ldap_connect(
-                "ldaps://" . $this->m_LDAP_Host, $this->m_LDAP_Port);
+            $ds = @ldap_connect("ldaps://" . $this->m_LDAP_Host, $this->m_LDAP_Port);
         } else {
             $ds = @ldap_connect($this->m_LDAP_Host, $this->m_LDAP_Port);
         }
 
         if ($ds) {
-
             // Set the connection
             $this->m_Connection = $ds;
 
             // Set protocol (and check)
-            if (!ldap_set_option($this->m_Connection,
-                LDAP_OPT_PROTOCOL_VERSION, 3)) {
+            if (!ldap_set_option($this->m_Connection, LDAP_OPT_PROTOCOL_VERSION, 3)) {
                 Log::error("[LDAP] ERROR: Could not set LDAP protocol version to 3.");
             }
 
@@ -191,7 +190,6 @@ class LDAPProxy extends AbstractProxy {
                     Log::error("[LDAP] ERROR: Could not activate TLS.");
                 }
             }
-
         } else {
             Log::error("[LDAP] ERROR: Could not connect to $this->m_LDAP_Host.");
         }
@@ -200,7 +198,8 @@ class LDAPProxy extends AbstractProxy {
     /**
      * Destructor: closes the connection.
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         if ($this->isConnected()) {
             @ldap_close($this->m_Connection);
         }
@@ -216,11 +215,12 @@ class LDAPProxy extends AbstractProxy {
     }
 
     /**
-     * Returna the email address of user with given username.
+     * Return the email address of user with given username.
      * @param string $uid Username for which to query the email address.
      * @return string|null email address or null.
     */
-    public function getEmailAddress($uid) {
+    public function getEmailAddress($uid)
+    {
 
         // Bind the manager
         if (!$this->bindManager()) {
@@ -230,8 +230,7 @@ class LDAPProxy extends AbstractProxy {
         // Searching for user $uid
         $filter = "(uid=" . $uid . ")";
         $searchbase = $this->searchbaseStr();
-        $sr = @ldap_search(
-            $this->m_Connection, $searchbase, $filter, array('uid', 'mail'));
+        $sr = @ldap_search($this->m_Connection, $searchbase, $filter, array('uid', 'mail'));
         if (!$sr) {
             return "";
         }
@@ -239,8 +238,7 @@ class LDAPProxy extends AbstractProxy {
             return "";
         }
         $info = @ldap_get_entries($this->m_Connection, $sr);
-        $email = $info[0]["mail"][0];
-        return $email;
+        return $info[0]["mail"][0];
     }
 
     /**
@@ -281,8 +279,7 @@ class LDAPProxy extends AbstractProxy {
         // Searching for user $uid
         $filter = "(uid=" . $uid . ")";
         $searchbase = $this->searchbaseStr();
-        $sr = @ldap_search(
-            $this->m_Connection, $searchbase, $filter, array('uid', 'memberof'));
+        $sr = @ldap_search($this->m_Connection, $searchbase, $filter, array('uid', 'memberof'));
         if (!$sr) {
             Log::error("[LDAP] ERROR: Authenticate -- search failed! " .
                 "Search base: \"$searchbase\"");
@@ -296,7 +293,6 @@ class LDAPProxy extends AbstractProxy {
         // Now we try to bind with the found dn
         $result = @ldap_get_entries($this->m_Connection, $sr);
         if ($result[0]) {
-
             // If this succeeds, the user is authenticated
             $b = @ldap_bind($this->m_Connection, $result[0]['dn'], $userPassword);
 
@@ -335,8 +331,8 @@ class LDAPProxy extends AbstractProxy {
      * @param string $uid Username for which to query the group.
      * @return string Group or "" if not found.
     */
-    public function getGroup($uid) {
-
+    public function getGroup($uid)
+    {
         // Bind the manager
         if (!$this->bindManager()) {
             return "";
@@ -345,8 +341,7 @@ class LDAPProxy extends AbstractProxy {
         // Searching for user $uid
         $filter = "(uid=" . $uid . ")";
         $searchbase = $this->searchbaseStr();
-        $sr = @ldap_search($this->m_Connection, $searchbase, $filter,
-            array('uid', 'memberof'));
+        $sr = @ldap_search($this->m_Connection, $searchbase, $filter, array('uid', 'memberof'));
         if (!$sr) {
             Log::warning("[LDAP] WARNING: Group -- no group information found!");
             return "";
@@ -358,11 +353,11 @@ class LDAPProxy extends AbstractProxy {
 
         // Filter by valid groups?
         if (count($this->m_LDAP_Valid_Groups) == 0) {
-
             // The configuration did not specify any valid groups
             $groups = array_diff(
                 explode(',', strtolower($groups[0])),
-                explode(',', strtolower($searchbase)));
+                explode(',', strtolower($searchbase))
+            );
             if (count($groups) == 0) {
                 return "";
             }
@@ -379,7 +374,6 @@ class LDAPProxy extends AbstractProxy {
                 return $matches[2];
             }
         } else {
-
             // The configuration contains a list of valid groups
             for ($i = 0; $i < count($groups); $i++) {
                 for ($j = 0; $j < count($this->m_LDAP_Valid_Groups); $j++) {
@@ -396,7 +390,8 @@ class LDAPProxy extends AbstractProxy {
      * Checks whether there is a connection to LDAP.
      * @return bool True if the connection is up, false otherwise.
      */
-    public function isConnected() {
+    public function isConnected()
+    {
         return ($this->m_Connection != null);
     }
 
@@ -404,7 +399,8 @@ class LDAPProxy extends AbstractProxy {
      * Returns the last occurred error.
      * @return string Last LDAP error.
      */
-    public function lastError() {
+    public function lastError()
+    {
         if ($this->isConnected()) {
             return @ldap_error($this->m_Connection);
         } else {
@@ -417,8 +413,8 @@ class LDAPProxy extends AbstractProxy {
      * @return bool True if the manager could bind, false otherwise.
      */
 
-    private function bindManager() {
-
+    private function bindManager()
+    {
         if (!$this->isConnected()) {
             return false;
         }
@@ -442,7 +438,8 @@ class LDAPProxy extends AbstractProxy {
      * Creates the search base string.
      * @return string Search base string.
      */
-    private function searchbaseStr() {
+    private function searchbaseStr()
+    {
         return ($this->m_LDAP_User_Search_DN . "," . $this->m_LDAP_Root);
     }
 
@@ -450,7 +447,8 @@ class LDAPProxy extends AbstractProxy {
      * Creates the DN string.
      * @return string DN string.
      */
-    private function dnStr() {
+    private function dnStr()
+    {
         $dn = $this->m_LDAP_Manager_Base_DN . "=" .
             $this->m_LDAP_Manager . "," .
             $this->m_LDAP_Manager_OU . "," .
@@ -461,5 +459,4 @@ class LDAPProxy extends AbstractProxy {
         $dn = str_replace(',,', ',', $dn);
         return $dn;
     }
-
-};
+}

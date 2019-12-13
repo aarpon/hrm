@@ -145,7 +145,7 @@ class ParameterSetting extends Setting {
            accumulate the microscopic parameters.*/
         $postedParams = array();
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $imageFormat = $this->parameter("ImageFileFormat")->value();
 
         /* Loop over the values of this setting's parameters. */
@@ -306,7 +306,7 @@ class ParameterSetting extends Setting {
             return False;
         }
 
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
@@ -919,7 +919,7 @@ class ParameterSetting extends Setting {
             return True;
         }
 
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
@@ -1193,7 +1193,7 @@ class ParameterSetting extends Setting {
             return False;
         }
 
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
@@ -1927,7 +1927,7 @@ class ParameterSetting extends Setting {
     public function threeDimensionalGeometries() {
         static $threeDimensionalGeometries;
         if ($threeDimensionalGeometries == NULL) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $threeDimensionalGeometries = $db->geometriesWith(True, NULL);
         }
         return $threeDimensionalGeometries;
@@ -1941,7 +1941,7 @@ class ParameterSetting extends Setting {
     public function timeSeriesGeometries() {
         static $timeSeriesGeometries;
         if ($timeSeriesGeometries == NULL) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $timeSeriesGeometries = $db->geometriesWith(NULL, True);
         }
         return $timeSeriesGeometries;
@@ -1955,7 +1955,7 @@ class ParameterSetting extends Setting {
     public function fixedGeometryFileFormats() {
         static $fixedGeometryFileFormats;
         if ($fixedGeometryFileFormats == NULL) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $fixedGeometryFileFormats = $db->fileFormatsWith(NULL, NULL, True);
         }
         return $fixedGeometryFileFormats;
@@ -1980,7 +1980,7 @@ class ParameterSetting extends Setting {
     public function singleChannelFileFormats() {
         static $singleChannelFileFormats;
         if ($singleChannelFileFormats == NULL) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $singleChannelFileFormats = $db->fileFormatsWith(True, NULL, NULL);
         }
         return $singleChannelFileFormats;
@@ -1994,7 +1994,7 @@ class ParameterSetting extends Setting {
     public function multiChannelFileFormats() {
         static $multiChannelFileFormats;
         if ($multiChannelFileFormats == NULL) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $multiChannelFileFormats = $db->fileFormatsWith(False, NULL, NULL);
         }
         return $multiChannelFileFormats;
@@ -2010,7 +2010,7 @@ class ParameterSetting extends Setting {
     public function variableChannelFileFormats() {
         static $variableChannelFileFormats;
         if ($variableChannelFileFormats == NULL) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $variableChannelFileFormats =
                 $db->fileFormatsWith(NULL, True, NULL);
         }
@@ -2323,7 +2323,7 @@ class ParameterSetting extends Setting {
      * @return array List of shared templates with the user.
     */
     public static function getTemplatesSharedWith($username) {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->getTemplatesSharedWith($username, self::sharedTable());
         return $result;
     }
@@ -2334,7 +2334,7 @@ class ParameterSetting extends Setting {
      * @return array List of shared templates by the user.
     */
     public static function getTemplatesSharedBy($username) {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->getTemplatesSharedBy($username, self::sharedTable());
         return $result;
     }
@@ -2373,6 +2373,14 @@ class ParameterSetting extends Setting {
             $hrmMicrType->setValue($micrVal);
         }
 
+        // Multiphoton.
+        if (strpos($huArray['parState,pcnt'], "default") === FALSE) {
+            $photonCnt = array_map('floatval', explode(' ', $huArray['pcnt']));
+            if ($photonCnt[0] > 1) {
+                $hrmMicrType->setValue('two photon');
+            }
+        }
+
         // Number of channels.
         if (isset($huMicrType)) {
             $chanCnt = count($huMicrType);
@@ -2380,7 +2388,7 @@ class ParameterSetting extends Setting {
             $chanCnt = 1;
         }
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
         if ($chanCnt > $maxChanCnt) {
             $chanCnt = $maxChanCnt;
@@ -2505,8 +2513,7 @@ class ParameterSetting extends Setting {
 
         // SPIM Excitation Mode.
         if (strpos($huArray['parState,spimExc'], "default") === FALSE) {
-            $spimExcMode = array_map('floatval',
-                                     explode(' ', $huArray['spimExc']));
+            $spimExcMode = explode(' ', $huArray['spimExc']);
             $this->parameter['SpimExcMode']->setValue($spimExcMode);
         }
 

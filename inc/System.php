@@ -34,7 +34,7 @@ class System
      * Current HRM minor version. This value has to be set by the developers!
      * @var int
      */
-    const HRM_VERSION_MINOR = 6;
+    const HRM_VERSION_MINOR = 7;
 
     /**
      * Current HRM maintenance (patch) version. This value has to be set by the
@@ -48,7 +48,7 @@ class System
      * set by the developers!
      * @var int
      */
-    const DB_LAST_REVISION = 17;
+    const DB_LAST_REVISION = 18;
 
     /**
      * Minimum HuCore (major) version number to be compatible with HRM.
@@ -184,7 +184,7 @@ class System
      */
     public static function getDBCurrentRevision()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->query(
             "SELECT * FROM global_variables WHERE name LIKE 'dbrevision';");
         if (!$rows) {
@@ -209,7 +209,7 @@ class System
      */
     public static function getHuCoreVersionAsInteger()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT value FROM global_variables WHERE name= 'huversion';";
         $version = $db->queryLastValue($query);
         if ($version == false) {
@@ -254,7 +254,7 @@ class System
      */
     public static function isMinHuCoreVersion()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT value FROM global_variables WHERE name= 'huversion';";
         $version = $db->queryLastValue($query);
         if ($version == false) {
@@ -271,7 +271,7 @@ class System
      */
     public static function setHuCoreVersion($value)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rs = $db->query("SELECT * FROM global_variables WHERE name = 'huversion';");
         if (!$rs) {
             $query = "INSERT INTO global_variables VALUES ('huversion', '" . $value . "');";
@@ -333,9 +333,11 @@ class System
                 "gpuMaxCores-1024" => "GPU max cores: 1024",
                 "gpuMaxCores-3072" => "GPU max cores: 3072",
                 "gpuMaxCores-8192" => "GPU max cores: 8192",
+                "gpuMaxCores-24576" => "GPU max cores: 24576",
                 "gpuMaxMemory-2048" => "GPU max memory: 2GB",
                 "gpuMaxMemory-4096" => "GPU max memory: 4GB",
                 "gpuMaxMemory-24576" => "GPU max memory: 24GB",
+                "gpuMaxMemory-65536" => "GPU max memory: 64GB",
                 "server=desktop" => "Server type: desktop",
                 "server=small" => "Server type: small",
                 "server=medium" => "Server type: medium",
@@ -369,7 +371,7 @@ class System
      */
     public static function getActiveLicenses()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $activeLicenses = $db->getActiveLicenses();
         return $activeLicenses;
     }
@@ -380,7 +382,7 @@ class System
      */
     public static function hucoreHasValidLicense()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->hucoreHasValidLicense();
     }
 
@@ -392,7 +394,7 @@ class System
      */
     public static function hasLicense($feature)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->hasLicense($feature);
     }
 
@@ -402,7 +404,7 @@ class System
      */
     public static function getHucoreServerType()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->hucoreServerType();
     }
 
@@ -492,7 +494,7 @@ class System
      */
     public static function getDatabaseType()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->type();
     }
 
@@ -503,7 +505,7 @@ class System
     public static function getDatabaseVersion()
     {
         $dbver = "";
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if (preg_match('|(\d+)\.(\d+)\.(\d+)|', $db->version(), $dbver)) {
             return "${dbver[1]}.${dbver[2]}.${dbver[3]}";
         } else {

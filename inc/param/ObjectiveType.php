@@ -51,7 +51,7 @@ class ObjectiveType extends ChoiceParameter
     public function translatedValue()
     {
         if (in_array($this->value, $this->possibleValues)) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $result = $db->translationFor($this->name, $this->value);
             return $result;
         } else {

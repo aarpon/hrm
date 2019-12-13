@@ -92,28 +92,28 @@ $fileFormat =
 
 if (isset($_POST['copy_public'])) {
     if (isset($_POST['public_setting'])) {
-        if (!$_SESSION['editor']->copyPublicSetting(
-            $admin_editor->setting($_POST['public_setting']))
-        ) {
+        if (!$_SESSION['editor']->copyPublicSetting($admin_editor->setting($_POST['public_setting']))) {
             $message = $_SESSION['editor']->message();
         }
-    } else $message = "Please select a setting to copy";
-} else if (!empty($_POST['new_setting_create'])) {
+    } else {
+        $message = "Please select a setting to copy";
+    }
+} elseif (!empty($_POST['new_setting_create'])) {
       $setting = $_SESSION['editor']->createNewSetting($_POST['new_setting_create']);
 
-    if ($setting != NULL) {
+    if ($setting != null) {
         $setting->parameter("ImageFileFormat")->setValue($fileFormat);
         $_SESSION['setting'] = $setting;
         header("Location: " . "image_format.php");
         exit();
     }
     $message = $_SESSION['editor']->message();
-    
-} else if (!empty($_POST['new_setting_copy'])) {
+
+} elseif (!empty($_POST['new_setting_copy'])) {
     $_SESSION['editor']->copySelectedSetting($_POST['new_setting_copy']);
     $message = $_SESSION['editor']->message();
-} else if (isset($_POST['imageTotemplate']) && isset($_POST['fileselection'])) {
-    $setting = NULL;
+} elseif (isset($_POST['imageTotemplate']) && isset($_POST['fileselection'])) {
+    $setting = null;
 
     if ($_POST['fileselection'] != 'Choose a file') {
         $filestring = $_POST['fileselection'];
@@ -121,20 +121,23 @@ if (isset($_POST['copy_public'])) {
         $hrmtemplatename = $_SESSION['editor']->getValidNewSettingName('Based on ' . $path_parts['filename']);
         $setting = $_SESSION['editor']->createNewSetting($hrmtemplatename);
         // @todo This should react appropriately to the return status of image2hrmTemplate()
-        $result = $_SESSION['editor']->image2hrmTemplate($setting,
-            $_SESSION['fileserver']->sourceFolder(), $filestring);
+        $result = $_SESSION['editor']->image2hrmTemplate(
+                $setting,
+                $_SESSION['fileserver']->sourceFolder(),
+                $filestring
+        );
         $message = $_SESSION['editor']->message();
     }
 
-    if ($setting != NULL) {
+    if ($setting != null) {
         // Need to set ImageFileFormat here, as for the template creation above.
         $setting->parameter("ImageFileFormat")->setValue($fileFormat);
         $_SESSION['setting'] = $setting;
         header("Location: " . "image_format.php");
         exit();
     }
-} else if (isset($_POST['huTotemplate'])) {
-    $setting = NULL;
+} elseif (isset($_POST['huTotemplate'])) {
+    $setting = null;
     $file = $_FILES["upfile"]["name"];
     $fileName = pathinfo($file[0], PATHINFO_BASENAME);
     $extension = pathinfo($file[0], PATHINFO_EXTENSION);
@@ -153,7 +156,7 @@ if (isset($_POST['copy_public'])) {
                 "(extension .hgsm)";
         }
 
-        if ($setting != NULL) {
+        if ($setting != null) {
             $setting->parameter("ImageFileFormat")->setValue($fileFormat);
             $_SESSION['setting'] = $setting;
             header("Location: " . "image_format.php");
@@ -163,7 +166,7 @@ if (isset($_POST['copy_public'])) {
         $message = "Please upload a valid Huygens microscopy template " .
             "(extension .hgsm)";
     }
-} else if (isset($_POST['edit'])) {
+} elseif (isset($_POST['edit'])) {
     /** @var ParameterSetting $setting */
     $setting = $_SESSION['editor']->loadSelectedSetting();
     if ($setting) {
@@ -173,32 +176,31 @@ if (isset($_POST['copy_public'])) {
         exit();
     }
     $message = $_SESSION['editor']->message();
-} else if (isset($_POST['pickUser']) && isset($_POST["templateToShare"])) {
+} elseif (isset($_POST['pickUser']) && isset($_POST["templateToShare"])) {
     if (isset($_POST["usernameselect"])) {
-        $_SESSION['editor']->shareSelectedSetting($_POST["templateToShare"],
-            $_POST["usernameselect"]);
+        $_SESSION['editor']->shareSelectedSetting(
+            $_POST["templateToShare"],
+            $_POST["usernameselect"]
+        );
         $message = $_SESSION['editor']->message();
     } else {
         $message = "Please pick one or more recipients.";
     }
-} else if (isset($_POST['make_default'])) {
+} elseif (isset($_POST['make_default'])) {
     $_SESSION['editor']->makeSelectedSettingDefault();
     $message = $_SESSION['editor']->message();
-} else if (isset($_POST['annihilate']) &&
-    strcmp($_POST['annihilate'], "yes") == 0
-) {
+} elseif (isset($_POST['annihilate']) && strcmp($_POST['annihilate'], "yes") == 0) {
     $_SESSION['editor']->deleteSelectedSetting();
     $message = $_SESSION['editor']->message();
-} else if (isset($_POST['OK']) && $_POST['OK'] == "OK") {
-
+} elseif (isset($_POST['OK']) && $_POST['OK'] == "OK") {
     if (!isset($_POST['setting'])) {
-        $message  = "Please select a template from \"Your image templates\".";        
+        $message  = "Please select a template from \"Your image templates\".";
     } else {
         $_SESSION['setting'] = $_SESSION['editor']->loadSelectedSetting();
         $_SESSION['setting']->parameter("ImageFileFormat")->setValue($fileFormat);
 
         // if measured PSF, check files availability
-        $ok = True;
+        $ok = true;
         $psfParam = $_SESSION['setting']->parameter("PointSpreadFunction");
 
         if ($psfParam->value() == "measured") {
@@ -210,20 +212,20 @@ if (isset($_POST['copy_public'])) {
                     if (!in_array($value[$i], $files)) {
                         $message = "Please verify selected template, as some PSF " .
                             "files appear to be missing";
-                        $ok = False;
+                        $ok = false;
                         break;
                     }
                 }
             } else {
                 $message = "Source image folder not found! Make sure path " .
                     $_SESSION['fileserver']->sourceFolder() . " exists";
-                $ok = False;
+                $ok = false;
             }
         }
 
         if (!$_SESSION['setting']->checkParameterSetting()) {
             $message = $_SESSION['setting']->message();
-            $ok = False;
+            $ok = false;
         }
 
         if ($ok) {
@@ -233,8 +235,7 @@ if (isset($_POST['copy_public'])) {
     }
 }
 
-$script = array("settings.js", "common.js",
-    "json-rpc-client.js", "shared.js", "ajax_utils.js");
+$script = array("settings.js", "common.js", "json-rpc-client.js", "shared.js", "ajax_utils.js");
 
 include("header.inc.php");
 
@@ -358,14 +359,12 @@ if (!$_SESSION['user']->isAdmin()) {
     <?php
 
     if ($_SESSION['user']->isAdmin()) {
-
         ?>
         <h3><img alt="ImageParameters" src="./images/image_parameters.png"
                  width="40"/>&nbsp;&nbsp;Create image template</h3>
         <?php
 
     } else {
-
         ?>
         <h3><img alt="ImageParameters" src="./images/image_parameters.png"
                  width="40"/>&nbsp;&nbsp;Step
@@ -378,7 +377,6 @@ if (!$_SESSION['user']->isAdmin()) {
 
     // display public settings
     if (!$_SESSION['user']->isAdmin()) {
-
         ?>
         <form id="formTemplateTypeParameters" method="post" action="">
 
@@ -457,10 +455,13 @@ if (!$_SESSION['user']->isAdmin()) {
 
                 $settings = $_SESSION['editor']->settings();
                 $size = "8";
-                if ($_SESSION['user']->isAdmin()) $size = "12";
+                if ($_SESSION['user']->isAdmin()) {
+                    $size = "12";
+                }
                 $flag = "";
-                if (sizeof($settings) == 0) $flag = " disabled=\"disabled\"";
-
+                if (sizeof($settings) == 0) {
+                    $flag = " disabled=\"disabled\"";
+                }
                 ?>
                 <select name="setting"
                         id="setting"
@@ -495,7 +496,7 @@ if (!$_SESSION['user']->isAdmin()) {
 
         <?php
         if ($_SESSION['user']->isAdmin()) {
-            $validFiles = $_SESSION['fileserver']->listFiles(TRUE);
+            $validFiles = $_SESSION['fileserver']->listFiles(true);
         } else {
             $validFiles = $_SESSION['fileserver']->selectedFiles();
         }
@@ -552,8 +553,8 @@ if (!$_SESSION['user']->isAdmin()) {
                    onclick="UnTip(); hu2template('micr');"/>
                 </td>
 <?php
-  if (!$_SESSION['user']->isAdmin()) {
-?>
+if (!$_SESSION['user']->isAdmin()) {
+    ?>
                 <td class="button">
                   <input name="share"
                        type="button"
@@ -569,7 +570,7 @@ if (!$_SESSION['user']->isAdmin()) {
                        onmouseover="TagToTip('ttSpanDefault' )"
                        onmouseout="UnTip()"/>
                 </td>
-<?php
+    <?php
 }
 ?>
                 <td class="button">
@@ -603,14 +604,14 @@ if (!$_SESSION['user']->isAdmin()) {
                 </td>
 <?php
 if (!$_SESSION['user']->isAdmin()) {
-?>       
+    ?>
                 <td class="label">
                      Share
                 </td>
                 <td class="label">
                      Mark as<br />favorite
                 </td>
-<?php
+    <?php
 }
 ?>      
                 <td class="label">
@@ -653,7 +654,6 @@ if (!$_SESSION['user']->isAdmin()) {
         
         <?php
         if (!$_SESSION['user']->isAdmin()) {
-
             ?>
             <div id="controls">
                 <input type="button"
@@ -670,7 +670,7 @@ if (!$_SESSION['user']->isAdmin()) {
                        onmouseout="UnTip()"/>
             </div>
 
-        <?php
+            <?php
         }
         ?>
 
@@ -739,15 +739,6 @@ if (!$_SESSION['user']->isAdmin()) {
 
         <p>&nbsp;</p>
         <?php
-
-        // add user management
-        if (!$_SESSION['user']->isAdmin()) {
-
-            ?>
-
-            <?php
-
-        }
 
         if (!$_SESSION['user']->isAdmin()) {
             echo "<p>In this step, you are asked to specify all parameters

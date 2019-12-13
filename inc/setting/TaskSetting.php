@@ -119,13 +119,12 @@ class TaskSetting extends Setting
      */
     public function checkPostedTaskParameters(array $postedParameters)
     {
-
         if (count($postedParameters) == 0) {
             $this->message = '';
             return False;
         }
 
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
@@ -137,36 +136,81 @@ class TaskSetting extends Setting
         // Deconvolution Algorithm - this should always be defined, but since
         // other parameters depend on it, in case it is not defined we return
         // here
-        if (!isset($postedParameters["DeconvolutionAlgorithm"])) {
-            $this->message = 'Please choose a deconvolution algorithm!';
-            return False;
+        $skipDeconAll = true;
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
+            if (isset($postedParameters["DeconvolutionAlgorithm$i"])) {
+                $value[$i] = $postedParameters["DeconvolutionAlgorithm$i"];
+                unset($postedParameters["DeconvolutionAlgorithm$i"]);
+
+                if ($value[$i] != "skip") {
+                    $skipDeconAll = false;
+                }
+            }            
         }
 
-        // Set the Parameter and check the value
-        $parameter = $this->parameter("DeconvolutionAlgorithm");
-        $parameter->setValue($postedParameters["DeconvolutionAlgorithm"]);
-        $this->set($parameter);
-        if (!$parameter->check()) {
-            $this->message = 'Unknown deconvolution algorithm!';
-            return False;
+        $name = 'DeconvolutionAlgorithm';
+
+        // @todo Correctly process the case where $value is not defined.
+        $valueSet = count(array_filter($value)) > 0;
+    
+        if ($valueSet) {
+    
+            // Set the value
+            $parameter = $this->parameter($name);
+            $parameter->setValue($value);
+            $this->set($parameter);
+    
+            // Keep the 'deconAlgorithms' so that it can be checked below if any
+            // parameters need to be forced, e.g when 'QMLE'.
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = False;
+            } else {
+                $deconAlgorithms = $parameter->value();
+            }
+        } else {
+    
+            // In this case it is important to know whether the Parameter
+            // must have a value or not
+            $parameter = $this->parameter($name);
+            $mustProvide = $parameter->mustProvide();
+    
+            // Reset the Parameter
+            $parameter->reset();
+            $this->set($parameter);
+    
+            // If the Parameter value must be provided, we return an error
+            if ($mustProvide) {
+                $this->message = "Please set the Deconvolution Algorithm!";
+                $noErrorsFound = False;
+            }
         }
-        $algorithm = strtoupper($parameter->value());
 
         // Signal-To-Noise Ratio
         // Depending on the choice of the deconvolution algorithm, we will
         // check only the relevant entries
         for ($i = 0; $i < $maxChanCnt; $i++) {
             $value[$i] = null;
-            $name = "SignalNoiseRatio" . $algorithm . "$i";
+            $name = "SignalNoiseRatio" . strtoupper($deconAlgorithms[$i]) . "$i";
             if (isset($postedParameters[$name])) {
-                $value[$i] = $postedParameters[$name];
+
+                // We need to set a default value in case of skipped channels 
+                // so that the parameter can get processed. Unfortunately, 
+                // there's no default for this parameter in the DB.
+                if ($deconAlgorithms[$i] == "skip") {
+                    $value[$i] = 20;
+                } else {
+                    $value[$i] = $postedParameters[$name];
+                }
             }
         }
+
         /** @var SignalNoiseRatio $parameter */
         $parameter = $this->parameter("SignalNoiseRatio");
         $parameter->setValue($value);
         $this->set($parameter);
-        if (!$parameter->check()) {
+        if (!$skipDeconAll && !$parameter->check()) {
             $this->message = $parameter->message();
             $noErrorsFound = False;
         }
@@ -208,7 +252,7 @@ class TaskSetting extends Setting
             $parameter = $this->parameter("BackgroundOffsetPercent");
             $parameter->setValue($value);
             $this->set($parameter);
-            if (!$parameter->check()) {
+            if (!$skipDeconAll && !$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
@@ -221,7 +265,7 @@ class TaskSetting extends Setting
             $parameter = $this->parameter("NumberOfIterations");
             $parameter->setValue($postedParameters["NumberOfIterations"]);
             $this->set($parameter);
-            if (!$parameter->check()) {
+            if (!$skipDeconAll && !$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
@@ -234,7 +278,7 @@ class TaskSetting extends Setting
             $parameter = $this->parameter("QualityChangeStoppingCriterion");
             $parameter->setValue($postedParameters["QualityChangeStoppingCriterion"]);
             $this->set($parameter);
-            if (!$parameter->check()) {
+            if (!$skipDeconAll && !$parameter->check()) {
                 $this->message = $parameter->message();
                 $noErrorsFound = False;
             }
@@ -447,6 +491,10 @@ class TaskSetting extends Setting
     {
         $result = '';
 
+        if ($numberOfChannels == 0) {
+            $numberOfChannels = $this->numberOfChannels();
+        }
+
         // These parameters are important to properly display other parameters.
         $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
         $TStabilization = $this->parameter('TStabilization')->value();   
@@ -580,7 +628,7 @@ class TaskSetting extends Setting
      */
     public static function getTemplatesSharedWith($username)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->getTemplatesSharedWith($username, self::sharedTable());
         return $result;
     }
@@ -592,7 +640,7 @@ class TaskSetting extends Setting
      */
     public static function getTemplatesSharedBy($username)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->getTemplatesSharedBy($username, self::sharedTable());
         return $result;
     }
@@ -610,33 +658,45 @@ class TaskSetting extends Setting
             $huArray[$key] = trim($value, " ");
         }
 
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
-        // We only look at the first channel for the decon algorithm.
-        if (strpos($huArray['cmle:0'], "") === FALSE) {
-            $algorithm = $this->parameter('DeconvolutionAlgorithm');
-            $algorithm->setValue("cmle");
-        } else if (strpos($huArray['qmle:0'], "") === FALSE) {
-            $algorithm = $this->parameter('DeconvolutionAlgorithm');
-            $algorithm->setValue("qmle");
-        } else if (strpos($huArray['gmle:0'], "") === FALSE) {
-            $algorithm = $this->parameter('DeconvolutionAlgorithm');
-            $algorithm->setValue("gmle");
+        // We only look at the first 6 channels for the decon algorithm.
+        $algorithm = $this->parameter('DeconvolutionAlgorithm');
+        $algArray = array();
+        for ($ch = 0; $ch < $maxChanCnt; $ch++) {
+            if (isset($huArray['cmle:' . $ch])) {
+                $algArray[$ch] = "cmle";
+            } else if (isset($huArray['qmle:' . $ch])) {
+                $algArray[$ch] = "qmle";                
+            } else if (isset($huArray['gmle:' . $ch])) {
+                $algArray[$ch] = "gmle";
+            } else if (isset($huArray['deconSkip:' . $ch])) {
+                $algArray[$ch] = "skip";
+            } else {
+                $algArray[$ch] = "cmle";
+            }
         }
+        $algorithm->setValue($algArray);
 
         // SNR.
+        $snrQMLEArray = array("low" => "1", "fair" => "2", "good" => "3", "inf" => "4");
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
-            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+            if ($algArray[$chan] == "cmle") {
                 $key = "cmle:" . $chan . " sn";
-            } else if ($this->parameter('DeconvolutionAlgorithm')->value() == "gmle") {
+            } else if ($algArray[$chan] == "gmle") {
                 $key = "gmle:" . $chan . " sn";
-            } else {
+            } else if ($algArray[$chan] == "qmle") {
                 $key = "qmle:" . $chan . " sn";
             }
 
-            if (strpos($huArray[$key], "") === FALSE) {
-                $snr[$chan] = $huArray[$key];
+            if (isset($huArray[$key])) {
+                if ($algArray[$chan] == "qmle" 
+                  && array_key_exists($huArray[$key], $snrQMLEArray)) {
+                    $snr[$chan] = $snrQMLEArray[$huArray[$key]];
+                } else {             
+                    $snr[$chan] = $huArray[$key];
+                }
             }
         }
         if (isset($snr)) {
@@ -644,7 +704,7 @@ class TaskSetting extends Setting
         }
 
         // Autocrop.
-        if (strpos($huArray['autocrop enabled'], "") === FALSE) {
+        if (isset($huArray['autocrop enabled'])) {
             $autocrop = $huArray['autocrop enabled'];
             $this->parameter['Autocrop']->setValue($autocrop);
         }
@@ -696,30 +756,31 @@ class TaskSetting extends Setting
         $this->parameter['BackgroundOffsetPercent']->setValue($bgArr);
 
         // Iterations.
+        $itMax = 0;
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
-            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+            if ($algArray[$chan] == "cmle") {
                 $key = "cmle:" . $chan . " it";
-            } else if ($this->parameter('DeconvolutionAlgorithm')->value() == "gmle") {
+            } else if ($algArray[$chan] == "gmle") {
                 $key = "gmle:" . $chan . " it";
-            } else {
+            } else if ($algArray[$chan] == "qmle") {
                 $key = "qmle:" . $chan . " it";
             }
 
-            if (strpos($huArray[$key], "") === FALSE) {
-                $it = $huArray[$key];
-                $itOld = $this->parameter['NumberOfIterations']->value();
-                if ($it > $itOld) {
-                    $this->parameter['NumberOfIterations']->setValue($it);
+            if (isset($huArray[$key])) {
+                $it = $huArray[$key];                
+                if ($it > $itMax) {
+                    $itMax = $it;
                 }
             }
         }
+        $this->parameter['NumberOfIterations']->setValue($itMax);
 
         // Array Detector Reduction Mode.
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
-            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+            if ($algArray[$chan] == "cmle") {
                 $key = "cmle:" . $chan . " reduceMode";
             } 
-            if (strpos($huArray[$key], "") === FALSE) {
+            if (isset($huArray[$key])) {
                 $reductionMode = $huArray[$key];          
                 $this->parameter('ArrayDetectorReductionMode')->setValue($reductionMode);
                 break;      
@@ -727,28 +788,29 @@ class TaskSetting extends Setting
         }
         
 
-        // Quality factor.
+        // Quality factor. The lower the more stringent.
+        $qMin = PHP_INT_MAX;
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
-            if ($this->parameter('DeconvolutionAlgorithm')->value() == "cmle") {
+            if ($algArray[$chan] == "cmle") {
                 $key = "cmle:" . $chan . " q";
-            } else if ($this->parameter('DeconvolutionAlgorithm')->value() == "gmle") {
+            } else if ($algArray[$chan] == "gmle") {
                 $key = "gmle:" . $chan . " q";
-            } else {
+            } else if ($algArray[$chan] == "qmle") {
                 $key = "qmle:" . $chan . " q";
             }
 
-            if (strpos($huArray[$key], "") === FALSE) {
-                $q = $huArray[$key];
-                $key = 'QualityChangeStoppingCriterion';
-                $qOld = $this->parameter[$key]->value();
-                if ($q > $qOld) {
-                    $this->parameter[$key]->setValue($q);
+            if (isset($huArray[$key])) {
+                $q = $huArray[$key];                
+                if ($q < $qMin) {
+                    $qMin = $q;
                 }
             }
         }
+        $this->parameter["QualityChangeStoppingCriterion"]->setValue($qMin);
+
 
         // Stabilization in Z.
-        if (strpos($huArray['stabilize enabled'], "") === FALSE) {
+        if (isset($huArray['stabilize enabled'])) {
             $stabilize = $huArray['stabilize enabled'];
             $this->parameter['ZStabilization']->setValue($stabilize);
         }
@@ -783,25 +845,25 @@ class TaskSetting extends Setting
         }
 
         // Stabilization in T.
-        if (strpos($huArray['stabilize:post enabled'], "") === FALSE) {
+        if (isset($huArray['stabilize:post enabled'])) {
             $stabilize = $huArray['stabilize:post enabled'];
             $this->parameter['TStabilization']->setValue($stabilize);
         }
 
         // Stabilization in T: Method
-        if (strpos($huArray['stabilize:post mode'], "") === FALSE) {
+        if (isset($huArray['stabilize:post mode'])) {
             $method = $huArray['stabilize:post mode'];
             $this->parameter['TStabilizationMethod']->setValue($method);
         }
 
         // Stabilization in T: Rotations
-        if (strpos($huArray['stabilize:post rot'], "") === FALSE) {
+        if (isset($huArray['stabilize:post rot'])) {
             $rotation = $huArray['stabilize:post rot'];
             $this->parameter['TStabilizationRotation']->setValue($rotation);
         }
 
         // Stabilization in T: Cropping
-        if (strpos($huArray['stabilize:post crop'], "") === FALSE) {
+        if (isset($huArray['stabilize:post crop'])) {
             $cropping = $huArray['stabilize:post crop'];
             $this->parameter['TStabilizationCropping']->setValue($cropping);
         }

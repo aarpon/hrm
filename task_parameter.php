@@ -28,7 +28,7 @@ if (!isset($_SESSION['task_setting'])) {
     $_SESSION['task_setting'] = new TaskSetting();
 }
 if ($_SESSION['user']->isAdmin()) {
-    $db = new DatabaseConnection;
+    $db = DatabaseConnection::get();
     $maxChanCnt = $db->getMaxChanCnt();
     $_SESSION['task_setting']->setNumberOfChannels($maxChanCnt);
 } else {
@@ -38,22 +38,26 @@ if ($_SESSION['user']->isAdmin()) {
 
 $message = "";
 
+
 /* *****************************************************************************
  *
- * MAKE SURE TO HAVE THE DECONVOLUTION ALGORITHM SET TO cmle IF WE ARE COMING
- * BACK FROM THE ESTIMATOR
+ * MANAGE THE DECONVOLUTION ALGORITHM
  *
  **************************************************************************** */
 
-if (!(strpos($_SERVER['HTTP_REFERER'],
-            'estimate_snr_from_image.php') === false) ||
-    !(strpos($_SERVER['HTTP_REFERER'],
-            'estimate_snr_from_image_beta.php') === false)) {
-    $algorithmParameter = $_SESSION['task_setting']->parameter(
-        "DeconvolutionAlgorithm");
-    $algorithmParameter->setValue('cmle');
-    $_SESSION['task_setting']->set($algorithmParameter);
+/** @var DeconvolutionAlgorithm $deconAlgorithmParam */
+$chanCnt = $_SESSION['task_setting']->numberOfChannels();
+$deconAlgorithmParam = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+$deconAlgorithm = $deconAlgorithmParam->value();
+for ($i = 0; $i < $chanCnt; $i++) {
+    $deconAlgorithmKey = "DeconvolutionAlgorithm{$i}";
+    if (isset($_POST[$deconAlgorithmKey])) {
+        $deconAlgorithm[$i] = $_POST[$deconAlgorithmKey];
+    } 
 }
+$deconAlgorithmParam->setValue($deconAlgorithm);
+$_SESSION['task_setting']->set($deconAlgorithmParam);
+
 
 /* *****************************************************************************
  *
@@ -149,6 +153,16 @@ include("header.inc.php");
         <h4>How should your images be restored?</h4>
 
         <!-- deconvolution algorithm -->
+        <?php
+        /***************************************************************************
+         *
+         * DeconvolutionAlgorithm
+         ***************************************************************************/
+
+        /** @var DeconvolutionAlgorithm $parameterDeconAlgorithm */
+        $parameterDeconAlgorithm = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+        ?>
+
         <fieldset class="setting provided"
                   onmouseover="changeQuickHelp( 'method' );">
 
@@ -159,39 +173,69 @@ include("header.inc.php");
                 Deconvolution Algorithm
             </legend>
 
-            <select name="DeconvolutionAlgorithm"
-                    title="Deconvolution algorithm"
-                    class="selection"   
-                    onchange="switchSnrMode(this.value);">
 
-                <?php
+            <div class="DeconvolutionAlgorithmValues">
+                <table class="DeconvolutionAlgorithmValues">
 
-                /*
-                                           DECONVOLUTION ALGORITHM
-                */
-
-                /** @var DeconvolutionAlgorithm $parameter */
-                $parameter = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
-                $possibleValues = $parameter->possibleValues();
-                $selectedMode = $parameter->value();
-                foreach ($possibleValues as $possibleValue) {
-                    $translation = $parameter->translatedValueFor($possibleValue);
-                    if ($possibleValue == $selectedMode) {
-                        $option = "selected=\"selected\"";
-                    } else {
-                        $option = "";
-                    }
-                    ?>
-                    <option <?php echo $option ?>
-                        value="<?php echo $possibleValue ?>">
-                        <?php echo $translation ?>
-                    </option>
                     <?php
-                }
-                ?>
-            </select>
+                    $selectedAlgArr = $parameterDeconAlgorithm->value();
+                    $possibleValues = $parameterDeconAlgorithm->possibleValues();
+
+                    /* Make sure CMLE is first in the list. */
+                    for ($i = 0; $i < count($possibleValues); $i++) {
+                        $arrValue = $possibleValues[0];                    
+                        if (strstr($arrValue, "gmle") || strstr($arrValue, "qmle")) {
+                            array_push($possibleValues, $arrValue);
+                        }
+                    }
+
+                    /* Loop on rows. */
+
+                    for ($chan = 0; $chan < $chanCnt; $chan++) {
+                        ?>
+                        <tr>
+                            <td>Ch<?php echo $chan; ?>:</td>
+
+                            <td>
+                                <select
+                                    name="DeconvolutionAlgorithm<?php echo $chan; ?>"
+                                    title="Deconvolution algorithm for channel <?php echo $chan; ?>"                                    
+                                    onchange="updateDeconEntryProperties()">
+
+                                    <?php
+                                    /* Loop for select options. */                                   
+                                    foreach ($possibleValues as $possibleValue) {
+                                        $translatedValue =
+                                            $parameterDeconAlgorithm->translatedValueFor($possibleValue);
+                                            
+                                        if ($possibleValue == $deconAlgorithm[$chan]) {
+                                            $selected = " selected=\"selected\"";
+                                        } else {
+                                            $selected = "";
+                                        }
+                                        ?>
+                                        <option
+                                            value=<?php echo $possibleValue;
+                                        echo $selected; ?>>
+                                            <?php echo $translatedValue; ?>
+                                        </option>
+                                        <?php
+                                    }                    /* End of loop for select options. */
+                                    ?>
+                                </select>
+                            </td>
+
+                        </tr>
+                        <?php
+                    }                        /* End of loop on rows. */
+                    ?>
+
+                </table> <!-- DeconvolutionAlgorithmValues -->
+            </div> <!-- DeconvolutionAlgorithmValues -->
 
         </fieldset>
+
+
 
         <!-- signal/noise ratio -->
         <fieldset class="setting provided"
@@ -207,55 +251,44 @@ include("header.inc.php");
             <div id="snr"
                  onmouseover="changeQuickHelp( 'snr' );">
 
+                <!-- start the SNR table-->
+                <table><tr>    
+                 
+
                 <?php
 
-                $visibility = " style=\"display: none\"";
-                if ($selectedMode == "cmle") {
-                    $visibility = " style=\"display: block\"";
-                }
+                /*                SIGNAL-TO-NOISE RATIO                    */
 
-                ?>
-                <div id="cmle-snr"
+                $signalNoiseRatioParam =
+                    $_SESSION['task_setting']->parameter("SignalNoiseRatio");
+                $signalNoiseRatioValue = $signalNoiseRatioParam->value();
+                
+                
+                    /* Loop over the channels. */
+                for ($ch = 0; $ch < $chanCnt; $ch++) {
+
+                    $visibility = " style=\"display: none\"";
+                    if ($selectedAlgArr[$ch] == "cmle") {
+                        $visibility = " style=\"display: block\"";
+                    }
+
+                    $value = "";
+                    if ($selectedAlgArr[$ch] == "cmle")
+                        $value = $signalNoiseRatioValue[$ch];
+                 ?>
+
+                    <!-- A new table cell for the SNR of this channel-->
+                    <td>
+
+                    <div id="cmle-snr-<?php echo $ch;?>"
                      class="multichannel"<?php echo $visibility ?>>
-                    <ul>
-                        <li>SNR:
-                            <div class="multichannel">
-                                <?php
-
-                                /*
-                                                           SIGNAL-TO-NOISE RATIO
-                                */
-
-                                $signalNoiseRatioParam =
-                                    $_SESSION['task_setting']->parameter("SignalNoiseRatio");
-                                $signalNoiseRatioValue = $signalNoiseRatioParam->value();
-
-
-                                for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
-
-                                    $value = "";
-                                    if ($selectedMode == "cmle")
-                                        $value = $signalNoiseRatioValue[$i];
-
-                                    /* Add a line break after a number of entries. */
-                                    if ($_SESSION['task_setting']->numberOfChannels() == 4) {
-                                        if ($i == 2) {
-                                            echo "<br />";
-                                        }
-                                    } else {
-                                        if ($i == 3) {
-                                            echo "<br />";
-                                        }
-                                    }
-
-
-                                    ?>
-                                    <span class="nowrap">Ch<?php echo $i; ?>:
-        &nbsp;&nbsp;&nbsp;
+                     
+                     <span class="nowrap">Ch<?php echo $ch; ?>:
+                        &nbsp;&nbsp;&nbsp;
                               <span class="multichannel">
                                   <input
-                                      id="SignalNoiseRatioCMLE<?php echo $i; ?>"
-                                      name="SignalNoiseRatioCMLE<?php echo $i; ?>"
+                                      id="SignalNoiseRatioCMLE<?php echo $ch; ?>"
+                                      name="SignalNoiseRatioCMLE<?php echo $ch; ?>"
                                       title="Signal-to-noise ratio (CMLE)"
                                       type="text"
                                       size="8"
@@ -263,101 +296,147 @@ include("header.inc.php");
                                       class="multichannelinput"/>
                                         </span>&nbsp;
                                     </span>
-                                    <?php
 
-                                }
-
-                                ?>
-                            </div>
-                        </li>
-                    </ul>
-
-                    <p><a href="#"
-                          onmouseover="TagToTip('ttEstimateSnr' )"
-                          onmouseout="UnTip()"
-                          onclick="storeValuesAndRedirect(
-                            'estimate_snr_from_image.php');">
-                            <img src="images/calc_small.png" alt=""/>
-                            Estimate SNR from image</a>
-                    </p>
-
-                </div>
-
-
-
-
-
-
-
-
-
-
+                    </div><!-- cmle-snr-channelNumber-->
 
 
                 <?php
 
-                $visibility = " style=\"display: none\"";
-                if ($selectedMode == "gmle") {
-                    $visibility = " style=\"display: block\"";
-                }
+                    $visibility = " style=\"display: none\"";
+                    if ($selectedAlgArr[$ch] == "gmle") {
+                        $visibility = " style=\"display: block\"";
+                    }
 
+                    $value = "";
+                    if ($selectedAlgArr[$ch] == "gmle")
+                        $value = $signalNoiseRatioValue[$ch];
                 ?>
-                <div id="gmle-snr"
+
+                    <div id="gmle-snr-<?php echo $ch;?>"
                      class="multichannel"<?php echo $visibility ?>>
-                    <ul>
-                        <li>SNR:
-                            <div class="multichannel">
-                                <?php
+ 
+                    <span class="nowrap">Ch<?php echo $ch; ?>:
+                        &nbsp;&nbsp;&nbsp;
+                            <span class="multichannel">
+                                <input
+                                    id="SignalNoiseRatioGMLE<?php echo $ch; ?>"
+                                    name="SignalNoiseRatioGMLE<?php echo $ch; ?>"
+                                    title="Signal-to-noise ratio (GMLE)"
+                                    type="text"
+                                    size="8"
+                                    value="<?php echo $value; ?>"
+                                    class="multichannelinput"/>
+                                    </span>&nbsp;
+                                </span>
 
-                                /*
-                                                           SIGNAL-TO-NOISE RATIO
-                                */
-
-                                $signalNoiseRatioParam =
-                                    $_SESSION['task_setting']->parameter("SignalNoiseRatio");
-                                $signalNoiseRatioValue = $signalNoiseRatioParam->value();
+                    </div><!-- gmle-snr-channelNumber-->
 
 
-                                for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+                <?php
 
-                                    $value = "";
-                                    if ($selectedMode == "gmle")
-                                        $value = $signalNoiseRatioValue[$i];
+                    $visibility = " style=\"display: none\"";
+                    if ($selectedAlgArr[$ch] == "qmle") {
+                        $visibility = " style=\"display: block\"";
+                    }
 
-                                    /* Add a line break after a number of entries. */
-                                    if ($_SESSION['task_setting']->numberOfChannels() == 4) {
-                                        if ($i == 2) {
-                                            echo "<br />";
-                                        }
+                    $value = "";
+                    if ($selectedAlgArr[$ch] == "qmle")
+                        $value = $signalNoiseRatioValue[$ch];
+                ?>
+
+                    <div id="qmle-snr-<?php echo $ch;?>"
+                     class="multichannel"<?php echo $visibility ?>>
+
+                     <span class="nowrap">Ch<?php echo $ch; ?>:                            
+                            <select class="snrselect"
+                                    title="Signal-to-noise ratio (QMLE)"
+                                    class="selection"
+                                    name="SignalNoiseRatioQMLE<?php echo $ch ?>">
+                        <?php
+
+                            for ($optionIdx = 1; $optionIdx <= 4; $optionIdx++) {
+                                $option = "                                <option ";
+                                if (isset($signalNoiseRatioValue)) {
+                                    if ($signalNoiseRatioValue[$ch] >= 1 
+                                       && $signalNoiseRatioValue[$ch] <= 4) {
+                                        if ($optionIdx == $signalNoiseRatioValue[$ch])
+                                            $option .= "selected=\"selected\" ";
                                     } else {
-                                        if ($i == 3) {
-                                            echo "<br />";
-                                        }
+                                        if ($optionIdx == 2)
+                                            $option .= "selected=\"selected\" ";
                                     }
-
-
-                                    ?>
-                                    <span class="nowrap">Ch<?php echo $i; ?>:
-        &nbsp;&nbsp;&nbsp;
-                              <span class="multichannel">
-                                  <input
-                                      id="SignalNoiseRatioGMLE<?php echo $i; ?>"
-                                      name="SignalNoiseRatioGMLE<?php echo $i; ?>"
-                                      title="Signal-to-noise ratio (GMLE)"
-                                      type="text"
-                                      size="8"
-                                      value="<?php echo $value; ?>"
-                                      class="multichannelinput"/>
-                                        </span>&nbsp;
-                                    </span>
-                                    <?php
-
+                                } else {
+                                    if ($optionIdx == 2)
+                                        $option .= "selected=\"selected\" ";
                                 }
+                                $option .= "value=\"" . $optionIdx . "\">";
+                                if ($optionIdx == 1)
+                                    $option .= "low</option>";
+                                else if ($optionIdx == 2)
+                                    $option .= "fair</option>";
+                                else if ($optionIdx == 3)
+                                    $option .= "good</option>";
+                                else if ($optionIdx == 4)
+                                    $option .= "inf</option>";
+                                echo $option;
+                            }
 
-                                ?>
-                            </div>
-                        </li>
-                    </ul>
+                            ?>
+                            </select>
+                    </div><!-- qmle-snr-channelNumber-->
+
+
+                <?php
+
+                    $visibility = " style=\"display: none\"";
+                    if ($selectedAlgArr[$ch] == "skip") {
+                        $visibility = " style=\"display: block\"";
+                    }
+
+                    $value = "";
+                    if ($selectedAlgArr[$ch] == "skip")
+                        $value = $signalNoiseRatioValue[$ch];
+                ?>
+
+                    <div id="skip-snr-<?php echo $ch;?>"
+                    class="multichannel"<?php echo $visibility ?>>
+
+                    <span class="nowrap">Ch<?php echo $ch; ?>:
+                        &nbsp;&nbsp;&nbsp;
+                            <span class="multichannel">
+                                <input
+                                    id="SignalNoiseRatioSKIP<?php echo $ch; ?>"
+                                    name="SignalNoiseRatioSKIP<?php echo $ch; ?>"
+                                    title="Signal-to-noise ratio (SKIP)"
+                                    type="text"
+                                    size="8"
+                                    value="<?php echo $value; ?>"
+                                    class="multichannelinput"/>
+                                    </span>&nbsp;
+                                </span>
+
+                    </div><!-- skip-snr-channelNumber-->
+
+                <!-- Close the table cell for the SNR of this channel-->
+                </td>    
+
+                    <?php    
+                    /* Start a new table row after a number of entries. */
+                    if ($chanCnt == 4) {
+                        if ($ch == 2) {
+                            echo "</tr><tr>";
+                        }
+                    } else {
+                        if ($ch == 2) {
+                            echo "</tr><tr>";
+                        }
+                    }
+                }                     
+                ?>
+
+                <!-- Close the last row and table-->
+                </tr></table>
+                
 
                     <p><a href="#"
                           onmouseover="TagToTip('ttEstimateSnr' )"
@@ -368,80 +447,10 @@ include("header.inc.php");
                             Estimate SNR from image</a>
                     </p>
 
-                </div>
+            </div> <!-- snr div -->
+        </fieldset> <!-- signal/noise ratio fieldset-->
 
 
-              <?php
-
-                $visibility = " style=\"display: none\"";
-                if ($selectedMode == "qmle") {
-                    $visibility = " style=\"display: block\"";
-                }
-
-                ?>
-                <div id="qmle-snr"
-                     class="multichannel"<?php echo $visibility ?>>
-                    <ul>
-                        <li>SNR:
-                            <div class="multichannel">
-                                <?php
-
-                                for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
-
-                                    ?>
-                                    <span class="nowrap">
-                            Ch<?php echo $i ?>:&nbsp;&nbsp;&nbsp;
-                            <select class="snrselect"
-                                    title="Signal-to-noise ration (QMLE)"
-                                    class="selection"
-                                    name="SignalNoiseRatioQMLE<?php echo $i ?>">
-<?php
-
-for ($j = 1; $j <= 4; $j++) {
-    $option = "                                <option ";
-    if (isset($signalNoiseRatioValue)) {
-        if ($signalNoiseRatioValue[$i] >= 1 &&
-            $signalNoiseRatioValue[$i] <= 4
-        ) {
-            if ($j == $signalNoiseRatioValue[$i])
-                $option .= "selected=\"selected\" ";
-        } else {
-            if ($j == 2)
-                $option .= "selected=\"selected\" ";
-        }
-    } else {
-        if ($j == 2)
-            $option .= "selected=\"selected\" ";
-    }
-    $option .= "value=\"" . $j . "\">";
-    if ($j == 1)
-        $option .= "low</option>";
-    else if ($j == 2)
-        $option .= "fair</option>";
-    else if ($j == 3)
-        $option .= "good</option>";
-    else if ($j == 4)
-        $option .= "inf</option>";
-    echo $option;
-}
-
-?>
-                            </select>
-                        </span><br/>
-                                    <?php
-
-                                }
-
-                                ?>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-            </div>
-
-
-        </fieldset>
 
         <div id="Autocrop">
             <fieldset class="setting provided"
@@ -624,14 +633,14 @@ for ($j = 1; $j <= 4; $j++) {
                 <div class="multichannel">
                     <?php
 
-                    for ($i = 0; $i < $_SESSION['task_setting']->numberOfChannels(); $i++) {
+                    for ($i = 0; $i < $chanCnt; $i++) {
                         $val = "";
                         if ($backgroundOffset[0] != "auto" && $backgroundOffset[0] != "object") {
                             $val = $backgroundOffset[$i];
                         }
 
                         /* Add a line break after a number of entries. */
-                        if ($_SESSION['task_setting']->numberOfChannels() == 4) {
+                        if ($chanCnt == 4) {
                             if ($i == 2) {
                                 echo "<br />";
                             }
@@ -874,6 +883,10 @@ for ($j = 1; $j <= 4; $j++) {
 
 </div> <!-- rightpanel -->
 
+<script type="text/javascript">
+    updateDeconEntryProperties();
+</script>
+
 <?php
 
 include("footer.inc.php");
@@ -897,6 +910,7 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
             snrArray = [];
             for (var i = 0; i < 32; i++) {
                 snrArray.push('SignalNoiseRatioCMLE' + i);
+                snrArray.push('SignalNoiseRatioGMLE' + i);
             }
             $(document).ready(retrieveValues(snrArray));
         </script>"

@@ -98,7 +98,7 @@ function showFileBrowser()
         <input name=\"estimate\" type=\"submit\" value=\"\" class=\"icon calc\"
         onmouseover=\"Tip('Estimate SNR from a selected image.' )\"
         onmouseout=\"UnTip()\"
-        onclick=\"setActionToCalcSNR(); process()\" />";
+        onclick=\"setActionToCalcSNR();\" />";
 
     $info = '
             <h3>Quick help</h3>
@@ -521,6 +521,10 @@ if (isset($_GET['home'])) {
     header("Location: " . "home.php");
     exit();
 }
+
+// Keep track of where we are coming from
+$_SESSION['filemanager_referer'] = $_SERVER['HTTP_REFERER'];
+$_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 
 // Ask the user to login if necessary.
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {

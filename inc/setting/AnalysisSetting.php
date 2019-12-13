@@ -113,7 +113,7 @@ class AnalysisSetting extends Setting
             return False;
         }
 
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
         $this->message = '';
@@ -249,7 +249,7 @@ class AnalysisSetting extends Setting
      */
     public static function getTemplatesSharedWith($username)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->getTemplatesSharedWith($username, self::sharedTable());
         return $result;
     }
@@ -261,7 +261,7 @@ class AnalysisSetting extends Setting
      */
     public static function getTemplatesSharedBy($username)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->getTemplatesSharedBy($username, self::sharedTable());
         return $result;
     }
