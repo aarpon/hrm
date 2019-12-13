@@ -1847,7 +1847,7 @@ class Fileserver
         <!-- Main stylesheets -->
         <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.7">
         <link rel="stylesheet" type="text/css" href="css/default.css?v=3.7">
-    
+
         <!-- Themes -->
         <link rel="stylesheet" type="text/css" href="css/themes/dark.css?v=3.7" title="dark">
         <link rel="alternate stylesheet" type="text/css" href="css/themes/light.css?v=3.7" title="light">
@@ -3139,22 +3139,6 @@ class Fileserver
         //$this->condenseTiffSeries();
     }
 
-    /**
-     * Returns the basename of the file, without numeric extension.
-     *
-     * This is the part of the file name that is common to file series. The
-     * numeric extension is expected to be directly before the . of the
-     * file extension. Please mind that the behavior of the built-in
-     * PHP function basename() is different!
-     *
-     * @param string $filename File name.
-     * @return string Basename without numeric extension.
-     */
-    private function basename($filename)
-    {
-        $basename = preg_replace("/(\w+|\/)([^0-9])([0-9]+)(\.)(\w+)/", "$1$2$4$5", $filename);
-        return $basename;
-    }
 
     /**
      * Removes all but the first file from each time series in the file attribute.
@@ -3447,6 +3431,49 @@ class Fileserver
     public function getCurrentFileList()
     {
         return $this->files;
+    }
+
+    /**
+     * Returns the basename of the file, without numeric extension.
+     *
+     * This is the part of the file name that is common to file series. The
+     * numeric extension is expected to be directly before the . of the
+     * file extension. Please mind that the behavior of the built-in
+     * PHP function basename() is different!
+     *
+     * @param string $filename File name.
+     * @return string Basename without numeric extension.
+     */
+    public function basename($filename)
+    {
+        $basename = preg_replace("/(\w+|\/)([^0-9])([0-9]+)(\.)(\w+)/", "$1$2$4$5", $filename);
+        return $basename;
+    }
+
+    /**
+     * Get file extension in a robust way.
+     *
+     * Double extensions (as in .ome.tif) are correctly returned. There
+     * is no support for longer, composite extensions because they do not
+     * occur in practice.
+     *
+     * @param string $filename Filename to be processed.
+     * @return string Complete extension.
+     *
+     */
+    public function getFileNameExtension($filename)
+    {
+        $info = pathinfo($filename);
+        $info_ext = pathinfo($info["filename"], PATHINFO_EXTENSION);
+        if ($info_ext == "") {
+            return $info["extension"];
+        } else {
+            if (strlen($info_ext) > 4) {
+                // Avoid pathological cases with dots somewhere in the file name.
+                return $info["extension"];
+            }
+            return $info_ext . "." . $info["extension"];
+        }
     }
 
     /**
@@ -4117,32 +4144,6 @@ class Fileserver
             }
         }
         return TRUE;
-    }
-
-    /**
-     * Get file extension in a robust way.
-     *
-     * Double extensions (as in .ome.tif) are correctly returned. There
-     * is no support for longer, composite extensions because they do not
-     * occur in practice.
-     *
-     * @param string $filename Filename to be processed.
-     * @return string Complete extension.
-     *
-     */
-    private function getFileNameExtension($filename)
-    {
-        $info = pathinfo($filename);
-        $info_ext = pathinfo($info["filename"], PATHINFO_EXTENSION);
-        if ($info_ext == "") {
-            return $info["extension"];
-        } else {
-            if (strlen($info_ext) > 4) {
-                // Avoid pathological cases with dots somewhere in the file name.
-                return $info["extension"];
-            }
-            return $info_ext . "." . $info["extension"];
-        }
     }
 
     private function getSourceFileNameForResult($filename)

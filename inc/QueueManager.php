@@ -489,6 +489,7 @@ class QueueManager
         $s = explode(" ", $jobServer);
         $jobHostname = $s[0];
 
+        // Other job properties.
         $jobDescription = $job->description();
         $jobOwner       = $jobDescription->owner();
 
@@ -527,16 +528,16 @@ class QueueManager
 
         // Unfortunately, the DB does not keep track of all the source files used
         // by the job. This is because the file series can become very large.
-        // Thus, we only retrieve the name of the main source file.
-        // Additionally, we check if there are any other jobs by the user
+        // Thus, we only retrieve the name of the job's main source file.
+        // Additionally, we check if there are any other jobs from the same user
         // running on the same machine with the same source files. If so, we skip
-        // the cleanup and leave the task to the last job that meets the criteria.
-        // With this we are able to properly clean up 99.9% of the cases. There
+        // the cleanup and leave the task to the last job that meets such criteria.
+        // With this, we are able to properly clean up 99.9% of the cases. There
         // might be some extreme cases of file collisions or debris from previous
         // old jobs (HRM < 3.7 did not clean them up) where this still fails.
         $srcFiles = $jobDescription->files();
 
-        // Loop over all the running jobs.
+        // Loop over all the running jobs to find out about collisions.
         $runningJobs = $this->queue->runningJobs();
         foreach ($runningJobs as $runningJob) {
 
@@ -545,6 +546,7 @@ class QueueManager
             $s = explode(" ", $runningJobServer);
             $runningJobHostname = $s[0];
 
+            // Other properties of the running job.
             $runningJobDescription = $runningJob->description();
             $runningJobOwner = $runningJobDescription->owner();
 
@@ -552,17 +554,26 @@ class QueueManager
             if ($runningJobOwner->name() != $jobOwner->name()) continue;
             if ($runningJobHostname != $jobHostname)           continue;
 
-            $runningJobSrcFiles = $runningJobDescription->files();
-
             // Remove collisions with other jobs from the list of source files.
+            $runningJobSrcFiles = $runningJobDescription->files();
             $srcFiles = array_diff($srcFiles, $runningJobSrcFiles);
         }
 
         // Lastly, clean up the job source images at the remote location.
         $cmd = "";
+        $fileServer = new Fileserver($jobOwner->name());
+        $fileSeries = $jobDescription->autoseries();
         foreach ($srcFiles as $srcFile) {
             $remotePath  = $huygens_server_image_folder . "/";
             $remotePath .= $jobOwner->name() . "/" . $image_source . "/";
+
+            // If we are dealing with a series, remove all of its files.
+            if ($fileSeries) {
+                $extension = $fileServer->getFileNameExtension($srcFile);
+                $srcFile   = $fileServer->basename($srcFile);
+                $srcFile   = str_replace($srcFile, $extension, "");
+                $srcFile  .= "*" . $extension;
+            }
             $remoteFiles = $srcFile;
 
             $cmd .= "find " . $remotePath . " -name '" . $remoteFiles . "' -delete;";
