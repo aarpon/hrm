@@ -143,7 +143,8 @@ class QueueManager
         // failed jobs.
         $this->removeHuygensOutputFiles($desc, $server_hostname);
 
-        Log::info("Executing template: " .
+        Log::info("Executing template for job with id " .
+            $job->id() . ": " .
             $imageProcessingIsOnQueueManager . " " .
             $copy_images_to_huygens_server);
 
@@ -157,7 +158,7 @@ class QueueManager
             $server . "_" . $job->id() . "_out.txt",
             $server . "_" . $job->id() . "_error.txt"
         );
-        Log::info("Shell process created");
+        Log::info("Shell process created for job with id " . $job->id());
 
         /* Check whether the shell is ready to accept further execution. If
          not, the shell will be released internally, no need to release it
@@ -461,7 +462,7 @@ class QueueManager
         }
         // remove job
         $this->stopTime = $queue->stopJob($job);
-        Log::info("Stopped job (" . date("l d F Y H:i:s") . ")\n");
+        Log::info("Completed and cleaned job with id " . $job->id() . " (" . date("l d F Y H:i:s") . ")\n");
     }
 
 
@@ -1176,12 +1177,12 @@ class QueueManager
                     break;
                 }
 
-                Log::info("using Huygens server: " . $this->freeServer);
+                Log::info("Using Huygens server: " . $this->freeServer);
 
                 // Read in a queued job
                 $desc = $job->description();
                 $id = $desc->id();
-                Log::info("processing job " . $id . " on " . $job->server());
+                Log::info("Processing job " . $id . " on " . $job->server());
 
                 // Create Huygens template
                 if (! $job->buildAndWriteHuygensTemplate()) {
@@ -1199,7 +1200,7 @@ class QueueManager
 
                 Log::info("Template has been executed");
                 $result = $result && $queue->startJob($job);
-                Log::info("job has been started (" . date("Y-m-d H:i:s") . ")");
+                Log::info("Job with id " . $job->id() . " has been started (" . date("Y-m-d H:i:s") . ")");
             }
         }
         Log::warning("Huygens Remote Manager stopped via database switch on " . date("Y-m-d H:i:s"));

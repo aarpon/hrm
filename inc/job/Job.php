@@ -321,7 +321,7 @@ class Job
             Log::error("Could not write Huygens template!");
             return false;
         } else {
-            Log::info("Successfully created Huygens template.");
+            Log::info("Successfully created Huygens template for job with id " . $this->jobDescription->id());
         }
 
         return true;

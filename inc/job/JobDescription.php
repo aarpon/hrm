@@ -547,7 +547,7 @@ class JobDescription
         $tmp = explode($taskSetting->name(), $this->sourceImageShortName());
         $outputFile = end($tmp);
         $outputFile = str_replace(" ", "_", $outputFile);
-        $result = $outputFile . "_" . $taskSetting->name() . "_hrm";
+        $result = $outputFile . "_" . $this->id() . "_hrm";
         # Add a non-numeric string at the end: if the task name ends with a
         # number, that will be removed when saving using some file formats that
         # use numbers to identify Z planes. Therefore the result file won't
