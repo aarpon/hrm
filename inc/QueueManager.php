@@ -512,8 +512,7 @@ class QueueManager
         Log::info("Shell process created");
 
         // Check whether the shell is ready to accept further execution. If not,
-        // not, the shell will be released internally, no need to release it
-        // here.
+        // the shell will be released internally, no need to release it here.
         if (!$proc->runShell()) {
             return;
         }
@@ -531,17 +530,21 @@ class QueueManager
         // Thus, we only retrieve the name of the main source file.
         // Additionally, we check if there are any other jobs by the user
         // running on the same machine with the same source files. If so, we skip
-        // the clean up and leave the task to the last job that meets the criteria.
+        // the cleanup and leave the task to the last job that meets the criteria.
         // With this we are able to properly clean up 99.9% of the cases. There
         // might be some extreme cases of file collisions or debris from previous
         // old jobs (HRM < 3.7 did not clean them up) where this still fails.
         $srcFiles = $jobDescription->files();
 
+        // Loop over all the running jobs.
         $runningJobs = $this->queue->runningJobs();
         foreach ($runningJobs as $runningJob) {
+
+            // Hostname == registered server entry without GPU tag.
             $runningJobServer = $runningJob->server();
             $s = explode(" ", $runningJobServer);
             $runningJobHostname = $s[0];
+
             $runningJobDescription = $runningJob->description();
             $runningJobOwner = $runningJobDescription->owner();
 
@@ -551,9 +554,11 @@ class QueueManager
 
             $runningJobSrcFiles = $runningJobDescription->files();
 
+            // Remove collisions with other jobs from the list of source files.
             $srcFiles = array_diff($srcFiles, $runningJobSrcFiles);
         }
 
+        // Lastly, clean up the job source images at the remote location.
         $cmd = "";
         foreach ($srcFiles as $srcFile) {
             $remotePath  = $huygens_server_image_folder . "/";
