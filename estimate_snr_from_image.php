@@ -98,7 +98,7 @@ function showFileBrowser()
         <input name=\"estimate\" type=\"submit\" value=\"\" class=\"icon calc\"
         onmouseover=\"Tip('Estimate SNR from a selected image.' )\"
         onmouseout=\"UnTip()\"
-        onclick=\"setActionToCalcSNR(); process()\" />";
+        onclick=\"setActionToCalcSNR();\" />";
 
     $info = '
             <h3>Quick help</h3>
