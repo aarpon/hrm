@@ -1137,17 +1137,23 @@ class QueueManager
         if (!$this->askHuCoreVersionAndStoreIntoDB($server, $hucorePath)) {
             Log::error("An error occurred while reading HuCore version");
             return;
+        } else {
+            Log::info("Successfully stored HuCore version in the database.");
         }
 
         if (!$this->storeHuCoreLicenseDetailsIntoDB($server, $hucorePath)) {
             Log::error("An error occurred while saving HuCore license details");
             return;
+        } else {
+            Log::info("Successfully updated license details in the database.");
         }
 
         if (!$this->storeConfidenceLevelsIntoDB($server, $hucorePath)) {
             Log::error("An error occurred while storing the confidence " .
                 "levels in the database");
             return;
+        } else {
+            Log::info("Successfully updated confidence levels in the database.");
         }
 
         $queue = $this->queue;
