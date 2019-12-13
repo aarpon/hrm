@@ -100,13 +100,6 @@ class Job
 
 
     /**
-     * Array with images transferred to a remote processing machine.
-     * @var array
-     */
-    private $remoteFilesArr;
-
-
-    /**
      * Job constructor.
      * @param $jobDescription JobDescription object.
      */
@@ -125,8 +118,6 @@ class Job
 
         $this->huTemplate = '';
         $this->jobDescription = $jobDescription;
-        $this->remoteFilesArr = array();
-
 
         $this->pipeProducts = array('main'       => 'scheduler_client0.log',
                                     'history'    => '_history.txt',
@@ -181,33 +172,6 @@ class Job
             'autocrop'                        => 'Autocrop',
             'z stabilization'                 => 'Z Stabilization',
             't stabilization'                 => 'T Stabilization');
-    }
-
-
-    /**
-     * Setter for bookkeeping which files are transferred to a remote server.
-     * @param $files Array with complete file paths.
-     */
-    public function registerRemoteFiles($files)
-    {
-        if (is_array($files)) {
-            foreach ($files as $file) {
-                $this->remoteFilesArr[] = $file;
-            }
-        } else {
-            // $files contains only one element.
-            $this->remoteFilesArr[] = $files;
-        }
-    }
-
-
-    /**
-     * Getter for bookkeeping which files are transferred to a remote server.
-     * @return An array with all transferred files and their complete paths.
-     */
-    public function getRemoteFilesList()
-    {
-        return $this->remoteFilesArr;
     }
 
 
@@ -446,12 +410,6 @@ class Job
             $result = exec("(cd " . escapeshellarg($path) .
                 "/hrm_previews && scp " . $huygens_user . "@" .
                 $server_hostname . ":" . escapeshellarg($previews) . " .)");
-
-            // Do the bookkeeping of the images that will need to be removed
-            // by the QM at the end of the job.
-            $remotePreviews = glob($previews);
-            $this->registerRemoteFiles($image);
-            $this->registerRemoteFiles($remotePreviews);
         }
 
         // TODO is checking for job id only a good idea?

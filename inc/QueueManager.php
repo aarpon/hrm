@@ -201,17 +201,13 @@ class QueueManager
         // @TODO substitute spaces by underscores in image name to avoid
         // processing problems with Huygens
 
-        $file   = $image_folder . "/" . $user->name() . "/" .
-            $image_source . "/" . $job->huTemplateName();
-        $batch  = "cd \"" . $huygens_server_image_folder . "\"\n";
+        $batch = "cd \"" . $huygens_server_image_folder . "\"\n";
         $batch .= "-mkdir \"" . $user->name() . "\"\n";
         $batch .= "cd \"" . $user->name() . "\"\n";
         $batch .= "-mkdir \"" . $image_source . "\"\n";
         $batch .= "cd \"" . $image_source . "\"\n";
-        $batch .= "put \"" . $file . "\"\n";
-
-        // Bookkeeping.
-        $job->registerRemoteFiles($file);
+        $batch .= "put \"" . $image_folder . "/" . $user->name() . "/" .
+            $image_source . "/" . $job->huTemplateName() . "\"\n";
 
         // Transfer the experimental PSF(s)
         $parameterSetting = $desc->parameterSetting;
@@ -231,20 +227,10 @@ class QueueManager
                     $image_source . "/" . $value;
                 if (stristr($filename, ".ics")) {
                     $batch .= "put \"" . $filename . "\"\n";
-
-                    // Bookkeeping.
-                    $job->registerRemoteFiles($filename);
-
                     $filename = preg_replace("/.ics/", ".ids", $filename);
                     $batch .= "put \"" . $filename . "\"\n";
-
-                    // Bookkeeping.
-                    $job->registerRemoteFiles($filename);
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
-
-                    // Bookkeeping.
-                    $job->registerRemoteFiles($filename);
                 }
                 if (sizeof($path) > 0) {
                     for ($i = 0; $i < sizeof($path) - 1; $i++) {
@@ -288,15 +274,8 @@ class QueueManager
                 $image_source . "/" . $file;
             if (stristr($filename, ".ics")) {
                 $batch .= "put \"" . $filename . "\"\n";
-
-                // Bookkeeping.
-                $job->registerRemoteFiles($filename);
-
                 $filename = substr($filename, 0, strrpos($filename, '.ics')) . ".ids";
                 $batch .= "put \"" . $filename . "\"\n";
-
-                // Bookkeeping.
-                $job->registerRemoteFiles($filename);
             } elseif (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
                 // TODO: if ImageFileFormat = single TIFF file, do not send
                 // corresponding series
@@ -307,10 +286,6 @@ class QueueManager
                 );
                 $name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
                 $batch .= "put \"" . $name . "\"*\n";
-
-                // Bookkeeping.
-                $remoteImages = glob($name . "*");
-                $job->registerRemoteFiles($remoteImages);
             } elseif (stristr($filename, ".stk")) {
                 // if ImageFileFormat = STK time series, send all timepoints
                 if (stripos($filename, "_t")) {
@@ -320,15 +295,8 @@ class QueueManager
                         $filename
                     );
                     $batch .= "put \"" . $basename . "\"*\n";
-
-                    // Bookkeeping.
-                    $remoteImages = glob($basename . "*");
-                    $job->registerRemoteFiles($remoteImages);
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
-
-                    // Bookkeeping.
-                    $job->registerRemoteFiles($filename);   
                 }
             } elseif (stristr($filename, ".nd")) {
                 $basename = preg_replace(
@@ -338,15 +306,8 @@ class QueueManager
                 );
                 $name = preg_replace("/(.*)\.nd?$/", "$1", $basename);
                 $batch .= "put \"" . $name . "\"*\n";
-
-                // Bookkeeping.
-                $remoteImages = glob($name . "*");
-                $job->registerRemoteFiles($remoteImages);
             } else {
                 $batch .= "put \"" . $filename . "\"\n";
-
-                // Bookkeeping.
-                $job->registerRemoteFiles($filename);
             }
             if (sizeof($path) > 0) {
                 for ($i = 0; $i < sizeof($path) - 1; $i++) {
@@ -514,6 +475,8 @@ class QueueManager
         global $imageProcessingIsOnQueueManager;
         global $copy_images_to_huygens_server;
         global $huygens_server_image_folder;
+        global $image_source;
+        global $image_destination;
 
 
         if ($imageProcessingIsOnQueueManager || !$copy_images_to_huygens_server) {
@@ -525,6 +488,9 @@ class QueueManager
         $jobServer = $job->server();
         $s = explode(" ", $jobServer);
         $jobHostname = $s[0];
+
+        $jobDescription = $job->description();
+        $jobOwner       = $jobDescription->owner();
 
         // Sanity check just in case something goes wrong with the configuration.
         // Make sure we are dealing with a remote server. If the remote server
@@ -552,10 +518,54 @@ class QueueManager
             return;
         }
 
-        // Clean up the HRM images folder at the remote location.
-        $remoteFilesArr = $job->getRemoteFilesList();
-        $cmd = "rm -rfv '" . implode("' '", $remoteFilesArr) . "';";
+        // Clean up the job dest images at the remote location.
+        $remotePath  = $huygens_server_image_folder . "/";
+        $remotePath .= $jobOwner->name() . "/" . $image_destination . "/";
+        $remoteFiles = "*" . $job->id() . "*";
+
+        $cmd = "find " . $remotePath . " -name '" . $remoteFiles . "' -delete;";
         $proc->execute($cmd);
+
+        // Unfortunately, the DB does not keep track of all the source files used
+        // by the job. This is because the file series can become very large.
+        // Thus, we only retrieve the name of the main source file.
+        // Additionally, we check if there are any other jobs by the user
+        // running on the same machine with the same source files. If so, we skip
+        // the clean up and leave the task to the last job that meets the criteria.
+        // With this we are able to properly clean up 99.9% of the cases. There
+        // might be some extreme cases of file collisions or debris from previous
+        // old jobs (HRM < 3.7 did not clean them up) where this still fails.
+        $srcFiles = $jobDescription->files();
+
+        $runningJobs = $this->queue->runningJobs();
+        foreach ($runningJobs as $runningJob) {
+            $runningJobServer = $runningJob->server();
+            $s = explode(" ", $runningJobServer);
+            $runningJobHostname = $s[0];
+            $runningJobDescription = $runningJob->description();
+            $runningJobOwner = $runningJobDescription->owner();
+
+            if ($runningJob->id() == $job->id())               continue;
+            if ($runningJobOwner->name() != $jobOwner->name()) continue;
+            if ($runningJobHostname != $jobHostname)           continue;
+
+            $runningJobSrcFiles = $runningJobDescription->files();
+
+            $srcFiles = array_diff($srcFiles, $runningJobSrcFiles);
+        }
+
+        $cmd = "";
+        foreach ($srcFiles as $srcFile) {
+            $remotePath  = $huygens_server_image_folder . "/";
+            $remotePath .= $jobOwner->name() . "/" . $image_source . "/";
+            $remoteFiles = $srcFile;
+
+            $cmd .= "find " . $remotePath . " -name '" . $remoteFiles . "' -delete;";
+        }
+
+        if ($cmd != "") {
+            $proc->execute($cmd);
+        }
 
         $proc->release();
     }
