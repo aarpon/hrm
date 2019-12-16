@@ -907,7 +907,7 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
                 snrArray.push('SignalNoiseRatioGMLE' + i);
             }
             $(document).ready(retrieveValues(snrArray));
-        </script>"
+        </script>
 
         <?php
         // Now remove the SNR_Calculated flag
@@ -917,7 +917,7 @@ if (!(strpos($_SERVER['HTTP_REFERER'],
         ?>
         <script type="text/javascript">
             $(document).ready(retrieveValues());
-        </script>"
+        </script>
         <?php
     }
 }
