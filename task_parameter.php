@@ -159,8 +159,7 @@ include("header.inc.php");
          * DeconvolutionAlgorithm
          ***************************************************************************/
 
-        /** @var DeconvolutionAlgorithm $parameterDeconAlgorithm */
-        $parameterDeconAlgorithm = $_SESSION['task_setting']->parameter("DeconvolutionAlgorithm");
+        /** @var DeconvolutionAlgorithm $deconAlgorithmParam */
         ?>
 
         <fieldset class="setting provided"
@@ -178,8 +177,7 @@ include("header.inc.php");
                 <table class="DeconvolutionAlgorithmValues">
 
                     <?php
-                    $selectedAlgArr = $parameterDeconAlgorithm->value();
-                    $possibleValues = $parameterDeconAlgorithm->possibleValues();
+                    $possibleValues = $deconAlgorithmParam->possibleValues();
 
                     /* Make sure CMLE is first in the list. */
                     for ($i = 0; $i < count($possibleValues); $i++) {
@@ -206,7 +204,7 @@ include("header.inc.php");
                                     /* Loop for select options. */
                                     foreach ($possibleValues as $possibleValue) {
                                         $translatedValue =
-                                            $parameterDeconAlgorithm->translatedValueFor($possibleValue);
+                                            $deconAlgorithmParam->translatedValueFor($possibleValue);
 
                                         if ($possibleValue == $deconAlgorithm[$chan]) {
                                             $selected = " selected=\"selected\"";
@@ -268,12 +266,12 @@ include("header.inc.php");
                 for ($ch = 0; $ch < $chanCnt; $ch++) {
 
                     $visibility = " style=\"display: none\"";
-                    if ($selectedAlgArr[$ch] == "cmle") {
+                    if ($deconAlgorithm[$ch] == "cmle") {
                         $visibility = " style=\"display: block\"";
                     }
 
                     $value = "";
-                    if ($selectedAlgArr[$ch] == "cmle")
+                    if ($deconAlgorithm[$ch] == "cmle")
                         $value = $signalNoiseRatioValue[$ch];
                  ?>
 
@@ -303,12 +301,12 @@ include("header.inc.php");
                 <?php
 
                     $visibility = " style=\"display: none\"";
-                    if ($selectedAlgArr[$ch] == "gmle") {
+                    if ($deconAlgorithm[$ch] == "gmle") {
                         $visibility = " style=\"display: block\"";
                     }
 
                     $value = "";
-                    if ($selectedAlgArr[$ch] == "gmle")
+                    if ($deconAlgorithm[$ch] == "gmle")
                         $value = $signalNoiseRatioValue[$ch];
                 ?>
 
@@ -335,12 +333,12 @@ include("header.inc.php");
                 <?php
 
                     $visibility = " style=\"display: none\"";
-                    if ($selectedAlgArr[$ch] == "qmle") {
+                    if ($deconAlgorithm[$ch] == "qmle") {
                         $visibility = " style=\"display: block\"";
                     }
 
                     $value = "";
-                    if ($selectedAlgArr[$ch] == "qmle")
+                    if ($deconAlgorithm[$ch] == "qmle")
                         $value = $signalNoiseRatioValue[$ch];
                 ?>
 
@@ -389,12 +387,12 @@ include("header.inc.php");
                 <?php
 
                     $visibility = " style=\"display: none\"";
-                    if ($selectedAlgArr[$ch] == "skip") {
+                    if ($deconAlgorithm[$ch] == "skip") {
                         $visibility = " style=\"display: block\"";
                     }
 
                     $value = "";
-                    if ($selectedAlgArr[$ch] == "skip")
+                    if ($deconAlgorithm[$ch] == "skip")
                         $value = $signalNoiseRatioValue[$ch];
                 ?>
 
