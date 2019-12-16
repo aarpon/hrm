@@ -289,7 +289,8 @@ include("header.inc.php");
                                       type="text"
                                       size="8"
                                       value="<?php echo $value; ?>"
-                                      class="multichannelinput"/>
+                                      class="multichannelinput"
+                                      onchange="copySnrToOtherAlgorithms(<?php echo $ch; ?>,this)"/>
                                         </span>&nbsp;
                                     </span>
 
@@ -320,7 +321,8 @@ include("header.inc.php");
                                     type="text"
                                     size="8"
                                     value="<?php echo $value; ?>"
-                                    class="multichannelinput"/>
+                                    class="multichannelinput"
+                                    onchange="copySnrToOtherAlgorithms(<?php echo $ch; ?>,this)"/>
                                     </span>&nbsp;
                                 </span>
 
@@ -404,7 +406,8 @@ include("header.inc.php");
                                     type="text"
                                     size="8"
                                     value="<?php echo $value; ?>"
-                                    class="multichannelinput"/>
+                                    class="multichannelinput"
+                                    onchange="copySnrToOtherAlgorithms(<?php echo $ch; ?>,this)"/>
                                     </span>&nbsp;
                                 </span>
 

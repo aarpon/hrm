@@ -355,6 +355,24 @@ function updateDeconEntryProperties( ) {
 }
 
 
+function copySnrToOtherAlgorithms(channel, inputObj) {
+
+    // QMLE is an exception here.
+    var tagArray = ["SignalNoiseRatioCMLE",
+                    "SignalNoiseRatioGMLE",
+                    "SignalNoiseRatioSKIP"];
+
+    for (var i = 0; i < tagArray.length; i++) {
+        var tag = tagArray[i];
+        var id = tag.concat(channel);
+
+        if (inputObj.name == id) {
+            continue;
+        }
+        document.getElementById(id).value = inputObj.value;
+    }
+}
+
 
 // Grey out the STED input fields of a specific channel if the
 // corresponding depletion mode is set to 'confocal'.
