@@ -141,22 +141,23 @@ function smoothChangeDiv(div, html, time) {
 }
 
 function isChromaticTableEmpty( ) {
-    var tag = "ChromaticAberration";
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
     
-    table = document.getElementById(tag);
+    table = document.getElementById(tableTag);
     
     channelCnt = table.rows.length - 1;
     componentCnt = table.rows[0].cells.length - 1;
-    
+
     var allEmpty = true;
     for (var chan = 0; chan < channelCnt; chan++) {
         for (var component = 0; component < componentCnt; component++) {
-            var id = tag + "Ch";
+            var id = channelTag + "Ch";
             id = id.concat(chan);
             id += "_";
             id = id.concat(component);
             inputElement = document.getElementById(id);
-            
+
             if (inputElement.value != "") {
                 allEmpty = false;
                 break;
@@ -173,34 +174,35 @@ function isChromaticTableEmpty( ) {
 function initChromaticChannelReference() {
 
     emptyTable = isChromaticTableEmpty();
-    
+
     if (emptyTable == true) {
         chan = 0;
     } else {
         chan = searchChromaticChannelReference();
     }
-    
+
     setChromaticChannelReference( chan );
 }
 
 function searchChromaticChannelReference( ) {
-    var tag = "ChromaticAberration";
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
     
-    table = document.getElementById(tag);
+    table = document.getElementById(tableTag);
     
     channelCnt = table.rows.length - 1;
     componentCnt = table.rows[0].cells.length - 1;
-    
+
     for (var chan = 0; chan < channelCnt; chan++) {
         var isReference = false;
-        
+
         for (var component = 0; component < componentCnt; component++) {
-            var id = tag + "Ch";
+            var id = channelTag + "Ch";
             id = id.concat(chan);
             id += "_";
             id = id.concat(component);
             inputElement = document.getElementById(id);
-            
+
             if (inputElement.value != 0 && component < 4) {
                 break;
             }
@@ -221,52 +223,54 @@ function searchChromaticChannelReference( ) {
 
 // The reference always contains values 0, 0, 0, 0, 1. */
 function setChromaticChannelReference( chan ) {
-    var tag = "ChromaticAberration";
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
 
-    table = document.getElementById(tag);
+    table = document.getElementById(tableTag);
     
     componentCnt = table.rows[0].cells.length - 1;
-    
+
     for (var component = 0; component < componentCnt; component++) {
-        var id = tag + "Ch";
+        var id = channelTag + "Ch";
         id = id.concat(chan);
         id += "_";
         id = id.concat(component);
-        
+
         inputElement = document.getElementById(id);
-        inputElement.readOnly = true;        
+        inputElement.readOnly = true;
         inputElement.style.backgroundColor="#888";
-        
+
         if (component == 4) {
             inputElement.value = 1;
         } else {
             inputElement.value = 0;
-        } 
+        }
     }
-    
+
     var tag = "ReferenceChannel";
     inputElement = document.getElementById(tag);
     inputElement.value = chan;
 }
 
 function removeChromaticChannelReference( ) {
-    var tag = "ChromaticAberration";
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
 
-    table = document.getElementById(tag);
+    table = document.getElementById(tableTag);
     
     channelCnt = table.rows.length - 1;
     componentCnt = table.rows[0].cells.length - 1;
-    
+
     for (var chan = 0; chan < channelCnt; chan++) {
         for (var component = 0; component < componentCnt; component++) {
-            var id = tag + "Ch";
+            var id = channelTag + "Ch";
             id = id.concat(chan);
             id += "_";
             id = id.concat(component);
 
             inputElement = document.getElementById(id);
-            inputElement.readOnly = false;            
-            inputElement.style.backgroundColor="";    
+            inputElement.readOnly = false;
+            inputElement.style.backgroundColor="";
         }
     }
 }
@@ -290,39 +294,39 @@ function updateDeconEntryProperties( ) {
                                 "SignalNoiseRatioSKIP",
                                 "BackgroundOffsetPercent"];
 
-    var skipAllChannels = true;    
+    var skipAllChannels = true;
 
     // First, the channel-dependent parameters.
-    for (var chan = 0; chan < 6; chan++) {      
+    for (var chan = 0; chan < 6; chan++) {
         var deconChanTag = deconTag.concat(chan);
 
         var deconInputElement = document.getElementsByName(deconChanTag);
         var deconAlgorithm    = deconInputElement[0];
 
         if (deconAlgorithm === undefined) continue;
-        if (deconAlgorithm.value !== "skip") skipAllChannels = false;        
+        if (deconAlgorithm.value !== "skip") skipAllChannels = false;
 
         // QMLE vs CMLE/GMLE.
         switchSnrMode(deconAlgorithm, chan);
-        
+
         for (var tagIdx = 0; tagIdx < paramChanTagArray.length; tagIdx++) {
             var tag = paramChanTagArray[tagIdx];
             var id = tag.concat(chan);
-    
+
             if (document.getElementById(id) == null) continue;
             var paramInputElement = document.getElementById(id);
-            
+
             if ( deconAlgorithm.value === "skip" ) {
-                paramInputElement.readOnly = true;                
+                paramInputElement.readOnly = true;
                 paramInputElement.style.backgroundColor="#888";
-            } else {                                    
-                paramInputElement.readOnly = false;                
-                paramInputElement.style.backgroundColor="";         
+            } else {
+                paramInputElement.readOnly = false;
+                paramInputElement.style.backgroundColor="";
             }
-        }    
+        }
     }
-    
-    // Then, the channel-independent parameters. These are changed when all 
+
+    // Then, the channel-independent parameters. These are changed when all
     // channels are skipped.
     for (var tagIdx = 0; tagIdx < paramAllChanTagArray.length; tagIdx++) {
         var id = paramAllChanTagArray[tagIdx];
@@ -330,10 +334,10 @@ function updateDeconEntryProperties( ) {
         var paramInputElement = document.getElementById(id);
 
         if (skipAllChannels) {
-            paramInputElement.readOnly = true;            
+            paramInputElement.readOnly = true;
             paramInputElement.style.backgroundColor="#888";
         } else {
-            paramInputElement.readOnly = false;            
+            paramInputElement.readOnly = false;
             paramInputElement.style.backgroundColor="";
         }
     }
@@ -355,12 +359,12 @@ function changeStedEntryProperties(selectObj, channel) {
         var id = tag.concat(channel);
 
         var inputElement = document.getElementById(id);
-        
+
         if ( selectObj.value == 'off-confocal' ) {
-            inputElement.readOnly = true;            
+            inputElement.readOnly = true;
             inputElement.style.backgroundColor="#888";
         } else {
-            inputElement.readOnly = false;            
+            inputElement.readOnly = false;
             inputElement.style.backgroundColor="";
         }
     }
@@ -369,7 +373,7 @@ function changeStedEntryProperties(selectObj, channel) {
 
 function setStedEntryProperties( ) {
     var tag = "StedDepletionMode";
-    
+
     for (var chan = 0; chan < 6; chan++) {
         var name = tag.concat(chan);
 
@@ -462,7 +466,7 @@ function changeSpimEntryProperties(selectObj, channel) {
 
 function setSpimEntryProperties( ) {
     var tag = "SpimExcMode";
-    
+
     for (var chan = 0; chan < 6; chan++) {
         var name = tag.concat(chan);
 
@@ -476,7 +480,7 @@ function checkAgainstFormat(file, selectedFormat) {
     if (selectedFormat == 'all') {
         return true;
     }
-    
+
         // Both variables as in the 'file_extension' table.
     var fileFormat    = '';
     var fileExtension = '';
@@ -486,23 +490,23 @@ function checkAgainstFormat(file, selectedFormat) {
     // Pattern lif, czi subimages:  = (\s\(.*\))*
 
     var nameDivisions;
-    nameDivisions = file.match(/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/);    
+    nameDivisions = file.match(/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/);
 
         // A first check on the file extension.
     if (nameDivisions != null) {
-        
+
         // Specific to ome-tiff.
         if (typeof nameDivisions[2] !== 'undefined') {
             if (nameDivisions[2] == 'ome') {
                 fileExtension = nameDivisions[2] + '.';
             }
         }
-        
+
         // Main extension.
         if (typeof nameDivisions[3] !== 'undefined') {
             fileExtension += nameDivisions[3];
         }
-        
+
         fileExtension = fileExtension.toLowerCase();
 
         switch (fileExtension) {
@@ -513,7 +517,7 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'lsm':
             case 'oif':
             case 'pic':
-            case 'r3d':           
+            case 'r3d':
             case 'stk':
             case 'zvi':
             case 'czi':
@@ -547,20 +551,20 @@ function checkAgainstFormat(file, selectedFormat) {
                 fileFormat    = '';
                 fileExtension = '';
         }
-    }    
+    }
 
         // Control over tiffs: this structure corresponds to Leica tiffs.
     if ((file.match(/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/)) != null) {
         if (fileExtension == 'tiff' || fileExtension == 'tif') {
             fileFormat = 'tiff-leica';
-        } 
+        }
     }
 
         // Control over stks: redundant.
     if ((file.match(/[^_]+_(T|t)[0-9]+\.\w+/)) != null) {
         if (fileExtension == 'stk') {
             fileFormat = 'stk';
-        } 
+        }
     }
 
         // Control over ics's, no distinction between ics and ics2.

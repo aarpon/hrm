@@ -160,7 +160,7 @@ if ($_SESSION['user']->isAdmin()
                 ?>
             </select>
 
-                <table id="ChromaticAberration">
+                <table id="ChromaticAberrationTable">
                     <tr>
                         <td class="header">Ch</td>
                         <td class="header">Shift x<br/>(&#956m)</td>

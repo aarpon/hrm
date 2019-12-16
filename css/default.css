@@ -937,12 +937,12 @@ table#Servers td {
     vertical-align: middle;
 }
 
-#ChromaticAberration table {
+#ChromaticAberrationTable table {
     font-size: 90%;
     padding-bottom: 1em;
 }
 
-#ChromaticAberration td.header {
+#ChromaticAberrationTable td.header {
     font-weight: bold;
 }
 
