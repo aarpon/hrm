@@ -53,7 +53,7 @@ for ($i = 0; $i < $chanCnt; $i++) {
     $deconAlgorithmKey = "DeconvolutionAlgorithm{$i}";
     if (isset($_POST[$deconAlgorithmKey])) {
         $deconAlgorithm[$i] = $_POST[$deconAlgorithmKey];
-    } 
+    }
 }
 $deconAlgorithmParam->setValue($deconAlgorithm);
 $_SESSION['task_setting']->set($deconAlgorithmParam);
@@ -183,7 +183,7 @@ include("header.inc.php");
 
                     /* Make sure CMLE is first in the list. */
                     for ($i = 0; $i < count($possibleValues); $i++) {
-                        $arrValue = $possibleValues[0];                    
+                        $arrValue = $possibleValues[0];
                         if (strstr($arrValue, "gmle") || strstr($arrValue, "qmle")) {
                             array_push($possibleValues, $arrValue);
                         }
@@ -199,15 +199,15 @@ include("header.inc.php");
                             <td>
                                 <select
                                     name="DeconvolutionAlgorithm<?php echo $chan; ?>"
-                                    title="Deconvolution algorithm for channel <?php echo $chan; ?>"                                    
+                                    title="Deconvolution algorithm for channel <?php echo $chan; ?>"
                                     onchange="updateDeconEntryProperties()">
 
                                     <?php
-                                    /* Loop for select options. */                                   
+                                    /* Loop for select options. */
                                     foreach ($possibleValues as $possibleValue) {
                                         $translatedValue =
                                             $parameterDeconAlgorithm->translatedValueFor($possibleValue);
-                                            
+
                                         if ($possibleValue == $deconAlgorithm[$chan]) {
                                             $selected = " selected=\"selected\"";
                                         } else {
@@ -252,8 +252,8 @@ include("header.inc.php");
                  onmouseover="changeQuickHelp( 'snr' );">
 
                 <!-- start the SNR table-->
-                <table><tr>    
-                 
+                <table><tr>
+
 
                 <?php
 
@@ -262,8 +262,8 @@ include("header.inc.php");
                 $signalNoiseRatioParam =
                     $_SESSION['task_setting']->parameter("SignalNoiseRatio");
                 $signalNoiseRatioValue = $signalNoiseRatioParam->value();
-                
-                
+
+
                     /* Loop over the channels. */
                 for ($ch = 0; $ch < $chanCnt; $ch++) {
 
@@ -282,7 +282,7 @@ include("header.inc.php");
 
                     <div id="cmle-snr-<?php echo $ch;?>"
                      class="multichannel"<?php echo $visibility ?>>
-                     
+
                      <span class="nowrap">Ch<?php echo $ch; ?>:
                         &nbsp;&nbsp;&nbsp;
                               <span class="multichannel">
@@ -314,7 +314,7 @@ include("header.inc.php");
 
                     <div id="gmle-snr-<?php echo $ch;?>"
                      class="multichannel"<?php echo $visibility ?>>
- 
+
                     <span class="nowrap">Ch<?php echo $ch; ?>:
                         &nbsp;&nbsp;&nbsp;
                             <span class="multichannel">
@@ -347,7 +347,7 @@ include("header.inc.php");
                     <div id="qmle-snr-<?php echo $ch;?>"
                      class="multichannel"<?php echo $visibility ?>>
 
-                     <span class="nowrap">Ch<?php echo $ch; ?>:                            
+                     <span class="nowrap">Ch<?php echo $ch; ?>:
                             <select class="snrselect"
                                     title="Signal-to-noise ratio (QMLE)"
                                     class="selection"
@@ -357,7 +357,7 @@ include("header.inc.php");
                             for ($optionIdx = 1; $optionIdx <= 4; $optionIdx++) {
                                 $option = "                                <option ";
                                 if (isset($signalNoiseRatioValue)) {
-                                    if ($signalNoiseRatioValue[$ch] >= 1 
+                                    if ($signalNoiseRatioValue[$ch] >= 1
                                        && $signalNoiseRatioValue[$ch] <= 4) {
                                         if ($optionIdx == $signalNoiseRatioValue[$ch])
                                             $option .= "selected=\"selected\" ";
@@ -418,9 +418,9 @@ include("header.inc.php");
                     </div><!-- skip-snr-channelNumber-->
 
                 <!-- Close the table cell for the SNR of this channel-->
-                </td>    
+                </td>
 
-                    <?php    
+                    <?php
                     /* Start a new table row after a number of entries. */
                     if ($chanCnt == 4) {
                         if ($ch == 2) {
@@ -431,12 +431,12 @@ include("header.inc.php");
                             echo "</tr><tr>";
                         }
                     }
-                }                     
+                }
                 ?>
 
                 <!-- Close the last row and table-->
                 </tr></table>
-                
+
 
                     <p><a href="#"
                           onmouseover="TagToTip('ttEstimateSnr' )"
@@ -883,10 +883,6 @@ include("header.inc.php");
 
 </div> <!-- rightpanel -->
 
-<script type="text/javascript">
-    updateDeconEntryProperties();
-</script>
-
 <?php
 
 include("footer.inc.php");
@@ -937,3 +933,7 @@ if (Util::using_IE() && !isset($_SERVER['HTTP_REFERER'])) {
     <?php
 }
 ?>
+
+<script type="text/javascript">
+    updateDeconEntryProperties();
+</script>
