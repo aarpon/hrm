@@ -270,9 +270,8 @@ include("header.inc.php");
                         $visibility = " style=\"display: block\"";
                     }
 
-                    $value = "";
-                    if ($deconAlgorithm[$ch] == "cmle")
-                        $value = $signalNoiseRatioValue[$ch];
+                    // All SNR divs need to be initialized with the value from the saved parameter.
+                    $value = $signalNoiseRatioValue[$ch];
                  ?>
 
                     <!-- A new table cell for the SNR of this channel-->
@@ -305,9 +304,8 @@ include("header.inc.php");
                         $visibility = " style=\"display: block\"";
                     }
 
-                    $value = "";
-                    if ($deconAlgorithm[$ch] == "gmle")
-                        $value = $signalNoiseRatioValue[$ch];
+                    // All SNR divs need to be initialized with the value from the saved parameter.
+                    $value = $signalNoiseRatioValue[$ch];
                 ?>
 
                     <div id="gmle-snr-<?php echo $ch;?>"
@@ -337,9 +335,8 @@ include("header.inc.php");
                         $visibility = " style=\"display: block\"";
                     }
 
-                    $value = "";
-                    if ($deconAlgorithm[$ch] == "qmle")
-                        $value = $signalNoiseRatioValue[$ch];
+                    // All SNR divs need to be initialized with the value from the saved parameter.
+                    $value = $signalNoiseRatioValue[$ch];
                 ?>
 
                     <div id="qmle-snr-<?php echo $ch;?>"
@@ -391,9 +388,8 @@ include("header.inc.php");
                         $visibility = " style=\"display: block\"";
                     }
 
-                    $value = "";
-                    if ($deconAlgorithm[$ch] == "skip")
-                        $value = $signalNoiseRatioValue[$ch];
+                    // All SNR divs need to be initialized with the value from the saved parameter.
+                    $value = $signalNoiseRatioValue[$ch];
                 ?>
 
                     <div id="skip-snr-<?php echo $ch;?>"
