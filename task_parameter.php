@@ -32,8 +32,7 @@ if ($_SESSION['user']->isAdmin()) {
     $maxChanCnt = $db->getMaxChanCnt();
     $_SESSION['task_setting']->setNumberOfChannels($maxChanCnt);
 } else {
-    $_SESSION['task_setting']->setNumberOfChannels(
-        $_SESSION['setting']->numberOfChannels());
+    $_SESSION['task_setting']->setNumberOfChannels($_SESSION['setting']->numberOfChannels());
 }
 
 $message = "";
