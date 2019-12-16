@@ -141,15 +141,16 @@ function smoothChangeDiv(div, html, time) {
 }
 
 function isChromaticTableEmpty( ) {
+    var allEmpty = true;
+
     var tableTag   = "ChromaticAberrationTable";
     var channelTag = "ChromaticAberration";
-    
+
     table = document.getElementById(tableTag);
-    
+
     channelCnt = table.rows.length - 1;
     componentCnt = table.rows[0].cells.length - 1;
 
-    var allEmpty = true;
     for (var chan = 0; chan < channelCnt; chan++) {
         for (var component = 0; component < componentCnt; component++) {
             var id = channelTag + "Ch";
@@ -173,6 +174,16 @@ function isChromaticTableEmpty( ) {
 
 function initChromaticChannelReference() {
 
+    var tableTag   = "ChromaticAberrationTable";
+
+    table = document.getElementById(tableTag);
+
+    channelCnt = table.rows.length - 1;
+
+    if (channelCnt == 1) {
+        return;
+    }
+
     emptyTable = isChromaticTableEmpty();
 
     if (emptyTable == true) {
@@ -187,9 +198,9 @@ function initChromaticChannelReference() {
 function searchChromaticChannelReference( ) {
     var tableTag   = "ChromaticAberrationTable";
     var channelTag = "ChromaticAberration";
-    
+
     table = document.getElementById(tableTag);
-    
+
     channelCnt = table.rows.length - 1;
     componentCnt = table.rows[0].cells.length - 1;
 
@@ -227,7 +238,7 @@ function setChromaticChannelReference( chan ) {
     var channelTag = "ChromaticAberration";
 
     table = document.getElementById(tableTag);
-    
+
     componentCnt = table.rows[0].cells.length - 1;
 
     for (var component = 0; component < componentCnt; component++) {
@@ -257,7 +268,7 @@ function removeChromaticChannelReference( ) {
     var channelTag = "ChromaticAberration";
 
     table = document.getElementById(tableTag);
-    
+
     channelCnt = table.rows.length - 1;
     componentCnt = table.rows[0].cells.length - 1;
 
