@@ -541,19 +541,28 @@ class QueueManager
         // Loop over all the running jobs to find out about collisions.
         $runningJobs = $this->queue->runningJobs();
         foreach ($runningJobs as $runningJob) {
-
             // Hostname == registered server entry without GPU tag.
             $runningJobServer = $runningJob->server();
             $s = explode(" ", $runningJobServer);
             $runningJobHostname = $s[0];
 
             // Other properties of the running job.
+
+            /** @var JobDescription $runningJobDescription */
             $runningJobDescription = $runningJob->description();
+
+            /** @var UserV2 $runningJobOwner */
             $runningJobOwner = $runningJobDescription->owner();
 
-            if ($runningJob->id() == $job->id())               continue;
-            if ($runningJobOwner->name() != $jobOwner->name()) continue;
-            if ($runningJobHostname != $jobHostname)           continue;
+            if ($runningJob->id() == $job->id()) {
+                continue;
+            }
+            if ($runningJobOwner->name() != $jobOwner->name()) {
+                continue;
+            }
+            if ($runningJobHostname != $jobHostname) {
+                continue;
+            }
 
             // Remove collisions with other jobs from the list of source files.
             $runningJobSrcFiles = $runningJobDescription->files();
@@ -1105,12 +1114,14 @@ class QueueManager
 
         // Fill admin user information in the database
         if (!$this->fillInSuperAdminInfoInTheDatabase()) {
-            Log::error("Could not store the information for the admin user in the database!");
+            Log::error("Could not store the information for the admin user in the database! " .
+            "The Queue Manager was shut down!");
             return;
         }
 
         if (!FileserverV2::createUpDownloadFolderIfMissing()) {
-            Log::error("The upload and download folders do not exist or are not writable!");
+            Log::error("The upload and download folders do not exist or are not writable!" .
+            "The Queue Manager was shut down!");
             return;
         }
 
@@ -1120,7 +1131,8 @@ class QueueManager
         // Query the database for processing servers
         $servers = $db->getAllServers();
         if (count($servers) == 0) {
-            Log::error("There are no processing servers configured in the database!");
+            Log::error("There are no processing servers configured in the database! " .
+            "The Queue Manager was shut down!");
             return;
         }
 
@@ -1135,22 +1147,24 @@ class QueueManager
         $hucorePath = $servers[0]['huscript_path'];
 
         if (!$this->askHuCoreVersionAndStoreIntoDB($server, $hucorePath)) {
-            Log::error("An error occurred while reading HuCore version");
+            Log::error("An error occurred while reading HuCore version. " .
+            "The Queue Manager was shut down!");
             return;
         } else {
             Log::info("Successfully stored HuCore version in the database.");
         }
 
         if (!$this->storeHuCoreLicenseDetailsIntoDB($server, $hucorePath)) {
-            Log::error("An error occurred while saving HuCore license details");
+            Log::error("An error occurred while saving HuCore license details" .
+            "The Queue Manager was shut down!");
             return;
         } else {
             Log::info("Successfully updated license details in the database.");
         }
 
         if (!$this->storeConfidenceLevelsIntoDB($server, $hucorePath)) {
-            Log::error("An error occurred while storing the confidence " .
-                "levels in the database");
+            Log::error("An error occurred while storing the confidence levels in the database. " .
+            "The Queue Manager was shut down!");
             return;
         } else {
             Log::info("Successfully updated confidence levels in the database.");
@@ -1159,7 +1173,6 @@ class QueueManager
         $queue = $this->queue;
         while (!$this->shallStop()) {
             set_time_limit(0);
-            $result = true;
 
             // Reduce the used cycles by going to sleep for one second
             if ($imageProcessingIsOnQueueManager) {
@@ -1198,17 +1211,28 @@ class QueueManager
 
                 // Execute the template on the Huygens server and
                 // update the database state
-                $result = $result && $this->executeTemplate($job);
-
-                if (!$result) {
+                if (! $this->executeTemplate($job)) {
+                    Log::error("An error occurred while executing HuCore template " .
+                    "for job with id $id. Skipping to next job in queue.");
                     continue;
                 }
 
-                Log::info("Template has been executed");
-                $result = $result && $queue->startJob($job);
-                Log::info("Job with id " . $job->id() . " has been started (" . date("Y-m-d H:i:s") . ")");
+                Log::info("Template has been executed successfully.");
+
+                // Now run the actual job
+                if (! $queue->startJob($job)) {
+                    Log::error("An error occurred while running job with id $id." .
+                        "Skipping to next job in queue.");
+                    continue;
+                }
+
+                // Inform that the job has started
+                $startDate = date("Y-m-d H:i:s");
+                Log::info("Job with id $id has been started on $startDate.");
             }
         }
+
+        // Inform
         Log::warning("Huygens Remote Manager stopped via database switch on " . date("Y-m-d H:i:s"));
     }
 
