@@ -725,7 +725,7 @@ include("header.inc.php");
 </div> <!-- rightpanel -->
 
 <script type="text/javascript">
-    setStedEntryProperties();
+    setStedEntryProperties(<?php echo $chanCnt; ?>);
 </script>
 
 <?php
