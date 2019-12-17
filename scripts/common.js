@@ -387,6 +387,8 @@ function changeStedEntryProperties(selectObj, channel) {
         var tag = tagArray[i];
         var id = tag.concat(channel);
 
+        if (document.getElementById(id) == null) continue;
+
         var inputElement = document.getElementById(id);
 
         if ( selectObj.value == 'off-confocal' ) {
@@ -400,10 +402,10 @@ function changeStedEntryProperties(selectObj, channel) {
 }
 
 
-function setStedEntryProperties( ) {
+function setStedEntryProperties(chanCnt) {
     var tag = "StedDepletionMode";
 
-    for (var chan = 0; chan < 6; chan++) {
+    for (var chan = 0; chan < chanCnt; chan++) {
         var name = tag.concat(chan);
 
         var inputElement = document.getElementsByName(name);
