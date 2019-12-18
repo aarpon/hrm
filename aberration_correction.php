@@ -35,7 +35,7 @@ $message = "";
 
 /* In this page, all parameters are required! */
 $parameterNames = $_SESSION['setting']->correctionParameterNames();
-$db = new DatabaseConnection();
+$db = DatabaseConnection::get();
 foreach ($parameterNames as $name) {
     /** @var Parameter $parameter */
     $parameter = $_SESSION['setting']->parameter($name);

@@ -23,7 +23,7 @@ if (!isset($_SESSION['user']) || (!$_SESSION['user']->isAdmin())) {
 
 $message = "";
 
-$db = new DatabaseConnection();
+$db = DatabaseConnection::get();
 
 if (isset($_GET["add"]["name"]) && !empty($_GET["add"]["name"])) {
     if (!isset($_GET["add"]["path"]) || empty($_GET["add"]["path"])) {

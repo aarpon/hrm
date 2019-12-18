@@ -76,7 +76,7 @@ class Stats
     public function __construct($username)
     {
         $this->m_Username = $username;
-        $this->m_DB = new DatabaseConnection();
+        $this->m_DB = DatabaseConnection::get();
         $this->m_Filter_FromDate = $this->getFromDate();
         $this->m_Filter_ToDate = $this->getToDate();
         $this->m_Filter_Group = "All groups";

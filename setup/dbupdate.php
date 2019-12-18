@@ -35,6 +35,7 @@
 //    it is simply updated to the last revision.
 
 // Include hrm_config.inc.php
+use hrm\DatabaseConnection;
 use hrm\System;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserConstants;
@@ -368,16 +369,16 @@ if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is c
 }
 write_to_error(timestamp());
 
-//  Check if the database exists; if it does not exist, create it
-$dsn = $db_type."://".$db_user.":".$db_password."@".$db_host;
-
-$db = ADONewConnection($dsn);
-if(!$db) {
-    $msg = "Cannot connect to database host.";
+// Connect to the database server
+$db = ADONewConnection($db_type);
+$success = $db->Connect($db_host, $db_user, $db_password);
+if ($success === false) {
+    $msg = "Cannot connect to the database server on $db_host.";
     write_message($msg);
     write_to_error($msg);
     return;
 }
+
 $datadict = NewDataDictionary($db);   // Build a data dictionary
 $databases = $db->MetaDatabases();
 if (!in_array($db_name, $databases)) {
@@ -394,24 +395,18 @@ if (!in_array($db_name, $databases)) {
     write_to_log($msg);
 }
 
-// Connect to the database
-$dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
-$db = ADONewConnection($dsn);
-if(!$db) {
-    $msg = "Cannot connect to the database, probably creation failed.\n".
-    "Please check that database user '$db_user' exists\n".
-    "and has privileges to administrate databases.";
+// Connect to the database '$db_name'
+$success = $db->SelectDB($db_name);
+
+if ($success === false) {
+    $msg = "Cannot connect to database '$db_name' on $db_host.";
     write_message($msg);
     write_to_error($msg);
     return;
 }
 
-// Build a data dictionary to automate the creation of tables
-$datadict = NewDataDictionary($db);
-
 // Extract the list of existing tables
 $tables = $db->MetaTables("TABLES");
-
 
 
 // -----------------------------------------------------------------------------
@@ -5908,7 +5903,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "superY";
-    $record["translation"] = "Super:Y create an image supersampled in Y.";
+    $record["translation"] = "SuperY: create an image supersampled in Y.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -5936,6 +5931,109 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 18
+// -----------------------------------------------------------------------------
+$n = 18;
+if ($current_revision < $n) {
+
+    // Add All files to possible image file formats
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "all";
+    $record["translation"] = "All files (*.*)";
+    $record["isDefault"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE value='" . $record['value'] .
+             "' AND parameter='" . $record['parameter'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+    // Correct Imaris' default.
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'OutputFileFormat';
+    $record["value"]       = 'IMS (Imaris Classic)';
+    $record["translation"] = 'Imaris';
+    $record["isDefault"]   = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', 
+        "parameter='OutputFileFormat' and translation='Imaris'")) {
+        $msg = "Could not correct entry for OutputFileFormat Imaris in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Correct CZI translation for alphabetical sorts.
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'ImageFileFormat';
+    $record["value"]       = 'czi';
+    $record["translation"] = 'Zeiss CZI (*.czi)';
+    $record["isDefault"]   = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE',
+        "parameter='ImageFileFormat' and value='czi'")) {
+        $msg = "Could not correct entry for InputFileFormat CZI in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Add entry to DeconvolutionAlgorithm.
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "DeconvolutionAlgorithm";
+    $record["value"] = "skip";
+    $record["translation"] = "Skip";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    // Add a settings_id column to the job_queue table
+    $tabname   = "job_queue";
+    $newcolumn = "settings_id";
+    $type = "C(30)";
+
+    // Add new column 'settings_id' to job_queue
+    $allcolumns = $db->MetaColumnNames($tabname);
+    if (! array_key_exists(strtoupper($newcolumn), $allcolumns)) {
+        if ( !insert_column($tabname, $newcolumn . " " . $type) ) {
+            $msg = "Error adding new column $newcolumn to table $tabname!";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
 
 fclose($fh);
 

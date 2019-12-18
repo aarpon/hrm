@@ -50,7 +50,7 @@ class ImageFileFormat extends SingleOrMultiChannelParameter
             $value = $this->value();
         }
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->fileExtensions($value);
         return $result;
     }

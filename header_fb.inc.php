@@ -40,9 +40,9 @@ if (Util::using_IE()) {
 
     <!-- Fine uploader's css -->
     <link rel="stylesheet" type="text/css" href="scripts/fineuploader/fine-uploader-new.css">
-    <link rel="stylesheet" type="text/css" href="css/custom_fineuploader.css?v=3.6">
-    <link rel="stylesheet" type="text/css" href="css/themes/custom_fineuploader_dark.css?v=3.6" title="dark">
-    <link rel="alternate stylesheet" type="text/css" href="css/themes/custom_fineuploader_light.css?v=3.6" title="light">
+    <link rel="stylesheet" type="text/css" href="css/custom_fineuploader.css?v=3.7">
+    <link rel="stylesheet" type="text/css" href="css/themes/custom_fineuploader_dark.css?v=3.7" title="dark">
+    <link rel="alternate stylesheet" type="text/css" href="css/themes/custom_fineuploader_light.css?v=3.7" title="light">
 
     <!-- Theming support -->
     <script type="text/javascript" src="scripts/theming.js"></script>
@@ -168,12 +168,12 @@ if (isset($generatedScript)) {
 ?>
 
     <!-- Main stylesheets -->
-    <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.6">
-    <link rel="stylesheet" type="text/css" href="css/default.css?v=3.6">
+    <link rel="stylesheet" type="text/css" href="css/fonts.css?v=3.7">
+    <link rel="stylesheet" type="text/css" href="css/default.css?v=3.7">
 
     <!-- Themes -->
-    <link rel="stylesheet" type="text/css" href="css/themes/dark.css?v=3.6" title="dark">
-    <link rel="alternate stylesheet" type="text/css" href="css/themes/light.css?v=3.6" title="light">
+    <link rel="stylesheet" type="text/css" href="css/themes/dark.css?v=3.7" title="dark">
+    <link rel="alternate stylesheet" type="text/css" href="css/themes/light.css?v=3.7" title="light">
 
     <!--[if lt IE 9]>
     <h3>This browser is OBSOLETE and is known to have important issues with HRM.

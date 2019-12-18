@@ -95,19 +95,27 @@ function seek(channel) {
 
 window.onunload = function() {if (snitch != null) snitch.close()};
 
-function switchSnrMode(algorithm) {
-    if (algorithm == 'cmle') {
-        $('#cmle-snr').show();
-        $('#gmle-snr').hide();
-        $('#qmle-snr').hide();
-    } else if (algorithm == 'gmle') {
-        $('#cmle-snr').hide();
-        $('#gmle-snr').show();
-        $('#qmle-snr').hide();
-    } else if (algorithm == 'qmle') {
-        $('#cmle-snr').hide();
-        $('#gmle-snr').hide();
-        $('#qmle-snr').show();
+function switchSnrMode(algorithm, channel) {    
+    if (algorithm.value === "cmle") {
+        $('#cmle-snr-' + channel).show();
+        $('#gmle-snr-' + channel).hide();
+        $('#qmle-snr-' + channel).hide();
+        $('#skip-snr-' + channel).hide();
+    } else if (algorithm.value === "gmle") {
+        $('#cmle-snr-' + channel).hide();
+        $('#gmle-snr-' + channel).show();
+        $('#qmle-snr-' + channel).hide();
+        $('#skip-snr-' + channel).hide();
+    } else if (algorithm.value === "qmle") {                
+        $('#cmle-snr-' + channel).hide();
+        $('#gmle-snr-' + channel).hide();
+        $('#qmle-snr-' + channel).show();
+        $('#skip-snr-' + channel).hide();
+    } else if (algorithm.value === "skip") {
+        $('#cmle-snr-' + channel).hide();
+        $('#gmle-snr-' + channel).hide();
+        $('#qmle-snr-' + channel).hide();
+        $('#skip-snr-' + channel).show();
     }
 }
 

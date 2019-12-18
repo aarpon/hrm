@@ -7,6 +7,7 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
 namespace hrm;
 
 use hrm\job\Job;
@@ -45,13 +46,6 @@ class QueueManager
     private $freeGpu;
 
     /**
-     * A Job object.
-     * @todo This seems to be unused. Confirm and remove.
-     * @var Job
-     */
-    private $job;
-
-    /**
      * Flag to indicate whether a Job should stop.
      * @var bool
      */
@@ -76,13 +70,22 @@ class QueueManager
     private $runningJobs;
 
     /**
+     * Number of seconds since the Unix Epoch until the last
+     * time the 'onceAnHourLog()' function logged the status
+     * of the queue.
+     * @var int
+     */
+    private $onceAnHourLastTimeLog;
+
+
+    /**
      * QueueManager constructor.
      */
     public function __construct()
     {
         $this->runningJobs = array();
         $this->queue = new JobQueue();
-        $this->shallStop = False;
+        $this->shallStop = false;
         $this->nping = array();
     }
 
@@ -110,17 +113,16 @@ class QueueManager
         $cmd .= "fi";
 
         if ($imageProcessingIsOnQueueManager) {
-            $result = exec($cmd);
+            exec($cmd);
         } else {
             $cmd = "'$cmd'";
-            $result = exec("ssh " . $huygens_user . "@" . $server_hostname .
-                           " " . $cmd);
+            exec("ssh " . $huygens_user . "@" . $server_hostname . " " . $cmd);
         }
     }
 
     /**
      * Executes given Job.
-     * @param Job $job A Job object.
+     * @param $job Job A Job object.
      * @return true if the Job could be executed, false otherwise.
      * @todo  Update templateName variable with templateName
      */
@@ -128,7 +130,6 @@ class QueueManager
     {
         global $imageProcessingIsOnQueueManager;
         global $copy_images_to_huygens_server;
-        global $logdir;
 
         $server = $this->freeServer;
         // server name without proc number
@@ -142,32 +143,34 @@ class QueueManager
         // failed jobs.
         $this->removeHuygensOutputFiles($desc, $server_hostname);
 
-        Log::info(">>>>> Executing template: " .
+        Log::info("Executing template for job with id " .
+            $job->id() . ": " .
             $imageProcessingIsOnQueueManager . " " .
             $copy_images_to_huygens_server);
-        if (!$imageProcessingIsOnQueueManager
-            &&  $copy_images_to_huygens_server) {
-            $clientTemplatePath =
-                $this->copyImagesToServer($job, $server_hostname);
+
+        if (!$imageProcessingIsOnQueueManager &&  $copy_images_to_huygens_server) {
+            $clientTemplatePath = $this->copyImagesToServer($job, $server_hostname);
             Log::info("images copied to IP server");
         }
 
-        $proc = ExternalProcessFactory::getExternalProcess($server,
+        $proc = ExternalProcessFactory::getExternalProcess(
+            $server,
             $server . "_" . $job->id() . "_out.txt",
-            $server . "_" . $job->id() . "_error.txt");
-        Log::info("shell process created");
+            $server . "_" . $job->id() . "_error.txt"
+        );
+        Log::info("Shell process created for job with id " . $job->id());
 
         /* Check whether the shell is ready to accept further execution. If
          not, the shell will be released internally, no need to release it
          here. */
         if (!$proc->runShell()) {
-            return False;
+            return false;
         }
 
-        Log::info("running shell: $clientTemplatePath$templateName");
+        Log::info("Running shell: $clientTemplatePath$templateName");
         $pid = $proc->runHuygensTemplate($clientTemplatePath . $templateName);
 
-        Log::info("running template (pid $pid)");
+        Log::info("Running template (pid $pid)");
 
         /* The template in the background will keep running after release. */
         $proc->release();
@@ -196,7 +199,7 @@ class QueueManager
         $desc = $job->description();
         $user = $desc->owner();
 
-        // TODO substitute spaces by underscores in image name to avoid
+        // @TODO substitute spaces by underscores in image name to avoid
         // processing problems with Huygens
 
         $batch = "cd \"" . $huygens_server_image_folder . "\"\n";
@@ -272,33 +275,36 @@ class QueueManager
                 $image_source . "/" . $file;
             if (stristr($filename, ".ics")) {
                 $batch .= "put \"" . $filename . "\"\n";
-                $filename = substr($filename, 0,
-                        strrpos($filename, '.ics')) . ".ids";
+                $filename = substr($filename, 0, strrpos($filename, '.ics')) . ".ids";
                 $batch .= "put \"" . $filename . "\"\n";
-            } else if (stristr($filename, ".tif") ||
-                stristr($filename, ".tiff")
-            ) {
+            } elseif (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
                 // TODO: if ImageFileFormat = single TIFF file, do not send
                 // corresponding series
                 $basename = preg_replace(
                     "/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/",
-                    "$1$6$7", $filename);
+                    "$1$6$7",
+                    $filename
+                );
                 $name = preg_replace("/(.*)\.tiff?$/", "$1", $basename);
                 $batch .= "put \"" . $name . "\"*\n";
-            } else if (stristr($filename, ".stk")) {
+            } elseif (stristr($filename, ".stk")) {
                 // if ImageFileFormat = STK time series, send all timepoints
                 if (stripos($filename, "_t")) {
                     $basename = preg_replace(
                         "/([^_]+|\/)(_)(T|t)([0-9]+)(\.)(\w+)/",
-                        "$1", $filename);
+                        "$1",
+                        $filename
+                    );
                     $batch .= "put \"" . $basename . "\"*\n";
                 } else {
                     $batch .= "put \"" . $filename . "\"\n";
                 }
-            } else if (stristr($filename, ".nd")) {
+            } elseif (stristr($filename, ".nd")) {
                 $basename = preg_replace(
                     "/([^_]+|\/)(_)(T|t|Z|z|CH|ch)([0-9]+)(\w+)(\.)(\w+)/",
-                    "$1$6$7", $filename);
+                    "$1$6$7",
+                    $filename
+                );
                 $name = preg_replace("/(.*)\.nd?$/", "$1", $basename);
                 $batch .= "put \"" . $name . "\"*\n";
             } else {
@@ -315,7 +321,8 @@ class QueueManager
         $batch .= "-mkdir \"" . $image_destination . "\"\n";
         $batch .= "quit\n";
 
-        Log::info("\nBATCH \n$batch", 2);
+        Log::info("BATCH");
+        Log::info("$batch");
 
         $batch_filename = $image_folder . "/" . $user->name() . "/" .
             "batchfile_" . $desc->id();
@@ -330,6 +337,7 @@ class QueueManager
         exec("rm -f " . $batch_filename);
         // >>
 
+
         return $huygens_server_image_folder . "/" . $user->name() . "/" .
         $image_source . "/";
     }
@@ -341,31 +349,30 @@ class QueueManager
     public function nextJobFromQueue()
     {
         $queue = $this->queue;
-        $foundExecutableJob = False;
-        $pausedJobs = False;
+        $foundExecutableJob = false;
+        $pausedJobs = false;
         $jobDescription = $queue->getNextJobDescription();
-        while ($jobDescription != NULL && !$foundExecutableJob) {
+        while ($jobDescription != null && !$foundExecutableJob) {
             $user = $jobDescription->owner();
             $username = $user->name();
             $fileserver = new Fileserver($username);
             if ($fileserver->isReachable()) {
-                $foundExecutableJob = True;
+                $foundExecutableJob = true;
             } else {
                 $src = $fileserver->sourceFolder();
                 $dest = $fileserver->destinationFolder();
-                Log::error("fileserver not reachable: $src or $dest" .
-                    "do not exist");
-                $pausedJobs = True;
+                Log::error("fileserver not reachable: $src or $dest" . " do not exist");
+                $pausedJobs = true;
                 $queue->pauseJob($jobDescription);
-                return NULL;
+                return null;
             }
             $jobDescription = $queue->getNextJobDescription();
         }
         if ($pausedJobs) {
             $queue->restartPausedJobs();
         }
-        if ($jobDescription == NULL) {
-            return NULL;
+        if ($jobDescription == null) {
+            return null;
         }
         $job = new Job($jobDescription);
         $job->setServer($this->freeServer);
@@ -373,13 +380,63 @@ class QueueManager
         return $job;
     }
 
+
+    /**
+     * Prints the status of the queue to the HRM log.
+     * This can be useful to spot problems in stalled queues.
+     */
+    public function onceAnHourLog()
+    {
+        // Check that an hour went by since the last status log.
+        // Otherwise return, we don't want to clog the log.
+        if (isset($this->onceAnHourLastTimeLog)
+            && $this->onceAnHourLastTimeLog - time() < 3600) {
+            return;
+        }
+
+        $queue      = $this->queue;
+        $isLocked   = $queue->isLocked();
+        $freeServer = $this->getFreeServer();
+
+        $db         = DatabaseConnection::get();
+        $nextJobId  = $db->getNextIdFromQueue();
+
+        $this->onceAnHourLastTimeLog = time();
+
+        $msg = "Queue status -> locked: " ;
+        if ($isLocked === True) {
+            $msg .= "true";
+        } else {
+            $msg .= "false";
+        }
+
+        $msg .= ", free server: ";
+        if ($freeServer === True) {
+            $msg .= "true";
+        } else {
+            $msg .= "false";
+        }
+
+        $msg .= ", nextJobId: ";
+        if (isset($nextJobId[0])) {
+            $msg .= $nextJobId[0];
+        } else {
+            $msg .= "null";
+        }
+
+        Log::info($msg);
+    }
+
+
     /**
      * Deletes temporary Job files from the file server
+     *
+     * @TODO If the processing server is not local, the cleaning will have no effect!
      * @param Job $job A Job object.
      */
-    function cleanUpFileServer($job)
+    private function cleanUpFileServer($job)
     {
-        Log::warning("cleaning up file server");
+        Log::warning("Cleaning up file server");
         $server = $job->server();
         // server name without proc number
         $s = explode(" ", $server);
@@ -405,8 +462,140 @@ class QueueManager
         }
         // remove job
         $this->stopTime = $queue->stopJob($job);
-        Log::info("stopped job (" . date("l d F Y H:i:s") . ")\n");
+        Log::info("Completed and cleaned job with id " . $job->id() . " (" . date("l d F Y H:i:s") . ")\n");
     }
+
+
+    /**
+     * Deletes the job source and destination files from the remote server.
+     *
+     * @param Job $job A Job object.
+     */
+    public function cleanUpRemoteServer($job)
+    {
+        global $imageProcessingIsOnQueueManager;
+        global $copy_images_to_huygens_server;
+        global $huygens_server_image_folder;
+        global $image_source;
+        global $image_destination;
+
+
+        if ($imageProcessingIsOnQueueManager || !$copy_images_to_huygens_server) {
+            // There's no remote server. Nothing to do.
+            return;
+        }
+
+        // Hostname == registered server entry without GPU tag.
+        $jobServer = $job->server();
+        $s = explode(" ", $jobServer);
+        $jobHostname = $s[0];
+
+        // Other job properties.
+        $jobDescription = $job->description();
+        $jobOwner       = $jobDescription->owner();
+
+        // Sanity check just in case something goes wrong with the configuration.
+        // Make sure we are dealing with a remote server. If the remote server
+        // is equal to the machine running the QM, then there must have been a
+        // mistake.
+        $qmHostname = gethostname();
+        if (strcasecmp($jobHostname, $qmHostname) == 0) {
+            return;
+        }
+
+        // It should be safe to remove the data now. Additionally, this operation is
+        // "protected" by the SSH keys. Only if HRM has been configured correctly, will
+        // the file deletion take place.
+        $proc = ExternalProcessFactory::getExternalProcess(
+            $jobServer,
+            $jobServer . "_remote_cleanup_out.txt",
+            $jobServer . "_remote_cleanup_error.txt"
+        );
+        Log::info("Shell process created");
+
+        // Check whether the shell is ready to accept further execution. If not,
+        // the shell will be released internally, no need to release it here.
+        if (!$proc->runShell()) {
+            return;
+        }
+
+        // Clean up the job dest images at the remote location.
+        $remotePath  = $huygens_server_image_folder . "/";
+        $remotePath .= $jobOwner->name() . "/" . $image_destination . "/";
+        $remoteFiles = "*" . $job->id() . "*";
+
+        $cmd = "find " . $remotePath . " -name '" . $remoteFiles . "' -delete;";
+        $proc->execute($cmd);
+
+        // Unfortunately, the DB does not keep track of all the source files used
+        // by the job. This is because the file series can become very large.
+        // Thus, we only retrieve the name of the job's main source file.
+        // Additionally, we check if there are any other jobs from the same user
+        // running on the same machine with the same source files. If so, we skip
+        // the cleanup and leave the task to the last job that meets such criteria.
+        // With this, we are able to properly clean up 99.9% of the cases. There
+        // might be some extreme cases of file collisions or debris from previous
+        // old jobs (HRM < 3.7 did not clean them up) where this still fails.
+        $srcFiles = $jobDescription->files();
+
+        // Loop over all the running jobs to find out about collisions.
+        $runningJobs = $this->queue->runningJobs();
+        foreach ($runningJobs as $runningJob) {
+            // Hostname == registered server entry without GPU tag.
+            $runningJobServer = $runningJob->server();
+            $s = explode(" ", $runningJobServer);
+            $runningJobHostname = $s[0];
+
+            // Other properties of the running job.
+
+            /** @var JobDescription $runningJobDescription */
+            $runningJobDescription = $runningJob->description();
+
+            /** @var UserV2 $runningJobOwner */
+            $runningJobOwner = $runningJobDescription->owner();
+
+            if ($runningJob->id() == $job->id()) {
+                continue;
+            }
+            if ($runningJobOwner->name() != $jobOwner->name()) {
+                continue;
+            }
+            if ($runningJobHostname != $jobHostname) {
+                continue;
+            }
+
+            // Remove collisions with other jobs from the list of source files.
+            $runningJobSrcFiles = $runningJobDescription->files();
+            $srcFiles = array_diff($srcFiles, $runningJobSrcFiles);
+        }
+
+        // Lastly, clean up the job source images at the remote location.
+        $cmd = "";
+        $fileServer = new Fileserver($jobOwner->name());
+        $fileSeries = $jobDescription->autoseries();
+        foreach ($srcFiles as $srcFile) {
+            $remotePath  = $huygens_server_image_folder . "/";
+            $remotePath .= $jobOwner->name() . "/" . $image_source . "/";
+
+            // If we are dealing with a series, remove all of its files.
+            if ($fileSeries) {
+                $extension = $fileServer->getFileNameExtension($srcFile);
+                $srcFile   = $fileServer->basename($srcFile);
+                $srcFile   = str_replace($srcFile, $extension, "");
+                $srcFile  .= "*" . $extension;
+            }
+            $remoteFiles = $srcFile;
+
+            $cmd .= "find " . $remotePath . " -name '" . $remoteFiles . "' -delete;";
+        }
+
+        if ($cmd != "") {
+            $proc->execute($cmd);
+        }
+
+        $proc->release();
+    }
+
 
     /**
      * Checks whether the processing server reacts on 'ping'.
@@ -415,9 +604,7 @@ class QueueManager
      * @param string $errLog A string specific of the error log file name.
      * @return bool True on success, false otherwise.
      */
-    private function isProcessingServerReachable($server,
-                                                 $outLog = NULL,
-                                                 $errLog = NULL)
+    private function isProcessingServerReachable($server, $outLog = null, $errLog = null)
     {
         if ($outLog) {
             $outLog .= "_";
@@ -427,9 +614,11 @@ class QueueManager
             $errLog .= "_";
         }
 
-        $proc = ExternalProcessFactory::getExternalProcess($server,
+        $proc = ExternalProcessFactory::getExternalProcess(
+            $server,
             $server . $outLog . "_out.txt",
-            $server . $errLog . "_error.txt");
+            $server . $errLog . "_error.txt"
+        );
         $isReachable = $proc->ping();
 
         $proc->release();
@@ -445,19 +634,16 @@ class QueueManager
      * @param string $errLog A string specific of the error log file name.
      * @return bool True on enough memory, false otherwise.
      */
-    private function hasProcessingServerEnoughFreeMem($server,
-                                                      $outLog = NULL,
-                                                      $errLog = NULL)
-    {        
+    private function hasProcessingServerEnoughFreeMem($server, $outLog = null, $errLog = null)
+    {
         global $min_free_mem_launch_requirement;
-        
-        /* Initialize. */ 
-        $hasEnoughFreeMem = True;
 
-        /* Sanity checks. */
-        if (!isset($min_free_mem_launch_requirement) 
-            || !is_numeric($min_free_mem_launch_requirement)) {
-                $min_free_mem_launch_requirement = 0;
+        // Initialize.
+        $hasEnoughFreeMem = true;
+
+        // Sanity checks.
+        if (!isset($min_free_mem_launch_requirement) || !is_numeric($min_free_mem_launch_requirement)) {
+            $min_free_mem_launch_requirement = 0;
         }
         if ($outLog) {
             $outLog .= "_";
@@ -466,17 +652,18 @@ class QueueManager
             $errLog .= "_";
         }
 
-        $proc = ExternalProcessFactory::getExternalProcess($server,
+        $proc = ExternalProcessFactory::getExternalProcess(
+            $server,
             $server . $outLog . "_out.txt",
-            $server . $errLog . "_error.txt");        
+            $server . $errLog . "_error.txt"
+        );
 
         $isReachable = $proc->ping();
 
         if ($isReachable) {
             $freeMem = $proc->getFreeMem();
-            if (is_numeric($freeMem) && $freeMem > 0
-                && $freeMem < $min_free_mem_launch_requirement) {
-                $hasEnoughFreeMem = False;
+            if (is_numeric($freeMem) && $freeMem > 0 && $freeMem < $min_free_mem_launch_requirement) {
+                $hasEnoughFreeMem = false;
             }
         }
 
@@ -490,23 +677,35 @@ class QueueManager
      *
      * This methods kills all Jobs that are marked to be killed, checks whether
      * Jobs are completed and create report files, write Parameter files,...
-     *
-     * @todo    This method is a mess!
      */
     public function updateJobAndServerStatus()
     {
-        global $imageProcessingIsOnQueueManager;
         global $send_mail;
         global $logdir;
 
-        // TODO check if it is necessary
+        // Alias
         $queue = $this->queue;
-        // Kill marked running jobs
-        $queue->killMarkedJobs();
-        // Remove broken jobs
-        if ($queue->removeMarkedJobs()) {
-            Log::info("broken jobs removed");
+
+        // First remove all 'delete' jobs that haven't started yet.
+        // This way we clean the queue as fast as possible.
+        if (! $queue->removeMarkedJobs()) {
+            // Report
+            Log::error("Failed removing deleted, not yet started jobs from the queue.");
+
+            // Force maintenance
+            DatabaseConnection::get()->cleanQueueFromBrokenJobs();
         }
+
+        // Then we kill running jobs that have been marked 'kill
+        if (! $queue->killMarkedJobs()) {
+            // Report
+            Log::error("Failed killing running jobs from the queue.");
+
+            // Force maintenance
+            DatabaseConnection::get()->cleanQueueFromBrokenJobs();
+        }
+
+        // Now process the queue
         $runningJobs = $queue->runningJobs();
         if (count($runningJobs) > 0) {
             Log::info(count($runningJobs) . " job" .
@@ -523,47 +722,39 @@ class QueueManager
 
             /** @var UserV2 $user */
             $fileserver = new Fileserver($user->name());
-            if (!$fileserver->isReachable())
+            if (!$fileserver->isReachable()) {
+                Log::error("The file server is not reachable!");
                 continue;
+            }
 
             /** @var Job $job */
-            if (!$this->isProcessingServerReachable($job->server(),
-                $job->id(),
-                $job->id())
-            ) {
+            if (!$this->isProcessingServerReachable($job->server(), $job->id(), $job->id())) {
+                Log::error("The processing server is not reachable!");
                 continue;
             }
 
             // Check finished marker
-            $finished = $job->checkProcessFinished();
-
-            if (!$finished) {
+            if (! $job->checkProcessFinished()) {
                 continue;
             }
 
-            Log::info("checked finished process");
+            Log::info("Huygens process completed successfully.");
 
             // Check result image
             $resultSaved = $job->checkResultImage();
 
-            Log::info("checked result image");
-
             // Notify user
             $startTime = $queue->startTime($job);
-            $errorFile = $logdir . "/" . $job->server() .
-                "_" . $job->id() . "_error.txt";
-            $logFile = $logdir . "/" . $job->server() .
-                "_" . $job->id() . "_out.txt";
+            $errorFile = $logdir . "/" . $job->server() . "_" . $job->id() . "_error.txt";
+            $logFile = $logdir . "/" . $job->server() . "_" . $job->id() . "_out.txt";
 
             if (!$resultSaved) {
-                Log::error("finishing job " . $desc->id() .
-                    " with error on " . $job->server());
+                Log::error("finishing job " . $desc->id() . " with error on " . $job->server());
 
                 // Clean up server
                 $this->cleanUpFileServer($job);
 
-                // Reset server and remove job from the job queue
-                // (update database)
+                // Reset server and remove job from the job queue (update database)
                 $this->stopTime = $queue->stopJob($job);
 
                 // Write email
@@ -583,28 +774,32 @@ class QueueManager
                     unlink($logFile);
                 }
             } else {
-                Log::info("job " . $desc->id() . " completed on " .
-                    $job->server());
+                Log::info("Job " . $desc->id() . " completed on " . $job->server());
 
                 // Report information to statistics table
-                $db = new DatabaseConnection();
+                $db = DatabaseConnection::get();
                 $db->updateStatistics($job, $startTime);
 
-                // Clean up server
+                // Clean up temporary job files in the file server.
                 $this->cleanUpFileServer($job);
+
+                // Remove all the transferred files from the processing server.
+                $this->cleanUpRemoteServer($job);
 
                 // Reset server and remove job from the job queue
                 $this->stopTime = $queue->stopJob($job);
                 $this->assembleJobLogFile($job, $startTime, $logFile, $errorFile);
 
                 // Write email
-                if ($send_mail)
+                if ($send_mail) {
                     $this->notifySuccess($job, $startTime);
+                }
                 if (file_exists($errorFile)) {
                     unlink($errorFile);
                 }
-                if (file_exists($logFile))
+                if (file_exists($logFile)) {
                     unlink($logFile);
+                }
             }
         }
     }
@@ -623,8 +818,7 @@ class QueueManager
      */
     public function assembleJobLogFile($job, $startTime, $logFile, $errorFile)
     {
-        global $imageProcessingIsOnQueueManager;
-        $result = False;
+        $result = false;
         $desc = $job->description();
         $imageName = $desc->destinationImageName();
         $id = $desc->id();
@@ -641,12 +835,12 @@ class QueueManager
         $text .= "Job id: $id (pid $pid on $server), started " .
             "at $startTime and finished at " . date("Y-m-d H:i:s") . "\n\n";
 
-        if (file_exists($errorFile))
-            $text .= "- HUYGENS ERROR REPORT (stderr) --------------\n\n" .
-                file_get_contents($errorFile);
-        if (file_exists($logFile))
-            $text .= "- HUYGENS REPORT (stdout) --------------------\n\n" .
-                file_get_contents($logFile);
+        if (file_exists($errorFile)) {
+            $text .= "- HUYGENS ERROR REPORT (stderr) --------------\n\n" . file_get_contents($errorFile);
+        }
+        if (file_exists($logFile)) {
+            $text .= "- HUYGENS REPORT (stdout) --------------------\n\n" . file_get_contents($logFile);
+        }
 
         // Save the log to file
         $parameterFileName = $path . $imageName . '.log.txt';
@@ -815,6 +1009,7 @@ class QueueManager
         $mail->send();
     }
 
+
     /**
      * Report (and internally store) the name of a free server that
      * can accept a Job.
@@ -822,20 +1017,18 @@ class QueueManager
      */
     public function getFreeServer()
     {
-
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $servers = $db->availableServer();
 
         foreach ($servers as $server) {
             $status = $db->statusOfServer($server);
             if ($status == 'free') {
-
                 if ($this->isProcessingServerReachable($server)) {
                     if ($this->hasProcessingServerEnoughFreeMem($server)) {
                         $this->nping[$server] = 0;
                         $this->freeServer = $server;
                         $this->freeGpu = $db->getGPUID($server);
-                        return True;
+                        return true;
                     }
                 } else {
                     $this->incNPing($server);
@@ -846,7 +1039,7 @@ class QueueManager
             }
         }
 
-        $this->freeServer = False;
+        $this->freeServer = false;
 
         return $this->freeServer;
     }
@@ -856,7 +1049,7 @@ class QueueManager
      */
     public function stop()
     {
-        $this->shallStop = True;
+        $this->shallStop = true;
     }
 
     /**
@@ -866,10 +1059,10 @@ class QueueManager
     public function shallStop()
     {
         if ($this->shallStop) {
-            return True;
+            return true;
         }
         $this->waitForDatabaseConnection();
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $this->shallStop = !$db->isSwitchOn();
         return $this->shallStop;
     }
@@ -879,11 +1072,11 @@ class QueueManager
      */
     public function waitForDatabaseConnection()
     {
-        $isDatabaseReachable = False;
+        $isDatabaseReachable = false;
         while (!$isDatabaseReachable) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             if ($db->isReachable()) {
-                $isDatabaseReachable = True;
+                $isDatabaseReachable = true;
             }
         }
     }
@@ -895,7 +1088,7 @@ class QueueManager
     {
         $queue = $this->queue;
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         /* Retrieve the list of servers. */
         $servers = $queue->availableServer();
@@ -913,33 +1106,38 @@ class QueueManager
     public function run()
     {
         global $imageProcessingIsOnQueueManager;
-        global $logdir;
-
 
         $this->waitForDatabaseConnection();
         $this->initializeServers();
 
-        Log::info("Huygens Remote Manager started on "
-            . date("Y-m-d H:i:s") . "\n");
+        Log::info("Huygens Remote Manager started on " . date("Y-m-d H:i:s"));
 
         // Fill admin user information in the database
         if (!$this->fillInSuperAdminInfoInTheDatabase()) {
-            Log::error("Could not store the information for the admin user in the database!");
+            Log::error("Could not store the information for the admin user in the database! " .
+            "The Queue Manager was shut down!");
             return;
         }
 
         if (!FileserverV2::createUpDownloadFolderIfMissing()) {
-            Log::error("The upload and download folders do not exist or are not writable!");
+            Log::error("The upload and download folders do not exist or are not writable!" .
+            "The Queue Manager was shut down!");
             return;
         }
 
+        // Instantiate database connection
+        $db = DatabaseConnection::get();
+
         // Query the database for processing servers
-        $db = new DatabaseConnection();
         $servers = $db->getAllServers();
         if (count($servers) == 0) {
-            Log::error("There are no processing servers configured in the database!");
+            Log::error("There are no processing servers configured in the database! " .
+            "The Queue Manager was shut down!");
             return;
         }
+
+        // Perform some database maintenance
+        $db->cleanQueueFromBrokenJobs();
 
         // We will use the first server for the following queries.
         // Due to historical reasons, the name field can also contain the GPU ID.
@@ -949,25 +1147,32 @@ class QueueManager
         $hucorePath = $servers[0]['huscript_path'];
 
         if (!$this->askHuCoreVersionAndStoreIntoDB($server, $hucorePath)) {
-            Log::error("An error occurred while reading HuCore version");
+            Log::error("An error occurred while reading HuCore version. " .
+            "The Queue Manager was shut down!");
             return;
+        } else {
+            Log::info("Successfully stored HuCore version in the database.");
         }
 
         if (!$this->storeHuCoreLicenseDetailsIntoDB($server, $hucorePath)) {
-            Log::error("An error occurred while saving HuCore license details");
+            Log::error("An error occurred while saving HuCore license details" .
+            "The Queue Manager was shut down!");
             return;
+        } else {
+            Log::info("Successfully updated license details in the database.");
         }
 
         if (!$this->storeConfidenceLevelsIntoDB($server, $hucorePath)) {
-            Log::error("An error occurred while storing the confidence " .
-                "levels in the database");
+            Log::error("An error occurred while storing the confidence levels in the database. " .
+            "The Queue Manager was shut down!");
             return;
+        } else {
+            Log::info("Successfully updated confidence levels in the database.");
         }
 
         $queue = $this->queue;
         while (!$this->shallStop()) {
             set_time_limit(0);
-            $result = True;
 
             // Reduce the used cycles by going to sleep for one second
             if ($imageProcessingIsOnQueueManager) {
@@ -978,48 +1183,57 @@ class QueueManager
             // user via email.
             $this->updateJobAndServerStatus();
 
+            // Log useful stuff to spot problematic situations with the queue.
+            $this->onceAnHourLog();
+
             // Read in a free huygens server
             while (!($queue->isLocked()) && $this->getFreeServer()) {
-
+                // Get next Job from the queue
                 $job = $this->nextJobFromQueue();
+
                 // Exit the loop if no job is queued.
-                if ($job == NULL) {
+                if ($job == null) {
                     break;
                 }
 
-                Log::info("using Huygens server: " . $this->freeServer);
+                Log::info("Using Huygens server: " . $this->freeServer);
 
                 // Read in a queued job
                 $desc = $job->description();
                 $id = $desc->id();
-                Log::info("processing job " . $id . " on " . $job->server());
+                Log::info("Processing job " . $id . " on " . $job->server());
 
-                // TODO check this <<
-                // If the job is compound create sub jobs and
-                // remove job otherwise create template
-                $result = $job->createSubJobsOrHuTemplate();
-                if (!$result || $desc->isCompound()) {
-                    Log::error("error or compound job");
+                // Create Huygens template
+                if (! $job->buildAndWriteHuygensTemplate()) {
+                    // Error has been logged already. Skipping.
                     continue;
                 }
-                Log::info("template has been created");
 
                 // Execute the template on the Huygens server and
                 // update the database state
-                $result = $result && $this->executeTemplate($job);
-
-                if (!$result) {
+                if (! $this->executeTemplate($job)) {
+                    Log::error("An error occurred while executing HuCore template " .
+                    "for job with id $id. Skipping to next job in queue.");
                     continue;
                 }
 
-                Log::info("Template has been executed");
-                $result = $result && $queue->startJob($job);
-                Log::info("job has been started ("
-                    . date("Y-m-d H:i:s") . ")");
+                Log::info("Template has been executed successfully.");
+
+                // Now run the actual job
+                if (! $queue->startJob($job)) {
+                    Log::error("An error occurred while running job with id $id." .
+                        "Skipping to next job in queue.");
+                    continue;
+                }
+
+                // Inform that the job has started
+                $startDate = date("Y-m-d H:i:s");
+                Log::info("Job with id $id has been started on $startDate.");
             }
         }
-        Log::warning("Huygens Remote Manager stopped via database switch on "
-            . date("Y-m-d H:i:s"));
+
+        // Inform
+        Log::warning("Huygens Remote Manager stopped via database switch on " . date("Y-m-d H:i:s"));
     }
 
     /**
@@ -1101,7 +1315,7 @@ class QueueManager
         Log::info($licDetails['license']);
 
         // Store the license details in the database.
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if (!$db->storeLicenseDetails($licDetails['license'])) {
             Log::error("Could not store license details in the database!");
             return false;
@@ -1136,7 +1350,7 @@ class QueueManager
             $this->parseConfidenceLevelString($confidenceLevelString);
 
         // Store the confidence levels in the database
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if (!$db->storeConfidenceLevels($confidenceLevels)) {
             Log::error("Could not store confidence levels to the database!");
             return false;
@@ -1154,8 +1368,11 @@ class QueueManager
     {
 
         // Break down the string into per-file substrings
-        $confidenceLevelString = str_replace('}}', '}}<CUT_HERE>',
-            $confidenceLevelString);
+        $confidenceLevelString = str_replace(
+            '}}',
+            '}}<CUT_HERE>',
+            $confidenceLevelString
+        );
 
         $groups = explode('<CUT_HERE> ', $confidenceLevelString);
 
@@ -1167,10 +1384,12 @@ class QueueManager
 
         // Process the substrings
         foreach ($groups as $group) {
-
             $match = array();
-            preg_match("/(\A\w{2,16})(\s{1,2})(\{sampleSizes\s\{.+)/",
-                $group, $match);
+            preg_match(
+                "/(\A\w{2,16})(\s{1,2})(\{sampleSizes\s\{.+)/",
+                $group,
+                $match
+            );
 
             // Get the parts
             if ((!isset($match[1])) || (!isset($match[3]))) {
@@ -1485,7 +1704,7 @@ class QueueManager
 
         $success = true;
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // This is a corner case: if the QM is started before the
         // database update to version 15, the sql query that relies on the
@@ -1511,5 +1730,4 @@ class QueueManager
         }
         return $success;
     }
-
 }

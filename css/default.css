@@ -381,6 +381,7 @@ table {
 #logos table tr.caption {
     vertical-align: top;
     text-align: center;
+    color: white;
 }
 
 #logos table td {
@@ -390,7 +391,7 @@ table {
 #logos table td.epfl {
     height: 100px;
     cursor: pointer;
-    background: url("../images/logo_epfl_neg.png") no-repeat center;
+    background: url("../images/logo_epfl.png") no-repeat center;
     background-size: 130px;
 }
 
@@ -936,12 +937,12 @@ table#Servers td {
     vertical-align: middle;
 }
 
-#ChromaticAberration table {
+#ChromaticAberrationTable table {
     font-size: 90%;
     padding-bottom: 1em;
 }
 
-#ChromaticAberration td.header {
+#ChromaticAberrationTable td.header {
     font-weight: bold;
 }
 
@@ -1655,7 +1656,8 @@ select {
 }
 
 select.snrselect {
-    width: 30%;
+    width: 80px;    
+    margin-left: 7px;
 }
 
 span.multichannel {
@@ -1732,7 +1734,7 @@ option.default {
 
 #message p {
     text-align: center;
-    color: red;
+    color: darkorange;
 }
 
 .message_small {
@@ -2324,4 +2326,8 @@ div.StedDeplModeValues {
     font-size: 1.0em;
     margin-right: 5px;
     border: 1px solid lightgray;
+}
+
+.highlighted {
+    color: darkorange;
 }

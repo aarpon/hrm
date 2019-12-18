@@ -44,7 +44,7 @@ class AnyTypeArrayParameter extends NumericalArrayParameter
         $this->possibleValues = array();
 
         // Get and set the Parameter possible values
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $this->possibleValues = $db->readPossibleValues($this);
     }
 

@@ -12,6 +12,7 @@ namespace hrm\user\proxy;
 
 use adLDAP\adLDAP;
 use adLDAP\adLDAPException;
+use Exception;
 use hrm\Log;
 
 require_once dirname(__FILE__) . '/../../bootstrap.php';
@@ -27,8 +28,8 @@ require_once dirname(__FILE__) . '/../../bootstrap.php';
  *
  * @package hrm
  */
-class ActiveDirectoryProxy extends AbstractProxy {
-
+class ActiveDirectoryProxy extends AbstractProxy
+{
     /**
      * The adLDAP object.
      * @var adLDAP
@@ -100,16 +101,15 @@ class ActiveDirectoryProxy extends AbstractProxy {
      *
      * No parameters are passed to the constructor.
      *
-     * @throws \Exception if config/active_directory_config.inc file could not be found.
+     * @throws Exception if config/active_directory_config.inc file could not be found.
      */
-    public function __construct() {
-
+    public function __construct()
+    {
         global $ACCOUNT_SUFFIX, $AD_PORT, $BASE_DN, $DOMAIN_CONTROLLERS,
                $AD_USERNAME, $AD_PASSWORD, $REAL_PRIMARY_GROUP, $USE_SSL,
                $USE_TLS, $RECURSIVE_GROUPS, $AUTHORIZED_GROUPS, $VALID_GROUPS,
                $AD_USERNAME_SUFFIX, $AD_USERNAME_SUFFIX_PATTERN,
                $AD_USERNAME_SUFFIX_REPLACE;
-
 
         // Include the configuration file
         $conf = dirname(__FILE__) . "/../../../config/active_directory_config.inc";
@@ -117,7 +117,7 @@ class ActiveDirectoryProxy extends AbstractProxy {
             $msg = "The Active Directory configuration file " .
                 "'active_directory_config.inc' is missing!";
             Log::error($msg);
-            throw new \Exception($msg);
+            throw new Exception($msg);
         }
         /** @noinspection PhpIncludeInspection */
         include($conf);
@@ -176,7 +176,8 @@ class ActiveDirectoryProxy extends AbstractProxy {
     /**
      * Destructor. Closes the connection started by the adLDAP object.
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         // We ask the adLDAP object to close the connection. A check whether a
         // connection actually exists will be made by the adLDAP object itself.
         // This is a fallback to make sure to close any open sockets when the
@@ -203,8 +204,8 @@ class ActiveDirectoryProxy extends AbstractProxy {
      * @param string $password Plain password for authentication.
      * @return bool True if authentication succeeded, false otherwise.
     */
-    public function authenticate($username, $password) {
-
+    public function authenticate($username, $password)
+    {
         // Make sure the user is active
         if (!$this->isActive($username)) {
             Log::info("User '$username': account is INACTIVE!");
@@ -212,8 +213,7 @@ class ActiveDirectoryProxy extends AbstractProxy {
         }
 
         // Authenticate against AD
-        $b = $this->m_AdLDAP->user()->authenticate(
-            strtolower($username), $password);
+        $b = $this->m_AdLDAP->user()->authenticate(strtolower($username), $password);
 
         // If authentication failed, we can return here.
         if ($b === false) {
@@ -248,8 +248,8 @@ class ActiveDirectoryProxy extends AbstractProxy {
      * @param string $username Username for which to query the email address.
      * @return string email address or "".
     */
-    public function getEmailAddress($username) {
-
+    public function getEmailAddress($username)
+    {
         // If needed, process the user name suffix for subdomains
         $username .= $this->m_UsernameSuffix;
         if ($this->m_UsernameSuffixReplaceMatch != '') {
@@ -276,8 +276,8 @@ class ActiveDirectoryProxy extends AbstractProxy {
      * @param string $username Username for which to query the group.
      * @return string Group or "" if not found.
     */
-    public function getGroup($username) {
-
+    public function getGroup($username)
+    {
         // If needed, process the user name suffix for subdomains
         $username .= $this->m_UsernameSuffix;
         if ($this->m_UsernameSuffixReplaceMatch != '') {
@@ -306,8 +306,7 @@ class ActiveDirectoryProxy extends AbstractProxy {
         // with the returned group list; otherwise, keep working with the
         // original array.
         if (count($this->m_ValidGroups) > 0) {
-            $userGroups = array_values(array_intersect(
-                $userGroups, $this->m_ValidGroups));
+            $userGroups = array_values(array_intersect($userGroups, $this->m_ValidGroups));
         }
 
         // Now return the first entry
@@ -320,7 +319,5 @@ class ActiveDirectoryProxy extends AbstractProxy {
 
         Log::info('Group for username "' . $username . '": ' . $group);
         return $group;
-
     }
-
-};
+}

@@ -11,6 +11,7 @@
 namespace hrm\user;
 
 use DateTime;
+use Exception;
 use hrm\DatabaseConnection;
 use hrm\Log;
 use hrm\user\proxy\AbstractProxy;
@@ -46,8 +47,8 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
  *
  * @package hrm
  */
-class UserV2 {
-
+class UserV2
+{
     /**
      * Name of the user.
      * @var string
@@ -162,10 +163,10 @@ class UserV2 {
      * omitted, an empty User with default authentication mode is created.
      * If the name is specified and the User exists, it is loaded from the
      * database. If the User does not exist, only the name is set.
-     * @throws \Exception
+     * @throws Exception
      */
-    public function __construct($name = null) {
-
+    public function __construct($name = null)
+    {
         // Initialize members to default values
 
         // The User id is -1 if the User does not exist in the database
@@ -196,7 +197,7 @@ class UserV2 {
         $this->isAdmin = null;
 
         // The User is not logged in by default.
-        $this->isLoggedIn = False;
+        $this->isLoggedIn = false;
 
         // If the name is specified, we try to load the User
         if ($name != null) {
@@ -208,7 +209,8 @@ class UserV2 {
      * Returns the User id
      * @return int User id.
      */
-    public function id() {
+    public function id()
+    {
         return $this->id;
     }
 
@@ -216,7 +218,8 @@ class UserV2 {
      * Returns the name of the User.
      * @return string The name of the User.
      */
-    public function name() {
+    public function name()
+    {
         return $this->name;
     }
 
@@ -225,11 +228,11 @@ class UserV2 {
      *
      * If a User with the given name exists in the database, it is loaded.
      * @param string $name The name of the User.
-     * @throws \Exception If the authentication mode is not recognized
+     * @throws Exception If the authentication mode is not recognized
      * for the specified user.
      */
-    public function setName($name) {
-
+    public function setName($name)
+    {
         // Set the name
         $this->name = $name;
 
@@ -244,7 +247,8 @@ class UserV2 {
      * Returns the creation date of the User.
      * @return string Creation date of the User.
      */
-    public function creationDate() {
+    public function creationDate()
+    {
         return $this->creationDate;
     }
 
@@ -252,7 +256,8 @@ class UserV2 {
      * Returns the last access date of the User.
      * @return string Last access date of the User.
      */
-    public function lastAccessDate() {
+    public function lastAccessDate()
+    {
         return $this->lastAccessDate;
     }
 
@@ -260,7 +265,8 @@ class UserV2 {
      * Returns the role of the User.
      * @return string Role of the User.
      */
-    public function role() {
+    public function role()
+    {
         return $this->role;
     }
 
@@ -268,7 +274,8 @@ class UserV2 {
      * Returns the institution of the User.
      * @return string Institution of the User.
      */
-    public function institution_id() {
+    public function institution_id()
+    {
         return $this->institution_id;
     }
 
@@ -276,7 +283,8 @@ class UserV2 {
      * Set the institution Id for the User.
      * @param $institution_id int Institution Id.
      */
-    public function set_institution_id($institution_id) {
+    public function set_institution_id($institution_id)
+    {
         $this->institution_id = $institution_id;
     }
 
@@ -284,8 +292,9 @@ class UserV2 {
      * Returns the institution of the User.
      * @return string Institution name of the User.
      */
-    public function institution_name() {
-        $db = new DatabaseConnection();
+    public function institution_name()
+    {
+        $db = DatabaseConnection::get();
         $name = $db->queryLastValue("SELECT name FROM institution WHERE id=" . $this->id . ";");
         return $name;
     }
@@ -294,19 +303,21 @@ class UserV2 {
      * Returns the authentication mode for the User.
      * @return string Authentication mode for the User.
      */
-    public function authenticationMode() {
+    public function authenticationMode()
+    {
         return $this->authMode;
     }
 
     /**
      * Sets the authentication mode for the User.
      * @param $authMode string Authentication mode for the User.
-     * @throws \Exception If the authentication mode is not configured or recognized.
+     * @throws Exception If the authentication mode is not configured or recognized.
      */
-    public function setAuthenticationMode($authMode) {
+    public function setAuthenticationMode($authMode)
+    {
         $authModes = ProxyFactory::getAllConfiguredAuthenticationModes();
         if (! in_array($authMode, $authModes)) {
-            throw new \Exception("The authentication mode is not configured or recognized.");
+            throw new Exception("The authentication mode is not configured or recognized.");
         }
         $this->authMode = $authMode;
     }
@@ -315,7 +326,8 @@ class UserV2 {
      * Returns the status of the User.
      * @return string Status of the User.
      */
-    public function status() {
+    public function status()
+    {
         return $this->status;
     }
 
@@ -323,13 +335,16 @@ class UserV2 {
      * Set the status of the User.
      * @param $status int Status of the User: one of UserConstants::STATUS_ACTIVE,
      * UserConstants::STATUS_DISABLED.
-     * @throws \Exception If the status is not valid.
+     * @throws Exception If the status is not valid.
      */
-    public function setStatus($status) {
-        if ($status != UserConstants::STATUS_ACTIVE &&
+    public function setStatus($status)
+    {
+        if (
+            $status != UserConstants::STATUS_ACTIVE &&
             $status != UserConstants::STATUS_DISABLED &&
-            $status != UserConstants::STATUS_OUTDATED) {
-                throw new \Exception("Invalid status!");
+            $status != UserConstants::STATUS_OUTDATED
+        ) {
+                throw new Exception("Invalid status!");
         }
         $this->status = $status;
     }
@@ -338,7 +353,8 @@ class UserV2 {
      * Returns the proxy of the User.
      * @return AbstractProxy Proxy of the User.
      */
-    public function proxy() {
+    public function proxy()
+    {
         return $this->proxy;
     }
 
@@ -346,7 +362,8 @@ class UserV2 {
      * Checks whether the user is logged in.
      * @return bool True if the user is logged in, false otherwise.
      */
-    public function isLoggedIn() {
+    public function isLoggedIn()
+    {
         return $this->isLoggedIn;
     }
 
@@ -358,13 +375,13 @@ class UserV2 {
      *
      * @param  string $password Password (plain)
      * @return bool True if the user could be logged in, false otherwise.
-     * @throws \Exception If the User does not have a name.
+     * @throws Exception If the User does not have a name.
      */
-    public function logIn($password) {
-
+    public function logIn($password)
+    {
         // Check the name the name
         if ($this->name == null) {
-            throw new \Exception("User does not have a name!");
+            throw new Exception("User does not have a name!");
         }
 
         // Get the appropriate proxy
@@ -375,7 +392,6 @@ class UserV2 {
 
         // Update the user information for a successful login
         if ($this->isLoggedIn == true) {
-
             // Load all User information (this retrieves data from all
             // relevant sources)
             $this->load();
@@ -391,7 +407,8 @@ class UserV2 {
     /**
      * Logs out the user
      */
-    public function logOut() {
+    public function logOut()
+    {
         $this->isLoggedIn = False;
     }
 
@@ -404,8 +421,8 @@ class UserV2 {
      *
      * @return bool True if the user has been accepted; false otherwise.
      */
-    public function isAccepted() {
-
+    public function isAccepted()
+    {
         if ($this->isAdmin()) {
             return true;
         }
@@ -422,8 +439,8 @@ class UserV2 {
      * @return bool True if the user was suspended by the administrator;
      * false otherwise.
      */
-    public function isDisabled() {
-
+    public function isDisabled()
+    {
         if ($this->isAdmin()) {
             return false;
         }
@@ -435,8 +452,8 @@ class UserV2 {
      * Returns the User e-mail address.
      * @return string The User e-mail address.
      */
-    public function emailAddress() {
-
+    public function emailAddress()
+    {
         // If the email is already stored in the object, return it; otherwise
         // retrieve it.
         if ($this->emailAddress == "") {
@@ -444,39 +461,34 @@ class UserV2 {
         }
 
         return $this->emailAddress;
-
     }
 
     /**
      * Sets the User e-mail address.
      * @param $emailAddress string The User e-mail address.
-     * @throws \Exception If the underlying proxy does not allow modifying the e-mail address.
+     * @throws Exception If the underlying proxy does not allow modifying the e-mail address.
      */
-    public function SetEmailAddress($emailAddress) {
-
+    public function SetEmailAddress($emailAddress)
+    {
         if (! $this->proxy()->canModifyEmailAddress()) {
-            throw new \Exception("The e-mail address of this user cannot be modified by the proxy!");
+            throw new Exception("The e-mail address of this user cannot be modified by the proxy!");
         }
 
         // If the email is already stored in the object, return it; otherwise
         // retrieve it.
         $this->emailAddress = $emailAddress;
-
     }
 
     /**
      * Checks whether the user is an administrator or the super administrator.
      * @return bool True if the user is an administrator, false otherwise.
      */
-    public function isAdmin() {
-
+    public function isAdmin()
+    {
         // If needed, retrieve.
         if ($this->isAdmin === null) {
-
-            $db = new DatabaseConnection();
-            $res = $db->connection()->Execute(
-                "SELECT role FROM username WHERE name=?;",
-                array($this->name));
+            $db = DatabaseConnection::get();
+            $res = $db->connection()->Execute("SELECT role FROM username WHERE name=?;", array($this->name));
             if ($res === false) {
                 Log::error("Could not retrieve role for user $this->name.");
                 return false;
@@ -496,14 +508,12 @@ class UserV2 {
      * Checks whether the user is the super administrator.
      * @return bool True if the user is the super administrator, false otherwise.
      */
-    public function isSuperAdmin() {
-
+    public function isSuperAdmin()
+    {
         // If needed, retrieve.
         if ($this->isSuperAdmin === null) {
-
-            $db = new DatabaseConnection();
-            $res = $db->connection()->Execute(
-                "SELECT role FROM username WHERE name=?;", array($this->name));
+            $db = DatabaseConnection::get();
+            $res = $db->connection()->Execute("SELECT role FROM username WHERE name=?;", array($this->name));
             if ($res === false) {
                 Log::error("Could not retrieve role for user $this->name.");
                 return false;
@@ -522,8 +532,8 @@ class UserV2 {
      * Returns the user to which the User belongs.
      * @return string Group name.
      */
-    public function group() {
-
+    public function group()
+    {
         // If the group is already stored in the object, return it; otherwise
         // retrieve it.
         if ($this->group == "") {
@@ -531,24 +541,22 @@ class UserV2 {
         }
 
         return $this->group;
-
     }
 
     /**
      * Sets the User group.
      * @param $group string The User group.
-     * @throws \Exception If the underlying proxy does not allow modifying the group.
+     * @throws Exception If the underlying proxy does not allow modifying the group.
      */
-    public function SetGroup($group) {
-
+    public function SetGroup($group)
+    {
         if (! $this->proxy()->canModifyGroup()) {
-            throw new \Exception("The group of this user cannot be modified by the proxy!");
+            throw new Exception("The group of this user cannot be modified by the proxy!");
         }
 
         // If the email is already stored in the object, return it; otherwise
         // retrieve it.
         $this->group = $group;
-
     }
 
     /**
@@ -560,16 +568,13 @@ class UserV2 {
     private function load()
     {
         // Instantiate the database connection
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // Load all information for current user
-        $result = $db->connection()->Execute(
-            "SELECT * FROM username WHERE name = ?;",
-            array($this->name));
+        $result = $db->connection()->Execute("SELECT * FROM username WHERE name = ?;", array($this->name));
         $rows = $result->GetRows();
         if (count($rows) == 0)
         {
-
             // A user with current name does not yet exist: we create it.
             $row = array();
             $row["name"] = $this->name();
@@ -584,7 +589,6 @@ class UserV2 {
             $row["id"] = -1;
 
         } else {
-
             $row = $rows[0];
         }
 
@@ -632,17 +636,16 @@ class UserV2 {
 
         // Cache the isSuperAdmin check
         $this->isSuperAdmin = ($this->role == UserConstants::ROLE_SUPERADMIN);
-
     }
 
     /**
      * Sets the last access date of the User (and stores it in the database).
      */
-    private function setLastAccessDate() {
-
+    private function setLastAccessDate()
+    {
         // The user might not yet exist in the database. This is not
         // necessarily an error.
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if ($db->queryLastValue("SELECT id FROM username WHERE name='$this->name';") === false) {
             return true;
         }
@@ -653,9 +656,7 @@ class UserV2 {
         // Store it in the database
 
         $query = "UPDATE username SET last_access_date=? WHERE name=?;";
-        $result = $db->connection()->Execute($query,
-            array($this->lastAccessDate, $this->name)
-        );
+        $result = $db->connection()->Execute($query, array($this->lastAccessDate, $this->name));
 
         if ($result === false) {
             Log::error("Could not update user $this->name in the database!");
@@ -664,6 +665,4 @@ class UserV2 {
 
         return true;
     }
-
-};
-
+}
