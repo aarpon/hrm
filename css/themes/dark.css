@@ -9,3 +9,38 @@ This file is part of the Huygens Remote Manager
 Copyright and license notice: see license.txt
 
 */
+
+#colocCoefficients td.title {
+   text-align: center;
+   font-weight: bold;
+   background-color: #BFFFB3;
+   color: #3F4641;
+}
+
+#colocCoefficients td.header {
+   width: 60px;
+   font-weight: bold;
+   background-color: #CFD7F2;
+   border: solid thin #B6ECFF;
+   color: #3F4641;
+}
+
+#colocCoefficients td.coefficient {
+   background-color: #A9A9A9;
+   color: #3F4641;
+}
+
+#colocCoefficients td.thresh {
+   background-color: #A9A9A9;
+   color: #3F4641;
+}
+
+#colocCoefficients td.cell {
+   background-color: #A9A9A9;
+   color: #3F4641;
+}
+
+#colocCoefficients td.marked {
+   background-color: #A9A9A9;
+   color: #3F4641;
+}
