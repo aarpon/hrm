@@ -14,6 +14,8 @@ Group=hrm
 ExecStart=/var/www/html/hrm/bin/hrm_queuemanager --detach
 Type=forking
 PIDFile=/var/log/hrm/hrmd.pid
+Restart=always
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
