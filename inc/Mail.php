@@ -10,8 +10,6 @@
 
 namespace hrm;
 
-use Exception;
-
 require_once dirname(__FILE__) . '/bootstrap.php';
 
 /**
@@ -88,40 +86,24 @@ class Mail
      * Sends the e-mail.
      * @return bool True if the e-mail was sent successfully, false otherwise.
      */
-    public function send(): bool
+    public function send()
     {
 
         // Check for completeness
         if ($this->sender == "") {
-            try {
-                Log::error("Mail could not be sent because no sender was specified!");
-            } catch (Exception $e) {
-                return false;
-            }
+            Log::error("Mail could not be sent because no sender was specified!");
             return false;
         }
         if ($this->receiver == "") {
-            try {
-                Log::error("Mail could not be sent because no receiver was specified!");
-            } catch (Exception $e) {
-                return false;
-            }
+            Log::error("Mail could not be sent because no receiver was specified!");
             return false;
         }
         if ($this->subject == "") {
-            try {
-                Log::error("Mail could not be sent because no subject was specified!");
-            } catch (Exception $e) {
-                return false;
-            }
+            Log::error("Mail could not be sent because no subject was specified!");
             return false;
         }
         if ($this->message == "") {
-            try {
-                Log::error("Mail could not be sent because no message was specified!");
-            } catch (Exception $e) {
-                return false;
-            }
+            Log::error("Mail could not be sent because no message was specified!");
             return false;
         }
 
@@ -135,18 +117,10 @@ class Mail
         // if something is wrong with the configuration.
         set_time_limit(10);
         if (mail($this->receiver, $this->subject, $this->message, $header, $params)) {
-            try {
-                Log::info("Mail '" . $this->subject . "' sent to " . $this->receiver);
-            } catch (Exception $e) {
-                return false;
-            }
+            Log::info("Mail '" . $this->subject . "' sent to " . $this->receiver);
             return true;
         } else {
-            try {
-                Log::error("Could not send mail '" . $this->subject . "' to " . $this->receiver);
-            } catch (Exception $e) {
-                return false;
-            }
+            Log::error("Could not send mail '" . $this->subject . "' to " . $this->receiver);
             return false;
         }
 

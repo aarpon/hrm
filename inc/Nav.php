@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Nav
  *
@@ -405,7 +404,7 @@ EOT;
      */
     public static function actionStyleToggle()
     {
-        return <<<EOT
+        $html = <<<EOT
 <li>
 <div class="theme_div">
 <form>
@@ -416,6 +415,7 @@ EOT;
 </div>
 </li>
 EOT;
+        return $html;
     }
 
     /**
@@ -449,7 +449,7 @@ EOT;
         $linkToWhatsNew = Nav::linkWhatsNew($wrapInLiElement = false);
         $linkToCredits = Nav::linkCredits($wrapInLiElement = false);
 
-        return <<<EOT
+        $html = <<<EOT
 <li>
     <div class="dropdown">
         <img src="images/resources.png" alt="Resources" />
@@ -475,10 +475,10 @@ EOT;
     window.onclick = function(event) {
         if (!event.target.matches('.dropbtn')) {
 
-            const dropdowns = document.getElementsByClassName("dropdown-content");
-            let i;
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
             for (i = 0; i < dropdowns.length; i++) {
-                let openDropdown = dropdowns[i];
+                var openDropdown = dropdowns[i];
                 if (openDropdown.classList.contains('show')) {
                     openDropdown.classList.remove('show');
                 }
@@ -488,6 +488,7 @@ EOT;
 
 </script>
 EOT;
+        return $html;
     }
 
     /**
@@ -533,10 +534,12 @@ EOT;
                 $onclick = 'onclick="this.target=\'_blank\';return true;"';
             }
         }
-        return $openingLi . '<a href="' . $url . '" ' . $onclick . '>' .
+        $html = $openingLi . '<a href="' . $url . '" ' . $onclick . '>' .
             '<img src="' . $img_url . '" ' .
             'alt="' . $altText . '" />&nbsp;' .
             $text . '</a>' . $closingLi;
+
+        return $html;
     }
 
     /**
@@ -564,9 +567,11 @@ EOT;
         }
 
         $onclick = 'onclick="' . $action . '"';
-        return $openingLi . '<a href="#" ' . $onclick . '>' .
+        $html = $openingLi . '<a href="#" ' . $onclick . '>' .
             '<img src="' . $img_url . '" ' .
             'alt="' . $altText . '" />&nbsp;' .
             $text . '</a>' . $closingLi;
+
+        return $html;
     }
 }
