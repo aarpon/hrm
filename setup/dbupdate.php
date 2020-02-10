@@ -6035,6 +6035,40 @@ if ($current_revision < $n) {
 }
 
 
+
+// -----------------------------------------------------------------------------
+// Update to revision 19
+// -----------------------------------------------------------------------------
+$n = 19;
+if ($current_revision < $n) {
+
+    // Correct Imaris' default.
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'OutputFileFormat';
+    $record["value"]       = 'IMS (Imaris Classic)';
+    $record["translation"] = 'imaris';
+    $record["isDefault"]   = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', 
+        "parameter='OutputFileFormat' and translation='Imaris'")) {
+        $msg = "Could not correct entry for OutputFileFormat Imaris in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+
 fclose($fh);
 
 return;
