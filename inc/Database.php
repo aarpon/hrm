@@ -657,7 +657,7 @@ class DatabaseConnection
             }
 
 
-            if ($newValue{0} == '#') {
+            if ($newValue[0] == '#') {
                 switch ($parameterName) {
                     case "DeconvolutionAlgorithm":
                     case "ExcitationWavelength":
@@ -778,7 +778,7 @@ class DatabaseConnection
                     continue;
                 }
             }
-            if ($newValue{0} == '#') {
+            if ($newValue[0] == '#') {
                 switch ($parameterName) {
                     case "DeconvolutionAlgorithm":
                     case "ExcitationWavelength":
