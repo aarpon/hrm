@@ -13,9 +13,6 @@ use hrm\DatabaseConnection;
 use hrm\HuygensTools;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
-
 /**
  * Abstract class for a SettingEditor.
  *

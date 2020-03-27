@@ -15,8 +15,6 @@ use adLDAP\adLDAPException;
 use Exception;
 use hrm\Log;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * Manages Active Directory connections through the adLDAP library.
  *

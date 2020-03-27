@@ -11,8 +11,6 @@ namespace hrm\param\base;
 
 use hrm\DatabaseConnection;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * Class for a Parameter that has an array of numbers as possible value,
  * where each entry represents a channel.

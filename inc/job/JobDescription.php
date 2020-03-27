@@ -21,8 +21,6 @@ use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * Collects all information for a deconvolution Job to be created.
  *

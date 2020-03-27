@@ -16,9 +16,6 @@ use hrm\param\SignalNoiseRatio;
 use hrm\setting\base\Setting;
 use hrm\System;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
-
 /**
  * A TaskSetting is a complete set of restoration parameters.
  *

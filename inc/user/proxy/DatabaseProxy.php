@@ -16,8 +16,6 @@ use hrm\System;
 use hrm\user\UserManager;
 use hrm\user\UserConstants;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * Manages authentication against the internal HRM  user database.
  *

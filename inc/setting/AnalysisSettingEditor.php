@@ -12,9 +12,6 @@ namespace hrm\setting;
 use hrm\setting\base\SettingEditor;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
-
 /**
  * Implements an Editor for AnalysisSetting.
  *

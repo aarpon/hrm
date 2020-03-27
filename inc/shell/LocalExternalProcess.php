@@ -10,8 +10,6 @@
 
 namespace hrm\shell;
 
-require_once dirname(__FILE__) . "/../bootstrap.php";
-
 global $hucore, $hutask;
 
 /** @todo Why is $hucore forced here? */

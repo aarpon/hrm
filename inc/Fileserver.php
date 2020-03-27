@@ -12,8 +12,6 @@ namespace hrm;
 
 use hrm\job\JobDescription;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
-
 /**
  * Takes care of all file handling to and from the image area and
  * provides commodity functions for creating and displaying previews.

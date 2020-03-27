@@ -17,9 +17,6 @@ use hrm\Fileserver;
 use hrm\HuygensTemplate;
 use hrm\Log;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
-
 /**
  * Stores all information for a deconvolution Job.
  */

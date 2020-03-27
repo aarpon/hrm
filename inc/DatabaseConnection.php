@@ -22,8 +22,6 @@ use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . "/bootstrap.php";
-
 /**
  * Manages the database connection through the ADOdb library.
  *

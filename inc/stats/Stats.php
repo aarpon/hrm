@@ -14,8 +14,6 @@ use hrm\DatabaseConnection;
 use hrm\Util;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * Commodity class to generate statistics of HRM usage.
  *

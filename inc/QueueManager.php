@@ -17,8 +17,6 @@ use hrm\shell\ExternalProcessFactory;
 use hrm\user\UserConstants;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
-
 /**
  * Creates Jobs from JobDescriptions and manages them in a priority queue.
  *

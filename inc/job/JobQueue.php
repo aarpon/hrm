@@ -15,9 +15,6 @@ use hrm\DatabaseConnection;
 use hrm\Log;
 use hrm\shell\ExternalProcessFactory;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
-
 /**
  * Manages the queue of deconvolution Jobs.
  *

@@ -17,8 +17,6 @@ use hrm\setting\AnalysisSetting;
 use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
-
 /**
  * Converts deconvolution parameters into a Huygens batch template.
  *

@@ -11,8 +11,6 @@ namespace hrm\param;
 
 use hrm\param\base\ChoiceParameter;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * A ChoiceParameter to represent the binning.
  *
