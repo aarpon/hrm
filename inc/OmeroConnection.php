@@ -124,7 +124,7 @@ class OmeroConnection
         $done = "";
         foreach ($selected as $img) {
             $fileAndPath = $fileServer->sourceFolder() . "/" . $img['name'];
-            $param = array("--imageid", $img{'id'}, "--dest", $fileAndPath);
+            $param = array("--imageid", $img['id'], "--dest", $fileAndPath);
             $cmd = $this->buildCmd("OMEROtoHRM", $param);
 
             $this->omelog('requesting ' . $img['id'] . ' to ' . $fileAndPath);
