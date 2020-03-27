@@ -19,9 +19,9 @@ FILE_MODE=0775
 # $HRM_DATA as otherwise these operations will fail!
 
 create() {
-    mkdir -pv "${HRM_DATA}/${1}/${HRM_SOURCE}"
-    mkdir -pv "${HRM_DATA}/${1}/${HRM_DEST}"
-    chmod -R $FILE_MODE "${HRM_DATA}/${1}"
+    mkdir -pv "${HRM_DATA:?}/${1}/${HRM_SOURCE}"
+    mkdir -pv "${HRM_DATA:?}/${1}/${HRM_DEST}"
+    chmod -R $FILE_MODE "${HRM_DATA:?}/${1}"
     # TODO / discuss : We could use this function to make sure the newly
     # created directory has the correct group (chgrp) and the setgid bit
     # configured (chmod g+s). However, this requires to know the GROUP that is
@@ -30,7 +30,7 @@ create() {
 }
 
 delete() {
-    rm -rf "${HRM_DATA}/${1}"
+    rm -rf "${HRM_DATA:?}/${1}"
 }
 
 case "$1" in
