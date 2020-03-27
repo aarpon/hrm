@@ -16,8 +16,6 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 // Settings
 global $hrm_url, $image_folder, $image_host, $email_sender, $userManagerScript;
 
-require_once dirname(__FILE__) . '/inc/bootstrap.php';
-
 session_start();
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
