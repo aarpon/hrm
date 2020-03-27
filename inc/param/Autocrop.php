@@ -9,6 +9,8 @@
  */
 namespace hrm\param;
 
+require_once dirname(__FILE__) . '/../bootstrap.php';
+
 use hrm\param\base\ChoiceParameter;
 
 /**
