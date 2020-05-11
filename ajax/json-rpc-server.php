@@ -275,6 +275,12 @@ switch ($method) {
         $json = jsonRemoveFilesFromSelection($fileList);
         break;
 
+    case 'jsonGetBase64EncodedPreviewsForImage':
+        $folder = $params[0];
+        $imageName = $params[1];
+        $json = jsonGetBase64EncodedPreviewsForImage($folder, $imageName);
+        break;
+
     default:
         // Unknown method
         $json = "Unknown method.";
@@ -1058,6 +1064,78 @@ function jsonRemoveFilesFromSelection($fileList)
     $fileServer ->removeFilesFromSelection($fileList);
 
     // Return as a JSON string
+    return (json_encode($json));
+}
+
+/**
+ * Return the base64-encoded xy and xz previews for the image with relative path
+ * from either the src or dst folders.
+ * @param $folder String One of "src" or "dst".
+ * @param $imageName String Image name with path relative to either "src" ot "dst".
+ * @return String XY and XZ base64-encoded preview in a JSON-encoded response.
+ */
+function jsonGetBase64EncodedPreviewsForImage($folder, $imageName)
+{
+    // Prepare the output array
+    $json = initJSONArray();
+
+    // Get the Fileserver object
+    $fileServer = $_SESSION['fileserver'];
+    if ($fileServer === null) {
+        // Return failure
+        $json["success"] = "false";
+        $json["message"] = "FileServer not instantiated.";
+
+        // Return a JSON string
+        return (json_encode($json));
+    }
+
+    // Fall-back image in case the preview does not exist
+    $fallback_img = "../images/no_preview_button.png";
+
+    // Should we process the source or destination folder?
+    if ($folder === "src") {
+        $rootFolder = $fileServer->sourceFolder();
+    } else {
+        $rootFolder = $fileServer->destinationFolder();
+    }
+
+    // Split directory and file name
+    $fileFolder = dirname($imageName);
+    $fileName = basename($imageName);
+
+    // Initialize the outputs
+    $json["xy"] = null;
+    $json["xz"] = null;
+
+    // Build full paths
+    $fullPath_xy = "$rootFolder/$fileFolder/hrm_previews/$fileName.preview_xy.jpg";
+    $fullPath_xz = "$rootFolder/$fileFolder/hrm_previews/$fileName.preview_xz.jpg";
+
+    // Does the xy preview exist?
+    if (! file_exists($fullPath_xy)) {
+        $fullPath_xy = $fallback_img;
+    }
+
+    // Base64-encode the image
+    $type = pathinfo($fullPath_xy, PATHINFO_EXTENSION);
+    $data = file_get_contents($fullPath_xy);
+    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+    $json["xy"] = $base64;
+
+
+    // Does the xz preview exist?
+    if (! file_exists($fullPath_xz)) {
+        $fullPath_xz = $fallback_img;
+    }
+
+    // Base64-encode the image
+    $type = pathinfo($fullPath_xz, PATHINFO_EXTENSION);
+    $data = file_get_contents($fullPath_xz);
+    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+    $json["xz"] = $base64;
+
+    // Return a JSON string
     return (json_encode($json));
 }
 
