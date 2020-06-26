@@ -1093,6 +1093,7 @@ table#Servers td {
 #colocCoefficients table {
     font-size: 100%;
     float: left;
+    color: black;
 }
 
 #colocCoefficients td {
