@@ -259,7 +259,7 @@ class OmeroConnection
         // now we can assemble the full command string:
         $cmd = join(" ", $tmp);
         // and and intermediate one for logging w/o password:
-        $tmp[4] = "[********]";
+        $tmp[4] = '"$OMEROPW"';
         $this->omelog("> " . join(" ", $tmp), 2);
         return $cmd;
     }
