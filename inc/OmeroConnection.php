@@ -307,19 +307,20 @@ class OmeroConnection
      */
     private function omelog($text, $level = 0)
     {
+        $message = "[HRM-OMERO] " . $text;
         // @todo Use class Log
         switch ($level) {
             case 0:
-                Log::error("OMERO connector: " . $text);
+                Log::error($message);
                 break;
             case 1:
-                Log::warning("OMERO connector: " . $text);
+                Log::warning($message);
                 break;
             case 2:
-                Log::info("OMERO connector: " . $text);
+                Log::info($message);
                 break;
             default:
-                Log::warning("OMERO connector: " . $text);
+                Log::warning($message);
                 break;
         }
     }
