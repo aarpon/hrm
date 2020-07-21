@@ -27,7 +27,9 @@ handler.setLevel(logging.DEBUG)
 handler.setFormatter(formatter)
 logging.root.addHandler(handler)
 
+LOG.debug('Trying to read HRM configuration file...')
 import hrm_config
+LOG.debug('Done reading HRM configuration file.')
 
 # optionally put EXT_LIB into our PYTHONPATH:
 if 'PYTHON_EXTLIB' in hrm_config.CONFIG:
@@ -81,6 +83,7 @@ def omero_login(user, passwd, host, port):
     conn = BlitzGateway(user, passwd, host=host, port=port, secure=True,
                         useragent="HRM-OMERO.connector")
     conn.connect()
+    LOG.debug('Created new OMERO connection [user=%s].', user)
     return conn
 
 

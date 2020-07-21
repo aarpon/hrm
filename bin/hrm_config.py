@@ -77,10 +77,13 @@ def parse_hrm_conf(filename):
                 "Can't parse %s, invalid syntax in line %s "
                 "(expected '=', found '%s')." %
                 (filename, lexer.lineno, equals))
+        except Exception as err:
+                logging.warn('Error parsing config: %s', err)
         value = lexer.get_token()
         value = value.replace('"', '')  # remove double quotes
         value = value.replace("'", '')  # remove single quotes
         config[key] = value
+    logging.debug('Successfully parsed [%s].', filename)
     return config
 
 
@@ -90,6 +93,7 @@ def check_hrm_conf(config):
     for entry in required:
         if entry not in config:
             raise SyntaxError('Missing "%s" in the HRM config file.' % entry)
+    logging.debug('HRM config file passed all checks.')
 
 
 if __name__ == "__main__":
