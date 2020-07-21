@@ -16,6 +16,17 @@ to an OMERO server for listing available images, transferring data, etc.
 
 
 import sys
+import logging
+
+logging.root.setLevel(logging.DEBUG)
+LOG = logging.getLogger('ome_hrm.py')
+LOG.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s [%(levelname)s] (%(name)s) %(message)s')
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+handler.setFormatter(formatter)
+logging.root.addHandler(handler)
+
 import hrm_config
 
 # optionally put EXT_LIB into our PYTHONPATH:

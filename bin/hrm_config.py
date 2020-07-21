@@ -26,6 +26,7 @@ this case.
 
 import shlex
 import sys
+import logging
 
 
 def parse_hrm_conf(filename):
