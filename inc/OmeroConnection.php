@@ -60,12 +60,12 @@ class OmeroConnection
     public function __construct($omeroUser, $omeroPass)
     {
         if (empty($omeroUser)) {
-            $this->omelog("No OMERO user name provided, cannot login.", 2);
+            $this->omelog("No OMERO user name provided, cannot login.", 0);
             return;
         }
 
         if (empty($omeroPass)) {
-            $this->omelog("No OMERO password provided, cannot login.", 2);
+            $this->omelog("No OMERO password provided, cannot login.", 0);
             return;
         }
 
@@ -76,7 +76,7 @@ class OmeroConnection
         if ($this->loggedIn == TRUE) {
             $this->omelog("Successfully connected to OMERO!", 2);
         } else {
-            $this->omelog("ERROR connecting to OMERO!", 2);
+            $this->omelog("ERROR connecting to OMERO!", 0);
         }
     }
 
@@ -102,7 +102,7 @@ class OmeroConnection
         /* $retval is zero in case of success */
         if ($retval != 0) {
             $this->loggedIn = FALSE;
-            $this->omelog("ERROR: checkCredentials(): " . implode(' ', $out), 1);
+            $this->omelog("ERROR: checkCredentials(): " . implode(' ', $out), 0);
             return;
         } else {
             $this->loggedIn = TRUE;
@@ -125,19 +125,19 @@ class OmeroConnection
             $param = array("--imageid", $img['id'], "--dest", $fileAndPath);
             $cmd = $this->buildCmd("OMEROtoHRM", $param);
 
-            $this->omelog('requesting ' . $img['id'] . ' to ' . $fileAndPath);
+            $this->omelog('requesting [' . $img['id'] . '] to [' . $fileAndPath . ']', 2);
             // somehow exec() seems to append to $out instead of overwriting
             // it, so we create an empty array for it explicitly:
             $out = array();
             exec($cmd, $out, $retval);
-            $this->omelog(implode(' ', $out));
+            $this->omelog(implode(' ', $out), 2);
             if ($retval != 0) {
-                $this->omelog("failed retrieving " . $img['id'], 1);
-                $this->omelog("ERROR: downloadFromOMERO(): " . implode(' ', $out), 2);
+                $this->omelog("failed retrieving [" . $img['id'] ."] from OMERO", 0);
+                $this->omelog("ERROR: downloadFromOMERO(): " . implode(' ', $out), 0);
                 $fail .= "<br/>" . $img['id'] . "&nbsp;&nbsp;&nbsp;&nbsp;";
                 $fail .= "[" . implode(' ', $out) . "]<br/>";
             } else {
-                $this->omelog("successfully retrieved " . $img['id'], 1);
+                $this->omelog("success retrieving [" . $img['id'] . "] from OMERO", 2);
                 $done .= "<br/>" . implode('<br/>', $out) . "<br/>";
             }
         }
@@ -169,13 +169,13 @@ class OmeroConnection
 
         if (sizeof($selectedFiles) < 1) {
             $msg = "No files selected for upload.";
-            $this->omelog($msg);
+            $this->omelog($msg, 0);
             return $msg;
         }
 
         if (!isset($postedParams['OmeDatasetId'])) {
             $msg = "No destination dataset selected.";
-            $this->omelog($msg);
+            $this->omelog($msg, 0);
             return $msg;
         }
 
@@ -190,18 +190,18 @@ class OmeroConnection
             $param = array("--file", $fileAndPath, "--dset", $datasetId);
             $cmd = $this->buildCmd("HRMtoOMERO", $param);
 
-            $this->omelog('uploading "' . $fileAndPath . '" to dataset ' . $datasetId);
+            $this->omelog('uploading [' . $fileAndPath . '] to dataset ' . $datasetId, 2);
             // somehow exec() seems to append to $out instead of overwriting
             // it, so we create an empty array for it explicitly:
             $out = array();
             exec($cmd, $out, $retval);
             if ($retval != 0) {
-                $this->omelog("failed uploading file to OMERO: " . $file, 1);
-                $this->omelog("ERROR: uploadToOMERO(): " . implode(' ', $out), 2);
+                $this->omelog("failed uploading file to OMERO: " . $file, 0);
+                $this->omelog("ERROR: uploadToOMERO(): " . implode(' ', $out), 0);
                 $fail .= "<br/>" . $file . "&nbsp;&nbsp;&nbsp;&nbsp;";
                 $fail .= "[" . implode(' ', $out) . "]<br/>";
             } else {
-                $this->omelog("success uploading file to OMERO: " . $file, 2);
+                $this->omelog("success uploading [" . $file . "] to OMERO.", 2);
                 $done .= "<br/>" . $file;
             }
         }
@@ -260,7 +260,7 @@ class OmeroConnection
         $cmd = join(" ", $tmp);
         // and and intermediate one for logging w/o password:
         $tmp[4] = "[********]";
-        $this->omelog("> " . join(" ", $tmp), 1);
+        $this->omelog("> " . join(" ", $tmp), 2);
         return $cmd;
     }
 
@@ -279,7 +279,7 @@ class OmeroConnection
             $cmd = $this->buildCmd("retrieveChildren", $param);
             exec($cmd, $out, $retval);
             if ($retval != 0) {
-                $this->omelog("ERROR: getChildren(): " . implode(' ', $out), 1);
+                $this->omelog("ERROR: getChildren(): " . implode(' ', $out), 0);
                 return FALSE;
             } else {
                 $this->nodeChildren[$id] = implode(' ', $out);
