@@ -434,7 +434,8 @@ def hrm_to_omero(conn, id_str, image_file):
     # print("import_args: " + str(import_args))
     try:
         cli.invoke(import_args, strict=True)
-    except:
+    except Exception as err:
+        print('OMERO error message: >>>%s<<<' % err)
         print('ERROR: uploading "%s" to %s failed!' % (image_file, id_str))
         # print(import_args)
         return False
