@@ -424,6 +424,9 @@ def hrm_to_omero(conn, id_str, image_file):
     cli._client = conn.c
     import_args = ["import"]
     import_args.extend(['--skip', 'upgrade'])
+    # import_args.extend(['--debug', 'ALL'])
+    # import_args.extend(['--file', '/tmp/hrm-omero-java-stdout'])
+    # import_args.extend(['--errs', '/tmp/hrm-omero-java-stderr'])
     import_args.extend(['-d', dset_id])
     if comment is not None:
         import_args.extend(['--annotation_ns', namespace])
