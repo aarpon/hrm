@@ -1,0 +1,260 @@
+<?php
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
+
+// This configuration file is used by the WEB INTERFACE.
+
+//==============================================================================
+// Database settings
+//==============================================================================
+
+// The database type ('mysqli' or 'postgres'; mysql is deprecated).
+// Please notice that it is highly recommended to use the mysqli driver for
+// PHP 5.5 and above. In PHP >= 5.6, the mysql driver is deprecated and will
+// overflow your log files when used!
+$db_type = "mysqli";
+
+// The name of the database host machine (this may be localhost if it is the
+// machine on which the web server runs)
+$db_host = "localhost";
+
+// The name of the database used by HRM
+$db_name = "hrm";
+
+// The name of the user with which the database is accessed
+$db_user = "dbuser";
+
+// The password of the account with which the database is accessed
+$db_password = "dbpasswd";
+
+//==============================================================================
+// Huygens settings
+//==============================================================================
+
+// Huygens server default user
+$huygens_user = "hrm";
+$huygens_group = "hrm";
+
+// Path to a local Huygens Core executable, to handle image information and
+// thumbnails. This installation of hucore doesn't require a full license
+// unless this is also the computation server. For image information and
+// thumbnails mostly freeware functions will be used, but support for certain
+// proprietary file formats requires a B flag in the license string. (See
+// https://svi.nl/FileFormats).
+//
+// In combination with Huygens 3.5.1 or higher, HRM can also provide an
+// estimate of the Signal-To-Noise ratio (SNR) of an image, interactively. At
+// least that same simple license is required for this to work.
+$local_huygens_core = "/usr/local/bin/hucore";
+
+//==============================================================================
+// File server settings
+//==============================================================================
+
+// File server host name
+$image_host = "localhost";
+
+// File server default user
+$image_user = "hrm";
+$image_group = "hrm";
+
+// File server base folder
+$image_folder = "/scratch/hrm_data";
+
+// File server image source folder
+$image_source = "src";
+
+// File server image destination folder
+$image_destination = "dst";
+
+// File server base folder as seen from the Huygens server machines
+$huygens_server_image_folder = "/scratch/hrm_data";
+
+// Allow HTTP transfer of the restored (download) images
+$allowHttpTransfer = true;
+
+// Allow HTTP transfer of original (upload) images.
+// Limitations in upload size must be configured in the below parameters
+// $max_upload_limit AND $max_post_limit. If these are set to 0, they are
+// instead read from the PHP settings. If set to higher values, make sure
+// that the PHP settings allow for such transfer limits. These PHP settings
+// are normally located in php.ini, with the options upload_max_filesize AND
+// post_max_size.
+// Unzipping large archives may also require high max_execution_time and
+// memory_limit variables.
+$allowHttpUpload = true;
+$max_upload_limit = 0; // Maximum file size for uploads in Mb
+$max_post_limit = 0;   // Maximum post size for uploads in Mb
+
+// Archiver for downloading the results via the web browser:
+// $compressBin is the archiver, including options.  %DEST% will be replaced
+// with the user's destination path; can be used as an option or part of the
+// command to change directories with 'cd'. Separate commands with "\n".
+// $packExcludePath controls whether the archiving command excludes the whole
+// file path per file when this is taken into account in the $compressBin
+// command itself by using %DEST% properly.
+
+$compressExt = ".zip";
+
+switch ($compressExt) {
+    case ".tgz":
+    case ".tar.gz":
+        $compressBin = "cd %DEST% \n /bin/tar chzf ";
+        $packExcludePath = true;
+        $dlMimeType = "application/x-force-download";
+        break;
+    case ".tar":
+        $compressBin = "cd %DEST% \n /bin/tar cfh ";
+        $packExcludePath = true;
+        $dlMimeType = "application/x-force-download";
+        break;
+    case ".zip":
+        $compressBin = "cd %DEST% \n /usr/bin/zip -0 ";
+        $packExcludePath =true;
+        $dlMimeType = "application/x-force-download";
+        break;
+    default:
+        $compressExt = ".zip";
+        $compressBin = "cd %DEST% \n/usr/bin/zip -0 -D";
+        $packExcludePath = true;
+        $dlMimeType = "application/x-force-download";
+}
+
+// Tools to decompress uploaded archives. This is an array, each key linked to
+// an archive extension.  %DEST% will be replaced with the user's destination
+// path; can be used as an option or part of the command to change directories
+// with 'cd'.
+// More formats are possible, just add more commands to the array.
+
+$decompressBin['zip'] = "cd %DEST% \n /usr/bin/unzip -o ";
+$decompressBin['tgz'] = "cd %DEST% \n /usr/bin/tar xzf ";
+$decompressBin['tar'] = "cd %DEST% \n /usr//bin/tar xf ";
+$decompressBin['tar.gz'] = "cd %DEST% \n /usr/bin/tar xzf ";
+
+// Default output file format.
+// One of: 'ics', 'ics2', 'hdf5', 'r3d', 'ome'.
+$default_output_format = "ics";
+
+//==============================================================================
+// HRM configuration parameters
+//==============================================================================
+
+// URL
+$hrm_url = "http://localhost/hrm";
+
+// Install dir
+$hrm_path = "/var/www/html/hrm";
+
+// Logging
+// Please create a directory for the logging (default and recommended is /var/log/hrm)
+// and make sure to grant read/write access to the web server user.
+$log_verbosity = 1;         // 0=quiet, 1=normal, 2=debug
+$logdir  = "/var/log/hrm";
+$logfile = "hrm.log";
+$logfile_max_size = 100;    // maximum size of the logfile in MB
+
+// Email
+$send_mail = true;
+$email_sender = "hrm@localhost";
+$email_admin = "hrm@localhost";
+// Comma (',') is the standard separator for lists of email addresses.
+// Please see: http://tools.ietf.org/html/rfc2822#section-3.6.3
+// Unfortunately, Microsoft Outlook uses semicolon (';') by default and
+// ',' only optionally. Please see: http://support.microsoft.com/kb/820868
+// on how to configure Outlook to support comma-separated lists.
+// If your users are mostly using Outlook, you can tell the HRM to use ';'
+// instead of the standard ',' for distribution lists.
+$email_list_separator = ",";    // Valid options are ',' and ';'.
+
+// Supported authentication types. Possible values are 'integrated', 'active_dir', 'ldap'.
+// These values replace the previous ones (but the old ones are still recognized):
+// 'integrated' replaces 'MYSQL';
+// 'active_dir' replaces 'ACTIVE_DIR';
+// 'ldap' replaces 'LDAP'.
+// You can use more than one authentication mechanism by listing them all in the
+// $authenticateAgainst array below.
+//
+// e.g. $authenticateAgainst = array("active_dir", "integrated");
+//
+// The first entry in the array is the default authentication mode that will be used
+// for new users. Administrators can then change the authentication mode for individual
+// users in the user management pages.
+//
+// Make sure to properly configure all authentication modes
+//(see sample files in config/samples).
+$authenticateAgainst = array("integrated");
+
+// If true, the queue manager and the image processing server run on the same
+// machine
+$imageProcessingIsOnQueueManager = true;
+
+// If true the images are copied to the huygens server machine
+$copy_images_to_huygens_server = false;
+
+// Minimum amount of free memory required from the processing machine 
+// to accept deconvolution jobs. Larger means more restrictive.
+$min_free_mem_launch_requirement = 0;  // In Mb.
+
+// Thumbnails require Huygens Core 3.3.2 or higher.
+
+// Notice that despite some script executions are relatively fast (like
+// thumbnail generation and SNR estimation), they still may take a long time if
+// the images are very large, or if deconvolution jobs are already running in
+// the local server. You may need to increase PHP's max_execution_time
+// directive in php.ini, and restart the web server.
+
+// If true, allows generates thumbnails and previews for the originals and the
+// results during the deconvolution (i.e. in the computation servers). These
+// are maximum intensity projections (MIP) of the stacks along the main axes,
+// so they provide xy, xz and zy views.
+$useThumbnails = true;
+
+// If true, allows on-demand generation of a preview of the original images in
+// this web server prior to the deconvolution. For this to work the variable
+// $local_huygens_core must be set correctly above. Notice that not all file
+// formats are readable in a freeware Huygens Core and for full functionality
+// you may need a license string. Otherwise just let the original thumbnails
+// be generated during the deconvolution itself with the previous option.
+// If this is true and the correct version of Huygens is installed, the SNR
+// estimator tools is also enabled (see $enable_code_for_huygens above).
+// This requires $useThumbnails = true;
+$genThumbnails = true;
+
+// Moreover, if $genThumbnails is true and Huygens 3.5.1 or higher is
+// installed (see $enable_code_for_huygens above), the Signal To Noise ratio
+// can be estimated visually from raw images, in the restoration parameters
+// editor.
+
+// If larger than zero, generates an AVI movie for 3D stacks that allows
+// browsing along the XY slices, and for time series to browse along MIPs in
+// time. The movie will have this maximum number of pixels in the largest
+// dimension.
+// This requires $useThumbnails = true;
+$movieMaxSize = 300;
+
+// If true, (and $useThumbnails is also true), it generates not only the MIP
+// previews but also Simulated Fluorescence Process top-view renderings of the
+// original and the restored images (https://svi.nl/SFP).
+$saveSfpPreviews = true;
+
+// If non-zero, save stack and time series previews of the original and restored
+// data side by side, to allow comparisons. (Requires $useThumbnails and
+// Huygens Core 3.5.2). This is the max size in pixels for each of the images's
+// slicer.
+$maxComparisonSize = 300;
+
+// A shell command that executes ping four times and stops afterwards
+$ping_command = 'ping -w 4';	// use this on linux systems
+// $ping_command = 'ping -t 4';	// use this on macosx systems
+//$ping_command = 'ping';	// use this on cygwin
+
+// The parameter for the ping command after the hostname
+$ping_parameter = '';	        // use this on linux systems
+//$ping_parameter = '56 4';	// use this on cygwin
+
+//==============================================================================
+// HRM + Omero
+//==============================================================================
+
+// Switch on/off (true/false) data transfers between HRM and Omero.
+$omero_transfers = false;

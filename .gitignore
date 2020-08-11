@@ -1,9 +1,9 @@
 # Configuration files
 config.local/
-config/*_config.inc
-config/hrm.conf
+#config/*_config.inc
+#config/hrm.conf
 resources/hrmd.plist
-user/login_user.inc
+#user/login_user.inc
 
 # Customization files
 images/hrm_custom.ico

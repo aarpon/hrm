@@ -180,7 +180,8 @@ include("header.inc.php");
 <div id="content">
 
     <h3>Registration</h3>
-
+    <h4>Creating accounts at the BIOP</h4>
+    <p>Please use your EPFL Login as username. Your password can be whatever you want</p>
     <?php
 
     if (!$processed) {
