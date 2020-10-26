@@ -1,0 +1,5 @@
+[hrm_jobqueue]
+user root
+env.db_name DB_NAME
+env.db_user DB_READONLY_USER
+env.db_pass DB_READONY_PASSWORD
