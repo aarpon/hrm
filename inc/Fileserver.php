@@ -260,6 +260,7 @@ class Fileserver
                 case 'lof':
                 case 'lsm':
                 case 'oif':
+                case 'vsi':
                 case 'pic':
                 case 'r3d':
                 case 'stk':

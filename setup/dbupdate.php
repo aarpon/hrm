@@ -6069,6 +6069,90 @@ if ($current_revision < $n) {
 }
 
 
+
+// -----------------------------------------------------------------------------
+// Update to revision 20
+// Description: Add Olympus VSI file format
+// -----------------------------------------------------------------------------
+$n = 20;
+if ($current_revision < $n) {
+
+    // Add Olympus VSI file to possible_values
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'ImageFileFormat';
+    $record["value"]   = 'vsi';
+    $record["translation"] = 'Olympus VSI (*.vsi)';
+    $record["isDefault"] = 'f';
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname . " WHERE parameter='" .
+        $record['parameter'] . "' AND value='" . $record['value'] . "' " .
+        " AND translation='" . $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
+            $msg = error_message($tabname);
+            write_message($msg);
+            write_to_error($msg);
+            return false;
+        }
+    }
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "vsi";
+    $record["extension"] = "vsi";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "vsi";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $record["hucoreName"] = "vsi";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE name='" . $record['name'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+    //Update revision
+    if(!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+
+
 fclose($fh);
 
 return;
