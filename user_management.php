@@ -146,7 +146,7 @@ if (isset($_POST['accept'])) {
         $text .= $hrm_url . "\n\n";
         $folder = $image_folder . "/" . $clean['username'];
         $text .= "Source and destination folders for your images are located " .
-            "on server " . $image_host . " under " . $folder . ".";
+            "on server \\\\svfasraw.epfl.ch\\PTBIOP-RAW\\HRM-Share under " . $clean['username'];
         $mail = new Mail($email_sender);
         $mail->setReceiver($email);
         $mail->setSubject("HRM account activated");
