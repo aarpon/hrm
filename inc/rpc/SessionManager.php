@@ -19,7 +19,7 @@ class SessionManager
      * Last (error) message.
      * @var string
      */
-    private string $lastMessage = "";
+    private $lastMessage = "";
 
     /**
      * Constructor.
