@@ -17,6 +17,8 @@ use hrm\shell\ExternalProcessFactory;
 use hrm\user\UserConstants;
 use hrm\user\UserV2;
 
+require_once dirname(__FILE__) . '/bootstrap.php';
+
 /**
  * Creates Jobs from JobDescriptions and manages them in a priority queue.
  *
@@ -252,7 +254,7 @@ class QueueManager
         foreach ($files as $file) {
             $counter++;
             $match = array();
-            if (preg_match("/^(.*\.(lif|lof|czi))\s\((.*)\)/i", $file, $match)) {
+            if (preg_match("/^(.*\.(lif|lof|czi|nd))\s\((.*)\)/i", $file, $match)) {
                 $filteredFiles[$counter] = $match[1];
             } else {
                 $filteredFiles[$counter] = $file;
@@ -1310,7 +1312,7 @@ class QueueManager
         }
 
 
-        Log::info($licDetails['license']);
+        Log::info($licDetails);
 
         // Store the license details in the database.
         $db = DatabaseConnection::get();

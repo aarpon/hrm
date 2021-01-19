@@ -21,6 +21,8 @@ use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
 use hrm\user\UserV2;
 
+require_once dirname(__FILE__) . '/../bootstrap.php';
+
 /**
  * Collects all information for a deconvolution Job to be created.
  *
@@ -504,8 +506,8 @@ class JobDescription
         //$parameterSetting = $this->parameterSetting;
         //$parameter = $parameterSetting->parameter('ImageFileFormat');
         //$fileFormat = $parameter->value();
-        if (preg_match("/^(.*)\.(lif|lof|czi)\s\((.*)\)/i", $inputFile[0], $match)) {
-            $inputFile = $match[1] . '_' . $match[2] . '_' . $match[3];
+        if (preg_match("/^(.*)\.(lif|lof|czi|nd)\s\((.*)\)/i", $inputFile[0], $match)) {
+            $inputFile = $match[1] . '_' . $match[2];
         } else {
             $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
         }
