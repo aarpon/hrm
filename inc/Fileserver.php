@@ -359,6 +359,7 @@ class Fileserver
         $this->getFiles();
         $files = $this->files();
 
+
         // Restore the previous selections
         $this->files = $currentFiles;
         $this->imageExtensions = $currentExtensions;
@@ -378,6 +379,7 @@ class Fileserver
      */
     public function scanAndStoreFiles($expand)
     {
+
         // Process
         $this->setDefaultImageExtensions();
         $this->expandSubImages($expand);
@@ -3430,6 +3432,7 @@ class Fileserver
      */
     public function getCurrentFileList()
     {
+
         return $this->files;
     }
 
