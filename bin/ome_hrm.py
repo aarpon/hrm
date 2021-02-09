@@ -66,27 +66,6 @@ else:
     PORT = 4064
 
 
-def omero_login(user, passwd, host, port):
-    """Establish the connection to an OMERO server.
-
-    Parameters
-    ==========
-    user : str - OMERO user name (e.g. "demo_user_01")
-    passwd : str - OMERO user password
-    host : str - OMERO server hostname to connect to
-    port : int - OMERO server port number (e.g. 4064)
-
-    Returns
-    =======
-    conn : omero.gateway._BlitzGateway - OMERO connection object
-    """
-    conn = BlitzGateway(user, passwd, host=host, port=port, secure=True,
-                        useragent="HRM-OMERO.connector")
-    conn.connect()
-    LOG.debug('Created new OMERO connection [user=%s].', user)
-    return conn
-
-
 def tree_to_json(obj_tree):
     """Create a JSON object with a given format from a tree."""
     return json.dumps(obj_tree, sort_keys=True,
@@ -585,21 +564,27 @@ def parse_arguments():
 def main():
     """Parse commandline arguments and initiate the requested tasks."""
     args = parse_arguments()
-
-    conn = omero_login(args.user, args.password, HOST, PORT)
-
     # TODO: implement requesting groups via cmdline option
 
-    if args.action == 'checkCredentials':
-        return check_credentials(conn)
-    elif args.action == 'retrieveChildren':
-        return print_children_json(conn, args.id)
-    elif args.action == 'OMEROtoHRM':
-        return omero_to_hrm(conn, args.imageid, args.dest)
-    elif args.action == 'HRMtoOMERO':
-        return hrm_to_omero(conn, args.dset, args.file)
-    else:
-        raise Exception('Huh, how could this happen?!')
+    conn = BlitzGateway(args.user, args.password, host=HOST, port=PORT, secure=True, useragent="HRM-OMERO.connector")
+    try:
+        conn.connect()
+        LOG.debug('Created new OMERO connection [user=%s].', args.user)
+        if args.action == 'checkCredentials':
+            return check_credentials(conn)
+        elif args.action == 'retrieveChildren':
+            return print_children_json(conn, args.id)
+        elif args.action == 'OMEROtoHRM':
+            return omero_to_hrm(conn, args.imageid, args.dest)
+        elif args.action == 'HRMtoOMERO':
+            return hrm_to_omero(conn, args.dset, args.file)
+        else:
+            raise Exception('Huh, how could this happen?!')
+    except Exception as exc:
+        print('OMERO connector failed: ', exc)
+    finally:
+        conn.close()
+        LOG.debug('Closed OMERO connection [user=%s].', args.user)
 
 
 if __name__ == "__main__":
