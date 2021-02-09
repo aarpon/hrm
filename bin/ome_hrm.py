@@ -41,8 +41,8 @@ try:
     import json
     import re
 except ImportError as err:
-    print "ERROR importing required Python packages:", err
-    print "Current PYTHONPATH: ", sys.path
+    print("ERROR importing required Python packages:", err)
+    print("Current PYTHONPATH: ", sys.path)
     sys.exit(1)
 
 # try to put OMERO into our PYTHONPATH:
@@ -50,12 +50,12 @@ if 'OMERO_PKG' in hrm_config.CONFIG:
     OMERO_LIB = '%s/lib/python' % hrm_config.CONFIG['OMERO_PKG']
     sys.path.insert(0, OMERO_LIB)
 else:
-    print "Could not find configuration value 'OMERO_PKG', omitting."
+    print("Could not find configuration value 'OMERO_PKG', omitting.")
 try:
     from omero.gateway import BlitzGateway
 except ImportError as err:
-    print "ERROR importing the OMERO Python bindings:", err
-    print "Current PYTHONPATH: ", sys.path
+    print("ERROR importing the OMERO Python bindings:", err)
+    print("Current PYTHONPATH: ", sys.path)
     sys.exit(2)
 
 # the connection values
@@ -87,9 +87,9 @@ def print_children_json(conn, id_str):
     try:
         children = gen_children(conn, id_str)
     except:
-        print "ERROR generating OMERO tree / node!"
+        print("ERROR generating OMERO tree / node!")
         return False
-    print tree_to_json(children)
+    print(tree_to_json(children))
     return True
 
 
@@ -218,7 +218,7 @@ def check_credentials(conn):
 
     Returns
     =======
-    conntected : bool
+    connected : bool
         True if connecting was successful (i.e. credentials are correct), False
         otherwise. In addition, a corresponding message is printed.
     """
@@ -370,7 +370,7 @@ def hrm_to_omero(conn, id_str, image_file):
     True in case of success, False otherwise.
     """
     if image_file.lower().endswith(('.h5', '.hdf5')):
-        print 'ERROR: HDF5 files are not supported by OMERO!'
+        print('ERROR: HDF5 files are not supported by OMERO!')
         return False
     # TODO I: group switching required!!
     _, gid, obj_type, dset_id = id_str.split(':')

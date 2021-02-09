@@ -56,7 +56,7 @@ def parse_hrm_conf(filename):
     }
     """
     config = dict()
-    body = file(filename, 'r').read()
+    body = open(filename, 'r').read()
     lexer = shlex.shlex(body)
     lexer.wordchars += '-./'
     while True:
@@ -97,7 +97,7 @@ def check_hrm_conf(config):
 
 
 if __name__ == "__main__":
-    print __doc__
+    print(__doc__)
     sys.exit(1)
 
 CONFIG = parse_hrm_conf('/etc/hrm.conf')
