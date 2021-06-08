@@ -275,7 +275,19 @@ class QueueManager
                 $image_source . "/" . $file;
             if (stristr($filename, ".ics")) {
                 $batch .= "put \"" . $filename . "\"\n";
-                $filename = substr($filename, 0, strrpos($filename, '.ics')) . ".ids";
+
+		// Get the 'c' from 'ics' in order to find its case.
+                $nameLength    = strlen($filename);
+                $extensionChar = $filename[$nameLength - 2];
+
+                if (ctype_upper($extensionChar)) {
+                    $extensionChar = "D";
+                } else {
+                    $extensionChar = "d";
+                }
+
+                $filename[$nameLength - 2] = $extensionChar;
+
                 $batch .= "put \"" . $filename . "\"\n";
             } elseif (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
                 // TODO: if ImageFileFormat = single TIFF file, do not send
