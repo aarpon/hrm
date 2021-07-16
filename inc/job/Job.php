@@ -17,6 +17,7 @@ use hrm\Fileserver;
 use hrm\HuygensTemplate;
 use hrm\Log;
 
+
 /**
  * Stores all information for a deconvolution Job.
  */
@@ -534,33 +535,34 @@ class Job
 
         /* Set file names. */
         $historyFile = $this->destImage . $this->pipeProducts["history"];
-        $tmpFile = $this->destImage . $this->pipeProducts["tmp"];
         $paramFile = $this->destImage . $this->pipeProducts["parameters"];
         $colocFile = $this->destImage . $this->pipeProducts["coloc"];
         $errorFile = $logdir . "/" . $this->server() . "_" .
-            $this->id() . "_error.txt";
+		$this->id() . "_error.txt";
+	$logFile   = $logdir . "/" . $this->server() . "_" .
+		$this->id() . "_out.txt";
         $huygensOut = dirname($this->destImage) . "/" .
-            $this->pipeProducts["main"];
+		$this->pipeProducts["main"];
 
-        /* The Huygens history file will be removed. */
-        $this->shell->removeFile($historyFile);
-
-        /* The Huygens job main file will be given a job id name. */
-        $this->shell->renameFile($huygensOut, $tmpFile);
+        /* Remove unnecessary output files from the Huygens job. */
+	$this->shell->removeFile($historyFile);
+	$this->shell->removeFile($huygensOut);	
 
         /* TODO: find workaround. The multiserver configuration has latency
          between renaming and reading files. A sleep(1) fixes it. The single
          server configuration seems to be benefited from it as well. */
         sleep(1);
 
-        /* Read the Huygens output file and make an html table from it. */
-        $jobReport = $this->shell->readFile($tmpFile);
+	/* Read this job's log file with the stdout redirected from the Huygens
+           process. Parse it and make html tables from it. */
+        $jobReport = file($logFile);
 
-        if (!empty($jobReport)) {
+	if (!empty($jobReport)) {
             if ("" !== $error = $this->checkForErrors($jobReport)) {
                 $this->copyString2File($error, $errorFile);
                 $this->shell->copyFile2Host($errorFile);
-            } else {
+	    } else {
+		
                 /* Build parameter tables from the Huygens output file. */
                 $parsedParam = $this->HuReportFile2Html($jobReport);
                 $this->copyString2File($parsedParam, $paramFile);
@@ -568,14 +570,12 @@ class Job
 
                 /* Build colocalization tables from the Huygens output file. */
                 $parsedColoc = $this->HuColoc2Html($jobReport);
-
+                
                 if ($this->colocRunOk) {
                     $this->copyString2File($parsedColoc, $colocFile);
                     $this->shell->copyFile2Host($colocFile);
                 }
             }
-
-            $this->shell->removeFile($tmpFile);
         }
     }
 
@@ -643,7 +643,7 @@ class Job
         $html = "";
 
         /* Extract data from the file and into the table. */
-        $pattern = "/{Microscope conflict for channel ([0-9]):(.*)}/";
+        $pattern = "/Microscope conflict for channel ([0-9]):(.*)/";
         foreach ($reportFile as $reportEntry) {
             if (!preg_match($pattern, $reportEntry, $matches)) {
                 continue;
@@ -705,7 +705,7 @@ class Job
 
         /* Extract data from the file and into the table. */
         foreach ($reportFile as $reportEntry) {
-            $pattern = "/the image will be multiplied by (.*)\.}}/";
+            $pattern = "/the image will be multiplied by (.*)\./";
             if (preg_match($pattern, $reportEntry, $matches)) {
                 $scaling = true;
 
@@ -716,7 +716,7 @@ class Job
                 $table .= $this->insertRow($row);
             }
 
-            $pattern = "/{Scaling of channel ([0-9]): (.*)}}/";
+            $pattern = "/Scaling of channel ([0-9]): (.*)/";
             if (preg_match($pattern, $reportEntry, $matches)) {
                 $scaling = true;
 
@@ -769,17 +769,17 @@ class Job
         $table .= $this->insertRow($row);
 
         /* Extract data from the file and into the table. */
-        $pattern = "/{Parameter ([a-zA-Z3]+?) (of channel ([0-9])\s|)(.*) ";
-        $pattern .= "(template|metadata|meta data): (.*).}}/";
+        $pattern = "/Parameter ([a-zA-Z3]+?) (of channel ([0-9])\s|)(.*) ";
+        $pattern .= "(template|metadata|meta data): (.*)./";
 
-        foreach ($reportFile as $reportEntry) {
+	foreach ($reportFile as $reportEntry) {
             /* Use strpos on most lines for speed reasons. */
             if (strpos($reportEntry, "Parameter") === false) {
                 continue;
-            }
+	    }
             if (!preg_match($pattern, $reportEntry, $matches)) {
                 continue;
-            }
+	    }
 
             $paramName = $matches[1];
 
@@ -978,13 +978,13 @@ class Job
         $html = "";
 
         /* Extract data from the file and into the table. */
-        $pattern = "/{Colocalization report: (.*)}}}/";
-
+        $pattern = "/Colocalization report: (.*)}}/";
+        	 
         /* Every loop creates a coloc table. */
-        foreach ($reportFile as $reportEntry) {
+	foreach ($reportFile as $reportEntry) {
             if (!preg_match($pattern, $reportEntry, $matches)) {
                 continue;
-            }
+	    }
             /* Add a horizontal separator before each table. */
             $colocRun = $this->insertSeparator("");
 
