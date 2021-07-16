@@ -402,7 +402,19 @@ if ($success === false) {
     $msg = "Cannot connect to database '$db_name' on $db_host.";
     write_message($msg);
     write_to_error($msg);
-    return;
+
+    // Before giving up, try a different method. This seems to work
+    // particularly well for Postgresql.
+    $msg = "Trying a different method ...";
+    write_message($msg);    
+    $db->PConnect($db_host, $db_user, $db_password, $db_name);
+    $errorMsg = $db->errorMsg();
+    
+    if ($errorMsg != "") {
+        write_message($errorMsg);
+        write_to_error($errorMsg);
+        return;
+    }
 }
 
 // Extract the list of existing tables
