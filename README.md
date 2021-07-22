@@ -48,17 +48,10 @@ This will update composer, and download and install all third-party libraries us
 In the console, run:
 
 ```bash
+$ mkdir -p /tmp/checkout; cd checkout
 $ git clone -b master --single-branch https://github.com/aarpon/hrm
 $ cd hrm
-$ ./setup/package_release.sh workdir archive_name 
+$ ./setup/package_release.sh /tmp /tmp/hrm_3.7.1.zip
 ```
 
 This will update composer, download and install all third-party libraries necessary for the release version of HRM, and then package everything into a zip file ready for distribution.
-
-Example:
-
-```bash
-$ cd $HRM_ROOT
-$ ./setup/package_release.sh /tmp ~/hrm_3.7.1.zip
-```
-
