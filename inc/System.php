@@ -42,7 +42,7 @@ class System
      * developers!
      * @var int
      */
-    private const HRM_VERSION_MAINTENANCE = 0;
+    private const HRM_VERSION_MAINTENANCE = 1;
 
     /**
      * Database revision needed by current HRM version. This value has to be
