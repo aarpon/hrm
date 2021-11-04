@@ -302,7 +302,7 @@ class OmeroConnection
     /**
      * Simple wrapper function to unify log messages from this module.
      * @param string $text Text to be logged
-     * @param int $level Severity level.
+     * @param int $level Severity level, 0=error, 1=warning (default), 2=info.
      * @todo Is this wrapper necessary?
      */
     private function omelog($text, $level = 0)
