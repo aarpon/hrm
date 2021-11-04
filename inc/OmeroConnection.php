@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OmeroConnection
  *
@@ -7,6 +8,7 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
 namespace hrm;
 
 /**
@@ -132,7 +134,7 @@ class OmeroConnection
             exec($cmd, $out, $retval);
             $this->omelog(implode(' ', $out), 2);
             if ($retval != 0) {
-                $this->omelog("failed retrieving [" . $img['id'] ."] from OMERO", 0);
+                $this->omelog("failed retrieving [" . $img['id'] . "] from OMERO", 0);
                 $this->omelog("ERROR: downloadFromOMERO(): " . implode(' ', $out), 0);
                 $fail .= "<br/>" . $img['id'] . "&nbsp;&nbsp;&nbsp;&nbsp;";
                 $fail .= "[" . implode(' ', $out) . "]<br/>";
@@ -324,5 +326,4 @@ class OmeroConnection
                 break;
         }
     }
-
 }
