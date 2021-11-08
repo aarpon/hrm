@@ -266,6 +266,10 @@ input.noPreview {
     background: url("../../images/no_preview_button.png") no-repeat center;
 }
 
+input.omero {
+    background: url("../../images/omero_data_pos.png") no-repeat center;
+}
+
 select {
     width: 100%;
     text-align: center;
@@ -377,4 +381,17 @@ select {
 
 #colocCoefficients td.marked {
     background-color: #B6ECFF;
+}
+
+/* Override color of jqTree items */
+.jqtree-tree .jqtree-title {
+    color: #1C4257;
+}
+
+ul.jqtree-tree .jqtree-toggler {
+    color: #333;
+}
+
+ul.jqtree-tree .jqtree-toggler:hover {
+    color: #000;
 }

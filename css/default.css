@@ -620,7 +620,7 @@ input.upload {
 }
 
 input.omero {
-    background: url("../images/omero_data.png") no-repeat center;
+    background: url("../images/omero_data_neg.png") no-repeat center;
 }
 
 input.save {
@@ -2337,4 +2337,17 @@ div.StedDeplModeValues {
 
 .highlighted {
     color: darkorange;
+}
+
+/* Override color of jqTree items */
+.jqtree-tree .jqtree-title {
+    color: #73A7C3;
+}
+
+ul.jqtree-tree .jqtree-toggler {
+    color: #aaa;
+}
+
+ul.jqtree-tree .jqtree-toggler:hover {
+    color: #fff;
 }
