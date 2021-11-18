@@ -1012,7 +1012,8 @@ class Fileserver
                 $baseName = basename($name);
                 $baseName = str_replace(" ", "_", $baseName);
                 $uploadFile = $uploadDir . "/" . $baseName;
-                $bareName = reset(explode('.', $baseName));
+                $splitBaseName = explode('.', $baseName);
+                $bareName = reset($splitBaseName);
                 $extension = str_replace($bareName, "", $baseName);
 
                 // If the php.ini upload variables are overriden in HRM
