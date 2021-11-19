@@ -6050,6 +6050,9 @@ if ($current_revision < $n) {
 
 // -----------------------------------------------------------------------------
 // Update to revision 19
+// Description:
+//     * Update translation for Imaris format
+//     * Add Olympus VSI file format
 // -----------------------------------------------------------------------------
 $n = 19;
 if ($current_revision < $n) {
@@ -6068,26 +6071,6 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return false;
     }
-
-
-    // Update revision
-    if(!update_dbrevision($n))
-        return;
-
-    $current_revision = $n;
-    $msg = "Database successfully updated to revision " . $current_revision . ".";
-    write_message($msg);
-    write_to_log($msg);
-}
-
-
-
-// -----------------------------------------------------------------------------
-// Update to revision 20
-// Description: Add Olympus VSI file format
-// -----------------------------------------------------------------------------
-$n = 20;
-if ($current_revision < $n) {
 
     // Add Olympus VSI file to possible_values
     $tabname = 'possible_values';
@@ -6141,19 +6124,19 @@ if ($current_revision < $n) {
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
-             " WHERE name='" . $record['name'] . "'";
+        " WHERE name='" . $record['name'] . "'";
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
-       $insertSQL = $db->GetInsertSQL($tabname, $record);
-       if(!$db->Execute($insertSQL)) {
-           $msg = "An error occurred while updating " .
-                  "the database to revision " . $n . ".";
-           write_message($msg);
-           write_to_error($msg);
-           return;
-       }
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
-    
+
     // ------- Set ND as multifile format. ------
     $tabname = "file_format";
     $record = array();
@@ -6164,9 +6147,8 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return false;
     }
-    
-    
-    //Update revision
+
+    // Update revision
     if(!update_dbrevision($n))
         return;
 
@@ -6175,8 +6157,6 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
-
-
 
 fclose($fh);
 

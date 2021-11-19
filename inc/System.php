@@ -49,7 +49,7 @@ class System
      * set by the developers!
      * @var int
      */
-    private const DB_LAST_REVISION = 20;
+    private const DB_LAST_REVISION = 19;
 
     /**
      * Minimum HuCore (major) version number to be compatible with HRM.
