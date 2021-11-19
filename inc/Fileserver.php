@@ -110,7 +110,7 @@ class Fileserver
      * Fileserver constructor.
      * @param string $name User name.
      */
-    function __construct($name)
+    public function __construct($name)
     {
         // Replace the array of decompression options from the
         // (deprecated) configuration files with the only supported
@@ -3463,16 +3463,24 @@ class Fileserver
      */
     public function getFileNameExtension($filename)
     {
+        // Process the path information
         $info = pathinfo($filename);
+        $allExtensions = FileserverV2::getAllValidExtensions();
+        if (in_array(strtolower($info["extension"]), $allExtensions)) {
+            return $info["extension"];
+        }
+
+        # Process possibly composed extension
         $info_ext = pathinfo($info["filename"], PATHINFO_EXTENSION);
         if ($info_ext == "") {
             return $info["extension"];
         } else {
-            if (strlen($info_ext) > 4) {
-                // Avoid pathological cases with dots somewhere in the file name.
+            $composedExt = strtolower($info_ext . "." . $info["extension"]);
+            if (in_array($composedExt, $allExtensions)) {
+                return $info_ext . "." . $info["extension"];
+            } else {
                 return $info["extension"];
             }
-            return $info_ext . "." . $info["extension"];
         }
     }
 

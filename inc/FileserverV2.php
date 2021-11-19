@@ -269,7 +269,7 @@ class FileserverV2
     public static function getImageExtrasExtensions()
     {
         // Return the image extras extensions
-        return array("ids", 'idx.gz');
+        return array("ids", 'ids.gz');
     }
 
     /**
@@ -317,18 +317,19 @@ class FileserverV2
     {
         // Process the path information
         $info = pathinfo($filename);
+        $allExtensions = FileserverV2::getAllValidExtensions();
+        if (in_array(strtolower($info["extension"]), $allExtensions)) {
+            return $info["extension"];
+        }
+
+        # Process possibly composed extension
         $info_ext = pathinfo($info["filename"], PATHINFO_EXTENSION);
         if ($info_ext == "") {
             return $info["extension"];
         } else {
-            if (strlen($info_ext) > 4) {
-                // Avoid pathological cases with dots somewhere in the file name.
-                return $info["extension"];
-            }
-            $allExtensions = FileserverV2::getAllValidExtensions();
-            $composedExt = $info_ext . "." . $info["extension"];
+            $composedExt = strtolower($info_ext . "." . $info["extension"]);
             if (in_array($composedExt, $allExtensions)) {
-                return $composedExt;
+                return $info_ext . "." . $info["extension"];
             } else {
                 return $info["extension"];
             }
