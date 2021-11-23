@@ -6053,6 +6053,7 @@ if ($current_revision < $n) {
 // Description:
 //     * Update translation for Imaris format
 //     * Add Olympus VSI file format
+//     * Increase maximum number of iterations to 1000
 // -----------------------------------------------------------------------------
 $n = 19;
 if ($current_revision < $n) {
@@ -6136,13 +6137,29 @@ if ($current_revision < $n) {
         }
     }
 
-
     // ------- Set ND as multifile format. ------
     $tabname = "file_format";
     $record = array();
     $record["ismultifile"] = 't';
     if (!$db->AutoExecute('file_format', $record, 'UPDATE', "name like 'nd'")){
         $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Increase the maximum number of iterations to 1000.
+    $tabname = 'boundary_values';
+    $record = array();
+    $record["parameter"] = 'NumberOfIterations';
+    $record["min"] = '1';
+    $record["max"] = '1000';
+    $record["min_included"] = 't';
+    $record["max_included"]   = 't';
+    $record["standard"]   = null;
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE',
+        "parameter='NumberOfIterations' and max='100'")) {
+        $msg = "Could not update the max value of NumberOfIterations to '1000'.";
         write_message($msg);
         write_to_error($msg);
         return false;
