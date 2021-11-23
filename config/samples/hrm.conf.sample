@@ -26,13 +26,8 @@ SUSER="hrm"
 HRM_LOG="/var/log/hrm"
 
 # Interaction with OMERO (if switched on in hrm/config).
-# OMERO_PKG specifies the path where the "OMERO.server" package is installed
-# OMERO_PKG="/opt/OMERO/OMERO.server-5.0.3-ice34-b41.linux"
 # OMERO_HOSTNAME="localhost"
 # OMERO_PORT="4064"
-
-# PYTHON_EXTLIB allows adding a directory to the PYTHONPATH
-# PYTHON_EXTLIB="/opt/OMERO/python-extlibs"
 
 # Set a custom PHP CLI binary if necessary:
 # PHP_CLI="/usr/local/php/bin/php"
