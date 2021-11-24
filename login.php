@@ -191,7 +191,7 @@ include("header.inc.php");
     if (System::getHuCoreVersionAsInteger() == 0) {
         echo "<div class=\"dbOutDated\">Warning: unknown HuCore version!\n";
         echo "<p>Please ask the administrator to start the queue manager.</p>" .
-            "<p>You are now allowed to login until this issue has been " .
+            "<p>You are not allowed to log in until this issue has been " .
             "fixed.</p></div>";
         echo "</div>\n";
         include("footer.inc.php");
