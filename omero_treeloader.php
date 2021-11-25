@@ -7,7 +7,10 @@
 // gets expanded by the user. It ensures the user is logged in, has a valid
 // OMERO connection and finally asks the connector for the JSON data.
 
-require_once("inc/OmeroConnection.php");
+use hrm\user\UserV2;
+
+require_once dirname(__FILE__) . "/inc/bootstrap.php";
+require_once dirname(__FILE__) . "/inc/OmeroConnection.php";
 
 session_start();
 
