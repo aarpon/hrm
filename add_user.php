@@ -87,7 +87,7 @@ if (isset($_POST['add'])) {
     } else if ($clean["email"] == "") {
         $message = "Please provide a valid email address!";
     } else if ($clean['group'] == "") {
-        $message = "Please a group!";
+        $message = "Please provide a group!";
     } else {
 
         // Make sure that there is no user with same name
