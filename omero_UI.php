@@ -3,6 +3,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+// clear OMERO connection related variables if "disconnectOmero" was requested:
+if (isset($_POST['disconnectOmero']) && isset($omeroConnection)) {
+    unset($omeroConnection);
+    unset($_SESSION['omeroConnection']);
+}
+
+
 // Dialog to ask for the OMERO credentials.
 if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
     ?>
@@ -67,7 +74,7 @@ if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
 
 
 // if we are connected to an OMERO server, always show the tree by default:
-if (isset($omeroConnection)) {
+if (isset($omeroConnection) && !isset($_POST['disconnectOmero'])) {
     ?>
 
     <script>
@@ -141,6 +148,13 @@ if (isset($omeroConnection)) {
                        onclick="UnTip(); setActionToUpdate()"
                        onmouseover="Tip('Reload Omero tree view')"
                        onmouseout="UnTip()"/>
+
+                <input type="submit" class="icon abort" id="disconnectOmero"
+                       name="disconnectOmero"
+                       onclick="UnTip();"
+                       onmouseover="Tip('Disconnect from OMERO')"
+                       onmouseout="UnTip()"/>
+
                 <input name="OmeImages" type="hidden">
                 <input name="OmeDatasetId" type="hidden">
                 <input name="selectedFiles" type="hidden">
