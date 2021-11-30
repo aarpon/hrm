@@ -36,14 +36,18 @@ function fileButton($type) {
   # confirmation before actually posting.
   $mode = "ajax";
 
+  $buttonId = "";
+
   switch ($type) {
     case "download":
+      $buttonId = "id=\"webTransferButton\"";
       $onClick = "downloadImages()";
       $name = "download";
       $tip = 'Compress and download';
       break;
 
     case "upload":
+      $buttonId = "id=\"webTransferButton\"";
       $max = UtilV2::getMaxUploadFileSize() / 1024 / 1024;
       $maxFile = "$max MB";
       $max = UtilV2::getMaxPostSize() / 1024 / 1024;
@@ -75,6 +79,7 @@ function fileButton($type) {
       break;
 
     case "omeroImport":
+        $buttonId = "id=\"omeroButton\"";
         $name    = "getOmeroData";
         $value   = "OMERO Data";
         $mode    = "post";
@@ -85,6 +90,7 @@ function fileButton($type) {
         break;
 
     case "omeroExport":
+        $buttonId = "id=\"omeroButton\"";
         $name    = "getOmeroData";
         $value   = "OMERO Data";
         $mode    = "post";
@@ -107,10 +113,12 @@ function fileButton($type) {
       }
     $ret = "\n\n<input name=\"$name\" type=\"submit\"
                  value=\"$value\" class=\"$class\"
+                 $buttonId
                  onclick=\"UnTip(); $onClick\"
                  onmouseover=\"Tip('$tip')\" onmouseout=\"UnTip()\" />";
   } else {
     $ret = "\n\n<input class=\"icon $name\" type=\"button\"
+            $buttonId
             onclick=\"UnTip(); $onClick\"
             onmouseover=\"Tip('$tip')\" onmouseout=\"UnTip()\" />";
   }

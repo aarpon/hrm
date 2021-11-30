@@ -70,6 +70,13 @@ if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
 if (isset($omeroConnection)) {
     ?>
 
+    <script>
+        // hide the web up-/download button to prevent confusion with the
+        // OMERO transfer buttons as long as we're having an OMERO connection
+        hide("webTransferButton");
+    </script>
+
+
     <div id="activeTransfer" title="OMERO transfer in progress">
         <p>An OMERO transfer is currently running, please wait
             until it has finished.</p>
