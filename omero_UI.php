@@ -91,6 +91,9 @@ if (isset($omeroConnection)) {
 
     </script>
 
+    <fieldset id="OmeroData">
+    <legend id="legendOmeroData">Your OMERO data</legend>
+
     <div id="omeroSelection">
 
         <form name="omeroForm"
@@ -140,7 +143,6 @@ if (isset($omeroConnection)) {
         </form> <!-- omeroForm !-->
 
         <fieldset>
-            <legend>Your OMERO data</legend>
 
             <div id="omeroTree" data-url="omero_treeloader.php">
                 <br/> <br/>
@@ -202,6 +204,8 @@ if (isset($omeroConnection)) {
                 ?>
 
     </div> <!-- omeroSelection -->
+
+    </fieldset> <!-- fsOmeroData -->
 
 
     <?php

@@ -2362,3 +2362,18 @@ ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
     background: -o-linear-gradient(top, #445662, #445662);
     text-shadow: unset;
 }
+
+#OmeroData {
+    border: 1px solid #335c70;
+    border-radius: 10px;
+    padding: 5px;
+    background: #1e2a30;
+    /*! width: inherit; */
+}
+
+#legendOmeroData {
+    width: unset;
+    margin-left: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
