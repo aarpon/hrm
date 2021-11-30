@@ -1615,6 +1615,12 @@ input.abort {
     background: url("../images/cancel_small.png") no-repeat center;
 }
 
+input.clearlist {
+    width: 60px;
+    height: 60px;
+    background: url("../images/clear-list.png") no-repeat center;
+}
+
 /* The dimensions are set to values smaller than the image to solve an
 issue in Chrome where some white padding is added to the image. */
 input.noPreview {

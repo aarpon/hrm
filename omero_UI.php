@@ -131,9 +131,9 @@ if (isset($omeroConnection)) {
                 }
                 ?>
 
-                <input type="button" class="icon abort"
+                <input type="button" class="icon clearlist"
                        onclick="UnTip(); cancelOmeroSelection()"
-                       onmouseover="Tip('Reset OMERO selection.')"
+                       onmouseover="Tip('Reset OMERO selection')"
                        onmouseout="UnTip()"/>
 
                 <input name="refreshOmero" type="submit"
