@@ -131,16 +131,6 @@ if (isset($omeroConnection)) {
                        onclick="UnTip(); setActionToUpdate()"
                        onmouseover="Tip('Reload Omero tree view')"
                        onmouseout="UnTip()"/>
-
-                <?php
-                if ($browse_folder == "src") {
-                    ?>
-                    <p><img alt="Disclaimer: " src="./images/note.png"/>
-                        HRM cannot guarantee that <b>OME-TIFFs</b>
-                        provided by OMERO contain the original metadata.</p>
-                    <?php
-                }
-                ?>
                 <input name="OmeImages" type="hidden">
                 <input name="OmeDatasetId" type="hidden">
                 <input name="selectedFiles" type="hidden">
@@ -200,6 +190,16 @@ if (isset($omeroConnection)) {
             </div> <!-- omeroTree !-->
 
         </fieldset>
+
+        <?php
+                if ($browse_folder == "src") {
+                    ?>
+                    <p><img alt="Disclaimer: " src="./images/note.png"/>
+                        <b>OME-TIFFs</b> provided by OMERO might be missing the
+                        original metadata.</p>
+                    <?php
+                }
+                ?>
 
     </div> <!-- omeroSelection -->
 
