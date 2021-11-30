@@ -25,9 +25,12 @@ css/custom.css
 # file marking a development version
 .hrm_devel_version
 
-# Composer's vendor folder 
+# Composer's vendor folder
 /vendor/
 
-# macOS finder files 
+# macOS finder files
 *.DS_Store
 *.phpunit.result.cache
+
+# symlink to the HRM-OMERO connector
+bin/ome_hrm.py
