@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9641b755092ef3184922f20b2b1d5452",
+    "content-hash": "32e31c884b92d55666a58c0d7da413ea",
     "packages": [
         {
             "name": "aarpon/php-traditional-server_old",
@@ -2169,7 +2169,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.4.0"
+        "php": ">=7.2.0"
     },
     "platform-dev": [],
     "plugin-api-version": "2.1.0"
