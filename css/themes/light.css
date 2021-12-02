@@ -409,8 +409,5 @@ ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
 
 #OmeroData {
     border: 1px solid #b3d1e0;
-    border-radius: 10px;
-    padding: 5px;
-    background: #f5faff;
-    /*! width: inherit; */
+    background: #f0f5ff;
 }

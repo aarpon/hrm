@@ -2374,7 +2374,8 @@ ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
     border-radius: 10px;
     padding: 5px;
     background: #1e2a30;
-    /*! width: inherit; */
+    margin-left: 15px;
+    margin-right: 10px;
 }
 
 #legendOmeroData {
