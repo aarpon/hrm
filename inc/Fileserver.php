@@ -2221,7 +2221,7 @@ class Fileserver
         if ($mode == "MIP") {
             $altMode = "SFP";
         } else {
-            $altMod = "MIP";
+            $altMode = "MIP";
         }
 
         echo "</div>";
