@@ -154,7 +154,6 @@ include("header.inc.php");
             <?php
             echo(Nav::linkWikiPage('HuygensRemoteManagerHelpLogin'));
             echo(Nav::externalSupportLinks());
-            echo(Nav::actionStyleToggle());
             ?>
         </ul>
     </div>

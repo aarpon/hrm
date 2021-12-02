@@ -2327,8 +2327,11 @@ div.StedDeplModeValues {
 }
 
 .theme_div {
-    margin-left: 35px;
-    font-size: 0.85em;
+    float: right;
+    font-size: 1.5em;
+    position: relative;
+    top: -18px;
+    color: lightslategrey;
 }
 
 .theme_div > form > label {

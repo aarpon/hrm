@@ -90,17 +90,10 @@ $loggedIn = (isset($_SESSION['user']) && $_SESSION['user']->isLoggedIn());
                 echo "v" . System::getHRMVersionAsString();
             }
         ?>
-        <br/>
     </div>
-</div>
-
-<div id="nav">
-        <ul>
-            <?php
-            echo(Nav::actionStyleToggle());
-            ?>
-        </ul>
-    <div class="clear"></div>
+    <?php
+    echo(Nav::actionStyleToggle());
+    ?>
 </div>
 
 </div> <!-- basket -->
