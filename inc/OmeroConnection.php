@@ -95,16 +95,10 @@ class OmeroConnection
      */
     private function checkOmeroCredentials()
     {
-        $this->omelog("attempting to log on to OMERO.", 2);
-        $cmd = $this->buildCmd("checkCredentials");
+        list($retval, $out) = $this->callConnector("checkCredentials");
 
-        /* Authenticate against the OMERO server. */
-        exec($cmd, $out, $retval);
-
-        /* $retval is zero in case of success */
         if ($retval != 0) {
             $this->loggedIn = FALSE;
-            $this->omelog("ERROR: checkCredentials(): " . implode(' ', $out), 0);
             return;
         }
 
@@ -124,18 +118,13 @@ class OmeroConnection
         $done = "";
         foreach ($selected as $img) {
             $fileAndPath = $fileServer->sourceFolder() . "/" . $img['name'];
-            $param = array("--imageid", $img['id'], "--dest", $fileAndPath);
-            $cmd = $this->buildCmd("OMEROtoHRM", $param);
-
             $this->omelog('requesting [' . $img['id'] . '] to [' . $fileAndPath . ']', 2);
-            // somehow exec() seems to append to $out instead of overwriting
-            // it, so we create an empty array for it explicitly:
-            $out = array();
-            exec($cmd, $out, $retval);
-            $this->omelog(implode(' ', $out), 2);
+
+            $param = array("--imageid", $img['id'], "--dest", $fileAndPath);
+            list($retval, $out) = $this->callConnector("OMEROtoHRM", $param);
+
             if ($retval != 0) {
                 $this->omelog("failed retrieving [" . $img['id'] . "] from OMERO", 0);
-                $this->omelog("ERROR: downloadFromOMERO(): " . implode(' ', $out), 0);
                 $fail .= "<br/>" . $img['id'] . "&nbsp;&nbsp;&nbsp;&nbsp;";
                 $fail .= "[" . implode(' ', $out) . "]<br/>";
                 continue;
@@ -190,14 +179,11 @@ class OmeroConnection
         foreach ($selectedFiles as $file) {
             // TODO: check if $file may contain relative paths!
             $fileAndPath = $fileServer->destinationFolder() . "/" . $file;
-            $param = array("--file", $fileAndPath, "--dset", $datasetId);
-            $cmd = $this->buildCmd("HRMtoOMERO", $param);
-
             $this->omelog('uploading [' . $fileAndPath . '] to dataset ' . $datasetId, 2);
-            // somehow exec() seems to append to $out instead of overwriting
-            // it, so we create an empty array for it explicitly:
-            $out = array();
-            exec($cmd, $out, $retval);
+
+            $param = array("--file", $fileAndPath, "--dset", $datasetId);
+            list($retval, $out) = $this->callConnector("HRMtoOMERO", $param);
+
             if ($retval != 0) {
                 $this->omelog("failed uploading file to OMERO: " . $file, 0);
                 $this->omelog("ERROR: uploadToOMERO(): " . implode(' ', $out), 0);
@@ -255,15 +241,12 @@ class OmeroConnection
         //// array_push($tmp, $this->omeroWrapper);
         // user/password must be given first:
         array_push($tmp, "--user", escapeshellarg($this->omeroUser));
-        array_push($tmp, "--password", escapeshellarg($this->omeroPass));
         // next the *actual* command:
         array_push($tmp, escapeshellarg($command));
         // and finally the parameters (if any):
         $tmp = array_merge($tmp, $parameters);
         // now we can assemble the full command string:
         $cmd = join(" ", $tmp);
-        // and and intermediate one for logging w/o password:
-        $tmp[4] = '"$OMEROPW"';
         $this->omelog("> " . join(" ", $tmp), 2);
         return $cmd;
     }
@@ -318,10 +301,8 @@ class OmeroConnection
     {
         if (!isset($this->nodeChildren[$id])) {
             $param = array('--id', $id);
-            $cmd = $this->buildCmd("retrieveChildren", $param);
-            exec($cmd, $out, $retval);
+            list($retval, $out) = $this->callConnector("retrieveChildren", $param);
             if ($retval != 0) {
-                $this->omelog("ERROR: getChildren(): " . implode(' ', $out), 0);
                 return FALSE;
             }
 
