@@ -482,15 +482,23 @@ class System
      */
     public static function getApacheVersion()
     {
-        $apver = "";
-        if (
-            preg_match(
-                '|Apache/(\d+)\.(\d+)\.(\d+)|',
-                apache_get_version(),
-                $apver
-            )
-        ) {
-            return "${apver[1]}.${apver[2]}.${apver[3]}";
+        // Query the Apache version string.
+        //
+        // Depending on how PHP and Apache are installed, the `apache_get_version()`
+        // function may not exist. In that case, we will assume that getApacheVersion()
+        // is triggered via the browser and hence the $_SERVER variable will be defined.
+        $version = "";
+        if (function_exists('apache_get_version')) {
+            $version = apache_get_version();
+        } else {
+            if (isset($_SERVER['SERVER_SOFTWARE']) && strlen($_SERVER['SERVER_SOFTWARE']) > 0) {
+                $version = $_SERVER["SERVER_SOFTWARE"];
+            }
+        }
+
+        // Extract the version number
+        if (preg_match('|Apache/(\d+)\.(\d+)\.(\d+)|', $version, $apver)) {
+                return "${apver[1]}.${apver[2]}.${apver[3]}";
         } else {
             return "Unknown";
         }
@@ -515,12 +523,11 @@ class System
     {
         $dbver = "";
         $db = DatabaseConnection::get();
-        if (
-            preg_match(
-                '|(\d+)\.(\d+)\.(\d+)|',
-                $db->version(),
-                $dbver
-            )
+        if (preg_match(
+            '|(\d+)\.(\d+)\.(\d+)|',
+            $db->version(),
+            $dbver
+        )
         ) {
             return "${dbver[1]}.${dbver[2]}.${dbver[3]}";
         } else {
@@ -651,8 +658,7 @@ class System
      */
     public static function isUploadEnabled()
     {
-        if (
-            System::isUploadEnabledFromConfig() == "enabled" &&
+        if (System::isUploadEnabledFromConfig() == "enabled" &&
             System::isUploadEnabledFromIni() == "enabled"
         ) {
             return "enabled";
