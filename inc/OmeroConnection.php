@@ -227,7 +227,7 @@ class OmeroConnection
     }
 
 
-    /* ---------------------- Command builder --------------------------- */
+    /* ------------- Command builder and call wrapper ------------------- */
 
     /**
      * Generic command builder for the OMERO connector.
@@ -266,6 +266,44 @@ class OmeroConnection
         $tmp[4] = '"$OMEROPW"';
         $this->omelog("> " . join(" ", $tmp), 2);
         return $cmd;
+    }
+
+    /**
+     * Call the OMERO connector with a given request and evaluate its return status.
+     *
+     * This function is preparing the call to the connector by assembling the command
+     * itself, then setting the `OMERO_PASSWORD` environment variable for the call (to
+     * be used for authenticating to OMERO) and then running the connector executable.
+     *
+     * In case the connector call returns a non-zero status, an error message is logged
+     * with the output returned by the connector.
+     *
+     * Eventually, the return status of the connector call and its output are returned
+     * as an array.
+     *
+     * @param string $request The command to request from the connector executable.
+     * @param array $parameters (optional) An array of additional parameters.
+     * required by the wrapper to run the requested command.
+     * @return array An array with the first item being the return value of the
+     * connector call and the second item being an array with the output.
+     */
+    private function callConnector($request, array $parameters = array())
+    {
+        $this->omelog("calling OMERO connector with request '{$request}'...", 2);
+        $cmd = $this->buildCmd($request, $parameters);
+        putenv("OMERO_PASSWORD=" . $this->omeroPass);
+        $out = array();  // reset variable, otherwise `exec` will append to it
+        exec($cmd, $out, $retval);
+
+        /* uncomment the line below to always log the output with severity "info" */
+        // $this->omelog(implode(' ', $out), 2);
+
+        /* $retval is zero in case of success */
+        if ($retval != 0) {
+            $this->omelog("ERROR: <{$request}> " . implode(' ', $out), 0);
+        }
+
+        return array($retval, $out);
     }
 
 
