@@ -106,9 +106,9 @@ class OmeroConnection
             $this->loggedIn = FALSE;
             $this->omelog("ERROR: checkCredentials(): " . implode(' ', $out), 0);
             return;
-        } else {
-            $this->loggedIn = TRUE;
         }
+
+        $this->loggedIn = TRUE;
     }
 
     /**
@@ -138,10 +138,11 @@ class OmeroConnection
                 $this->omelog("ERROR: downloadFromOMERO(): " . implode(' ', $out), 0);
                 $fail .= "<br/>" . $img['id'] . "&nbsp;&nbsp;&nbsp;&nbsp;";
                 $fail .= "[" . implode(' ', $out) . "]<br/>";
-            } else {
-                $this->omelog("success retrieving [" . $img['id'] . "] from OMERO", 2);
-                $done .= "<br/>" . implode('<br/>', $out) . "<br/>";
+                continue;
             }
+
+            $this->omelog("success retrieving [" . $img['id'] . "] from OMERO", 2);
+            $done .= "<br/>" . implode('<br/>', $out) . "<br/>";
         }
         // build the return message:
         $msg = "";
@@ -202,10 +203,11 @@ class OmeroConnection
                 $this->omelog("ERROR: uploadToOMERO(): " . implode(' ', $out), 0);
                 $fail .= "<br/>" . $file . "&nbsp;&nbsp;&nbsp;&nbsp;";
                 $fail .= "[" . implode(' ', $out) . "]<br/>";
-            } else {
-                $this->omelog("success uploading [" . $file . "] to OMERO.", 2);
-                $done .= "<br/>" . $file;
+                continue;
             }
+
+            $this->omelog("success uploading [" . $file . "] to OMERO.", 2);
+            $done .= "<br/>" . $file;
         }
         // reload the OMERO tree:
         $this->resetNodes();
@@ -283,9 +285,9 @@ class OmeroConnection
             if ($retval != 0) {
                 $this->omelog("ERROR: getChildren(): " . implode(' ', $out), 0);
                 return FALSE;
-            } else {
-                $this->nodeChildren[$id] = implode(' ', $out);
             }
+
+            $this->nodeChildren[$id] = implode(' ', $out);
         }
         return $this->nodeChildren[$id];
     }
