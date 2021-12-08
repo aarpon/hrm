@@ -128,6 +128,18 @@ ensure_no_qm_is_running() {
     fi
 }
 
+wait_for_pid_file() {
+    # wait up to 5 seconds for the PID file to show up, check every 0.1s
+    for _WAIT_COUNT in $(seq 1 50) ; do
+        if [ -f "$PID_FILE" ] ; then
+            PID="$(cat "$PID_FILE")"
+            echo "Background process started, PID is $PID."
+            return
+        fi
+        sleep .1
+    done
+}
+
 warn_daemon_user() {
     cat << EOF
 WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
@@ -287,6 +299,7 @@ if [ "$1" = "--detach" ] ; then
     shift
     echo "HRM Queue Manager: forking background process."
     "$0" "$@" &
+    wait_for_pid_file
     exit 0
 fi
 
