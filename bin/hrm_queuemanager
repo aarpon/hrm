@@ -73,8 +73,7 @@ test_writable_create() {
     fi
 }
 
-
-lsb_check_for_running_queuemanager() {
+ensure_no_qm_is_running_lsb() {
     # use LSB functions to check if the QM is already running,
     # if that is true -> exit
     LSB_INITFUNCTIONS="/lib/lsb/init-functions"
@@ -104,6 +103,15 @@ lsb_check_for_running_queuemanager() {
     fi
 }
 
+ensure_no_qm_is_running_systemd() {
+    # use systemd to check if the QM is already running, exit if true
+    if systemctl is-active --quiet hrmd.service; then
+        echo "According to systemd the HRM service is already running."
+        echo "NOT starting a second instance of the Queue Manager!"
+        echo
+        exit 1
+    fi
+}
 
 we_are_on_systemd() {
     # try to find out whether we are run as a systemd service by checking if
@@ -111,6 +119,14 @@ we_are_on_systemd() {
     ps -p $PPID -o command | grep -qs systemd
 }
 
+ensure_no_qm_is_running() {
+    # check for a running QM using the proper way for systemd or LSB
+    if we_are_on_systemd; then
+        ensure_no_qm_is_running_systemd
+    else
+        ensure_no_qm_is_running_lsb
+    fi
+}
 
 warn_daemon_user() {
     cat << EOF
@@ -131,6 +147,8 @@ EOF
 }
 
 run_qm_daemon() {
+    # first make sure the is no other instance or leftover PID files:
+    ensure_no_qm_is_running
 
     # TODO: do we really need two different logfiles here?
     echo "Reporting stdout to '$LOG_OUT' and stderr to '$LOG_ERR'."
@@ -270,14 +288,6 @@ if [ "$1" = "--detach" ] ; then
     echo "HRM Queue Manager: forking background process."
     "$0" "$@" &
     exit 0
-fi
-
-# check for a running QM unless we are operated by systemd (in which case we
-# simply assume that we are well taken care of!)
-if we_are_on_systemd ; then
-    echo "HRM Queue Manager: running as a systemd service."
-else
-    lsb_check_for_running_queuemanager
 fi
 
 # install the signal handler (runs the function "cleanup_exit" when either of
