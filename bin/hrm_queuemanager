@@ -138,6 +138,8 @@ wait_for_pid_file() {
         fi
         sleep .1
     done
+    echo "WARNING: PID file still not present, looks like startup failed!"
+    cleanup_exit 3
 }
 
 warn_daemon_user() {
