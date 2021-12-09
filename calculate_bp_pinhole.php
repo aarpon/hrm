@@ -69,20 +69,20 @@ $microscopes = array(
         array("micro=Olympus_FV1000&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=3.82&c=0.5641896&u=-6", "https://svi.nl/Olympus_FV1000"),
     "Olympus FV3000" =>
         array("micro=Olympus_FV3000&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=7.6&c=0.5641896&u=-6", "https://svi.nl/Olympus_FV3000"),
-    "Yokogawa spinning disk (pinhole radius)" =>
+    "Yokogawa spinning disk - pinhole RADIUS - all CSU models" =>
         array("micro=Yokogawa_spinning_disk&d=50&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6",
             "https://svi.nl/YokogawaDisk"),
-    "Yokogawa spinning disk (CSU-10, CSU-22, CSU-X1) (pinhole distance)" =>
+    "Yokogawa spinning disk - pinhole DISTANCE - CSU-10, CSU-22, CSU-X1" =>
         array("micro=Yokogawa_disk_(pinhole_distance)&d=253&a=1&b=0&na=0&wl=0&msys=1&c=1&u=-6&ru=-6&rtag=pinhole+distance",
             "https://svi.nl/BackProjectedPinholeDistance"),
-    "Yokogawa spinning disk (CSU-W1) (pinhole distance)" =>
+    "Yokogawa spinning disk - pinhole DISTANCE - CSU-W1" =>
         array("micro=Yokogawa_disk_(pinhole_distance)&d=253&a=1&b=0&na=0&wl=0&msys=0.5065&c=1&u=-6&ru=-6&rtag=pinhole+distance",
             "https://svi.nl/BackProjectedPinholeDistance"),
 
-    "Visitech Infinity spinning disk (pinhole radius)" =>
+    "Visitech Infinity spinning disk - pinhole RADIUS" =>
         array("micro=Visitech_spinning_disk&d=50&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6",
             "https://svi.nl/Visitech_Infinity"),
-    "Visitech Infinity spinning disk (pinhole distance)" =>
+    "Visitech Infinity spinning disk - pinhole DISTANCE" =>
         array("micro=Visitech_disk_(pinhole_distance)&d=253&a=1&b=0&na=0&wl=0&msys=1&c=1&u=-6&ru=-6&rtag=pinhole+distance",
             "https://svi.nl/BackProjectedPinholeDistance"),
     "Zeiss LSM410 inverted" =>
