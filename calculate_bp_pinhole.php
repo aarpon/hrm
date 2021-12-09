@@ -506,14 +506,8 @@ echo "\n</div> <!-- content -->\n";
         if ($error) {
             $out .= "<h3>Error!</h3>\n" . $error;
         } else {
-            $result = round($phr / $M, 2);
-            $out .= "<h4>";
-            $out .= "Backprojected $rtag $runits: <b>$result</b>";
-            $out .= "</h4>";
 
-            $out .= "<p>&nbsp;</p>";
-
-            $out .= "<p>This is the parameter list used in this calculation:</p>";
+            $out .= "<p>Parameters used for the calculation:</p>";
             $out .= $warning;
 
             $out .= "<p>";
@@ -528,6 +522,14 @@ echo "\n</div> <!-- content -->\n";
                 }
             }
             $out .= "</p>\n";
+
+            $out .= "<p>&nbsp;</p>";
+
+            $result = round($phr / $M, 2);
+            $out .= "<fieldset id='backproj_result'>";
+            $out .= "<legend>Result</legend>";
+            $out .= "Backprojected $rtag $runits: <em class='result_value'>$result</em>";
+            $out .= "</fieldset>";
         }
 
         $out .= "<div id=\"controls\">";

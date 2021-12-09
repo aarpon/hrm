@@ -2387,3 +2387,13 @@ ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
     padding-left: 5px;
     padding-right: 5px;
 }
+
+#backproj_result {
+    color: #3f993f;
+}
+
+.result_value {
+    font-weight: bolder;
+    font-size: 1.2em;
+    font-style: normal;
+}
