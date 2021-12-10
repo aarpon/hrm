@@ -54,7 +54,7 @@
 
 test_writable() {
     # Test if a file or directory is writable, exit otherwise.
-    if ! [ -w "$1" ] ; then
+    if ! [ -w "$1" ]; then
         echo "ERROR: file or directory not writable: '$1'!"
         exit 1
     fi
@@ -63,7 +63,7 @@ test_writable() {
 test_writable_create() {
     # Test if a file exists and is writable, try to create it otherwise. If
     # both fails exit with an error message.
-    if ! [ -e "$1" ] ; then
+    if ! [ -e "$1" ]; then
         touch "$1" 2>/dev/null || {
             echo "ERROR: cannot create file: '$1'!"
             exit 1
@@ -77,7 +77,7 @@ ensure_no_qm_is_running_lsb() {
     # use LSB functions to check if the QM is already running,
     # if that is true -> exit
     LSB_INITFUNCTIONS="/lib/lsb/init-functions"
-    if ! [ -r "$LSB_INITFUNCTIONS" ] ; then
+    if ! [ -r "$LSB_INITFUNCTIONS" ]; then
         echo "WARNING: missing the LSB init functions ($LSB_INITFUNCTIONS)!"
         echo "--> CANNOT check if the Queue Manager is already running!"
         return 1
@@ -86,16 +86,16 @@ ensure_no_qm_is_running_lsb() {
     RUNNING_PID=$(pidofproc -p "$PID_FILE" "$0")
     RUNNING_STATUS=$?
     # NOTE: see the LSB specification for return values of "pidofproc"
-    if [ -n "$RUNNING_PID" ] ; then
+    if [ -n "$RUNNING_PID" ]; then
         echo "The Queue Manager seems to be running already ($RUNNING_PID)."
         echo "NOT starting a second instance!"
         echo
         exit 1
     fi
-    if [ "$RUNNING_STATUS" = "1" ] ; then
+    if [ "$RUNNING_STATUS" = "1" ]; then
         echo "NOTE: leftover pid file '$PID_FILE' (no Queue Manager running)."
     fi
-    if [ "$RUNNING_STATUS" = "4" ] ; then
+    if [ "$RUNNING_STATUS" = "4" ]; then
         echo "ERROR: unable to determine status from pid file '$PID_FILE'."
         echo "       Please manually check if another instance is running"
         echo "       and remove the file if not."
@@ -130,8 +130,8 @@ ensure_no_qm_is_running() {
 
 wait_for_pid_file() {
     # wait up to 5 seconds for the PID file to show up, check every 0.1s
-    for _WAIT_COUNT in $(seq 1 50) ; do
-        if [ -f "$PID_FILE" ] ; then
+    for _WAIT_COUNT in $(seq 1 50); do
+        if [ -f "$PID_FILE" ]; then
             PID="$(cat "$PID_FILE")"
             echo "Background process started, PID is $PID."
             return
@@ -143,7 +143,7 @@ wait_for_pid_file() {
 }
 
 warn_daemon_user() {
-    cat << EOF
+    cat <<EOF
 WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING
 
 Your setup does not have the "SUSER" variable configured to be used for running
@@ -173,12 +173,12 @@ run_qm_daemon() {
 
     # a custom QUEUEMGR can be set in the config file, this is mostly meant
     # for testing *this* script (e.g. set "sleep 99999999"):
-    if [ -z "$QUEUEMGR" ] ; then
+    if [ -z "$QUEUEMGR" ]; then
         QUEUEMGR="$PHP_CLI -q $HRM_HOME/run/runHuygensRemoteManager.php"
     fi
     # the PHP QM expects to be run from within the "run/" subdirectory:
     cd "$HRM_HOME/run"
-    $QUEUEMGR 1>> "$LOG_OUT" 2>> "$LOG_ERR" &
+    $QUEUEMGR 1>>"$LOG_OUT" 2>>"$LOG_ERR" &
     # NOTE: we cannot check the status of the previous command via "$?" as this
     # variable is only set for commands executed in *foreground* (see "man
     # bash" in the "Special Parameters" section), therefore we have to use the
@@ -191,7 +191,7 @@ run_qm_daemon() {
     # pidfile but the PID of *this* bash process as *we* are meant to stay
     # alive during its runtime to handle signals and clean up after the QM has
     # stopped (upon request/signal or crashed):
-    echo $$ > "$PID_FILE" || {
+    echo $$ >"$PID_FILE" || {
         echo "ERROR: can't write PID file '$PID_FILE'!"
         err "[$0] ERROR: can't write PID file '$PID_FILE'!"
         cleanup_exit
@@ -199,13 +199,12 @@ run_qm_daemon() {
 
     # loop until we receive SIGINT/SIGTERM or the subprocess exited for some
     # other reason (e.g. because it crashed or was killed directly):
-    while :
-    do
+    while :; do
         sleep 1
         # "jobs -p" lists the PID's of *all* active jobs (asynchronous
         # subprocesses of this bash instance), so the if-clause below would
         # also be true if there was *more* than one subprocess:
-        if [ "$QUEUEMGR_PID" != "$(jobs -p)" ] ; then
+        if [ "$QUEUEMGR_PID" != "$(jobs -p)" ]; then
             echo "WARNING: the HRM Queue Manager is not running any more!"
             # show everything of the errorlog since our startup-mark (maximum
             # of 100 lines) to give a hint what could have gone wrong:
@@ -218,7 +217,7 @@ run_qm_daemon() {
         # NOTE: due to some weird bash behaviour (bug?), the joblist doesn't
         # get updated when "jobs -p" is called but *ONLY* if we call "jobs -l"
         # or something, so we do this explicitly as a workaround:
-        jobs -l > /dev/null
+        jobs -l >/dev/null
     done
 }
 
@@ -236,16 +235,14 @@ cleanup_exit() {
 }
 
 err() {
-    echo "$*" >> "$LOG_ERR"
+    echo "$*" >>"$LOG_ERR"
 }
 
 log() {
-    echo "$*" >> "$LOG_OUT"
+    echo "$*" >>"$LOG_OUT"
 }
 
 ##################  end of function definitions  ###################
-
-
 
 ######################### main script part #########################
 
@@ -257,31 +254,31 @@ PHP_CLI="php"
 
 # Read in hrm.conf (defines variables like HRM_HOME)
 set -e
-if [ -n "$HRM_CONF" ] ; then
+if [ -n "$HRM_CONF" ]; then
     . "$HRM_CONF"
 else
     . "/etc/hrm.conf"
 fi
 set +e
 
-if [ -n "$DEBUG_HRMD" ] ; then
+if [ -n "$DEBUG_HRMD" ]; then
     set -o xtrace
 fi
 
 # refuse to start if no SUSER is configured:
-if [ -z "$SUSER" ] ; then
+if [ -z "$SUSER" ]; then
     warn_daemon_user
     exit 1
 fi
 
 # re-exec with correct user in case we were started as root:
-if [ "$(id -u)" = 0 ] ; then
+if [ "$(id -u)" = 0 ]; then
     exec su -l "$SUSER" -c "$0 $@"
 fi
 
 # refuse to start if we were started with the wrong account:
 WHOAMI=$(id -u -n)
-if [ "$WHOAMI" != "$SUSER" ] ; then
+if [ "$WHOAMI" != "$SUSER" ]; then
     echo "User mismatch: '$WHOAMI' <-> '$SUSER'."
     exit 2
 fi
@@ -297,7 +294,7 @@ test_writable_create "${LOG_OUT}"
 test_writable_create "${LOG_ERR}"
 
 # detach into background if requested
-if [ "$1" = "--detach" ] ; then
+if [ "$1" = "--detach" ]; then
     shift
     echo "HRM Queue Manager: forking background process."
     "$0" "$@" &
