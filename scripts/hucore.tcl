@@ -520,6 +520,7 @@ proc getDeconDataFromHuTemplate {} {
 
 proc estimateSnrFromImage {} {
 
+
     if { [info proc ::WebTools::estimateSnrFromImage] == "" } {
         reportError "This tool requires Huygens Core 3.5.1 or higher"
         return
@@ -529,6 +530,7 @@ proc estimateSnrFromImage {} {
     set error [ getInputVariables {
         basename src series dest snrVersion returnImages
     } ]
+    
     if { $error } { exit 1 }
 
     # Optional arguments:
@@ -537,7 +539,15 @@ proc estimateSnrFromImage {} {
 
     # Opening images
     set srcImg [ hrmImgOpen $src $basename -series $series ]
+    
+    array set params [$srcImg setp -tclReturn]
+    if {"generic" in $params(mType)} {
+     	reportError "The image meta data specifies no microscope type.\
+                     Impossible to continue."
+    	return
+    }
 
+    
     if { $s != -1 } {
         reportMsg "Setting voxel size $s"
         if { [ catch { eval $srcImg setp -s {$s} } err ] } {
