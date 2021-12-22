@@ -6047,6 +6047,25 @@ if ($current_revision < $n) {
 }
 
 
+
+// -----------------------------------------------------------------------------
+// Update to revision 19
+// -----------------------------------------------------------------------------
+$n = 19;
+if ($current_revision < $n) {
+
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+
 fclose($fh);
 
 return;

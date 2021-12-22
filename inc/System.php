@@ -34,21 +34,21 @@ class System
      * Current HRM minor version. This value has to be set by the developers!
      * @var int
      */
-    const HRM_VERSION_MINOR = 7;
+    const HRM_VERSION_MINOR = 8;
 
     /**
      * Current HRM maintenance (patch) version. This value has to be set by the
      * developers!
      * @var int
      */
-    const HRM_VERSION_MAINTENANCE = 1;
+    const HRM_VERSION_MAINTENANCE = 0;
 
     /**
      * Database revision needed by current HRM version. This value has to be
      * set by the developers!
      * @var int
      */
-    const DB_LAST_REVISION = 18;
+    const DB_LAST_REVISION = 19;
 
     /**
      * Minimum HuCore (major) version number to be compatible with HRM.
