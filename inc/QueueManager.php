@@ -589,13 +589,17 @@ class QueueManager
             $remotePath  = $huygens_server_image_folder . "/";
             $remotePath .= $jobOwner->name() . "/" . $image_source . "/";
 
+	    $extension = $fileServer->getFileNameExtension($srcFile);
+	    $srcFile   = $fileServer->basename($srcFile);
+            $srcFile   = str_replace($srcFile, $extension, "");
+
             // If we are dealing with a series, remove all of its files.
             if ($fileSeries) {
-                $extension = $fileServer->getFileNameExtension($srcFile);
-                $srcFile   = $fileServer->basename($srcFile);
-                $srcFile   = str_replace($srcFile, $extension, "");
-                $srcFile  .= "*" . $extension;
+                $srcFile .= "*" . $extension;
+            } elseif ($extension == "ics") {
+	        $srcFile .= ".i*s"; 
             }
+	    
             $remoteFiles = $srcFile;
 
             $cmd .= "find " . $remotePath . " -name '" . $remoteFiles . "' -delete;";
