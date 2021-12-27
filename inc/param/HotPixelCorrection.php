@@ -1,6 +1,6 @@
 <?php
 /**
- * HotPixel
+ * HotPixelCorrection
  *
  * @package hrm
  *
@@ -20,20 +20,20 @@ require_once dirname(__FILE__) . '/../bootstrap.php';
  *
  * @package hrm
  */
-class HotPixel extends AnyTypeArrayParameter
+class HotPixelCorrection extends AnyTypeArrayParameter
 {
 
     /**
-     * HotPixel constructor.
+     * HotPixelCorrection constructor.
      */
     public function __construct()
     {
-        parent::__construct('HotPixel');
+        parent::__construct('HotPixelCorrection');
     }
 
     /**
-     * Checks whether the HotPixel parameter is valid
-     * @return bool True if the HotPixel parameter is valid, false otherwise.
+     * Checks whether the HotPixelCorrection parameter is valid
+     * @return bool True if the HotPixelCorrection parameter is valid, false otherwise.
      */
     public function check()
     {
@@ -47,16 +47,16 @@ class HotPixel extends AnyTypeArrayParameter
     }
 
     /**
-     * Returns the string representation of the HotPixel parameter.
+     * Returns the string representation of the HotPixelCorrection parameter.
      * @param int $numberOfChannels Number of channels.
-     * @return string String representation of the HotPixel Parameter.
+     * @return string String representation of the HotPixelCorrection Parameter.
      */
     public function displayString($numberOfChannels = 0)
     {
         if ($numberOfChannels == 1) {
-            $result = $this->formattedName("Hot Pixel mask file name");
+            $result = $this->formattedName("Hot Pixel Correction - mask file name");
         } else {
-            $result = $this->formattedName("Hot Pixel mask file names");
+            $result = $this->formattedName("Hot Pixel Correction - mask file names");
         }
         if ($this->notSet()) {
             $result = $result . "*not set*" . "\n";
