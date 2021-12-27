@@ -217,6 +217,12 @@ class QueueManager
             $psf = $parameterSetting->parameter('PSF');
             $values = $psf->value();
             foreach ($values as $value) {
+
+                /* This loop goes over the max number of channels, even if
+		they are empty. To prevent sftp errors those channels have to
+		be skipped. */
+                if ($value == "") continue;
+	        
                 $path = explode("/", $value);
                 if (sizeof($path) > 0) {
                     for ($i = 0; $i < sizeof($path) - 1; $i++) {
