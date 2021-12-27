@@ -52,7 +52,7 @@ if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForTSta
         $postErrors++;
     }
 }
-if (!$_SESSION['task_setting']->checkPostedHotPixelCorrection($_POST)) {
+if (!$_SESSION['task_setting']->checkPostedHotPixelCorrectionParameters($_POST)) {
     $postErrors++;
 }
 
