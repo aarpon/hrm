@@ -434,8 +434,8 @@ if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForTSta
                onmouseout="UnTip()"
                onclick="deleteValuesAndRedirect(
                     'select_task_settings.php' );"/>
-        <input type="submit" value="" class="icon save"
-               onmouseover="TagToTip('ttSpanSave' )"
+        <input type="submit" value="" class="icon next"
+               onmouseover="TagToTip('ttSpanForward' )"
                onmouseout="UnTip()"
                onclick="process()"/>
     </div>
