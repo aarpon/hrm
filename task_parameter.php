@@ -71,14 +71,8 @@ if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
         header("Location: " . "post_processing.php");
         exit();
     } else {
-
-        $saved = $_SESSION['task_setting']->save();
-        if ($saved) {
-            header("Location: " . "select_task_settings.php");
-            exit();
-        } else {
-            $message = $_SESSION['task_setting']->message();
-        }
+        header("Location: " . "select_hpc.php");
+        exit();
     }
 } else {
     $message = $_SESSION['task_setting']->message();
