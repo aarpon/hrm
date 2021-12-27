@@ -67,7 +67,7 @@ $chan = $_GET["channel"];
 
                 <legend>Available files</legend>
                 <?php
-                $files = $_SESSION['fileserver']->getFiles();
+                $files = $_SESSION['fileserver']->listFiles(true);
 
                 ?>
 
