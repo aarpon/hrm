@@ -154,7 +154,7 @@ include("header.inc.php");
                                } ?>"
                                readonly="readonly"/>
                         <input type="button"
-                               onclick="seek('<?php echo $i ?>')"
+                               onclick="seek('<?php echo $i ?>', 'psf')"
                                value="browse"/>
                     </p>
                     <?php

@@ -48,8 +48,8 @@ function release() {
     element.style.color = 'black';
 }
 
-function seek(channel) {
-    var url = "select_psf_popup.php?channel=" + channel;
+function seek(channel,type) {
+    var url = "select_" + type + "_popup.php?channel=" + channel;
     var name = "snitch";
     var options = "directories = no, menubar = no, status = no, width = 560, height = 400";
     snitch = window.open(url, name, options);
