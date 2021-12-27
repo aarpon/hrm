@@ -81,7 +81,7 @@ $chan = $_GET["channel"];
 
                         foreach ($files as $file) {
                             $style = "";
-                            print "            <option value=\"$file\" $style>$file " </option>\n";
+                            print "            <option value=\"$file\" $style>$file </option>\n";
                         }
 
                         ?>
