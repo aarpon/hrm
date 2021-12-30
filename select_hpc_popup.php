@@ -20,8 +20,6 @@ if (!isset($_SESSION['fileserver'])) {
     $_SESSION['fileserver'] = new Fileserver($name);
 }
 
-$chan = $_GET["channel"];
-
 ?>
 
 <!DOCTYPE html>
@@ -38,8 +36,8 @@ $chan = $_GET["channel"];
         <!--
         function lock(l) {
             var hpc = l.options[l.options.selectedIndex].value;
-            window.opener.document.forms["select"].elements["<?php echo "hpc" . $_GET["channel"] ?>"].value = hpc;
-            window.opener.document.forms["select"].elements["<?php echo "hpc" . $_GET["channel"] ?>"].style.color = "black";
+            window.opener.document.forms["select"].elements["hpc"].value = hpc;
+            window.opener.document.forms["select"].elements["hpc"].style.color = "black";
         }
         //-->
     </script>
@@ -91,9 +89,6 @@ $chan = $_GET["channel"];
             </fieldset>
 
             <div>
-                <input name="channel"
-                       type="hidden"
-                       value="<?php echo $_GET["channel"] ?>"/>
                 <input name="update"
                        type="submit"
                        value=""

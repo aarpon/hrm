@@ -32,7 +32,7 @@ $message = "";
 
 /* *****************************************************************************
  *
- * MANAGE THE MULTI-CHANNEL HPC FILE NAMES
+ * MANAGE HPC FILE NAMES
  *
  **************************************************************************** */
 
@@ -40,12 +40,10 @@ $message = "";
 $hpcParam = $_SESSION['task_setting']->parameter("HotPixelCorrection");
 $hpc = $hpcParam->value();
 
-$hpcKey = "hpc{0}";
-if (isset($_POST[$hpcKey])) {
-    $hpc[0] = $_POST[$hpcKey];
+if (isset($_POST["hpc"])) {
+    $hpc = $_POST["hpc"];
 }
 
-// get rid of extra values in case the number of channels is changed
 $hpcParam->setValue($hpc);
 $_SESSION['task_setting']->set($hpcParam);
 
@@ -81,7 +79,6 @@ include("header.inc.php");
     </span>
 <span class="toolTip" id="ttSpanCancel">
         Abort editing and go back to the image parameters selection page.
-        All changes will be lost!
     </span>
 <span class="toolTip" id="ttSpanSave">
         Save and return to the image parameters selection page.
@@ -144,6 +141,8 @@ include("header.inc.php");
                         <input type="button"
                                onclick="seek('0', 'hpc')"
                                value="browse"/>
+                        <input type="button"
+                               value="reset"/>
                     </p>
                     <?php
 
