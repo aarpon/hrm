@@ -194,7 +194,7 @@ include("header.inc.php");
 
         <h3>Quick help</h3>
 
-        <p>Select a Hot Pixel Correction mask.</p>
+        <p>Select a Hot Pixel Correction mask. This correction will be applied to the target images before any other image processing is executed. For multiple channels, please select a single file with different masks for the channels. </p>
 
     </div>
 
