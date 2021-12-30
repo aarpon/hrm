@@ -38,14 +38,13 @@ $message = "";
 
 /** @var HPC $hpcParam */
 $hpcParam = $_SESSION['task_setting']->parameter("HotPixelCorrection");
-$hpcParam->setNumberOfChannels($_SESSION['setting']->numberOfChannels());
 $hpc = $hpcParam->value();
-for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
-    $hpcKey = "hpc{$i}";
-    if (isset($_POST[$hpcKey])) {
-        $hpc[$i] = $_POST[$hpcKey];
-    }
+
+$hpcKey = "hpc{0}";
+if (isset($_POST[$hpcKey])) {
+    $hpc[0] = $_POST[$hpcKey];
 }
+
 // get rid of extra values in case the number of channels is changed
 $hpcParam->setValue($hpc);
 $_SESSION['task_setting']->set($hpcParam);
@@ -117,7 +116,6 @@ include("header.inc.php");
         <div id="hpcselection" class="provided">
             <?php
 
-            for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
                 /** @var HPC $parameter */
                 $parameter = $_SESSION['task_setting']->parameter("HotPixelCorrection");
                 $value = $parameter->value();
@@ -125,17 +123,16 @@ include("header.inc.php");
                 $_SESSION['fileserver']->imageExtensions();
                 $files = $_SESSION['fileserver']->allFiles();
                 if ($files != null) {
-                    if (!in_array($value[$i], $files)) {
+                    if (!in_array($value[0], $files)) {
                         $missing = True;
                     }
 
                     ?>
                     <p>
-                        <span class="title">Ch<?php echo $i ?>:</span>
-                        <input name="hpc<?php echo $i ?>"
-                               title="Select HPC file for channel <?php echo $i ?>"
+                        <input name="hpc"
+                               title="Select a Hot Pixel Correction mask"
                                type="text"
-                               value="<?php echo $value[$i] ?>"
+                               value="<?php echo $value[0] ?>"
                                class="
                            <?php
                                if ($missing) {
@@ -145,7 +142,7 @@ include("header.inc.php");
                                } ?>"
                                readonly="readonly"/>
                         <input type="button"
-                               onclick="seek('<?php echo $i ?>', 'hpc')"
+                               onclick="seek('0', 'hpc')"
                                value="browse"/>
                     </p>
                     <?php
@@ -167,10 +164,7 @@ include("header.inc.php");
                         <?php
 
                     }
-                    break;
                 }
-            }
-
             ?>
         </div>
 
@@ -200,8 +194,7 @@ include("header.inc.php");
 
         <h3>Quick help</h3>
 
-        <p>Select a HPC file for each of the channels. Only
-            <strong>single-channel HPC files</strong> are supported.</p>
+        <p>Select a Hot Pixel Correction mask.</p>
 
     </div>
 
