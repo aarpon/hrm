@@ -2627,173 +2627,188 @@ class Fileserver
         return $result;
     }
 
+
     /**
-     * Create hard links into the psf_sharing/buffer folder from the
+     * Create hard links into the ${auxType}_sharing/buffer folder from the
      * folder of the sharing user and return an array of full paths
      * created links.
-     * @param array $psfFiles Array of psf files paths relatives to current user.
+     * @param array $auxfiles Array of auxiliary files for running jobs (PSFs, HPCs) with paths 
+     *              relative to current user.
+     * @param string $auxType whether 'psf' or 'hpc'.
      * @param string $targetUser name of the target user.
-     * @return array Array of destination PSF paths.
+     * @return array Array of destination paths.
      */
-    public function createHardLinksToSharedPSFs(array $psfFiles, $targetUser)
+    public function createHardLinksToSharedAuxFiles(array $auxFiles, $auxType, $targetUser)
     {
-
         global $image_folder;
 
-        // Prepare output
-        $destPFSPaths = array();
 
-        // Full path to psf_sharing and psf_sharing/buffer
-        $psf_sharing = $image_folder . "/" . "psf_sharing";
-        $buffer = $psf_sharing . "/" . "buffer";
+        if (!in_array($auxType, array('psf', 'hpc'))) {
+	    Log::error("Unimplemented file type '$auxType' found in shared hard links infrastructure.");
+            return null;
+        }
 
-        // Create a timestamp for current hard links
+        // Prepare output.
+        $destAuxPaths = array();
+
+        // Full path to shared folders.
+        $aux_sharing = $image_folder . "/" . $auxType . "_sharing";
+        $buffer = $aux_sharing . "/" . "buffer";
+
+        // Create a timestamp for current hard links.
         $mt = microtime();
         $mt = explode(" ", $mt);
         $timestamp = (string)$mt[1] . (string)round(1e6 * $mt[0]);
 
-        // Go over all PSF files
-        for ($i = 0; $i < count($psfFiles); $i++) {
+        // Go over all files.
+        for ($i = 0; $i < count($auxFiles); $i++) {
 
             // If we have a file, process it
-            if ($psfFiles[$i] != "") {
+            if ($auxFiles[$i] != "") {
 
-                // Full psf file path
-                $fullSourcePSFPath = $this->sourceFolder() . "/" . $psfFiles[$i];
+                // Full aux file path.
+                $fullSourceAuxPath = $this->sourceFolder() . "/" . $auxFiles[$i];
 
-                // Destination psf file path
-                $fullDestPSFPath = $buffer . "/" . $targetUser . "/" .
-                    $this->username . "/" . $timestamp . "/" . $psfFiles[$i];
+                // Destination aux file path.
+                $fullDestAuxPath = $buffer . "/" . $targetUser . "/" .
+                    $this->username . "/" . $timestamp . "/" . $auxFiles[$i];
 
-                // Destination psf containing folder
-                $contDestPSFFolder = dirname($fullDestPSFPath);
+                // Destination aux containing folder.
+                $contDestAuxFolder = dirname($fullDestAuxPath);
 
-                // Create the container folder if it does not exist
-                if (!file_exists($contDestPSFFolder)) {
-                    if (!mkdir($contDestPSFFolder, 0777, true)) {
-                        $destPFSPaths[$i] = "";
+                // Create the container folder if it does not exist.
+                if (!file_exists($contDestAuxFolder)) {
+                    if (!mkdir($contDestAuxFolder, 0777, true)) {
+                        $destAuxPaths[$i] = "";
                         continue;
                     }
                 }
 
-                // Create hard link
-                $cmd = "ln \"" . $fullSourcePSFPath . "\" \"" . $contDestPSFFolder . "/.\"";
+                // Create hard link.
+                $cmd = "ln \"" . $fullSourceAuxPath . "\" \"" . $contDestAuxFolder . "/.\"";
                 $out = shell_exec($cmd);
 
-                // If the PSF file is a *.ics/*.ids pair, we make sure to
-                // hard-link also the companion file
-                $companion = Fileserver::findCompanionFile($fullSourcePSFPath);
+                // If the aux file is a *.ics/*.ids pair, we make sure to
+                // hard-link also the companion file.
+                $companion = Fileserver::findCompanionFile($fullSourceAuxPath);
                 if (NULL !== $companion) {
-                    $cmd = "ln \"" . $companion . "\" \"" . $contDestPSFFolder . "/.\"";
+                    $cmd = "ln \"" . $companion . "\" \"" . $contDestAuxFolder . "/.\"";
                     $out = shell_exec($cmd);
                 }
 
-                // Store the relative path to the destination PSF file to the
-                // output array
-                $relPath = substr($fullDestPSFPath, strlen($image_folder) + 1);
-                $destPFSPaths[$i] = $relPath;
+                // Store the relative path to the destination aux file to the
+                // output array.
+                $relPath = substr($fullDestAuxPath, strlen($image_folder) + 1);
+                $destAuxPaths[$i] = $relPath;
 
             } else {
 
-                $destPFSPaths[$i] = "";
+                $destAuxPaths[$i] = "";
 
             }
         }
 
-        // Return the aray of full PSF destination paths
-        return $destPFSPaths;
+        // Return the aray of full aux destination paths
+        return $destAuxPaths;
     }
+
 
     /**
      * Create hard links into the folder of the target user from
-     * the psf_sharing/buffer folder and return an array of full paths
+     * the aux_sharing/buffer folder and return an array of full paths
      * created links.
-     * @param array $psfFiles array of psf files paths relatives to current user.
+     * @param array $auxFiles Array of auxiliary files for running jobs (PSFs, HPCs) with paths 
+     *              relative to current user.
+     * @param string $auxType whether 'psf' or 'hpc'.
      * @param string $targetUser Name of the target user.
      * @param string $previousUser Name of the previous (source) user.
-     * @return array Array of destination PSF paths.
+     * @return array Array of destination aux paths.
      */
-    public function createHardLinksFromSharedPSFs(array $psfFiles, $targetUser, $previousUser)
+    public function createHardLinksFromSharedAuxFiles(array $auxFiles, $auxType, $targetUser, $previousUser)
     {
-
         global $image_folder;
         global $image_source;
 
-        // Full path to psf_sharing and psf_sharing/buffer
-        $psf_sharing = $image_folder . "/" . "psf_sharing";
-        $buffer = $psf_sharing . "/" . "buffer";
 
-        // Create a timestamp for current hard links
+        if (!in_array($auxType, array('psf', 'hpc'))) {
+	    Log::error("Unimplemented file type '$auxType' found in shared hard links infrastructure.");
+            return null;
+        }
+
+        // Full path to shared folders.
+        $aux_sharing = $image_folder . "/" . $auxType . "_sharing";
+        $buffer = $aux_sharing . "/" . "buffer";
+
+        // Create a timestamp for current hard links.
         $mt = microtime();
         $mt = explode(" ", $mt);
         $targetTimestamp = (string)$mt[1] . (string)round(1e6 * $mt[0]);
 
-        // Full path with user and time information
+        // Full path with user and time information.
         $full_buffer = $buffer . "/" . $targetUser . "/" . $previousUser . "/";
 
         // Prepare output
-        $destPFSPaths = array();
+        $destAuxPaths = array();
 
-        // Go over all PSF files
-        for ($i = 0; $i < count($psfFiles); $i++) {
+        // Go over all aux files.
+        for ($i = 0; $i < count($auxFiles); $i++) {
 
-            // If we have a file, process it
-            if ($psfFiles[$i] != "") {
+            // If we have a file, process it.
+            if ($auxFiles[$i] != "") {
 
-                // Full psf file path
-                $fullSourcePSFPath = $image_folder . "/" . $psfFiles[$i];
+                // Full aux file path.
+                $fullSourceAuxPath = $image_folder . "/" . $auxFiles[$i];
 
-                // Get the numeric timestamp
-                $pos = strpos($fullSourcePSFPath, "/", strlen($full_buffer));
+                // Get the numeric timestamp.
+                $pos = strpos($fullSourceAuxPath, "/", strlen($full_buffer));
                 if (False === $pos) {
-                    // This should not happen
-                    $destPFSPaths[$i] = "";
+                    // This should not happen.
+                    $destAuxPaths[$i] = "";
                     continue;
                 }
 
-                // Relative PSF path
-                $relPSFPath = $targetTimestamp . "/" . substr($fullSourcePSFPath, ($pos + 1));
+                // Relative aux path.
+                $relAuxPath = $targetTimestamp . "/" . substr($fullSourceAuxPath, ($pos + 1));
 
-                // Destination psf file path
-                $fullDestPSFPath = $image_folder . "/" . $targetUser . "/" .
-                    $image_source . "/" . $relPSFPath;
+                // Destination aux file path.
+                $fullDestAuxPath = $image_folder . "/" . $targetUser . "/" .
+                    $image_source . "/" . $relAuxPath;
 
-                // Destination psf containing folder
-                $contDestPSFFolder = dirname($fullDestPSFPath);
+                // Destination aux containing folder.
+                $contDestAuxFolder = dirname($fullDestAuxPath);
 
-                // Create the container folder if it does not exist
-                if (!file_exists($contDestPSFFolder)) {
-                    if (!mkdir($contDestPSFFolder, 0777, true)) {
-                        $destPFSPaths[$i] = "";
+                // Create the container folder if it does not exist.
+                if (!file_exists($contDestAuxFolder)) {
+                    if (!mkdir($contDestAuxFolder, 0777, true)) {
+                        $destAuxPaths[$i] = "";
                         continue;
                     }
                 }
 
-                // Create hard link
-                $cmd = "ln \"" . $fullSourcePSFPath . "\" \"" . $contDestPSFFolder . "/.\"";
+                // Create hard link.
+                $cmd = "ln \"" . $fullSourceAuxPath . "\" \"" . $contDestAuxFolder . "/.\"";
                 $out = shell_exec($cmd);
 
-                // Now delete the source file
-                unlink($fullSourcePSFPath);
+                // Now delete the source file.
+                unlink($fullSourceAuxPath);
 
-                // If the PSF file is a *.ics/*.ids pair, we make sure to
-                // hard-link also the companion file
-                $companion = Fileserver::findCompanionFile($fullSourcePSFPath);
+                // If the aux file is a *.ics/*.ids pair, we make sure to
+                // hard-link also the companion file.
+                $companion = Fileserver::findCompanionFile($fullSourceAuxPath);
                 if (NULL !== $companion) {
-                    $cmd = "ln \"" . $companion . "\" \"" . $contDestPSFFolder . "/.\"";
+                    $cmd = "ln \"" . $companion . "\" \"" . $contDestAuxFolder . "/.\"";
                     $out = shell_exec($cmd);
 
                     // Now delete the companion file
                     unlink($companion);
-
                 }
 
-                // Store the relative path to the destination PSF file to the
-                // output array
-                $destPFSPaths[$i] = $relPSFPath;
+                // Store the relative path to the destination aux file to the
+                // output array.
+                $destAuxPaths[$i] = $relAuxPath;
 
-                // Delete the containing folders if they are no longer needed
-                $contFolder = dirname($fullSourcePSFPath);
+                // Delete the containing folders if they are no longer needed.
+                $contFolder = dirname($fullSourceAuxPath);
                 while ($contFolder != $buffer && Fileserver::is_dir_empty($contFolder)) {
                     if (!rmdir($contFolder)) {
                         break;
@@ -2802,36 +2817,42 @@ class Fileserver
                 }
 
             } else {
-
-                $destPFSPaths[$i] = "";
-
+                $destAuxPaths[$i] = "";
             }
         }
 
-        // Return the aray of full PSF destination paths
-        return $destPFSPaths;
+        // Return the aray of full aux destination paths.
+        return $destAuxPaths;
     }
 
-    /**
-     * Delete PSF files (hard links) with given relative path from
-     * the psf_sharing/buffer folder.
-     * @param array $psfFiles Array of PSF files paths relative to the file server root.
-     */
-    public static function deleteSharedPSFFilesFromBuffer(array $psfFiles)
-    {
 
+    /**
+     * Delete auxiliary files (hard links) with given relative path from
+     * the ${auxType}_sharing/buffer folder.
+     * @param array $auxFiles Array of auxiliary files for running jobs (PSFs, HPCs) with paths 
+     *              relative to the file server root.
+     * @param string $auxType whether 'psf' or 'hpc'.
+     */
+    public static function deleteSharedAuxFilesFromBuffer(array $auxFiles, $auxType)
+    {
         global $image_folder;
 
-        // Full path of the psf_sharing/buffer folder
-        $buffer = $image_folder . "/psf_sharing/buffer";
 
-        // Process the PSF files
-        foreach ($psfFiles as $f) {
+        if (!in_array($auxType, array('psf', 'hpc'))) {
+	    Log::error("Unimplemented file type '$auxType' found in shared hard links infrastructure.");
+            return null;
+        }
+
+        // Full path to shared buffer folder.
+        $buffer = $image_folder . "/" . $auxType . "_sharing/buffer";
+
+        // Process the aux files.
+        foreach ($auxFiles as $f) {
 
             // Make sure the file points in the the buffer folder!
-            if (strpos($f, "psf_sharing/buffer") === 0) {
+            if (strpos($f, $auxType . "_sharing/buffer") === 0) {
 
-                // Full path
+                // Full path.
                 $f = $image_folder . "/" . $f;
 
                 // Delete the file. If the file does not exist or cannot be
@@ -2840,7 +2861,7 @@ class Fileserver
                     Log::warning("Could not delete " . $f);
                 }
 
-                // Get companion file
+                // Get companion file.
                 $c = Fileserver::findCompanionFile($f);
                 if (NULL !== $c) {
                     // Delete the companion file. If the file does not exist or
@@ -2850,7 +2871,7 @@ class Fileserver
                     }
                 }
 
-                // Delete the containing folders if empty
+                // Delete the containing folders if empty.
                 $contFolder = dirname($f);
                 while ($contFolder != $buffer && Fileserver::is_dir_empty($contFolder)) {
                     if (!rmdir($contFolder)) {
@@ -2864,6 +2885,7 @@ class Fileserver
         }
 
     }
+
 
     /**
      * Given the name of either an ics or and ids file, returns the name of the companion.

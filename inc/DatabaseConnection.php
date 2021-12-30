@@ -591,9 +591,8 @@ class DatabaseConnection
                     // Create hard links and update paths to the PSF files
                     // to point to the hard-links.
                     $fileServer = new Fileserver($original_user);
-                    $parameterValue = $fileServer->createHardLinksToSharedPSFs(
-                        $parameterValue, $targetUserName);
-
+                    $parameterValue = $fileServer->createHardLinksToSharedAuxFiles(
+                        $parameterValue, "psf", $targetUserName);
                 }
 
                 // Special treatment for the HotPixelCorrection parameter.
@@ -602,9 +601,8 @@ class DatabaseConnection
                     // Create hard links and update paths to the HPC files
                     // to point to the hard-links.
                     $fileServer = new Fileserver($original_user);
-                    $parameterValue = $fileServer->createHardLinksToSharedHPCs(
-                        $parameterValue, $targetUserName);
-
+                    $parameterValue = $fileServer->createHardLinksToSharedAuxFiles(
+                        $parameterValue, "hpc", $targetUserName);
                 }
 
                 /*!
@@ -947,8 +945,8 @@ class DatabaseConnection
                 $psfFiles = explode('#', $values);
 
                 // Create hard-links to the target user folder
-                $newPSFFiles = $fileserver->createHardLinksFromSharedPSFs(
-                    $psfFiles, $owner, $previous_owner);
+                $newPSFFiles = $fileserver->createHardLinksFromSharedAuxFiles(
+                    $psfFiles, "psf", $owner, $previous_owner);
 
                 // Update the entries for the database
                 $record["value"] = "#" . implode('#', $newPSFFiles);
@@ -966,8 +964,8 @@ class DatabaseConnection
                 $hpcFiles = explode('#', $values);
 
                 // Create hard-links to the target user folder
-                $newHPCFiles = $fileserver->createHardLinksFromSharedHPCs(
-                    $hpcFiles, $owner, $previous_owner);
+                $newHPCFiles = $fileserver->createHardLinksFromSharedAuxFiles(
+                    $hpcFiles, "hpc", $owner, $previous_owner);
 
                 // Update the entries for the database
                 $record["value"] = "#" . implode('#', $newHPCFiles);
