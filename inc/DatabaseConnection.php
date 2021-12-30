@@ -666,7 +666,7 @@ class DatabaseConnection
             }
 
 
-            if ($newValue{0} == '#') {
+            if ($newValue[0] == '#') {
                 switch ($parameterName) {
                     case "DeconvolutionAlgorithm":
                     case "ExcitationWavelength":
@@ -699,9 +699,7 @@ class DatabaseConnection
                         $newValues = explode("#", $newValue);
                 }
 
-                if ((strcmp($parameterName, "PSF") != 0 || strcmp($parameterName, "HotPixelCorrection") != 0)
-                    && strpos($newValue, "/")
-                ) {
+                if (!in_array($parameterName, array("PSF", "HotPixelCorrection")) && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
                         if (strpos($newValues[$i], "/")) {
@@ -788,7 +786,7 @@ class DatabaseConnection
                     continue;
                 }
             }
-            if ($newValue{0} == '#') {
+            if ($newValue[0] == '#') {
                 switch ($parameterName) {
                     case "DeconvolutionAlgorithm":
                     case "ExcitationWavelength":
@@ -802,8 +800,7 @@ class DatabaseConnection
                         $newValues = explode("#", $newValue);
                 }
 
-                if ((strcmp($parameterName, "PSF") != 0 || strcmp($parameterName, "HotPixelCorrection") != 0)
-		   && strpos($newValue, "/")) {
+                if (!in_array($parameterName, array("PSF", "HotPixelCorrection")) && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
                         //$val = explode("/", $newValues[$i]);

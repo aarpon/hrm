@@ -9,7 +9,6 @@
  */
 namespace hrm\param;
 
-
 use hrm\param\base\AnyTypeArrayParameter;
 
 require_once dirname(__FILE__) . '/../bootstrap.php';
@@ -54,9 +53,9 @@ class HotPixelCorrection extends AnyTypeArrayParameter
     public function displayString($numberOfChannels = 0)
     {
         if ($numberOfChannels == 1) {
-            $result = $this->formattedName("Hot Pixel Correction - mask file name");
+            $result = $this->formattedName("Hot Pixel Correction - mask file");
         } else {
-            $result = $this->formattedName("Hot Pixel Correction - mask file names");
+            $result = $this->formattedName("Hot Pixel Correction - mask files");
         }
         if ($this->notSet()) {
             $result = $result . "*not set*" . "\n";
@@ -68,6 +67,7 @@ class HotPixelCorrection extends AnyTypeArrayParameter
                 $result = $result . $values . "\n";
             }
         }
+
         return $result;
     }
 
