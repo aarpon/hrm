@@ -110,7 +110,7 @@ include("header.inc.php");
 <div id="content">
 
     <h3><img alt="SelectHPC" src="./images/hpc.png"
-             width="40"/>&nbsp;Hot Pixel Correction - file selection</h3>
+             width="40"/>&nbsp;Hot Pixel Correction - mask file selection</h3>
 
     <form method="post" action="select_hpc.php" id="select">
 

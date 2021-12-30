@@ -2817,7 +2817,7 @@ class Fileserver
      * the psf_sharing/buffer folder.
      * @param array $psfFiles Array of PSF files paths relative to the file server root.
      */
-    public static function deleteSharedFSPFilesFromBuffer(array $psfFiles)
+    public static function deleteSharedPSFFilesFromBuffer(array $psfFiles)
     {
 
         global $image_folder;

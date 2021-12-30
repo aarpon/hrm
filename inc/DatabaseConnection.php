@@ -596,6 +596,17 @@ class DatabaseConnection
 
                 }
 
+                // Special treatment for the HotPixelCorrection parameter.
+                if ($parameter->name() == "HotPixelCorrection") {
+
+                    // Create hard links and update paths to the HPC files
+                    // to point to the hard-links.
+                    $fileServer = new Fileserver($original_user);
+                    $parameterValue = $fileServer->createHardLinksToSharedHPCs(
+                        $parameterValue, $targetUserName);
+
+                }
+
                 /*!
                   @todo Currently there are not longer "range values" (values
                   separated by /). In the future they will be reintroduced.
@@ -682,6 +693,7 @@ class DatabaseConnection
                     case "ColocChannel":
                     case "ColocThreshold":
                     case "ColocCoefficient":
+		    case "HotPixelCorrection":	
                     case "PSF":
                         /* Extract and continue to explode. */
                         $newValue = substr($newValue, 1);
@@ -689,7 +701,7 @@ class DatabaseConnection
                         $newValues = explode("#", $newValue);
                 }
 
-                if (strcmp($parameterName, "PSF") != 0
+                if ((strcmp($parameterName, "PSF") != 0 || strcmp($parameterName, "HotPixelCorrection") != 0)
                     && strpos($newValue, "/")
                 ) {
                     $newValue = array();
@@ -792,7 +804,8 @@ class DatabaseConnection
                         $newValues = explode("#", $newValue);
                 }
 
-                if (strcmp($parameterName, "PSF") != 0 && strpos($newValue, "/")) {
+                if ((strcmp($parameterName, "PSF") != 0 || strcmp($parameterName, "HotPixelCorrection") != 0)
+		   && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
                         //$val = explode("/", $newValues[$i]);
@@ -939,11 +952,28 @@ class DatabaseConnection
 
                 // Update the entries for the database
                 $record["value"] = "#" . implode('#', $newPSFFiles);
+		
+            } elseif ($record["name"] == "HotPixelCorrection") {
+
+                // Instantiate a Fileserver object for the target user
+                $fileserver = new Fileserver($owner);
+
+                // Get the array of HPC names
+                $values = $row["value"];
+                if ($values[0] == "#") {
+                    $values = substr($values, 1);
+                }
+                $hpcFiles = explode('#', $values);
+
+                // Create hard-links to the target user folder
+                $newHPCFiles = $fileserver->createHardLinksFromSharedHPCs(
+                    $hpcFiles, $owner, $previous_owner);
+
+                // Update the entries for the database
+                $record["value"] = "#" . implode('#', $newHPCFiles);
 
             } else {
-
                 $record["value"] = $row["value"];
-
             }
 
             $insertSQL = $this->connection()->GetInsertSQL($destParameterTable,
@@ -1043,6 +1073,24 @@ class DatabaseConnection
                 Fileserver::deleteSharedFSPFilesFromBuffer($psfFiles);
             }
         }
+
+        // Delete shared HPC files if any exist
+        if ($sourceParameterTable == "shared_parameter") {
+            $query = "select value from $sourceParameterTable where setting_id=$id and name='HotPixelCorrection'";
+            $hpcFiles = $this->queryLastValue($query);
+            if (null != $hpcFiles && $hpcFiles != "#####") {
+                if ($hpcFiles[0] == "#") {
+                    $hpcFiles = substr($hpcFiles, 1);
+                }
+
+                // Extract HPC file paths from the string
+                $hpcFiles = explode("#", $hpcFiles);
+
+                // Delete them
+                Fileserver::deleteSharedHPCFilesFromBuffer($psfFiles);
+            }
+        }
+
 
         $this->connection()->BeginTrans();
 
@@ -2282,6 +2330,7 @@ class DatabaseConnection
             case 'PerformAberrationCorrection':
             case 'AberrationCorrectionMode':
             case 'AdvancedCorrectionOptions':
+	    case 'HotPixelCorrection':
             case 'PSF' :
                 return "provided";
             case 'Binning':
