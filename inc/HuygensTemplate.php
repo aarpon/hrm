@@ -1085,23 +1085,20 @@ class HuygensTemplate
     {
         $taskDescr = "";
 
-        foreach ($this->hpcArray as $key => $value) {
+        /* The HPC mask may be located in a different subfolder than the raw 
+           data. Thus, its path must be found independently of the raw images. */
+        $userFileArea = $this->jobDescription->sourceFolder();
+        $deconSetting = $this->deconSetting;
 
+        foreach ($this->hpcArray as $key => $value) {
             if ($key != "listID") {
                 $taskDescr .= " " . $key . " ";
             }
 
             switch ($key) {
-                case 'hotPath':
-		
-		    /* The HPC mask may be located in a different subfolder than the
-		    raw data. Thus, its path must be found independently of the raw
-		    images. */
-                    $userFileArea = $this->jobDescription->sourceFolder();
-                    $deconSetting = $this->deconSetting;
+                case 'hotPath':		
                     $hpcFile = $deconSetting->parameter("HotPixelCorrection")->value();
                     $hpcPath = trim($userFileArea . $hpcFile[0]);
-
                     $taskDescr .= $this->string2tcllist($hpcPath);
                     break;
 		case 'timeOut':
