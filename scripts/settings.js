@@ -93,6 +93,11 @@ function seek(channel,type) {
     snitch.focus();
 }
 
+function hpcReset() {
+    var select = document.getElementById("select");
+    select.elements["hpc"].value = "";
+}
+
 window.onunload = function() {if (snitch != null) snitch.close()};
 
 function switchSnrMode(algorithm, channel) {    

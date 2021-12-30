@@ -142,6 +142,7 @@ include("header.inc.php");
                                onclick="seek('0', 'hpc')"
                                value="browse"/>
                         <input type="button"
+			       onclick="hpcReset()"
                                value="reset"/>
                     </p>
                     <?php
