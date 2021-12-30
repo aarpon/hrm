@@ -53,9 +53,9 @@ class HotPixelCorrection extends AnyTypeArrayParameter
     public function displayString($numberOfChannels = 0)
     {
         if ($numberOfChannels == 1) {
-            $result = $this->formattedName("Hot Pixel Correction - mask file");
+            $result = $this->formattedName("hot pixel correction - mask file");
         } else {
-            $result = $this->formattedName("Hot Pixel Correction - mask files");
+            $result = $this->formattedName("hot pixel correction - mask files");
         }
         if ($this->notSet()) {
             $result = $result . "*not set*" . "\n";
