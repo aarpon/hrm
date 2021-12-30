@@ -857,6 +857,9 @@ class HuygensTemplate
         $list = "";
 
         foreach ($this->imgProcessTasksArray as $key => $value) {
+	    if ($key == 'hotPixelCorrection' && !$this->hotPixelMaskExists()) {
+	        continue;
+            }
             switch ($key) {
                 case 'open':
                 case 'save':
@@ -911,6 +914,10 @@ class HuygensTemplate
 
         $this->initializeThumbCounter();
         foreach ($this->imgProcessTasksArray as $key => $value) {
+	    if ($key == 'hotPixelCorrection' && !$this->hotPixelMaskExists()) {
+	        continue;
+            }
+
             $tasksDescr .= " ";
             switch ($key) {
                 case 'open':
@@ -1110,7 +1117,7 @@ class HuygensTemplate
                     Log::error("Hot pixel correction field $key not yet implemented.");
             }
         }
-	    
+
         return $this->hpcList;
     }
 
@@ -3089,6 +3096,24 @@ class HuygensTemplate
         }
 
         return $colocRuns;
+    }
+
+    /**
+     * Checks whether a hot pixel correction mask exists.
+     * @param void
+     * @return bool true if it exists false otherwise.
+     */
+    private function hotPixelMaskExists()
+    {
+        $userFileArea = $this->jobDescription->sourceFolder();
+        $deconSetting = $this->deconSetting;
+        $hpcFile = $deconSetting->parameter("HotPixelCorrection")->value();
+
+        if ($hpcFile[0] == "") {
+	    return false;
+        } else {
+            return true;
+        }
     }
 
     /**
