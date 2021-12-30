@@ -432,6 +432,7 @@ class TaskSetting extends Setting
      * @return bool True if all Parameters are defined and valid, false
      * otherwise.
      */
+     // For now this is a dummy function as any hot pixel choice should be accepted. 
     public function checkPostedHotPixelCorrectionParameters(array $postedParameters)
     {
         if (count($postedParameters) == 0) {

@@ -36,13 +36,18 @@ class HotPixelCorrection extends AnyTypeArrayParameter
      */
     public function check()
     {
-        for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-            if ($this->value[$i] == NULL) {
-                $this->message = "Please select a Hot Pixel mask file for channel $i!";
-                return False;
-            }
-        }
-        return True;
+
+        /* Whatever the selection it should be accepted. */
+	return True;
+
+
+        // for ($i = 0; $i < $this->numberOfChannels(); $i++) {
+        //     if ($this->value[$i] == NULL) {
+        //         $this->message = "Please select a Hot Pixel mask file for channel $i!";
+        //         return False;
+        //     }
+        // }
+        // return True;
     }
 
     /**
