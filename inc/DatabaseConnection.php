@@ -1038,7 +1038,7 @@ class DatabaseConnection
                 $psfFiles = explode("#", $psfFiles);
 
                 // Delete them
-                Fileserver::deleteSharedFSPFilesFromBuffer($psfFiles);
+                Fileserver::deleteSharedPSFFilesFromBuffer($psfFiles);
             }
         }
 
