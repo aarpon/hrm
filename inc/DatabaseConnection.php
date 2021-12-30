@@ -1068,7 +1068,7 @@ class DatabaseConnection
                 $psfFiles = explode("#", $psfFiles);
 
                 // Delete them
-                Fileserver::deleteSharedFSPFilesFromBuffer($psfFiles);
+                Fileserver::deleteSharedAuxFilesFromBuffer($psfFiles, "psf");
             }
         }
 
@@ -1085,7 +1085,7 @@ class DatabaseConnection
                 $hpcFiles = explode("#", $hpcFiles);
 
                 // Delete them
-                Fileserver::deleteSharedHPCFilesFromBuffer($psfFiles);
+                Fileserver::deleteSharedAuxFilesFromBuffer($hpcFiles, "hpc");
             }
         }
 
