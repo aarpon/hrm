@@ -389,7 +389,7 @@ function jsonSendTestEmail()
     global $email_admin;
 
     // Include configuration file
-    include(dirname(__FILE__) . "/../config/hrm_client_config.inc");
+    include(dirname(__FILE__) . "/../config/hrm_config.inc");
 
     // Prepare the output array
     $json = initJSONArray();
