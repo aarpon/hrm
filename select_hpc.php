@@ -88,7 +88,7 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpSelectHPCFiles'));
+            echo(Nav::linkWikiPage('Hot-Cold-PixelRemover'));
             ?>
             <li> [ <?php echo $_SESSION['task_setting']->name(); ?> ]</li>
         </ul>
@@ -110,7 +110,7 @@ include("header.inc.php");
 
     <form method="post" action="select_hpc.php" id="select">
 
-        <div id="hpcselection" class="provided">
+        <div id="HotPixelCorrection" class="provided">
             <?php
 
                 /** @var HPC $parameter */
@@ -166,9 +166,12 @@ include("header.inc.php");
                     }
                 }
             ?>
+     	    <p class="info">The correction is optional: leave empty for skipping.</p>
         </div>
 
-        <div><input name="OK" type="hidden"/></div>
+        <div>
+	   <input name="OK" type="hidden"/>
+	</div>
 
         <div id="controls">
             <input type="button" value="" class="icon previous"
@@ -193,9 +196,8 @@ include("header.inc.php");
     <div id="info">
 
         <h3>Quick help</h3>
-
         <p>Select a Hot Pixel Correction mask. This correction will be applied to the target images before any other image processing is executed. For multiple channels, please select a single file with different masks for the channels. </p>
-
+        <p>Since the images of a batch may or may not have all the same dimensions please notice that the correction will be skipped on runtime for images whose dimensions don't match the selected mask. </p>
     </div>
 
     <div id="message">

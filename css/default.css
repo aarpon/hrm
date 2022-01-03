@@ -960,6 +960,13 @@ table#Servers td {
     font-size: 90%;
 }
 
+#HotPixelCorrection p.info {
+    text-align: center;
+    margin-bottom: 0;
+    color: #4988DE;
+    font-size: 90%;
+}
+
 #AberrationCorrectionModeDiv {
     margin-top: 25px;
 }
