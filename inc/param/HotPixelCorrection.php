@@ -32,22 +32,11 @@ class HotPixelCorrection extends AnyTypeArrayParameter
 
     /**
      * Checks whether the HotPixelCorrection parameter is valid
-     * @return bool True if the HotPixelCorrection parameter is valid, false otherwise.
+     * @return bool Always true. Whatever the selection, it should be accepted.
      */
     public function check()
     {
-
-        /* Whatever the selection it should be accepted. */
 	return True;
-
-
-        // for ($i = 0; $i < $this->numberOfChannels(); $i++) {
-        //     if ($this->value[$i] == NULL) {
-        //         $this->message = "Please select a Hot Pixel mask file for channel $i!";
-        //         return False;
-        //     }
-        // }
-        // return True;
     }
 
     /**
@@ -57,20 +46,12 @@ class HotPixelCorrection extends AnyTypeArrayParameter
      */
     public function displayString($numberOfChannels = 0)
     {
-        if ($numberOfChannels == 1) {
-            $result = $this->formattedName("hot pixel correction - mask file");
-        } else {
-            $result = $this->formattedName("hot pixel correction - mask files");
-        }
+        $result = $this->formattedName("hot pixel correction - mask file");
+     
         if ($this->notSet()) {
             $result = $result . "*not set*" . "\n";
         } else {
-            if ($numberOfChannels == 1) {
-                $result = $result . $this->value[0] . "\n";
-            } else {
-                $values = implode(", ", array_slice($this->value, 0, $numberOfChannels));
-                $result = $result . $values . "\n";
-            }
+            $result = $result . $this->value[0] . "\n";
         }
 
         return $result;
