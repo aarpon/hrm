@@ -18,32 +18,13 @@ namespace hrm;
 class FileserverV2
 {
     /**
-     * Get the compression command (with %DEST% placeholder for the source)
-     *
-     * Note: when serving a compressed file for download, remember to set the
-     * MIME type to "application/x-force-download".
-     *
-     * @return array Array with the command for each supported compressor (currently only zip).
-     */
-    private static function getCompressor()
-    {
-        // Replace the array of compression options from the
-        // (deprecated) configuration files with the only supported
-        // option: zip.
-        $compressBin['zip'] = "cd %DEST% \n /usr/bin/zip -0 ";
-        return $compressBin;
-    }
-
-    /**
      * Get the decompression command (with %DEST% placeholder for the target)
      * @return array Array with the command for each supported decompressor (currently only zip).
      */
-    private static function getDecompressor()
+    private static function getDecompressors()
     {
-        // Replace the array of decompression options from the
-        // (deprecated) configuration files with the only supported
-        // option: zip.
-        $decompressBin['zip'] = "cd %DEST% \n /usr/bin/unzip -o ";
+        // Get the archive file extensions from the configuration files.
+        global $decompressBin;
         return $decompressBin;
     }
 
@@ -66,7 +47,7 @@ class FileserverV2
         }
 
         // Drop path info and sanitize file name
-        $destBaseName = str_replace(" ", "_", basename($file));
+        $destBaseName = FileserverV2::sanitizeFileName(basename($file));
 
         // Full path of destination file
         $destFile = $destDir . "/" . $destBaseName;
@@ -134,11 +115,8 @@ class FileserverV2
      */
     public static function decompressArchive($file, $destDir)
     {
-        // Replace the array of decompression options from the
-        // (deprecated) configuration files with the only supported
-        // option: zip.
-        // @TODO: Simplify.
-        $decompressBin = self::getDecompressor();
+        // Get the archive file extensions from the configuration files.
+        $decompressBin = self::getDecompressors();
 
         // Create the output directory
         if (!is_dir($destDir)) {
@@ -187,11 +165,7 @@ class FileserverV2
     public static function isArchiveFile($fileName)
     {
         // Get the archive file extensions from the configuration files.
-        // Replace the array of decompression options from the
-        // (deprecated) configuration files with the only supported
-        // option: zip.
-        // @TODO: Simplify.
-        $decompressBin = self::getDecompressor();
+        $decompressBin = self::getDecompressors();
 
         // Get the file extension
         $extension = FileserverV2::getFileNameExtension($fileName);
@@ -250,11 +224,8 @@ class FileserverV2
      */
     public static function getArchiveExtensions()
     {
-        // Replace the array of decompression options from the
-        // (deprecated) configuration files with the only supported
-        // option: zip.
-        // @TODO: Simplify.
-        $decompressBin = self::getDecompressor();
+        // Get the archive file extensions from the configuration files.
+        $decompressBin = self::getDecompressors();
 
         // Archive extensions
         return array_keys($decompressBin);
@@ -540,5 +511,63 @@ class FileserverV2
 
         // Return global result
         return $result;
+    }
+
+    /**
+     * Remove any non-ASCII characters and convert known non-ASCII characters
+     * to their ASCII equivalents, if possible. Also, replaces blank spaces with "_".
+     *
+     * @param string $string
+     * @return string $string
+     * @author Jay Williams <myd3.com>
+     * @license MIT License
+     * @link http://gist.github.com/119517
+     *
+     * Modified by Aaron Ponti for the HRM project.
+     */
+    private static function sanitizeFileName($string)
+    {
+        // Replace Single Curly Quotes
+        $search[]  = chr(226).chr(128).chr(152);
+        $replace[] = "'";
+        $search[]  = chr(226).chr(128).chr(153);
+        $replace[] = "'";
+
+        // Replace Smart Double Curly Quotes
+        $search[]  = chr(226).chr(128).chr(156);
+        $replace[] = '"';
+        $search[]  = chr(226).chr(128).chr(157);
+        $replace[] = '"';
+
+        // Replace En Dash
+        $search[]  = chr(226).chr(128).chr(147);
+        $replace[] = '--';
+
+        // Replace Em Dash
+        $search[]  = chr(226).chr(128).chr(148);
+        $replace[] = '---';
+
+        // Replace Bullet
+        $search[]  = chr(226).chr(128).chr(162);
+        $replace[] = '*';
+
+        // Replace Middle Dot
+        $search[]  = chr(194).chr(183);
+        $replace[] = '*';
+
+        // Replace Ellipsis with three consecutive dots
+        $search[]  = chr(226).chr(128).chr(166);
+        $replace[] = '...';
+
+        // Apply Replacements
+        $string = str_replace($search, $replace, $string);
+
+        // Remove any non-ASCII Characters
+        $string = preg_replace("/[^\x01-\x7F]/","_", $string);
+
+        // Replace blank spaces with underscores
+        $string = str_replace(" ", "_", $string);
+
+        return $string;
     }
 }
