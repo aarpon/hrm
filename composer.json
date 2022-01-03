@@ -48,7 +48,7 @@
     "php": ">=7.2.0",
     "adodb/adodb-php": "v5.20.14",
     "adldap2/adldap2": "4.0.5",
-    "aarpon/php-traditional-server_old": "1.0.2",
+    "aarpon/php-traditional-server_old": "1.0.3",
     "monolog/monolog": "1.19.0"
   },
   "require-dev": {
