@@ -22,6 +22,14 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     exit();
 }
 
+if ($_SESSION['user']->isAdmin()
+   || $_SESSION['task_setting']->isEligibleForCAC()
+   || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+    $back = "post_processing.php";
+} else {
+    $back = "task_parameter.php";
+}
+
 // fileserver related code
 if (!isset($_SESSION['fileserver'])) {
     $name = $_SESSION['user']->name();
@@ -177,7 +185,7 @@ include("header.inc.php");
             <input type="button" value="" class="icon previous"
                    onmouseover="TagToTip('ttSpanBack' )"
                    onmouseout="UnTip()"
-                   onclick="document.location.href='post_processing.php'"/>
+                   onclick="document.location.href='<?php echo $back;?>'"/>
             <input type="button" value="" class="icon up"
                    onmouseover="TagToTip('ttSpanCancel' )"
                    onmouseout="UnTip()"
