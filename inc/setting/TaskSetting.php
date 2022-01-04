@@ -48,7 +48,8 @@ class TaskSetting extends Setting
             'TStabilization',
             'TStabilizationMethod',
             'TStabilizationRotation',
-            'TStabilizationCropping');
+            'TStabilizationCropping',
+	    'HotPixelCorrection');
 
         // Instantiate the Parameter objects
         foreach ($parameterClasses as $class) {
@@ -417,6 +418,28 @@ class TaskSetting extends Setting
             }
         }
 
+        return $noErrorsFound;
+    }
+
+
+    /**
+     * Checks that the posted Hot Pixel Correction Parameters are defined.
+     * This correction is optional.
+     * @param array $postedParameters The array of posted parameters.
+     * @return bool True if all Parameters are defined and valid, false
+     * otherwise.
+     */
+     // For now this is a dummy function as any hot pixel choice should be accepted. 
+    public function checkPostedHotPixelCorrectionParameters(array $postedParameters)
+    {
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return false;
+        }
+
+        $this->message = '';
+        $noErrorsFound = true;
+        
         return $noErrorsFound;
     }
 

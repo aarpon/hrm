@@ -207,6 +207,12 @@ class HuygensTemplate
     private $setpConfArray;
 
     /**
+     * Array with information on the hot pixel correction subtask.
+     * @var array
+     */
+    private $hpcArray;
+
+    /**
      * Array with information on thumbnail projections.
      * @var array
      */
@@ -217,6 +223,12 @@ class HuygensTemplate
      * @var string
      */
     private $setpList;
+
+    /**
+     * A Tcl list with information for the 'hot pixel correction' subtask.
+     * @var string
+     */
+    private $hpcList;
 
     /**
      * Path and name of the source 'raw' image.
@@ -442,6 +454,7 @@ class HuygensTemplate
         $this->imgProcessTasksArray =
             array('open'                  => 'imgOpen',
                 'setParameters'           => 'setp',
+		'hotPixelCorrection'      => 'hotPix',
                 'autocrop'                => 'autocrop',
                 'adjustBaseline'          => 'adjbl',
                 'ZStabilization'          => 'stabilize',
@@ -537,6 +550,13 @@ class HuygensTemplate
                   'spimFill'         => 'parState,spimFill',
                   'spimDir'          => 'parState,spimDir',
                   'listID'           => 'setp');
+
+        /* Options for the 'hot pixel correction' action */
+        $this->hpcArray =
+            array('hotPath'  => '',
+                  'timeOut'  => '10000',
+                  'listID'   => 'hotPix');
+
 
         /* Options for the 'adjust baseline' action */
         $this->adjblArray =
@@ -837,10 +857,14 @@ class HuygensTemplate
         $list = "";
 
         foreach ($this->imgProcessTasksArray as $key => $value) {
+	    if ($key == 'hotPixelCorrection' && !$this->hotPixelMaskExists()) {
+	        continue;
+            }
             switch ($key) {
                 case 'open':
                 case 'save':
                 case 'setParameters':
+		case 'hotPixelCorrection':
                 case 'autocrop':
                 case 'adjustBaseline':
                 case 'ZStabilization':
@@ -890,6 +914,10 @@ class HuygensTemplate
 
         $this->initializeThumbCounter();
         foreach ($this->imgProcessTasksArray as $key => $value) {
+	    if ($key == 'hotPixelCorrection' && !$this->hotPixelMaskExists()) {
+	        continue;
+            }
+
             $tasksDescr .= " ";
             switch ($key) {
                 case 'open':
@@ -900,6 +928,9 @@ class HuygensTemplate
                     break;
                 case 'setParameters':
                     $tasksDescr .= $this->getImgTaskDescrSetp();
+                    break;
+                case 'hotPixelCorrection':
+                    $tasksDescr .= $this->getImgTaskDescrHotPixelCorrection();
                     break;
                 case 'autocrop':
                     $tasksDescr .= $this->getImgTaskDescrAutocrop();
@@ -1051,6 +1082,43 @@ class HuygensTemplate
         }
 
         return $this->setpList;
+    }
+
+    /**
+     * Gets options for the 'hot pixel correction' task.
+     * @return string Tcl list with the 'Hot Pixel Correction' task and its options.
+     */
+    private function getImgTaskDescrHotPixelCorrection()
+    {
+        $taskDescr = "";
+
+        /* The HPC mask may be located in a different subfolder than the raw 
+           data. Thus, its path must be found independently of the raw images. */
+        $userFileArea = $this->jobDescription->sourceFolder();
+        $deconSetting = $this->deconSetting;
+
+        foreach ($this->hpcArray as $key => $value) {
+            if ($key != "listID") {
+                $taskDescr .= " " . $key . " ";
+            }
+
+            switch ($key) {
+                case 'hotPath':		
+                    $hpcFile = $deconSetting->parameter("HotPixelCorrection")->value();
+                    $hpcPath = trim($userFileArea . $hpcFile[0]);
+                    $taskDescr .= $this->string2tcllist($hpcPath);
+                    break;
+		case 'timeOut':
+		    $taskDescr .= $value;
+                case 'listID':
+                    $this->hpcList = $value . " " . $this->string2tcllist($taskDescr);
+                    break;
+                default:
+                    Log::error("Hot pixel correction field $key not yet implemented.");
+            }
+        }
+
+        return $this->hpcList;
     }
 
     /**
@@ -3028,6 +3096,24 @@ class HuygensTemplate
         }
 
         return $colocRuns;
+    }
+
+    /**
+     * Checks whether a hot pixel correction mask exists.
+     * @param void
+     * @return bool true if it exists false otherwise.
+     */
+    private function hotPixelMaskExists()
+    {
+        $userFileArea = $this->jobDescription->sourceFolder();
+        $deconSetting = $this->deconSetting;
+        $hpcFile = $deconSetting->parameter("HotPixelCorrection")->value();
+
+        if ($hpcFile[0] == "") {
+	    return false;
+        } else {
+            return true;
+        }
     }
 
     /**

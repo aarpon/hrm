@@ -71,14 +71,8 @@ if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
         header("Location: " . "post_processing.php");
         exit();
     } else {
-
-        $saved = $_SESSION['task_setting']->save();
-        if ($saved) {
-            header("Location: " . "select_task_settings.php");
-            exit();
-        } else {
-            $message = $_SESSION['task_setting']->message();
-        }
+        header("Location: " . "select_hpc.php");
+        exit();
     }
 } else {
     $message = $_SESSION['task_setting']->message();
@@ -826,29 +820,10 @@ include("header.inc.php");
                    onmouseover="TagToTip('ttSpanCancel' )"
                    onmouseout="UnTip()"
                    onclick="deleteValuesAndRedirect('select_task_settings.php' );"/>
-
-            <?php
-            /* Don't proceed to the post processing page. */
-            if ($_SESSION['user']->isAdmin()
-            || $_SESSION['task_setting']->isEligibleForCAC()
-            || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
-                ?>
                 <input type="submit" value="" class="icon next"
                        onmouseover="TagToTip('ttSpanForward' )"
                        onmouseout="UnTip()"
                        onclick="process()"/>
-                <?php
-            } else {
-                ?>
-                <input type="submit" value=""
-                       class="icon save"
-                       onmouseover="TagToTip('ttSpanSave')"
-                       onmouseout="UnTip()"
-                       onclick="process()"/>
-
-                <?php
-            }
-            ?>
 
         </div>
 

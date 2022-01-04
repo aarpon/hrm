@@ -4,7 +4,7 @@
 
 use hrm\Fileserver;
 use hrm\Nav;
-use hrm\param\PSF;
+use hrm\param\HotPixelCorrection;
 
 require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
@@ -22,6 +22,14 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     exit();
 }
 
+if ($_SESSION['user']->isAdmin()
+   || $_SESSION['task_setting']->isEligibleForCAC()
+   || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+    $back = "post_processing.php";
+} else {
+    $back = "task_parameter.php";
+}
+
 // fileserver related code
 if (!isset($_SESSION['fileserver'])) {
     $name = $_SESSION['user']->name();
@@ -32,47 +40,37 @@ $message = "";
 
 /* *****************************************************************************
  *
- * MANAGE THE MULTI-CHANNEL PSF FILE NAMES
+ * MANAGE HPC FILE NAMES
  *
  **************************************************************************** */
 
-/** @var PSF $psfParam */
-$psfParam = $_SESSION['setting']->parameter("PSF");
-$psfParam->setNumberOfChannels($_SESSION['setting']->numberOfChannels());
-$psf = $psfParam->value();
-for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
-    $psfKey = "psf{$i}";
-    if (isset($_POST[$psfKey])) {
-        $psf[$i] = $_POST[$psfKey];
-    }
+/** @var HPC $hpcParam */
+$hpcParam = $_SESSION['task_setting']->parameter("HotPixelCorrection");
+$hpc = $hpcParam->value();
+
+if (isset($_POST["hpc"])) {
+    $hpc = $_POST["hpc"];
 }
-// get rid of extra values in case the number of channels is changed
-$psfParam->setValue($psf);
-$_SESSION['setting']->set($psfParam);
+
+$hpcParam->setValue($hpc);
+$_SESSION['task_setting']->set($hpcParam);
 
 /* *****************************************************************************
  *
  * PROCESS THE POSTED PARAMETERS
- *
- * In this case, we do not need to check the confidence level of the PSF
- * Parameter (although it is set to Provide), since there is no other
- * meaningful alternative to having to provide the file names.
- *
+ * *
  **************************************************************************** */
 
 if (count($_POST) > 0) {
-    if ($psfParam->check()) {
-        // Make sure to turn off the aberration correction since we use a measured PSF
-        $_SESSION['setting']->parameter(
-            'AberrationCorrectionNecessary')->setValue('0');
-        $saved = $_SESSION['setting']->save();
-        $message = $_SESSION['setting']->message();
+    if ($hpcParam->check()) {        
+        $saved = $_SESSION['task_setting']->save();
+        $message = $_SESSION['task_setting']->message();
         if ($saved) {
-            header("Location: select_parameter_settings.php");
+            header("Location: select_task_settings.php");
             exit();
         }
     } else {
-        $message = $psfParam->message();
+        $message = $hpcParam->message();
     }
 }
 
@@ -89,7 +87,6 @@ include("header.inc.php");
     </span>
 <span class="toolTip" id="ttSpanCancel">
         Abort editing and go back to the image parameters selection page.
-        All changes will be lost!
     </span>
 <span class="toolTip" id="ttSpanSave">
         Save and return to the image parameters selection page.
@@ -99,9 +96,9 @@ include("header.inc.php");
     <div id="navleft">
         <ul>
             <?php
-            echo(Nav::linkWikiPage('HuygensRemoteManagerHelpSelectPSFFiles'));
+            echo(Nav::linkWikiPage('Hot-Cold-PixelRemover'));
             ?>
-            <li> [ <?php echo $_SESSION['setting']->name(); ?> ]</li>
+            <li> [ <?php echo $_SESSION['task_setting']->name(); ?> ]</li>
         </ul>
     </div>
     <div id="navright">
@@ -116,46 +113,45 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3><img alt="SelectPSF" src="./images/psf.png"
-             width="40"/>&nbsp;Distilled PSF file selection</h3>
+    <h3><img alt="SelectHPC" src="./images/hpc.png"
+             width="40"/>&nbsp;Hot Pixel Correction - mask file selection</h3>
 
-    <p class="message_confidence_<?php echo $_SESSION['setting']->parameter("PointSpreadFunction")->confidenceLevel(); ?>"></p>
+    <form method="post" action="select_hpc.php" id="select">
 
-    <form method="post" action="select_psf.php" id="select">
-
-        <div id="psfselection" class="provided">
+        <div id="HotPixelCorrection" class="provided">
             <?php
 
-            for ($i = 0; $i < $_SESSION['setting']->numberOfChannels(); $i++) {
-                /** @var PSF $parameter */
-                $parameter = $_SESSION['setting']->parameter("PSF");
+                /** @var HPC $parameter */
+                $parameter = $_SESSION['task_setting']->parameter("HotPixelCorrection");
                 $value = $parameter->value();
                 $missing = False;
                 $_SESSION['fileserver']->imageExtensions();
                 $files = $_SESSION['fileserver']->allFiles();
                 if ($files != null) {
-                    if (!in_array($value[$i], $files)) {
+                    if (!in_array($value[0], $files)) {
                         $missing = True;
                     }
 
                     ?>
                     <p>
-                        <span class="title">Ch<?php echo $i ?>:</span>
-                        <input name="psf<?php echo $i ?>"
-                               title="Select PSF file for channel <?php echo $i ?>"
+                        <input name="hpc"
+                               title="Select a Hot Pixel Correction mask"
                                type="text"
-                               value="<?php echo $value[$i] ?>"
+                               value="<?php echo $value[0] ?>"
                                class="
                            <?php
                                if ($missing) {
-                                   echo "psfmissing";
+                                   echo "hpcmissing";
                                } else {
-                                   echo "psffile";
+                                   echo "hpcfile";
                                } ?>"
                                readonly="readonly"/>
                         <input type="button"
-                               onclick="seek('<?php echo $i ?>', 'psf')"
+                               onclick="seek('0', 'hpc')"
                                value="browse"/>
+                        <input type="button"
+			       onclick="hpcReset()"
+                               value="reset"/>
                     </p>
                     <?php
 
@@ -176,24 +172,24 @@ include("header.inc.php");
                         <?php
 
                     }
-                    break;
                 }
-            }
-
             ?>
+     	    <p class="info">The correction is optional: leave empty for skipping.</p>
         </div>
 
-        <div><input name="OK" type="hidden"/></div>
+        <div>
+	   <input name="OK" type="hidden"/>
+	</div>
 
         <div id="controls">
             <input type="button" value="" class="icon previous"
                    onmouseover="TagToTip('ttSpanBack' )"
                    onmouseout="UnTip()"
-                   onclick="document.location.href='capturing_parameter.php'"/>
+                   onclick="document.location.href='<?php echo $back;?>'"/>
             <input type="button" value="" class="icon up"
                    onmouseover="TagToTip('ttSpanCancel' )"
                    onmouseout="UnTip()"
-                   onclick="document.location.href='select_parameter_settings.php'"/>
+                   onclick="document.location.href='select_task_settings.php'"/>
             <input type="submit" value="" class="icon save"
                    onmouseover="TagToTip('ttSpanSave' )"
                    onmouseout="UnTip()" onclick="process()"/>
@@ -208,10 +204,8 @@ include("header.inc.php");
     <div id="info">
 
         <h3>Quick help</h3>
-
-        <p>Select a PSF file for each of the channels. Only
-            <strong>single-channel PSF files</strong> are supported.</p>
-
+        <p>Select a Hot Pixel Correction mask. This correction will be applied to the target images before any other image processing is executed. For multiple channels, please select a single file with different masks for the channels. </p>
+        <p>Since the images of a batch may or may not have all the same dimensions please notice that the correction will be skipped on runtime for images whose dimensions don't match the selected mask. </p>
     </div>
 
     <div id="message">

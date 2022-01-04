@@ -52,11 +52,14 @@ if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForTSta
         $postErrors++;
     }
 }
+if (!$_SESSION['task_setting']->checkPostedHotPixelCorrectionParameters($_POST)) {
+    $postErrors++;
+}
 
 if ($postErrors == 0) {
     $saved = $_SESSION['task_setting']->save();
     if ($saved) {
-        header("Location: " . "select_task_settings.php");
+        header("Location: " . "select_hpc.php");
         exit();
     } else {
         $message = $_SESSION['task_setting']->message();
@@ -431,8 +434,8 @@ if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForTSta
                onmouseout="UnTip()"
                onclick="deleteValuesAndRedirect(
                     'select_task_settings.php' );"/>
-        <input type="submit" value="" class="icon save"
-               onmouseover="TagToTip('ttSpanSave' )"
+        <input type="submit" value="" class="icon next"
+               onmouseover="TagToTip('ttSpanForward' )"
                onmouseout="UnTip()"
                onclick="process()"/>
     </div>
