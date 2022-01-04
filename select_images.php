@@ -70,11 +70,11 @@ $info = "<h3>Quick help</h3>" .
     "of available images. The file names are filtered by the selected " .
     "file format." .
     "<p>Use SHIFT- and CTRL-click to select multiple files from any of the boxes.</p>" .
-    "<p>Use the arrow buttons " .
-    "<img src=\"images/add.png\" alt=\"Help\" width=\"22\" height=\"22\"/>" .
-    "<img src=\"images/remove.png\" alt=\"Help\" width=\"22\" height=\"22\"/>" .
-    "to add/remove images to the <b><i>Selected Images</i></b> box from the " .
-    "<b><i>Images available on server</i></b> box.</p>" .
+    "<p>From the <b><i>Images available on server</i></b> box, select the images you " .
+    "want to process and use the <img src=\"images/add.png\" alt=\"Help\" width=\"22\" height=\"22\"/> " .
+    "button to add them to the <b><i>Selected Images</i></b> box.</p>".
+    "<p>To remove images, select them in the <b><i>Selected Images</i></b> box " .
+    "and hit the <img src=\"images/remove.png\" alt=\"Help\" width=\"22\" height=\"22\"/> button.</p>" .
     "<p>Where applicable, the files belonging to a series can be condensed " .
     "into one file name by checking the 'autoseries' option. These files " .
     "will be loaded and deconvolved as one large dataset. Unchecking " .

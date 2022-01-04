@@ -737,7 +737,6 @@ if (!$_SESSION['user']->isAdmin()) {
                 <img src="images/help.png" alt="Help" width="22" height="22"/>
                 <b>Help</b> link in the navigation bar.</strong></p>
 
-        <p>&nbsp;</p>
         <?php
 
         if (!$_SESSION['user']->isAdmin()) {
