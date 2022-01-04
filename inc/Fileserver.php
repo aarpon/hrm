@@ -624,6 +624,46 @@ class Fileserver
         $this->expandSubImages = $bool;
     }
 
+
+    /**
+     * Returns the given file name after replacing bad behaved characters with
+     * underscores.
+     */
+    public function getSanitizedName($file)
+    {
+        return preg_replace('/[^a-zA-Z0-9\.-]/', '_', $file);
+    }
+    
+    /**
+     * Returns the list of selected files after sanitizing bad filenames. It
+     * will rename the files on disk.
+     * @return array Array of file names after sanitation.
+     */
+    public function sanitizeFiles()
+    {
+        if ($this->selectedFiles == NULL) {
+            $this->selectedFiles = array();
+        }
+        
+        foreach ($this->selectedFiles as $key => $file) {
+            $sanitized = $this->getSanitizedName($file);
+            if (strcmp($file, $sanitized) !== 0) {
+                $oldPath = realpath($this->sourceFolder() . "/" . $file);
+                $newPath = $this->sourceFolder() . "/" . $sanitized;
+                if (!$oldPath) {
+                    error_log("Path " . $oldPath .
+                              " doesn't exist, stopping sanitization.");
+                    return $this->selectedFiles;
+                }
+                rename($oldPath, $newPath);
+                $this->selectedFiles[$key] = $sanitized;
+            }
+        }
+        
+        return $this->selectedFiles;
+    }
+
+
     /**
      * Returns the list of selected files that will be added to a job.
      * @return array Array of selected file names.
