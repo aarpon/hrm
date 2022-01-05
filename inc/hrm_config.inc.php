@@ -15,15 +15,7 @@ namespace hrm;
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-if (!isset($isServer)) {
-    $isServer = false;
-}
-
-if ($isServer == true) {
-    require_once dirname(__FILE__) . '/../config/hrm_server_config.inc';
-} else {
-    require_once dirname(__FILE__) . '/../config/hrm_client_config.inc';
-}
+require_once dirname(__FILE__) . '/../config/hrm_config.inc';
 
 // This is a hidden parameter for advanced users
 if (!isset($userManagerScript)) {
