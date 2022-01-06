@@ -678,7 +678,7 @@ class Fileserver
      */
     public function sanitizeFiles()
     {
-        if ($this->selectedFiles == NULL) {
+        if ($this->selectedFiles == null) {
             $this->selectedFiles = array();
         }
         if ($this->selectionSanitized) {
@@ -1311,17 +1311,20 @@ class Fileserver
     {
         $filename = strtolower($filename);
         $ext = $this->getFileNameExtension($filename);
+        if ($ext === "") {
+            return false;
+        }
         if ($ext === "gz") {
             // Use two suffixes as extension
             $filename = basename($filename, ".gz");
             $ext = $this->getFileNameExtension($filename) . ".gz";
         }
-        $result = False;
+        $result = false;
         if (in_array($ext, $this->validImageExtensions)) {
-            $result = True;
+            $result = true;
         }
         if ($alsoExtras && (in_array($ext, $this->validImageExtensionsExtras))) {
-            $result = True;
+            $result = true;
         }
         return $result;
     }
@@ -3558,6 +3561,10 @@ class Fileserver
     {
         // Process the path information
         $info = pathinfo($filename);
+        if (! array_key_exists("extension", $info)) {
+            return "";
+        }
+
         $allExtensions = FileserverV2::getAllValidExtensions();
         if (in_array(strtolower($info["extension"]), $allExtensions)) {
             return $info["extension"];
