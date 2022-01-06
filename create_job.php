@@ -373,22 +373,10 @@ echo $_SESSION['analysis_setting']->displayString();
                       readonly="readonly">
 <?php
 
-// Show the files selected, also check if sanitization is needed.
-$sanitizeFilesNeeded = false;
-$sanitizeInfoString = "";
+// Show the files selected.
 $files = $_SESSION['fileserver']->selectedFiles();
 foreach ($files as $file) {
     echo " " . $file . "\n";
-    if (!$sanitizeFilesNeeded) {
-        $file = pathinfo($file, PATHINFO_FILENAME);
-        $sanitized = $_SESSION['fileserver']->getSanitizedName($file);
-        if(strcmp($sanitized, $file) !== 0) {
-            $sanitizeFilesNeeded = true;
-            $sanitizeInfoString = "For example the file \"". $file .
-                                  "\" will be renamed to \"" . $sanitized .
-                                  "\".";
-        }
-    }
 }
 
 ?>
@@ -463,11 +451,12 @@ foreach ($files as $file) {
 
         echo "<p>$message</p>";
 
-        if ($sanitizeFilesNeeded) {
+        if (!$_SESSION['fileserver']->checkSanitization()) {
             echo "<p>Warning: files containing special characters in their " .
-                 "names have been selected. These files will automatically " .
-                 "be renamed on disk if you continue.</p>" .
-                 "<p>" . $sanitizeInfoString . "</p>";
+                "names have been selected. These files will automatically " .
+                "be renamed on disk if you continue.</p>" .
+                "<p>For example a file called \"B@d img(náme).h5\" " .
+                "would be renamed to \"B_d_img_n_me_.h5\".</p>";
         }
         ?>
     </div>

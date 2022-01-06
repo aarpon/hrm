@@ -122,6 +122,7 @@ class Fileserver
         $this->selectedFiles = NULL;
         $this->destFiles = NULL;
         $this->imageExtensions = NULL;
+        $this->selectionSanitized = false;
 
         // Set the valid image extensions
         $db = DatabaseConnection::get();
@@ -624,14 +625,50 @@ class Fileserver
         $this->expandSubImages = $bool;
     }
 
-
+    
     /**
-     * Returns the given file name after replacing bad behaved characters with
-     * underscores.
+     * Returns a postfixed version of the given path, so that it is unique.
+     * It will add "_$inx" as suffix, whith $inx = 0,1,2... until 100. Returns
+     * false if nothing was found.
      */
-    public function getSanitizedName($file)
+    private function getPostfixedPath($path)
     {
-        return preg_replace('/[^a-zA-Z0-9\.-]/', '_', $file);
+        $dir  = pathinfo($path, PATHINFO_DIRNAME);
+        $file = pathinfo($path, PATHINFO_FILENAME);
+        $ext  = pathinfo($path, PATHINFO_EXTENSION);
+        
+        for ($inx = 0; $inx <= 100; $inx+=1) {
+            $suffixed = $dir . "/" . $file . "_" . $inx . "." . $ext;
+            if (!realpath($suffixed)) {
+                return $suffixed;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Returns true if sanization of the selection is not needed or already
+     * done. Otherwise returns false.
+     */
+    public function checkSanitization()
+    {
+        if ($this->selectionSanitized) {
+            return true;
+        }
+        if ($this->selectedFiles == NULL) {
+            $this->selectionSanitized = true;
+            return true;
+        }
+
+        foreach ($this->selectedFiles as $key => $file) {
+            $sanitized = FileserverV2::sanitizeFileName($file);
+            if (strcmp($file, $sanitized) !== 0) {
+                $this->selectionSanitized = false;
+                return false;
+            }
+        }
+        $this->selectionSanitized = true;
+        return true;
     }
     
     /**
@@ -644,9 +681,12 @@ class Fileserver
         if ($this->selectedFiles == NULL) {
             $this->selectedFiles = array();
         }
+        if ($this->selectionSanitized) {
+            return $this->selectedFiles;
+        }
         
         foreach ($this->selectedFiles as $key => $file) {
-            $sanitized = $this->getSanitizedName($file);
+            $sanitized = FileserverV2::sanitizeFileName($file);
             if (strcmp($file, $sanitized) !== 0) {
                 $oldPath = realpath($this->sourceFolder() . "/" . $file);
                 $newPath = $this->sourceFolder() . "/" . $sanitized;
@@ -655,11 +695,21 @@ class Fileserver
                               " doesn't exist, stopping sanitization.");
                     return $this->selectedFiles;
                 }
+                if (realpath($newPath)) {
+                    $newPath = $this->getPostfixedPath($newPath);
+                    if (!$newPath) {
+                        error_log("Path ". $newPath . " already exists and " .
+                                  "no viable suffixed alternative was found. " .
+                                  "Sanitization skipped for " . $oldPath . ".");
+                        continue;
+                    }
+                }
                 rename($oldPath, $newPath);
                 $this->selectedFiles[$key] = $sanitized;
             }
         }
-        
+
+        $this->selectionSanitized = true;
         return $this->selectedFiles;
     }
 
@@ -689,6 +739,9 @@ class Fileserver
         $new = array_diff($files, $selected);
         $this->selectedFiles = array_merge($new, $this->selectedFiles);
         sort($this->selectedFiles);
+
+        // After adding any files, set the selectionSanitized to false.
+        $this->selectionSanitized = false;
     }
 
     /**

@@ -515,7 +515,8 @@ class FileserverV2
 
     /**
      * Remove any non-ASCII characters and convert known non-ASCII characters
-     * to their ASCII equivalents, if possible. Also, replaces blank spaces with "_".
+     * to their ASCII equivalents, if possible. Also, replaces blank spaces
+     * with "_".
      *
      * @param string $string
      * @return string $string
@@ -523,21 +524,15 @@ class FileserverV2
      * @license MIT License
      * @link http://gist.github.com/119517
      *
-     * Modified by Aaron Ponti for the HRM project.
+     * Modified by Aaron Ponti and Kevin Namink for the HRM project.
      */
-    private static function sanitizeFileName($string)
+    public static function sanitizeFileName($string)
     {
         // Replace Single Curly Quotes
         $search[]  = chr(226).chr(128).chr(152);
         $replace[] = "'";
         $search[]  = chr(226).chr(128).chr(153);
         $replace[] = "'";
-
-        // Replace Smart Double Curly Quotes
-        $search[]  = chr(226).chr(128).chr(156);
-        $replace[] = '"';
-        $search[]  = chr(226).chr(128).chr(157);
-        $replace[] = '"';
 
         // Replace En Dash
         $search[]  = chr(226).chr(128).chr(147);
@@ -547,26 +542,20 @@ class FileserverV2
         $search[]  = chr(226).chr(128).chr(148);
         $replace[] = '---';
 
-        // Replace Bullet
-        $search[]  = chr(226).chr(128).chr(162);
-        $replace[] = '*';
-
-        // Replace Middle Dot
-        $search[]  = chr(194).chr(183);
-        $replace[] = '*';
-
         // Replace Ellipsis with three consecutive dots
         $search[]  = chr(226).chr(128).chr(166);
         $replace[] = '...';
 
+        // Replace blank spaces with underscores
+        $search[]  = " ";
+        $replace[] = "_";
+        
         // Apply Replacements
         $string = str_replace($search, $replace, $string);
 
-        // Remove any non-ASCII Characters
-        $string = preg_replace("/[^\x01-\x7F]/","_", $string);
-
-        // Replace blank spaces with underscores
-        $string = str_replace(" ", "_", $string);
+        // Replace non-ASCII characters and any characters that are not
+        // one of the following: "!%^&=',._" "0-9" "A-Z" "a-z" with "_".
+        $string = preg_replace("/[^\!\%\^\&\=\'\,\.\_0-9A-Za-z]/","_", $string);
 
         return $string;
     }
