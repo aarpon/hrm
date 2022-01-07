@@ -456,7 +456,7 @@ foreach ($files as $file) {
                 "names have been selected. These files will automatically " .
                 "be renamed on disk if you continue.</p>" .
                 "<p>For example a file called \"B@d img(náme).h5\" " .
-                "would be renamed to \"B_d_img_n_me_.h5\".</p>";
+                "would be renamed to \"B_d_img_n__me_.h5\".</p>";
         }
         ?>
     </div>
