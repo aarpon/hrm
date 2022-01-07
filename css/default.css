@@ -1675,6 +1675,10 @@ select {
     padding: 5px;
 }
 
+select:disabled {
+    color: #777777;
+}
+
 select.snrselect {
     width: 80px;    
     margin-left: 7px;
