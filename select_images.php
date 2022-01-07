@@ -44,6 +44,7 @@ if (!isset($_SESSION['fileserver']) || $_SESSION['fileserver'] == null) {
     // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
     $_SESSION['fileserver'] = new Fileserver($name);
 }
+
 if (!isset($_SESSION['parametersetting'])) {
     $_SESSION['parametersetting'] = new ParameterSetting();
 }
@@ -392,7 +393,7 @@ include("footer.inc.php");
         sortOptions("filesPerFormat");
     }
 
-    // Update bot files and selected files elements
+    // Update both files and selected files elements
     function updateFilesAndSelectedFiles(response) {
         if (response["success"] === "false") {
 

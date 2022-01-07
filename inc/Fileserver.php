@@ -710,6 +710,7 @@ class Fileserver
         }
 
         $this->selectionSanitized = true;
+        $this->getFiles();
         return $this->selectedFiles;
     }
 
