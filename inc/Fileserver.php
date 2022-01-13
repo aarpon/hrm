@@ -660,9 +660,13 @@ class Fileserver
             return true;
         }
 
+        // Compare the filename with it's sanitized version. If not the same
+        // it needs sanitization.
         foreach ($this->selectedFiles as $key => $file) {
-            $sanitized = FileserverV2::sanitizeFileName($file);
-            if (strcmp($file, $sanitized) !== 0) {
+            $fileName = pathinfo($file, PATHINFO_FILENAME);
+            $sanitized = FileserverV2::sanitizeFileName($fileName);
+            
+            if (strcmp($fileName, $sanitized) !== 0) {
                 $this->selectionSanitized = false;
                 return false;
             }
@@ -685,16 +689,42 @@ class Fileserver
             return $this->selectedFiles;
         }
         
+        // Compare the filename and it's sanitized version, enter sanitization
+        // when they are not the same.
+        $renamesDone = array();
         foreach ($this->selectedFiles as $key => $file) {
-            $sanitized = FileserverV2::sanitizeFileName($file);
-            if (strcmp($file, $sanitized) !== 0) {
-                $oldPath = realpath($this->sourceFolder() . "/" . $file);
-                $newPath = $this->sourceFolder() . "/" . $sanitized;
-                if (!$oldPath) {
-                    error_log("Path " . $oldPath .
-                              " doesn't exist, stopping sanitization.");
-                    return $this->selectedFiles;
+            $fileName = pathinfo($file, PATHINFO_FILENAME);
+            $sanitized = FileserverV2::sanitizeFileName($fileName);
+            
+            if (strcmp($fileName, $sanitized) !== 0) {
+
+                // Create the actual paths of the files (the extension might
+                // have to be modified, so it is processed a little bit).
+                $extension = pathinfo($file, PATHINFO_EXTENSION);
+                $extensionProcessed = explode(" ", $extension)[0];
+                
+                $oldPath = $this->sourceFolder() .
+                    "/" . $fileName . "." . $extensionProcessed;
+                $newPath = $this->sourceFolder() .
+                    "/" . $sanitized . "." . $extensionProcessed;
+                
+                // Check if the old path exists. If not it might have already
+                // been renamed, so check $renamesDone. 
+                if (!realpath($oldPath)) {
+                    
+                    if (array_key_exists($fileName, $renamesDone)) {
+                        $sanitized = $renamesDone[$fileName];
+                        $this->selectedFiles[$key] = $sanitized . "." .
+                            $extension;
+                    } else {
+                        error_log("Path " . $oldPath . " can't be found " .
+                                  "during sanitization.");
+                    }
+                    continue;
                 }
+                
+                // Check the new path. If it exsists already find an
+                // alternative path by adding a postfix. 
                 if (realpath($newPath)) {
                     $newPath = $this->getPostfixedPath($newPath);
                     if (!$newPath) {
@@ -705,7 +735,8 @@ class Fileserver
                     }
                 }
                 rename($oldPath, $newPath);
-                $this->selectedFiles[$key] = $sanitized;
+                $renamesDone[$fileName] = $sanitized;
+                $this->selectedFiles[$key] = $sanitized . "." . $extension;
             }
         }
 
