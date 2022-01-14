@@ -732,6 +732,8 @@ class Fileserver
                                   "no viable suffixed alternative was found. " .
                                   "Sanitization skipped for " . $oldPath . ".");
                         continue;
+                    } else {
+                        $sanitized = pathinfo($newPath, PATHINFO_FILENAME);
                     }
                 }
                 rename($oldPath, $newPath);
@@ -2510,6 +2512,31 @@ class Fileserver
 
         if ($src == "src") {
             $psrc = $this->sourceFolder();
+            
+            // Check "src" files for sanitization, since they might not have
+            // been santized before.
+            $fileName = pathinfo($file, PATHINFO_FILENAME);
+            $sanitized = FileserverV2::sanitizeFileName($fileName);
+            if (strcmp($fileName, $sanitized) !== 0) {
+
+                // Backup the current selection, then set the current file as
+                // selection. 
+                $selectedBackup = $this->selectedFiles();
+                $this->removeAllFilesFromSelection();
+                $fileArray = array(0 => $file);
+                $this->addFilesToSelection($fileArray);
+                $result = $this->sanitizeFiles();
+                if ($result) {
+                    // Successfull rename.
+                    $updateSelection = array_search($file, $selectedBackup);
+                    if ($updateSelection) {
+                        $selectedBackup[$updateSelection] = $result[0];
+                    }
+                    $file = $result[0];
+                }
+                $this->removeAllFilesFromSelection();
+                $this->addFilesToSelection($selectedBackup);
+            }
         } else {
             $psrc = $this->destinationFolder();
         }

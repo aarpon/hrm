@@ -920,8 +920,8 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
 
            // Preview doesn't exist, but you can create it now.
            link = "file_management.php?genPreview=" + infile + "&src=" + dir
-                  + "&data=" + data + '&index=' + index;
-
+                   + "&data=" + data + '&index=' + index;
+           
            onClick =  '<center><img src=\\\'images/spin.gif\\\' '
                 +                           'alt=\\\'busy\\\'><br />'
                 + '<small>Generating preview in another window.<br />'
