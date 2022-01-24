@@ -598,10 +598,10 @@ if (!$_SESSION['user']->isAdmin()) {
                      Duplicate
                 </td>
                 <td class="label">
-                     From<br />image
+                     Extract<br />from<br />image
                 </td>
                 <td class="label">
-                     Huygens<br />template
+                     Import<br />Huygens<br/>template<br/>
                 </td>
 <?php
 if (!$_SESSION['user']->isAdmin()) {

@@ -539,7 +539,7 @@ if (!$_SESSION['user']->isAdmin()) {
                      Duplicate
                     </td>
                     <td class="label">
-                     Huygens<br />template
+                     Import<br />Huygens<br />template
                     </td>
 <?php
 if (!$_SESSION['user']->isAdmin()) {

@@ -679,6 +679,7 @@ input.apply {
 #actions td.label {
     font-weight: bold;
     width: 50px;
+    vertical-align: top;
 }
 
 #omeroActions {
