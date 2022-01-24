@@ -245,33 +245,34 @@ include("header.inc.php");
 -->
 <span class="toolTip" id="ttSpanCreate">
         Create a new image template set with the specified name.
-    </span>
+</span>
 <span class="toolTip" id="ttSpanEdit">
         Edit the selected image template.
-    </span>
+</span>
 <span class="toolTip" id="ttSpanImageToTemplate">
         Generate template from image file.
-    </span>
+</span>
 <span class="toolTip" id="ttSpanHuygens">
-        Import a Huygens template.
-    </span>
+        Import a Huygens microscopy template (extension "hgsm").
+</span>
 <span class="toolTip" id="ttSpanClone">
-        Copy the selected image template to a new one with the
-      specified name.</span>
+        Copy the selected image template to a new one with the specified name.
+</span>
 <span class="toolTip" id="ttSpanShare">
-        Share the selected image template with one or more HRM users.</span>
+        Share the selected image template with one or more HRM users.
+</span>
 <span class="toolTip" id="ttSpanDelete">
         Delete the selected image template.
-    </span>
+</span>
 <span class="toolTip" id="ttSpanAcceptTemplate">
         Accept the template.
-    </span>
+</span>
 <span class="toolTip" id="ttSpanRejectTemplate">
         Reject the template.
-    </span>
+</span>
 <span class="toolTip" id="ttSpanPreviewTemplate">
         Preview the template.
-    </span>
+</span>
 <?php
 if (!$_SESSION['user']->isAdmin()) {
     ?>

@@ -191,37 +191,37 @@ $script = array( "settings.js", "common.js",
 include("header.inc.php");
 
 ?>
-    <!--
-      Tooltips
-    -->
-    <span class="toolTip" id="ttSpanCreate">
-        Create a new restoration template with the specified name.
-    </span>
-    <span class="toolTip" id="ttSpanHuygens">
-        Import a Huygens template.
-    </span>
-    <span class="toolTip" id="ttSpanEdit">
+<!--
+  Tooltips
+-->
+<span class="toolTip" id="ttSpanCreate">
+        Create a new restoration<br />template with the specified name.
+</span>
+<span class="toolTip" id="ttSpanHuygens">
+        Import a Huygens restoration template (extension "hgsd").
+</span>
+<span class="toolTip" id="ttSpanEdit">
         Edit the selected restoration template.
-    </span>
-    <span class="toolTip" id="ttSpanClone">
+</span>
+<span class="toolTip" id="ttSpanClone">
         Copy the selected restoration template to a new one with the
       specified name.
-    </span>
-    <span class="toolTip" id="ttSpanShare">
+</span>
+<span class="toolTip" id="ttSpanShare">
         Share the selected restoration template with one or more HRM users.
-    </span>
-    <span class="toolTip" id="ttSpanDelete">
+</span>
+<span class="toolTip" id="ttSpanDelete">
         Delete the selected restoration template.
-    </span>
-    <span class="toolTip" id="ttSpanAcceptTemplate">
+</span>
+<span class="toolTip" id="ttSpanAcceptTemplate">
         Accept the template.
-    </span>
-    <span class="toolTip" id="ttSpanRejectTemplate">
+</span>
+<span class="toolTip" id="ttSpanRejectTemplate">
         Reject the template.
-    </span>
-    <span class="toolTip" id="ttSpanPreviewTemplate">
+</span>
+<span class="toolTip" id="ttSpanPreviewTemplate">
         Preview the template.
-    </span>
+</span>
     <?php
       if (!$_SESSION['user']->isAdmin()) {
         ?>
