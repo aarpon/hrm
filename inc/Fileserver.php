@@ -1716,11 +1716,15 @@ class Fileserver
         if ($compare > 0) {
             $compare = 400;
         }
+        
+        // Also supply the sanitized name, to see if renaming is needed and
+        // handle it properly.
+        $sanitized = FileserverV2::sanitizeFileName($file);
 
         return
             "imgPrev('" . rawurlencode($file) . "', $mode, " .
-            (int)$genThumbnails . ", $compare, $index, '$dir', " .
-            "'$referer', $data)";
+            (int)$genThumbnails . ", '" . rawurlencode($sanitized) .
+            "', $compare, $index, '$dir', '$referer', $data)";
     }
 
     /**

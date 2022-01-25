@@ -887,11 +887,19 @@ function cancelSelection() {
     changeDiv('selection', control);
 }
 
-function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
+function changeFileSelectionValueAt(index, newName) {
+    document.getElementById('fileSelection')[index].value = newName;
+    document.getElementById('fileSelection')[index].text = newName;
+    setActionToUpdate();
+    document.getElementById('file_browser').submit();
+    
+}
 
+function imgPrev(infile, mode, gen, sanitized, compare, index,
+                 dir, referer, data) {
     var file = unescape(infile);
     var tip, html, link, onClick = "";
-
+    
     if (mode == 0 && gen == 1) {
         try
         {
@@ -907,7 +915,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
             mode = 0;
         }
     }
-
+    
     switch (mode)
     {
         case 0:
@@ -927,23 +935,30 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
                 + '<small>Generating preview in another window.<br />'
                 + 'Please wait...</small></center>';
 
-           html = '<input type="button" name="genPreview" value="" '
-                  +    'class="icon noPreview" '
-                  +    'onclick="'
-                  +        'changeDiv(\'info\',\'' + onClick + '\'); '
-                  +        'openTool(\'' + link + '\'); '
-                  +    '"'
-                  + '>'
-                  + '<br />'
-                  + '<div class="expandedView" '
-                  +    'onclick="'
-                  +        'changeDiv(\'info\',\'' + onClick + '\'); '
-                  +        'openTool(\'' + link + '\'); '
-                  +    '"'
-                  + '>'
-                  + '<img src="images/eye.png"> '
-                  + 'Click to generate preview'
-                  + '</div>';
+               html = '<input type="button" name="genPreview" value="" '
+                   +    'class="icon noPreview" '
+                   +    'onclick="'
+                   +        'changeDiv(\'info\',\'' + onClick + '\'); '
+                   +        'openTool(\'' + link + '\'); '
+                   +    '"'
+                   + '>'
+                   + '<br />'
+                   + '<div class="expandedView" '
+                   +    'onclick="'
+                   +        'changeDiv(\'info\',\'' + onClick + '\'); '
+                   +        'openTool(\'' + link + '\'); ';
+               if ( infile != sanitized ) {
+                   html = html + 'changeFileSelectionValueAt(\''
+                       + index + '\', \'' + unescape(sanitized) + '\'); ';
+               }
+               html = html +    '"'
+                   + '>'
+                   + '<img src="images/eye.png"> '
+                   + 'Click to generate preview';
+               if ( infile != sanitized ) {
+                   html = html + ' (the file will be renamed)';
+               }
+               html = html + '</div>';
            }
 
            break;
