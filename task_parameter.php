@@ -488,6 +488,54 @@ include("header.inc.php");
                 </select>
         </div> <!-- Autocrop -->
 
+            
+        <div id="BleachingMode">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('bleaching');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpBleaching')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Bleaching Correction
+                </legend>
+
+                <select id="BleachingMode"
+                        title="Bleaching Mode"
+                        name="BleachingMode"
+                        class="selection">
+                    <?php
+
+                    /*
+                          BLEACHINIG MODE
+                    */
+                    $parameterBlMode =
+                        $_SESSION['task_setting']->parameter("BleachingMode");
+                    $possibleValues = $parameterBlMode->possibleValues();
+                    $selectedMode = $parameterBlMode->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterBlMode->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- BleachingMode -->
+
+            
         <div id="ArrayDetectorReductionMode">
         <?php
             if ($_SESSION['user']->isAdmin()

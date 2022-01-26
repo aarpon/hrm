@@ -6165,6 +6165,52 @@ if ($current_revision < $n) {
         return false;
     }
 
+    // -------------------- Add bleaching mode option ------------------------
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "BleachingMode";
+    $record["value"] = "auto";
+    $record["translation"] = "Apply a correction for bleaching";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "BleachingMode";
+    $record["value"] = "off";
+    $record["translation"] = "Do not apply a bleaching correction";
+    $record["isDefault"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
     // Update revision
     if(!update_dbrevision($n))
         return;

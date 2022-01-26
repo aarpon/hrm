@@ -592,7 +592,7 @@ class HuygensTemplate
                   'bgMode'     => '',
                   'bg'         => '',
                   'sn'         => '',
-                  'blMode'     => 'auto',
+                  'blMode'     => '',
                   'pad'        => 'auto',
                   'reduceMode' => 'auto',
                   'psfMode'    => '',
@@ -1963,8 +1963,10 @@ class HuygensTemplate
             switch ($key) {
                 case 'timeOut':
                 case 'pad':
-                case 'blMode':
                     $taskDescr .= $value;
+                    break;
+                case 'blMode':
+                    $taskDescr .= $this->getBleachingMode();
                     break;
                 case 'q':
                     $taskDescr .= $this->getQualityFactor();
@@ -2151,6 +2153,20 @@ class HuygensTemplate
         }
     }
 
+    /**
+     * Gets the bleaching mode.
+     * @return string Bleaching mode.
+     */
+    private function getBleachingMode()
+    {
+        /** @var TaskSetting $deconSetting */
+        $deconSetting = $this->deconSetting;
+
+        $blMode = $deconSetting->parameter("BleachingMode")->value();
+        
+        return $blMode;
+    }
+    
     /**
      * Gets the SNR value. One channel.
      * @param int $channel A channel

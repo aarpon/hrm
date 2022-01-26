@@ -43,6 +43,7 @@ class TaskSetting extends Setting
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
             'ArrayDetectorReductionMode',
+            'BleachingMode',
             'ZStabilization',
             'ChromaticAberration',
             'TStabilization',
@@ -285,6 +286,17 @@ class TaskSetting extends Setting
         if (isset($postedParameters["Autocrop"]) || $postedParameters["Autocrop"] == '') {
             $parameter = $this->parameter("Autocrop");
             $parameter->setValue($postedParameters["Autocrop"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // Bleaching Mode
+        if (isset($postedParameters["BleachingMode"]) || $postedParameters["BleachingMode"] == '') {
+            $parameter = $this->parameter("BleachingMode");
+            $parameter->setValue($postedParameters["BleachingMode"]);
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
@@ -693,6 +705,16 @@ class TaskSetting extends Setting
             $this->parameter['Autocrop']->setValue($autocrop);
         }
 
+        // Bleaching mode.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            $key = $algArray[$chan] . ":" . $chan . " blMode";
+            if (isset($huArray[$key]) && $huArray[$key] != "off") {
+                $blMode = $huArray[$key];
+                $this->parameter('BleachingMode')->setValue($blMode);
+                break;
+            }
+        }
+        
         // Background.
         // Set it to manual only if all channels are specified.
         // Otherwise set it to the first other mode encountered.
@@ -790,7 +812,6 @@ class TaskSetting extends Setting
             }
         }
         $this->parameter["QualityChangeStoppingCriterion"]->setValue($qMin);
-
 
         // Stabilization in Z.
         if (isset($huArray['stabilize enabled'])) {
