@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "224fdcc60077afc1f8dc80baf3d49852",
+    "content-hash": "b588929232a140c1e0d689a1a0783ef0",
     "packages": [
         {
             "name": "aarpon/php-traditional-server_old",
@@ -88,16 +88,16 @@
         },
         {
             "name": "adodb/adodb-php",
-            "version": "v5.20.14",
+            "version": "v5.20.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "a32113c6b3e4e2cb8ae6b49752527d5668a9d7a6"
+                "reference": "6c38e6c614802acd3151444a71191912edcec965"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/a32113c6b3e4e2cb8ae6b49752527d5668a9d7a6",
-                "reference": "a32113c6b3e4e2cb8ae6b49752527d5668a9d7a6",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/6c38e6c614802acd3151444a71191912edcec965",
+                "reference": "6c38e6c614802acd3151444a71191912edcec965",
                 "shasum": ""
             },
             "require": {
@@ -142,7 +142,7 @@
                 "issues": "https://github.com/ADOdb/ADOdb/issues",
                 "source": "https://github.com/ADOdb/ADOdb"
             },
-            "time": "2019-01-05T23:16:44+00:00"
+            "time": "2022-01-22T22:38:02+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -2436,5 +2436,5 @@
         "php": ">5.5.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }
