@@ -46,7 +46,7 @@
   ],
   "require": {
     "php": ">5.5.0",
-    "adodb/adodb-php": "v5.20.14",
+    "adodb/adodb-php": "v5.20.21",
     "adldap2/adldap2": "4.0.5",
     "aarpon/php-traditional-server_old": "1.0.2",
     "monolog/monolog": "1.19.0"
