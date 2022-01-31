@@ -34,13 +34,8 @@ class BleachingMode extends ChoiceParameter
      */
     public function displayString($numberOfChannels = 0)
     {
-        if ($this->value() == 0) {
-            $value = "off";
-        } else {
-            $value = "auto";
-        }
         $result = $this->formattedName();
-        $result = $result . $value . "\n";
+        $result = $result . $this->value . "\n";
         return $result;
     }
 }
