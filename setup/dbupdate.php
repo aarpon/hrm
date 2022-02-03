@@ -6052,12 +6052,13 @@ if ($current_revision < $n) {
 // Update to revision 19
 // Description:
 //     * Update translation for Imaris format
+//     * Update display name of the Imaris format
 //     * Add Olympus VSI file format
 //     * Increase maximum number of iterations to 1000
 // -----------------------------------------------------------------------------
 $n = 19;
 if ($current_revision < $n) {
-
+	
     // Correct Imaris' default.
     $tabname = 'possible_values';
     $record = array();
@@ -6068,6 +6069,21 @@ if ($current_revision < $n) {
     if (!$db->AutoExecute($tabname, $record, 'UPDATE', 
         "parameter='OutputFileFormat' and translation='Imaris'")) {
         $msg = "Could not correct entry for OutputFileFormat Imaris in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+	
+    // Correct Imaris' displayed name to reflect support for Imaris 5.5 files.
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'ImageFileFormat';
+    $record["value"]       = 'ims';
+    $record["translation"] = 'Imaris Classic/Imaris 5.5 (*.ims)';
+    $record["isDefault"]   = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', 
+        "parameter='ImageFileFormat' and value='ims'")) {
+        $msg = "Could not correct entry for ImageFileFormat ims in possible_values.";
         write_message($msg);
         write_to_error($msg);
         return false;
