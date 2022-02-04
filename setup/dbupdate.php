@@ -6116,7 +6116,7 @@ if ($current_revision < $n) {
         $record["isDefault"] . "'";
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
-            $msg = error_message($tabname);
+            $msg = "Could not add entry for Olympus VSI in table 'possible_values'.";
             write_message($msg);
             write_to_error($msg);
             return false;
@@ -6135,8 +6135,7 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "An error occurred while updating " .
-                "the database to revision " . $n . ".";
+            $msg = "Could not add entry for Olympus VSI in table 'file_extension'.";
             write_message($msg);
             write_to_error($msg);
             return;
