@@ -42,6 +42,8 @@ use hrm\user\UserConstants;
 
 require_once  dirname( __FILE__ ) . '/../inc/bootstrap.php';
 
+$ADODB_DEBUGGING = false;
+
 // Database last revision
 $LAST_REVISION = System::getDBLastRevision( );
 
@@ -88,6 +90,11 @@ function write_message($msg) {
     }
     else echo $msg . "\n";
 }
+
+// An override for ADODB's default logging function
+function myAdodbDebugLogger($msg, $discard) {
+    print "\nADODB DEBUG: $msg";
+} 
 
 
 // Return an error message
@@ -371,6 +378,11 @@ write_to_error(timestamp());
 
 // Connect to the database server
 $db = ADONewConnection($db_type);
+if ($ADODB_DEBUGGING === true) {
+    DEFINE ('ADODB_OUTP','myAdodbDebugLogger');
+    $db->debug = true;
+}
+
 $success = $db->Connect($db_host, $db_user, $db_password);
 if ($success === false) {
     $msg = "Cannot connect to the database server on $db_host.";
