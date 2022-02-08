@@ -447,6 +447,8 @@ class FileserverV2
 
             }
 
+            // $perms = substr(sprintf('%o', fileperms($httpDownloadTempFilesDir)), -4);
+            // Log::info("Permissions: " . $perms);
             if (! chmod($httpDownloadTempFilesDir, 0775)) {
                 Log::warning("Adjusting permissions failed on " . $httpDownloadTempFilesDir);
             }
