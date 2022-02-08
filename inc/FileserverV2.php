@@ -438,10 +438,10 @@ class FileserverV2
         if (isset($allowHttpTransfer) && $allowHttpTransfer == true) {
             // Does the download directory exist?
             if (!is_dir($httpDownloadTempFilesDir)) {
-                // Try creating it
+                Log::info("Trying to create " . $httpDownloadTempFilesDir);
                 $result &= mkdir($httpDownloadTempFilesDir, 0775);
                 if (! $result) {
-                    // @todo Report!
+                    Log::error("ERROR creating " . $httpDownloadTempFilesDir);
                     return false;
                 }
 
@@ -466,10 +466,10 @@ class FileserverV2
 
             // Does the chunk upload directory exist?
             if (!is_dir($httpUploadTempChunksDir)) {
-                // Try creating it
+                Log::info("Trying to create " . $httpUploadTempChunksDir);
                 $result &= mkdir($httpUploadTempChunksDir, 0775);
                 if (! $result) {
-                    // @todo Report!
+                    Log::error("Error creating " . $httpUploadTempChunksDir);
                     return false;
                 }
             }
@@ -488,10 +488,10 @@ class FileserverV2
 
             // Does the file upload directory exist?
             if (!is_dir($httpUploadTempFilesDir)) {
-                // Try creating it
+                Log::info("Trying to create " . $httpUploadTempFilesDir);
                 $result &= mkdir($httpUploadTempFilesDir, 0775);
                 if (! $result) {
-                    // @todo Report!
+                    Log::error("Error creating " . $httpUploadTempFilesDir);
                     return false;
                 }
 
