@@ -11,6 +11,9 @@ After=mysql.service network.target network-online.target
 # If needed, change 'User=' and 'Group=' to point to the correct values.
 User=hrm
 Group=hrm
+# Setting UMask is required to allow the Queue Manager for relaxing permissions
+# of the upload / download directories so Apache is allowed to write there:
+UMask=0002
 ExecStart=/var/www/html/hrm/bin/hrm_queuemanager --detach
 Type=forking
 PIDFile=/var/log/hrm/hrmd.pid
