@@ -447,6 +447,10 @@ class FileserverV2
 
             }
 
+            if (! chmod($httpDownloadTempFilesDir, 0775)) {
+                Log::warning("Adjusting permissions failed on " . $httpDownloadTempFilesDir);
+            }
+
             // Check that the download directory is writable
             $fid = @fopen("$httpDownloadTempFilesDir/$fname", "w");
             if (false === $fid) {
@@ -474,6 +478,10 @@ class FileserverV2
                 }
             }
 
+            if (! chmod($httpUploadTempChunksDir, 0775)) {
+                Log::warning("Adjusting permissions failed on " . $httpUploadTempChunksDir);
+            }
+
             // Check that the chunk upload directory is writable
             $fid = @fopen("$httpUploadTempChunksDir/$fname", "w");
             if (false === $fid) {
@@ -495,6 +503,10 @@ class FileserverV2
                     return false;
                 }
 
+            }
+
+            if (! chmod($httpUploadTempFilesDir, 0775)) {
+                Log::warning("Adjusting permissions failed on " . $httpUploadTempFilesDir);
             }
 
             // Check that the file upload directory is writable
