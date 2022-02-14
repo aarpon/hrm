@@ -258,8 +258,11 @@ function setChromaticChannelReference( chan ) {
             inputElement.value = 0;
         }
     }
-
-
+    
+    var id = channelTag + "DiscardOtherCh" + chan;
+    buttonElement = document.getElementById(id);
+    buttonElement.setAttribute('hidden', true);
+    
     // todo: make sure it is "reset" in the case of 14 parameters.
     
     var tag = "ReferenceChannel";
@@ -280,12 +283,10 @@ function clearChromaticChannelReference( ) {
 
         // If there are 14 parameters known for this chanenl don't make
         // it editable.
-        var id = channelTag + "ResetCh";
+        var id = channelTag + "DiscardOtherCh";
         id = id.concat(chan);
-        console.log(id);
         inputElement = document.getElementById(id);
         var nonEditable14params = !inputElement.getAttribute('hidden');
-        console.log(nonEditable14params);
         
         for (var component = 0; component < componentCnt; component++) {
             var id = channelTag + "Ch";
@@ -311,7 +312,7 @@ function changeChromaticChannelReference(selectObj) {
 }
 
 function editChromaticChannelWith14Params(selectObj) {
-    selectObj.setAttribute('hidden', false);
+    selectObj.setAttribute('hidden', true);
     clearChromaticChannelReference( );
     
     var tag = "ReferenceChannel";

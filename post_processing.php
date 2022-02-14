@@ -197,11 +197,11 @@ if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForCAC(
                         
                             ?>
                              <td><input type="button"
-                                     id="ChromaticAberrationResetCh<?php echo $chan?>"
-                                     name="ChromaticAberrationResetCh<?php echo $chan?>"
-                                     title="Discard other corrections to edit the remaining"
+                                     id="ChromaticAberrationDiscardOtherCh<?php echo $chan?>"
+                                     name="ChromaticAberrationDiscardOtherCh<?php echo $chan?>"
+                                     title="Discard this channel's other components to edit the remaining"
                                      value="Discard other"
-                                     <?php if ($chromaticParam[$chan]->value()[13] == null && $chan < 3) { echo 'hidden=true'; } ?>
+                                     <?php if ($chromaticParam[$chan]->value()[13] == null) { echo 'hidden=true'; }?>
                                      onclick="editChromaticChannelWith14Params(this)"/></td>
                         </tr>
                         <?php

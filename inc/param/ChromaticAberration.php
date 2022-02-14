@@ -160,7 +160,7 @@ class ChromaticAberration extends Parameter
             $valuesArray = array("0","0","0","0","1");
         }
         $this->value->setValue($valuesArray);
-        
+        error_log($this->internalValue());
     }
 
     /**

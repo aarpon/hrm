@@ -354,8 +354,6 @@ class TaskSetting extends Setting
         }
         
         
-        
-        
         // Set the values. Overwrite only when the value has changed,
         // otherwise the higher order corrections (which when present are not
         // editable) can be overwritten.
@@ -830,28 +828,28 @@ class TaskSetting extends Setting
         $maxCmp = $this->parameter['ChromaticAberrationCh0']->maxComponentCnt();
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             $key = "shift:" . $chan . " vector";
-
+            
             unset($vector);
             if (isset($huArray[$key])) {
-                $vector = explode(" ", $huArray[$key], $compCnt);
+                $vector = explode(' ', $huArray[$key], $maxCmp);
             }
             
             unset($aberration);
             for ($comp = 0; $comp < $maxCmp; $comp++) {
                 if (isset($vector[$comp])) {
-                    $aberration[$compKey] = $vector[$comp];
+                    $aberration[$comp] = $vector[$comp];
                 } else {
                     // A CAC correction template should have one of 3, 4, 5 or
                     // 14 components. The first 5 are editable and have to
                     // exist. Components 6 to 14 are either present or should
                     // not be present.
                     if ($comp < 4) {
-                        $aberration[$compKey] = 0.;
+                        $aberration[$comp] = 0.;
                     } elseif ($comp < 5) {
                         // Scale component.
-                        $aberration[$compKey] = 1.;
+                        $aberration[$comp] = 1.;
                     } else {
-                        $aberration[$compKey] = null;
+                        $aberration[$comp] = null;
                     }
                 }
             }
