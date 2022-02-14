@@ -14,11 +14,8 @@ use hrm\param\base\NumericalVectorParameter;
 use hrm\param\base\Parameter;
 
 /**
- * A multi-channel, vector parameter to characterize the chromatic aberration.
- *
- * @todo This did not inherit from any base class. Now it inherits from Parameter.
- * Make sure that it still works as expected!
- *
+ * A single-channel, vector parameter to characterize the chromatic aberration.
+ * Has one instance per channel.
  *
  * @package hrm
  */
@@ -32,13 +29,22 @@ class ChromaticAberration extends Parameter
     public $value;
 
     /**
-     * The number of channels for which a vector is needed.
+     * The channel this vector discribes.
      * @var int
      */
-    public $chanCnt;
+    public $channel;
+
+    
+    /**
+     * The maximum numer of vector components used to describe the CA.
+     * @var int
+     */
+    public $maxComponentCnt;
+
 
     /**
-     * The numer of vector components used to describe the CA. Currently 5.
+     * The numer of vector components used to describe the CA. Currently 5 or
+     * 14.
      * @var int
      */
     public $componentCnt;
@@ -48,27 +54,35 @@ class ChromaticAberration extends Parameter
      *
      * This method does NOT call the parent constructor!
      *
-     * @todo: Provide an input argument $chanCnt with the number of channels of
-     * the data set.
      */
-    public function __construct()
+    public function __construct($ch)
     {
 
-        $this->name = "ChromaticAberration";
-
-        /* 5 components for shift x, y, z, rotation and scale. */
+        $this->name = "ChromaticAberrationCh" . $ch;
+        $this->channel = $ch;
+        
+        /* 14 components for shift x, y, z, rotation,  scaleX, scaleY, scaleZ,
+           angleX, angleY, barrelPincushion1, barrelPincushion2,
+           barrelPincushion3, barrelPincushionXcenter,
+           barrelPincushionYcenter. Return either the first 5 or all 14
+           parametes, depending on the input. Default to componentCnt 5.*/
+        $this->maxComponentCnt = 14;
         $this->componentCnt = 5;
 
-        $db = DatabaseConnection::get();
-        $this->chanCnt = $db->getMaxChanCnt();
-
-        // Add a NumericalVectorParameter per channel
-        for ($chan = 0; $chan < $this->chanCnt; $chan++) {
-            $this->value[$chan] = new NumericalVectorParameter(
-                $this->name() . "Ch" . $chan, $this->componentCnt());
-        }
+        // Add a NumericalVectorParameter per channel with maxComponentCnt size.
+        $this->value = new NumericalVectorParameter(
+            $this->name(), $this->maxComponentCnt());
     }
 
+    /**
+     * A function for retrieving the maximum number of elements of the vector.
+     * @return int The number of vector elements.
+     */
+    public function maxComponentCnt()
+    {
+        return $this->maxComponentCnt;
+    }
+    
     /**
      * A function for retrieving the number of elements of the vector.
      * @return int The number of vector elements.
@@ -78,6 +92,15 @@ class ChromaticAberration extends Parameter
         return $this->componentCnt;
     }
 
+    /**
+     * A function for retrieving the number of elements to show of the vector.
+     * @return int The number of vector elements.
+     */
+    public function shownComponentCnt()
+    {
+        return $this->componentCnt();
+    }
+    
     /**
      * Checks whether the Parameter is a Task Parameter.
      * @return bool Always true.
@@ -99,23 +122,15 @@ class ChromaticAberration extends Parameter
 
     /**
      * The string representation of the Parameter.
-     * @param int $chanCnt The number of channels.
      * @return string String representation of the Parameter.
      */
     public function displayString($chanCnt = 0)
     {
-        $result = "";
-
-        if (!is_numeric($chanCnt)) {
-            $db = DatabaseConnection::get();
-            $chanCnt = $db->getMaxChanCnt();
+        // Don't show anything when the channel is irrelevant.
+        if ($this->channel > $chanCnt) {
+            return "";
         }
-
-        for ($i = 0; $i < $chanCnt; $i++) {
-            $result .= $this->value[$i]->displayString();
-        }
-
-        return $result;
+        return rtrim($this->value->displayString(), ", \n\r\t\v\x00"). "\n";
     }
 
     /**
@@ -126,7 +141,7 @@ class ChromaticAberration extends Parameter
      */
     public function setValue($values)
     {
-
+        // If it comes from the database explode it into an array.
         if (!is_array($values)) {
             /* The first element of the array will be empty due to the explode. */
             $valuesArray = explode('#', $values);
@@ -134,16 +149,18 @@ class ChromaticAberration extends Parameter
         } else {
             $valuesArray = $values;
         }
-
+        
         if (empty($valuesArray) || is_null($valuesArray)) {
             return;
         }
 
-        for ($chan = 0; $chan < $this->chanCnt; $chan++) {
-            $offset = $chan * $this->componentCnt;
-            $chanArray = array_slice($valuesArray, $offset, $this->componentCnt);
-            $this->value[$chan]->setValue($chanArray);
+        // If component count is 14: set the values so it is recognized as
+        // reference when it would be the reference.
+        if (array_count_values($valuesArray)["0.0"] == 14) {
+            $valuesArray = array("0","0","0","0","1");
         }
+        $this->value->setValue($valuesArray);
+        
     }
 
     /**
@@ -156,28 +173,17 @@ class ChromaticAberration extends Parameter
 
         /* The first element of the array will be empty due to the explode. */
         unset($valuesArray[0]);
-
+        
         /* Re-index with array_values. */
         return array_values($valuesArray);
     }
 
-    /**
-     * A function for retrieving the parameter value for a specific channel
-     * @param int $chan The requested channel.
-     * @return array An array with one component per vector element.
-     */
-    public function chanValue($chan)
-    {
-        $valuesArray = $this->value();
-        $offset = $chan * $this->componentCnt;
-        $chanArray = array_slice($valuesArray, $offset, $this->componentCnt);
-
-        return $chanArray;
-    }
-
+    
     /**
      * A function to set the number of channels for the correction.
      * @param int $chanCnt The number of channels.
+     *
+     * TODO: not necessary?
      */
     public function setNumberOfChannels($chanCnt)
     {
@@ -203,13 +209,7 @@ class ChromaticAberration extends Parameter
      */
     public function internalValue()
     {
-        $result = "";
-
-        for ($i = 0; $i < $this->chanCnt; $i++) {
-            $result .= $this->value[$i]->value();
-        }
-
-        return $result;
+        return $this->value->value();
     }
 
     /**

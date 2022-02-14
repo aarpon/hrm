@@ -17,6 +17,7 @@ window.helpText[ "chromatic" ] =
     'be used in this table to correct the images for chromatic aberration ' +
     'in batch mode.</p><p>To <b>skip</b> this step just leave the table ' +
     'fields empty.';
+// TODO
 window.helpText[ "default" ] =
     '<p>On this page you specify the parameters of those ' +
     'restoration operations to be carried out on the deconvolved ' +

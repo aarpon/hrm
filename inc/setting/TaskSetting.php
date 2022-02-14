@@ -44,15 +44,30 @@ class TaskSetting extends Setting
             'DeconvolutionAlgorithm',
             'ArrayDetectorReductionMode',
             'ZStabilization',
-            'ChromaticAberration',
+            'ChromaticAberrationCh0',
+            'ChromaticAberrationCh1',
+            'ChromaticAberrationCh2',
+            'ChromaticAberrationCh3',
+            'ChromaticAberrationCh4',
+            'ChromaticAberrationCh5',
             'TStabilization',
             'TStabilizationMethod',
             'TStabilizationRotation',
             'TStabilizationCropping',
-	    'HotPixelCorrection');
+            'HotPixelCorrection');
 
         // Instantiate the Parameter objects
         foreach ($parameterClasses as $class) {
+            if (strpos($class, 'ChromaticAberration') !== false) {
+                $ch = substr($class, -1, 1);
+                $className = 'hrm\\param\\ChromaticAberration';
+                $param = new $className($ch);
+                /** @var Parameter $param */
+                $name = $param->name();
+                $this->parameter[$name] = $param;
+                $this->numberOfChannels = null;
+                continue;
+            }
             $className = 'hrm\\param\\' . $class;
             $param = new $className;
             /** @var Parameter $param */
@@ -337,22 +352,34 @@ class TaskSetting extends Setting
         if (!$noErrorsFound) {
             return $noErrorsFound;
         }
-
-        $parameter = $this->parameter("ChromaticAberration");
-
-        /* The posted parameters are received in increasing 'chan component'
-           order. */
-        $i = 0;
+        
+        
+        
+        
+        // Set the values. Overwrite only when the value has changed,
+        // otherwise the higher order corrections (which when present are not
+        // editable) can be overwritten.
+        // Every 5 indexes are a channel.
+        $ch = 0;
+        $newVal = array();
         foreach ($postedParameters as $name => $param) {
             if (strpos($name, 'ChromaticAberration') === false) {
                 continue;
             }
-
-            $valuesArray[$i] = $param;
-            $i++;
+            
+            $newVal[] = $param;
+            if (count($newVal) == 5) {
+                $parameter = $this->parameter("ChromaticAberrationCh".$ch);
+                $oldVal    = $parameter->value();
+                if (array_splice($oldVal, 0, 5) == $newVal) {
+                    // The relevant values have not changed; no work needed.
+                } else {
+                    $parameter->setValue($newVal);
+                }
+                $ch++;
+                $newVal = array();
+            }
         }
-
-        $parameter->setValue($valuesArray);
 
         return $noErrorsFound;
     }
@@ -515,7 +542,8 @@ class TaskSetting extends Setting
             if ($parameter->name() == 'TStabilizationCropping' && ($TStabilization == 0 || $timeInterval == 0)) {
                 continue;
             }
-            if ($parameter->name() == 'ChromaticAberration' && $numberOfChannels == 1) {
+            if (strpos($parameter->name(), 'ChromaticAberration') !== false
+                && $numberOfChannels == 1) {
                 continue;
             }
             if ($parameter->name() == 'ArrayDetectorReductionMode' && !strstr($micrType, "array detector confocal")) {
@@ -799,7 +827,7 @@ class TaskSetting extends Setting
         }
 
         // Chromatic Aberration.
-        $compCnt = 5;
+        $maxCmp = $this->parameter['ChromaticAberrationCh0']->maxComponentCnt();
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             $key = "shift:" . $chan . " vector";
 
@@ -807,24 +835,29 @@ class TaskSetting extends Setting
             if (isset($huArray[$key])) {
                 $vector = explode(" ", $huArray[$key], $compCnt);
             }
-
-            for ($comp = 0; $comp < $compCnt; $comp++) {
-                $compKey = $chan * $compCnt + $comp;
-
+            
+            unset($aberration);
+            for ($comp = 0; $comp < $maxCmp; $comp++) {
                 if (isset($vector[$comp])) {
                     $aberration[$compKey] = $vector[$comp];
                 } else {
-                    if ($comp < $compCnt - 1) {
+                    // A CAC correction template should have one of 3, 4, 5 or
+                    // 14 components. The first 5 are editable and have to
+                    // exist. Components 6 to 14 are either present or should
+                    // not be present.
+                    if ($comp < 4) {
                         $aberration[$compKey] = 0.;
-                    } else {
+                    } elseif ($comp < 5) {
                         // Scale component.
                         $aberration[$compKey] = 1.;
+                    } else {
+                        $aberration[$compKey] = null;
                     }
                 }
             }
-        }
-        if (isset($aberration)) {
-            $this->parameter['ChromaticAberration']->setValue($aberration);
+            if (isset($aberration)) {
+                $this->parameter['ChromaticAberrationCh'.$chan]->setValue($aberration);
+            }
         }
 
         // Stabilization in T.

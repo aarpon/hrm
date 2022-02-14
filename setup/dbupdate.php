@@ -6165,6 +6165,162 @@ if ($current_revision < $n) {
         return false;
     }
 
+
+    // In task_parameter all ChromaticAberration values have to be changed to
+    // sets of 14 instead of 5. Because this will leave little room (3
+    // characters)  for each chromatic aberration component it makes more
+    // sense to split the chromatic aberration components in seperate entries
+    // per channel.
+    $tabname = "task_parameter";
+    $fields_set = array('owner','setting','name','value');
+    $name = "ChromaticAberration";
+    $insertArray = array(null,null,null,null,null,null,null,null,null);
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+            $array = explode('#', $row[3]);
+            $maxCh = intdiv(count($array), 5);
+
+            // Get sets of 5 components, add null value entries after and 1 in
+            // front, then implode and add to the database with the channel in
+            // the value.
+            for($ch = 0; $ch < $maxCh; $ch++) {
+                $inx = $ch * 5 + 1;
+                $currCh = array_slice($array, $inx, 5);
+                $currCh = array_merge(array(null), $currCh, $insertArray);
+                $row[3] = implode($currCh, '#');
+                $row[2] = $name . "Ch" . $ch;
+                for($i = 0; $i < count($fields_set); $i++) {
+                    $temp[$fields_set[$i]] = $row[$i];
+                }
+                
+                $insertSQL = $db->GetInsertSQL($tabname, $temp);
+                if(!$db->Execute($insertSQL)) {
+                    $msg = "An error occurred while updating " .
+                        "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+            
+            // Delete the old entry.
+            if(!$db->Execute("DELETE FROM " . $tabname .
+                             " WHERE owner='" . $row[0] .
+                             "' AND setting='" . $row[1] .
+                             "' AND name='" . $name . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // The same for the shared_templates:
+    $tabname = "shared_task_parameter";
+    $fields_set = array('id','setting_id','owner','setting','name','value');
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+            $array = explode('#', $row[5]);
+            $maxCh = intdiv(count($array), 5);
+
+            // Get sets of 5 components, add null value entries after and 1 in
+            // front, then implode and add to the database with the channel in
+            // the value.
+            for($ch = 0; $ch < $maxCh; $ch++) {
+                $inx = $ch * 5 + 1;
+                $currCh = array_slice($array, $inx, 5);
+                $currCh = array_merge(array(null), $currCh, $insertArray);
+                $row[5] = implode($currCh, '#');
+                $row[4] = $name . "Ch" . $ch;
+                for($i = 0; $i < count($fields_set); $i++) {
+                    $temp[$fields_set[$i]] = $row[$i];
+                }
+                $temp["id"] = null; // An id will be automatically assigned.
+                
+                $insertSQL = $db->GetInsertSQL($tabname, $temp);
+                if(!$db->Execute($insertSQL)) {
+                    $msg = "An error occurred while updating " .
+                        "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+            
+            // Delete the old entry.
+            if(!$db->Execute("DELETE FROM " . $tabname .
+                             " WHERE id='" . $row[0] .
+                             "' AND setting_id='" . $row[1] .
+                             "' AND owner='" . $row[2] .
+                             "' AND setting='" . $row[3] .
+                             "' AND name='" . $name . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+    
+    // Also in possible_values, the old default was actually wrong as well. It
+    // had a 6'th hastag.
+    $tabname = "possible_values";
+    $fields_set = array('parameter','value','translation','isDefault');
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE parameter = '" . $name . "'");
+    $maxCh = 6;
+    $defaultCh0 = "#0#0#0#0#1#########";
+    $default    = "##############";
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+
+            // Set new defaults for each channel.
+            for($ch = 0; $ch < $maxCh; $ch++) {
+                $temp["parameter"]   = $name . "Ch" . $ch;
+                if ($ch == 0) {
+                    $temp["value"]   = $defaultCh0;
+                } else {
+                    $temp["value"]   = $default;
+                }
+                $temp["translation"] = $row[2];
+                $temp["isDefault"]   = $row[3];
+            
+                $insertSQL = $db->GetInsertSQL($tabname, $temp);
+                if(!$db->Execute($insertSQL)) {
+                    $msg = "An error occurred while updating " .
+                        "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+            
+            // Delete the old entry. There should only be one.
+            if(!$db->Execute("DELETE FROM " . $tabname .
+                             " WHERE parameter='" . $row[0] .
+                             "' AND value='" . $row[1] .
+                             "' AND translation='" . $row[2] .
+                             "' AND isDefault='" . $row[3] . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+    
+    
     // Update revision
     if(!update_dbrevision($n))
         return;
@@ -6174,6 +6330,7 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
+
 
 fclose($fh);
 

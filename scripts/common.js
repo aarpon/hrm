@@ -192,6 +192,7 @@ function initChromaticChannelReference() {
         chan = searchChromaticChannelReference();
     }
 
+    clearChromaticChannelReference();
     setChromaticChannelReference( chan );
 }
 
@@ -246,7 +247,7 @@ function setChromaticChannelReference( chan ) {
         id = id.concat(chan);
         id += "_";
         id = id.concat(component);
-
+        
         inputElement = document.getElementById(id);
         inputElement.readOnly = true;
         inputElement.style.backgroundColor="#888";
@@ -258,12 +259,15 @@ function setChromaticChannelReference( chan ) {
         }
     }
 
+
+    // todo: make sure it is "reset" in the case of 14 parameters.
+    
     var tag = "ReferenceChannel";
     inputElement = document.getElementById(tag);
     inputElement.value = chan;
 }
 
-function removeChromaticChannelReference( ) {
+function clearChromaticChannelReference( ) {
     var tableTag   = "ChromaticAberrationTable";
     var channelTag = "ChromaticAberration";
 
@@ -273,22 +277,46 @@ function removeChromaticChannelReference( ) {
     componentCnt = table.rows[0].cells.length - 1;
 
     for (var chan = 0; chan < channelCnt; chan++) {
+
+        // If there are 14 parameters known for this chanenl don't make
+        // it editable.
+        var id = channelTag + "ResetCh";
+        id = id.concat(chan);
+        console.log(id);
+        inputElement = document.getElementById(id);
+        var nonEditable14params = !inputElement.getAttribute('hidden');
+        console.log(nonEditable14params);
+        
         for (var component = 0; component < componentCnt; component++) {
             var id = channelTag + "Ch";
             id = id.concat(chan);
             id += "_";
             id = id.concat(component);
-
             inputElement = document.getElementById(id);
-            inputElement.readOnly = false;
-            inputElement.style.backgroundColor="";
+
+            if (nonEditable14params) {
+                inputElement.readOnly = true;
+                inputElement.style.backgroundColor="#666";
+            } else {
+                inputElement.readOnly = false;
+                inputElement.style.backgroundColor="";
+            }
         }
     }
 }
 
 function changeChromaticChannelReference(selectObj) {
-    removeChromaticChannelReference( );
+    clearChromaticChannelReference( );
     setChromaticChannelReference( selectObj.value );
+}
+
+function editChromaticChannelWith14Params(selectObj) {
+    selectObj.setAttribute('hidden', false);
+    clearChromaticChannelReference( );
+    
+    var tag = "ReferenceChannel";
+    inputElement = document.getElementById(tag);
+    setChromaticChannelReference( inputElement.value );
 }
 
 
