@@ -146,10 +146,11 @@ class ChromaticAberration extends Parameter
             /* The first element of the array will be empty due to the explode. */
             $valuesArray = explode('#', $values);
             unset($valuesArray[0]);
+            $valuesArray = array_values($valuesArray);
         } else {
             $valuesArray = $values;
         }
-        
+
         if (empty($valuesArray) || is_null($valuesArray)) {
             return;
         }
@@ -160,7 +161,6 @@ class ChromaticAberration extends Parameter
             $valuesArray = array("0","0","0","0","1");
         }
         $this->value->setValue($valuesArray);
-        error_log($this->internalValue());
     }
 
     /**

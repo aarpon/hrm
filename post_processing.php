@@ -202,7 +202,7 @@ if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForCAC(
                                      title="Discard this channel's other components to edit the remaining"
                                      value="Discard other"
                                      <?php if ($chromaticParam[$chan]->value()[13] == null) { echo 'hidden=true'; }?>
-                                     onclick="editChromaticChannelWith14Params(this)"/></td>
+                                     onclick="editChromaticChannelWith14Params(<?php echo $chan?>)"/></td>
                         </tr>
                         <?php
                     }

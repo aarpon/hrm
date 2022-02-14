@@ -311,13 +311,31 @@ function changeChromaticChannelReference(selectObj) {
     setChromaticChannelReference( selectObj.value );
 }
 
-function editChromaticChannelWith14Params(selectObj) {
-    selectObj.setAttribute('hidden', true);
+function editChromaticChannelWith14Params(channel) {
+    // Hide the discard button.
+    var tag = "ChromaticAberrationDiscardOtherCh" + channel;
+    butElement = document.getElementById(tag);
+    butElement.setAttribute('hidden', true);
     clearChromaticChannelReference( );
-    
+
+    // Round the values to 5 decimals. This both makes it easier to edit and
+    // ensures the new values are saved properly. 
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
+    table = document.getElementById(tableTag);
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    for (var component = 0; component < componentCnt; component++) {
+        var id = channelTag + "Ch" + channel + "_" + component;
+        inputElement = document.getElementById(id);
+        var rounded = Math.round(inputElement.value*100000)/100000;
+        inputElement.value = rounded;
+    }
+
+    // Call setChromaticChannelReference to properly redo the layout.
     var tag = "ReferenceChannel";
-    inputElement = document.getElementById(tag);
-    setChromaticChannelReference( inputElement.value );
+    refElement = document.getElementById(tag);
+    setChromaticChannelReference( refElement.value );
 }
 
 
