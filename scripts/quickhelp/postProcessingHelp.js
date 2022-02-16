@@ -18,7 +18,7 @@ window.helpText[ "chromatic" ] =
     'in batch mode.</p><p>Chromatic aberration parameters from a Huygens ' +
     'template can contain more parameters than listed here. While these ' +
     'other parameters exist the shown components cannot be edited. A button ' +
-    'will appear which can be used to discard them, which enables editing. ' +
+    'will appear which can be used to discard them and enable editing. ' +
     '</p><p>To <b>skip</b> this step just leave the table ' +
     'fields empty.';
 window.helpText[ "default" ] =

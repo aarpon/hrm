@@ -1171,7 +1171,7 @@ class HuygensTemplate
             $taskDescr = "";
             /** @var ChromaticAberrationCh$chan $chromaticParam */
             $chromaticParam =
-                $this->deconSetting->parameter("ChromaticAberrationCh".$chan);
+                $this->deconSetting->parameter("ChromaticAberrationCh" . $chan);
             $chanVector = implode(' ', $chromaticParam->value());
             
             foreach ($this->chromaticArray as $chromKey => $chromValue) {
@@ -2279,7 +2279,7 @@ class HuygensTemplate
         for ($chan = 0; $chan < $chanCnt; $chan++) {
             /** @var ChromaticAberrationCh$chan $chromaticParamCh$chan */
             $chromaticParam =
-                $this->deconSetting->parameter("ChromaticAberrationCh".$chan);
+                $this->deconSetting->parameter("ChromaticAberrationCh" . $chan);
             $chromaticChan = $chromaticParam->value();
 
             foreach ($chromaticChan as $component => $value) {

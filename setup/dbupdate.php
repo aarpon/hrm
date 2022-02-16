@@ -6169,7 +6169,7 @@ if ($current_revision < $n) {
     // In task_parameter all ChromaticAberration values have to be changed to
     // sets of 14 instead of 5. Because this will leave little room (3
     // characters)  for each chromatic aberration component it makes more
-    // sense to split the chromatic aberration components in seperate entries
+    // sense to split the chromatic aberration components in separate entries
     // per channel.
     $tabname = "task_parameter";
     $fields_set = array('owner','setting','name','value');
