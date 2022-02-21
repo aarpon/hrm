@@ -378,7 +378,7 @@ class HuygensTemplate
 
         $this->jobInfoArray =
             array('title'        => 'Batch Processing template',
-                  'version'      => '2.3',
+                  'version'      => '2.4',
                   'templateName' => '',
                   'date'         => '',
                   'listID'       => 'info');

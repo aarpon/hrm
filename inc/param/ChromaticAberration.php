@@ -154,12 +154,22 @@ class ChromaticAberration extends Parameter
         if (empty($valuesArray) || is_null($valuesArray)) {
             return;
         }
-
-        // If component count is 14: set the values so it is recognized as
-        // reference when it would be the reference.
-        if (array_count_values($valuesArray)["0.0"] == 14) {
-            $valuesArray = array("0","0","0","0","1");
+        
+        // If all the values are 0 it is the 14 parameter reference, set it
+        // like the 5 parameter reference so it is properly recognized.
+        $isReference = 1;
+        foreach ($valuesArray as $val) {
+            if (floatval($val) != 0.0) {
+                $isReference = 0;
+                break;
+            }
         }
+        if ($isReference) {
+            $valuesArray = array("0","0","0","0","1",null,null,null,
+                                 null,null,null,null,null,null);
+        }
+        
+        //error_log(implode('_', $valuesArray));
         $this->value->setValue($valuesArray);
     }
 
