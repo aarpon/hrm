@@ -353,7 +353,6 @@ class TaskSetting extends Setting
             return $noErrorsFound;
         }
         
-        
         // Set the values. Overwrite only when the value has changed,
         // otherwise the higher order corrections (which when present are not
         // editable) can be overwritten.
@@ -854,7 +853,7 @@ class TaskSetting extends Setting
                 }
             }
             if (isset($aberration)) {
-                $this->parameter['ChromaticAberrationCh'.$chan]->setValue($aberration);
+                $this->parameter['ChromaticAberrationCh' . $chan]->setValue($aberration);
             }
         }
 

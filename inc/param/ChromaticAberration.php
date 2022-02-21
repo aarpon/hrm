@@ -29,14 +29,14 @@ class ChromaticAberration extends Parameter
     public $value;
 
     /**
-     * The channel this vector discribes.
+     * The channel this vector describes.
      * @var int
      */
     public $channel;
 
     
     /**
-     * The maximum numer of vector components used to describe the CA.
+     * The maximum number of vector components used to describe the CA.
      * @var int
      */
     public $maxComponentCnt;
@@ -61,11 +61,11 @@ class ChromaticAberration extends Parameter
         $this->name = "ChromaticAberrationCh" . $ch;
         $this->channel = $ch;
         
-        /* 14 components for shift x, y, z, rotation,  scaleX, scaleY, scaleZ,
+        /* 14 components for shift x, y, z, rotation, scaleX, scaleY, scaleZ,
            angleX, angleY, barrelPincushion1, barrelPincushion2,
            barrelPincushion3, barrelPincushionXcenter,
            barrelPincushionYcenter. Return either the first 5 or all 14
-           parametes, depending on the input. Default to componentCnt 5.*/
+           parameters, depending on the input. Default to componentCnt 5.*/
         $this->maxComponentCnt = 14;
         $this->componentCnt = 5;
 

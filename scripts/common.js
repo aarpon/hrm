@@ -328,7 +328,7 @@ function editChromaticChannelWith14Params(channel) {
     for (var component = 0; component < componentCnt; component++) {
         var id = channelTag + "Ch" + channel + "_" + component;
         inputElement = document.getElementById(id);
-        var rounded = Math.round(inputElement.value*100000)/100000;
+        var rounded = Math.round(inputElement.value * 100000) / 100000;
         inputElement.value = rounded;
     }
 
