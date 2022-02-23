@@ -146,37 +146,37 @@ include("header.inc.php");
             $timeValue = $timeParameter->value();
 
             // Make sure that if we had TIFF (8 or 16 bit) as output file format and a
-            // multichannel dataset, we reset the value to ics
+            // multichannel dataset, we reset the value to ics2
             if (($value == 'TIFF 8-bit') || ($value == 'TIFF 16-bit')) {
                 /** @var NumberOfChannels $nChannelsParameter */
                 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
                 $numberOfChannels = $nChannelsParameter->value();
                 if ($numberOfChannels > 1) {
-                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    $parameter->setValue("ICS2 (Image Cytometry Standard 2)");
                     $_SESSION['first_visit'] = false;
                 }
             }
 
             // Make sure that if we had RGB-TIFF 8 bit as output file format and a
-            // single-channel dataset or more than 3 channels, we reset the value to ics
+            // single-channel dataset or more than 3 channels, we reset the value to ics2
             if ($value == 'RGB TIFF 8-bit') {
                 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
                 $numberOfChannels = $nChannelsParameter->value();
                 if (($numberOfChannels == 1 || $numberOfChannels > 3)) {
-                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    $parameter->setValue("ICS2 (Image Cytometry Standard 2)");
                     $_SESSION['first_visit'] = false;
                 }
             }
 
             // Make sure that if we had Imaris Classic, TIFF 8, or TIFF 16
             // as output file format and a time-series dataset, we reset
-            // the value to ics
+            // the value to ics2
             if (
                 ($value == 'IMS (Imaris Classic)') ||
                 ($value == 'TIFF 8-bit') || ($value == 'TIFF 16-bit')
             ) {
                 if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0)) {
-                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    $parameter->setValue("ICS2 (Image Cytometry Standard 2)");
                     $_SESSION['first_visit'] = false;
                 }
             }
@@ -234,7 +234,7 @@ include("header.inc.php");
 
                     /* Fallback. */
                     if (! in_array($default_output_format, $possibleValues)) {
-                        $default_output_format = "ICS (Image Cytometry Standard)";
+                        $default_output_format = "ICS2 (Image Cytometry Standard 2)";
                     }
 
                     $parameter->setValue($default_output_format);
