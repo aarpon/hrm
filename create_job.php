@@ -147,7 +147,7 @@ include("header.inc.php");
 
             // Make sure that if we had TIFF (8 or 16 bit) as output file format and a
             // multichannel dataset, we reset the value to ics
-            if (($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')) {
+            if (($value == 'TIFF 8-bit') || ($value == 'TIFF 16-bit')) {
                 /** @var NumberOfChannels $nChannelsParameter */
                 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
                 $numberOfChannels = $nChannelsParameter->value();
@@ -173,7 +173,7 @@ include("header.inc.php");
             // the value to ics
             if (
                 ($value == 'IMS (Imaris Classic)') ||
-                ($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')
+                ($value == 'TIFF 8-bit') || ($value == 'TIFF 16-bit')
             ) {
                 if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0)) {
                     $parameter->setValue("ICS (Image Cytometry Standard)");
