@@ -815,16 +815,21 @@ class Fileserver
 
             // Delete all files name like this one, with all different extensions.
             $dirname = dirname($pdir . "/" . $file);
+            Log::debug("dirname: " . $dirname);
             $basename = basename($pdir . "/" . $file);
+            Log::debug("basename (initial): " . $basename);
 
             if ($dir == "src") {
                 $pattern = "/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/";
                 preg_match($pattern, $basename, $matches);
 
                 $pattern = "/$matches[0]$/";
+                Log::debug("filename pattern: " . $pattern);
                 $basename = preg_replace($pattern, "\\1.*", $basename);
+                Log::debug("basename: ". $basename);
 
                 $path = $dirname . "/" . $basename;
+                Log::debug("path: ". $path);
                 $path_preview = $dirname . "/hrm_previews/" . $basename;
             } else {
                 $filePattern = $this->getFilePattern($basename);
