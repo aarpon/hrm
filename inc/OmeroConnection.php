@@ -40,7 +40,7 @@ class OmeroConnection
      * OMERO connector executable.
      * @var string
      */
-    private $omeroWrapper = "bin/ome_hrm.py";
+    public static $omeroWrapper = "bin/ome_hrm.py";
 
     /**
      * Array map to hold children in JSON format.
@@ -84,6 +84,16 @@ class OmeroConnection
 
 
     /* -------------------- General OMERO processes -------------------- */
+
+    public static function getConnectorVersion()
+    {
+        $cmd = OmeroConnection::$omeroWrapper . " --version";
+        $out = array();  // reset variable, otherwise `exec` will append to it
+        exec($cmd, $out, $retval);
+
+        return join(" ", $out);
+    }
+
 
     /**
      * Check to authenticate to OMERO using given credentials.
@@ -236,9 +246,9 @@ class OmeroConnection
         }
         // build a temporary array with the command elements, starting with the
         // connector/wrapper itself:
-        $tmp = array($this->omeroWrapper);
+        $tmp = array(OmeroConnection::$omeroWrapper);
         //// $tmp = array("/usr/bin/python");
-        //// array_push($tmp, $this->omeroWrapper);
+        //// array_push($tmp, OmeroConnection::$omeroWrapper);
         // user/password must be given first:
         array_push($tmp, "--user", escapeshellarg($this->omeroUser));
         // next the *actual* command:
