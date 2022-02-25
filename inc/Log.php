@@ -61,6 +61,9 @@ class Log
             case 2:
                 $level = Logger::INFO;
                 break;
+            case 3:
+                $level = Logger::DEBUG;
+                break;
             default:
                 $level = Logger::WARNING;
                 break;
@@ -92,6 +95,18 @@ class Log
 
         // Return the logger instance
         return self::$monologger;
+    }
+
+    /**
+     * Log debug message.
+     * @param string $message Debug message.
+     */
+    public static function debug($message)
+    {
+        if (is_array($message)) {
+            $message = implode(", ", $message);
+        }
+        self::getMonoLogger()->addDebug($message);
     }
 
     /**
