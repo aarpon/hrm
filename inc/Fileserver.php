@@ -857,7 +857,7 @@ class Fileserver
             }
 
             # deal with formats having extra folders:
-            if ($extra_dir != "") {
+            if ($extra_dir != "" and is_dir($extra_dir)) {
                 Log::info("Removing extra folders for '{$file}': [{$extra_dir}]");
                 FileserverV2::removeDirAndContent($extra_dir);
             }
