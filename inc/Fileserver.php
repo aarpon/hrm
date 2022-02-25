@@ -819,6 +819,9 @@ class Fileserver
             $basename = basename($pdir . "/" . $file);
             Log::debug("basename (initial): " . $basename);
 
+            # some formats (like .vsi) have extra dirs with the actual data:
+            $extra_dir = "";
+
             if ($dir == "src") {
                 $pattern = "/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/";
                 preg_match($pattern, $basename, $matches);
@@ -831,6 +834,11 @@ class Fileserver
                 $path = $dirname . "/" . $basename;
                 Log::debug("path: ". $path);
                 $path_preview = $dirname . "/hrm_previews/" . $basename;
+
+                if ($pattern == "/.vsi$/") {
+                    Log::info("Detected 'VSI', scanning for related dirs...");
+                    $extra_dir = $dirname . "/_" .  preg_replace("/\.\*/", "_/", $basename);
+                }
             } else {
                 $filePattern = $this->getFilePattern($basename);
                 $path = $dirname . "/" . $filePattern;
@@ -846,6 +854,12 @@ class Fileserver
             $allFiles = glob($path_preview);
             foreach ($allFiles as $f) {
                 $success &= unlink($f);
+            }
+
+            # deal with formats having extra folders:
+            if ($extra_dir != "") {
+                Log::info("Removing extra folders for '{$file}': [{$extra_dir}]");
+                FileserverV2::removeDirAndContent($extra_dir);
             }
         }
 
