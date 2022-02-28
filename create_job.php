@@ -231,13 +231,24 @@ include("header.inc.php");
                 // See config files.
                 if (!isset($_SESSION['first_visit'])) {
                     global $default_output_format;
-
-                    /* Fallback. */
-                    if (! in_array($default_output_format, $possibleValues)) {
-                        $default_output_format = "ICS2 (Image Cytometry Standard 2)";
+                    
+                    /* Notice that unfortunately 'values-translations' are inverted in
+                    parameter "OutputFileFormat" w.r.t "ImageFileFormat". Therefore, a
+                    translation is needed here. */
+                    $defaultFormatSet = False;
+                    foreach ($possibleValues as $possibleValue) {
+                        if ($parameter->translatedValueFor($possibleValue) == $default_output_format) {
+                             $parameter->setValue($possibleValue);
+                             $defaultFormatSet = True;
+                             break;
+                        }
                     }
 
-                    $parameter->setValue($default_output_format);
+                    /* Fallback */
+                    if ($defaultFormatSet === False) {
+                        $parameter->setValue("ICS2 (Image Cytometry Standard 2)");
+                    }
+
                     $_SESSION['first_visit'] = false;
                 }
 
