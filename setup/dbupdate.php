@@ -6229,8 +6229,23 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionPattern";
-    $record["value"] = "RowSnake";
-    $record["translation"] = "Acquisition pattern";
+    $record["value"] = "rs";
+    $record["translation"] = "Row snake";
+    $record["isDefault"] = "t";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchAcquisitionStart";
+    $record["value"] = "tl";
+    $record["translation"] = "Top left";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {

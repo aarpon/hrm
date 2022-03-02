@@ -1,6 +1,6 @@
 <?php
 /**
- * StitchAcquisitionPattern
+ * StitchAcquisitionStart
  *
  * @package hrm
  *
@@ -12,18 +12,18 @@ namespace hrm\param;
 use hrm\param\base\ChoiceParameter;
 
 /**
- * A ChoiceParameter to indicate the acquisition pattern.
+ * A ChoiceParameter to indicate where the acquisition starts.
  *
  * @package hrm
  */
-class StitchAcquisitionPattern extends ChoiceParameter
+class StitchAcquisitionStart extends ChoiceParameter
 {
 
     /**
-     * StitchAcquisitionPattern constructor.
+     * StitchAcquisitionStart constructor.
      */
     public function __construct()
     {
-        parent::__construct("StitchAcquisitionPattern");
+        parent::__construct("StitchAcquisitionStart");
     }
 }
