@@ -6195,12 +6195,48 @@ if ($current_revision < $n) {
     // Update revision
     if(!update_dbrevision($n))
         return;
-
+    
     $current_revision = $n;
     $msg = "Database successfully updated to revision " . $current_revision . ".";
     write_message($msg);
     write_to_log($msg);
 }
+
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 20
+// Description:
+//     * Stitcher parameters.
+// -----------------------------------------------------------------------------
+$n = 20;
+if ($current_revision < $n) {
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchOffsetsInit";
+    $record["value"] = "patt+overlap";
+    $record["translation"] = "Pattern and overlap";
+    $record["isDefault"] = "t";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+    
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+
 
 fclose($fh);
 

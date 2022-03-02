@@ -90,7 +90,7 @@ include("header.inc.php");
 
 <div id="content">
 
-    <h3><img alt="SelectHPC" src="./images/hpc.png"
+    <h3><img alt="Stitching" src="./images/stitching.png"
              width="40"/>&nbsp;Stitching</h3>
 
 
