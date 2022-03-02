@@ -34,6 +34,8 @@ class TaskSetting extends Setting
 
         // @todo Retrieve this information from the database.
         $parameterClasses = array(
+            'Acuity',
+            'AcuityMode',
             'Autocrop',
             'SignalNoiseRatio',
             'BackgroundOffsetPercent',
@@ -203,6 +205,44 @@ class TaskSetting extends Setting
 
         /** @var SignalNoiseRatio $parameter */
         $parameter = $this->parameter("SignalNoiseRatio");
+        $parameter->setValue($value);
+        $this->set($parameter);
+        if (!$skipDeconAll && !$parameter->check()) {
+            $this->message = $parameter->message();
+            $noErrorsFound = false;
+        }
+
+        
+        // Acuity mode
+        if (isset($postedParameters["AcuityMode"]) || $postedParameters["AcuityMode"] == '') {
+            $parameter = $this->parameter("AcuityMode");
+            $parameter->setValue($postedParameters["AcuityMode"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // Acuity
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
+            $name = "Acuity$i";
+            if (isset($postedParameters[$name])) {
+                // We need to set a default value in case of skipped channels
+                // so that the parameter can get processed. Unfortunately,
+                // there's no default for this parameter in the DB. We also
+                // default to this value if acuity mode is disabled.
+                if ($deconAlgorithms[$i] == "skip" || $parameter->value() == "off") {
+                    $value[$i] = "0";
+                } else {
+                    $value[$i] = $postedParameters[$name];
+                }
+            }
+        }
+
+        /** @var Acuity $parameter */
+        $parameter = $this->parameter("Acuity");
         $parameter->setValue($value);
         $this->set($parameter);
         if (!$skipDeconAll && !$parameter->check()) {
@@ -485,7 +525,7 @@ class TaskSetting extends Setting
         if ($numberOfChannels == 0) {
             $numberOfChannels = $this->numberOfChannels();
         }
-
+        
         // These parameters are important to properly display other parameters.
         $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
         $TStabilization = $this->parameter('TStabilization')->value();
@@ -665,8 +705,26 @@ class TaskSetting extends Setting
         $algorithm->setValue($algArray);
 
         // SNR.
-        $snrQMLEArray = array("low" => "1", "fair" => "2", "good" => "3", "inf" => "4");
+        $snrQMLEArray = array("low" => "5.6", "fair" => "16.0", "good" => "33.3", "inf" => "1000.0");
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            
+            // Starting from template version 2.5, snr instead of sn is used
+            // to signify SNR. Most conversion cases are handled by the
+            // template::loadCommon proc, but if we encounter an sn entry we
+            // overwrite the snr entry for backwards compatibility.
+            
+            if ($algArray[$chan] == "cmle") {
+                $key = "cmle:" . $chan . " snr";
+            } elseif ($algArray[$chan] == "gmle") {
+                $key = "gmle:" . $chan . " snr";
+            } elseif ($algArray[$chan] == "qmle") {
+                $key = "qmle:" . $chan . " snr";
+            }
+            
+            if (isset($huArray[$key])) {
+                $snr[$chan] = $huArray[$key];
+            }
+            
             if ($algArray[$chan] == "cmle") {
                 $key = "cmle:" . $chan . " sn";
             } elseif ($algArray[$chan] == "gmle") {
@@ -683,9 +741,60 @@ class TaskSetting extends Setting
                 }
             }
         }
+        
         if (isset($snr)) {
             $this->parameter['SignalNoiseRatio']->setValue($snr);
         }
+        
+        // Acuity.
+  
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($algArray[$chan] == "cmle") {
+                $key = "cmle:" . $chan . " acuity";
+            } elseif ($algArray[$chan] == "gmle") {
+                $key = "gmle:" . $chan . " acuity";
+            } elseif ($algArray[$chan] == "qmle") {
+                $key = "qmle:" . $chan . " acuity";
+            }
+            
+            if (isset($huArray[$key])) {
+                $acuity[$chan] = $huArray[$key];
+                $this->parameter['Acuity']->setValue($acuity);
+            }
+        }
+        
+        // Acuity mode. Turn it off unless there is at least one channel for
+        // which a value of on has been provided. 
+        
+        $globalAcuityMode = 'off';
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($algArray[$chan] == "cmle") {
+                $key = "cmle:" . $chan . " acuityMode";
+            } elseif ($algArray[$chan] == "gmle") {
+                $key = "gmle:" . $chan . " acuityMode";
+            } elseif ($algArray[$chan] == "qmle") {
+                $key = "qmle:" . $chan . " acuityMode";
+            }
+
+            if (isset($huArray[$key])) {
+                $acuityMode = $huArray[$key];
+                
+                switch ($acuityMode) {
+                case 'auto':
+                    break;
+                case 'on':
+                    $globalAcuityMode = 'on';
+                    break;
+                case 'off':
+                    if ($globalAcuityMode != "on") $globalAcuityMode = 'off';
+                    break;
+                default:
+                    $this->message = 'Unknown acuity mode!';
+                    $noErrorsFound = false;
+                }
+            }
+        }
+        $this->parameter['AcuityMode']->setValue($globalAcuityMode);
 
         // Autocrop.
         if (isset($huArray['autocrop enabled'])) {

@@ -303,6 +303,7 @@ function updateDeconEntryProperties( ) {
                                 "SignalNoiseRatioQMLE",
                                 "SignalNoiseRatioGMLE",
                                 "SignalNoiseRatioSKIP",
+                                "Acuity",
                                 "BackgroundOffsetPercent"];
 
     var skipAllChannels = true;
@@ -317,7 +318,7 @@ function updateDeconEntryProperties( ) {
         if (deconAlgorithm === undefined) continue;
         if (deconAlgorithm.value !== "skip") skipAllChannels = false;
 
-        // QMLE vs CMLE/GMLE.
+        // Show the input box relevant for the current algorithm.
         switchSnrMode(deconAlgorithm, chan);
 
         for (var tagIdx = 0; tagIdx < paramChanTagArray.length; tagIdx++) {
@@ -357,9 +358,9 @@ function updateDeconEntryProperties( ) {
 
 function copySnrToOtherAlgorithms(channel, inputObj) {
 
-    // QMLE is an exception here.
     var tagArray = ["SignalNoiseRatioCMLE",
                     "SignalNoiseRatioGMLE",
+                    "SignalNoiseRatioQMLE",
                     "SignalNoiseRatioSKIP"];
 
     for (var i = 0; i < tagArray.length; i++) {

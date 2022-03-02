@@ -42,8 +42,6 @@ use hrm\user\UserConstants;
 
 require_once  dirname( __FILE__ ) . '/../inc/bootstrap.php';
 
-$ADODB_DEBUGGING = false;
-
 // Database last revision
 $LAST_REVISION = System::getDBLastRevision( );
 
@@ -90,11 +88,6 @@ function write_message($msg) {
     }
     else echo $msg . "\n";
 }
-
-// An override for ADODB's default logging function
-function myAdodbDebugLogger($msg, $discard) {
-    print "\nADODB DEBUG: $msg";
-} 
 
 
 // Return an error message
@@ -378,11 +371,6 @@ write_to_error(timestamp());
 
 // Connect to the database server
 $db = ADONewConnection($db_type);
-if ($ADODB_DEBUGGING === true) {
-    DEFINE ('ADODB_OUTP','myAdodbDebugLogger');
-    $db->debug = true;
-}
-
 $success = $db->Connect($db_host, $db_user, $db_password);
 if ($success === false) {
     $msg = "Cannot connect to the database server on $db_host.";
@@ -454,7 +442,7 @@ if (!in_array("global_variables", $tables)) {
 
 // Check if the variable dbrevision exists
 $rs = $db->Execute("SELECT * FROM global_variables WHERE name = 'dbrevision'");
-if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set its value to 0
+if ($rs->EOF ) { // If the variable dbrevision does not exist, create it and set its value to 0
     $record = array();
     $record["name"] = "dbrevision";
     $record["value"] = "0";
@@ -6064,13 +6052,12 @@ if ($current_revision < $n) {
 // Update to revision 19
 // Description:
 //     * Update translation for Imaris format
-//     * Update display name of the Imaris format
 //     * Add Olympus VSI file format
 //     * Increase maximum number of iterations to 1000
 // -----------------------------------------------------------------------------
 $n = 19;
 if ($current_revision < $n) {
-	
+
     // Correct Imaris' default.
     $tabname = 'possible_values';
     $record = array();
@@ -6081,21 +6068,6 @@ if ($current_revision < $n) {
     if (!$db->AutoExecute($tabname, $record, 'UPDATE', 
         "parameter='OutputFileFormat' and translation='Imaris'")) {
         $msg = "Could not correct entry for OutputFileFormat Imaris in possible_values.";
-        write_message($msg);
-        write_to_error($msg);
-        return false;
-    }
-	
-    // Correct Imaris' displayed name to reflect support for Imaris 5.5 files.
-    $tabname = 'possible_values';
-    $record = array();
-    $record["parameter"]   = 'ImageFileFormat';
-    $record["value"]       = 'ims';
-    $record["translation"] = 'Imaris Classic/Imaris 5.5 (*.ims)';
-    $record["isDefault"]   = 'f';
-    if (!$db->AutoExecute($tabname, $record, 'UPDATE', 
-        "parameter='ImageFileFormat' and value='ims'")) {
-        $msg = "Could not correct entry for ImageFileFormat ims in possible_values.";
         write_message($msg);
         write_to_error($msg);
         return false;
@@ -6116,7 +6088,7 @@ if ($current_revision < $n) {
         $record["isDefault"] . "'";
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
-            $msg = "Could not add entry for Olympus VSI in table 'possible_values'.";
+            $msg = error_message($tabname);
             write_message($msg);
             write_to_error($msg);
             return false;
@@ -6135,7 +6107,8 @@ if ($current_revision < $n) {
     if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if(!$db->Execute($insertSQL)) {
-            $msg = "Could not add entry for Olympus VSI in table 'file_extension'.";
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
             write_message($msg);
             write_to_error($msg);
             return;
@@ -6190,6 +6163,70 @@ if ($current_revision < $n) {
         write_message($msg);
         write_to_error($msg);
         return false;
+    }
+
+    // -------------------- Add acuity mode option ------------------------
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"] = 'AcuityMode';
+    $record["value"] = 'on';
+    $record["translation"] = 'Enable acuity mode';
+    $record["isDefault"] = 't';
+    
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"] = 'AcuityMode';
+    $record["value"] = 'off';
+    $record["translation"] = 'Use legacy SNR';
+    $record["isDefault"] = 'f';
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // -------------------- Add acuity boundary values ------------------------
+    $tabname = 'boundary_values';
+    $record = array();
+    $record["parameter"] = 'Acuity';
+    $record["min"] = '-100';
+    $record["max"] = '100';
+    $record["min_included"] = 't';
+    $record["max_included"]   = 't';
+    $record["standard"]   = null;
+     $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
+    if ($rs->EOF) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
     }
 
     // Update revision

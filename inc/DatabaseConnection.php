@@ -672,6 +672,7 @@ class DatabaseConnection
                     case "PinholeSize":
                     case "PinholeSpacing":
                     case "SignalNoiseRatio":
+                    case "Acuity":
                     case "BackgroundOffsetPercent":
                     case "ChromaticAberration":
                     case "StedDepletionMode":
@@ -689,7 +690,7 @@ class DatabaseConnection
                     case "ColocChannel":
                     case "ColocThreshold":
                     case "ColocCoefficient":
-		    case "HotPixelCorrection":	
+		            case "HotPixelCorrection":	
                     case "PSF":
                         /* Extract and continue to explode. */
                         $newValue = substr($newValue, 1);
@@ -790,6 +791,7 @@ class DatabaseConnection
                     case "ExcitationWavelength":
                     case "EmissionWavelength":
                     case "SignalNoiseRatio":
+                    case "Acuity":
                     case "BackgroundOffsetPercent":
                     case "ChromaticAberration":
                         /* Extract and continue to explode. */

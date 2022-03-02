@@ -165,6 +165,8 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
     */
     $ok = True;
     $ok = $ok && $_SESSION['task_setting']->parameter(
+        'Acuity' )->check();
+    $ok = $ok && $_SESSION['task_setting']->parameter(
         'SignalNoiseRatio' )->check();
     $ok = $ok && $_SESSION['task_setting']->parameter(
         'BackgroundOffsetPercent' )->check();
