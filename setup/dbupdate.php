@@ -6214,7 +6214,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchOffsetsInit";
-    $record["value"] = "patt+overlap";
+    $record["value"] = "patt_overlap";
     $record["translation"] = "Pattern and overlap";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6226,6 +6226,21 @@ if ($current_revision < $n) {
     }
 
 
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchAcquisitionPattern";
+    $record["value"] = "RowSnake";
+    $record["translation"] = "Acquisition pattern";
+    $record["isDefault"] = "t";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    
     // Update revision
     if(!update_dbrevision($n))
         return;

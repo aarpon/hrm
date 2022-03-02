@@ -1,6 +1,6 @@
 <?php
 /**
- * StitchPattWidth
+ * StitchPatternWidth
  *
  * @package hrm
  *
@@ -16,14 +16,14 @@ use hrm\param\base\NumericalParameter;
  *
  * @package hrm
  */
-class StitchPattWidth extends NumericalParameter
+class StitchPatternWidth extends NumericalParameter
 {
 
     /**
-     * StitchPattWidth constructor.
+     * StitchPatternWidth constructor.
      */
     public function __construct()
     {
-        parent::__construct("StitchPattWidth");
+        parent::__construct("StitchPatternWidth");
     }
 }
