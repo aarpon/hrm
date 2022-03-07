@@ -6271,6 +6271,21 @@ if ($current_revision < $n) {
     }
 
     
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchPrefilterMode";
+    $record["value"] = "off";
+    $record["translation"] = "Off";
+    $record["isDefault"] = "t";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    
     
     // Update revision
     if(!update_dbrevision($n))
