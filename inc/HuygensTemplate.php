@@ -406,7 +406,7 @@ class HuygensTemplate
                   'perJobThreadCnt'  => 'auto',
                   'concurrentJobCnt' => '1',
                   'OMP_DYNAMIC'      => '1',
-                  'timeOut'          => '10000',
+                  'timeOut'          => '100000',
                   'exportFormat'     => '',
                   'gpuDevice'        => '0',
                   'listID'           => 'setEnv');
