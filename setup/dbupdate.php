@@ -6300,6 +6300,21 @@ if ($current_revision < $n) {
         return;
     }
     
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchVignettingModel";
+    $record["value"] = "default";
+    $record["translation"] = "Default";
+    $record["isDefault"] = "t";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
     
     // Update revision
     if(!update_dbrevision($n))
