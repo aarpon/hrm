@@ -70,7 +70,7 @@ class System
      * This value has to be set by the developers!
      * @var int
      */
-    private const MIN_HUCORE_VERSION_MAINTENANCE = 0;
+    private const MIN_HUCORE_VERSION_MAINTENANCE = 1;
 
     /**
      * Minimum HuCore (patch) version number to be compatible with HRM.
