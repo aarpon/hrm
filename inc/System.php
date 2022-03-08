@@ -56,28 +56,28 @@ class System
      * This value has to be set by the developers!
      * @var int
      */
-    private const MIN_HUCORE_VERSION_MAJOR = 14;
+    private const MIN_HUCORE_VERSION_MAJOR = 21;
 
     /**
      * Minimum HuCore (minor) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
-    private const MIN_HUCORE_VERSION_MINOR = 6;
+    private const MIN_HUCORE_VERSION_MINOR = 10;
 
     /**
      * Minimum HuCore (maintenance) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
-    private const MIN_HUCORE_VERSION_MAINTENANCE = 1;
+    private const MIN_HUCORE_VERSION_MAINTENANCE = 0;
 
     /**
      * Minimum HuCore (patch) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
-    private const MIN_HUCORE_VERSION_PATCH = 7;
+    private const MIN_HUCORE_VERSION_PATCH = 0;
 
     /**
      * Returns the HRM version.
