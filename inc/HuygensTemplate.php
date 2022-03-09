@@ -2185,6 +2185,10 @@ class HuygensTemplate
         $deconSetting = $this->deconSetting;
         $acuityRate = $deconSetting->parameter("Acuity")->value();
         $acuityValue = $acuityRate[$channel];
+	    
+	if ($acuityValue == "") {
+	    $acuityValue = 0;
+	}
 
         return $acuityValue;
     }
