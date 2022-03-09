@@ -6214,8 +6214,36 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchOffsetsInit";
-    $record["value"] = "patt_overlap";
-    $record["translation"] = "Pattern and overlap";
+    $record["value"] = "pattern_overlap";
+    $record["translation"] = "Pattern and overlap settings";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchOffsetsInit";
+    $record["value"] = "pattern_overlap";
+    $record["translation"] = "List of saved offsets";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchOffsetsInit";
+    $record["value"] = "metadata";
+    $record["translation"] = "Meta data from image format";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
@@ -6225,6 +6253,8 @@ if ($current_revision < $n) {
         return;
     }
 
+    
+    
 
     $tabname = "possible_values";
     $record = array();
