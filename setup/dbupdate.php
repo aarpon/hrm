@@ -6171,6 +6171,7 @@ if ($current_revision < $n) {
     // characters)  for each chromatic aberration component it makes more
     // sense to split the chromatic aberration components in separate entries
     // per channel.
+    unset($temp);
     $tabname = "task_parameter";
     $fields_set = array('owner','setting','name','value');
     $name = "ChromaticAberration";
