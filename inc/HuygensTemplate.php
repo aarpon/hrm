@@ -671,7 +671,6 @@ class HuygensTemplate
         $this->template .= $this->jobTasksList . "\n";
         $this->template .= $this->envList . "\n ";
         $this->template .= $this->imgProcessList;
-        error_log("ASSEMBLE TEMPLATE ".$this->template);
     }
 
     /**
