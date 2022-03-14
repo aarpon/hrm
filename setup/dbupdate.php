@@ -6224,6 +6224,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
+    
 
     $tabname = "possible_values";
     $record = array();
@@ -6238,6 +6239,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
+    
 
     $tabname = "possible_values";
     $record = array();
@@ -6252,9 +6254,7 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-
-    
-    
+        
 
     $tabname = "possible_values";
     $record = array();
@@ -6271,6 +6271,52 @@ if ($current_revision < $n) {
     }
 
 
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchAcquisitionPattern";
+    $record["value"] = "rl";
+    $record["translation"] = "Row line";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchAcquisitionPattern";
+    $record["value"] = "cs";
+    $record["translation"] = "Column snake";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchAcquisitionPattern";
+    $record["value"] = "cl";
+    $record["translation"] = "Column line";
+    $record["isDefault"] = "t";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    
+    
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionStart";
