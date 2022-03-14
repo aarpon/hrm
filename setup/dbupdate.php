@@ -6259,7 +6259,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchOffsetsInit";
-    $record["value"] = "pattern_overlap";
+    $record["value"] = "list_offsets";
     $record["translation"] = "List of saved offsets";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
