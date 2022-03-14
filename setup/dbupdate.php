@@ -6200,7 +6200,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "BleachingMode";
     $record["value"] = "auto";
-    $record["translation"] = "Apply a correction for bleaching";
+    $record["translation"] = "Apply a correction for bleaching, if possible";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
