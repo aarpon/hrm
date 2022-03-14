@@ -6396,7 +6396,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "StitchAlignmentMode";
     $record["value"] = "xyz";
-    $record["translation"] = "XYZ";
+    $record["translation"] = "Optimal displacements in X, Y, and Z.";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
@@ -6406,6 +6406,36 @@ if ($current_revision < $n) {
         return;
     }
 
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchAlignmentMode";
+    $record["value"] = "xy_zcenter";
+    $record["translation"] = "Only X,Y displacement optimization based on the central Z plane.";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchAlignmentMode";
+    $record["value"] = "none";
+    $record["translation"] = "No optimization. Use the input tile offsets.";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+    
     
     $tabname = "possible_values";
     $record = array();
