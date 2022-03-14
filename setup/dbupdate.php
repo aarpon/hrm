@@ -6315,6 +6315,21 @@ if ($current_revision < $n) {
         return;
     }
 
+
+    // Spiral from the center to the left?
+    // $tabname = "possible_values";
+    // $record = array();
+    // $record["parameter"] = "StitchAcquisitionPattern";
+    // $record["value"] = "sl";
+    // $record["translation"] = "Spiral starting at the center and rotating leftwards";
+    // $record["isDefault"] = "f";
+    // $insertSQL = $db->GetInsertSQL($tabname, $record);
+    // if(!$db->Execute($insertSQL)) {
+    //     $msg = "An error occurred while updating the database to revision " . $n . ".";
+    //     write_message($msg);
+    //     write_to_error($msg);
+    //     return;
+    // }
     
     
     $tabname = "possible_values";
@@ -6332,6 +6347,51 @@ if ($current_revision < $n) {
     }
 
 
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchAcquisitionStart";
+    $record["value"] = "tr";
+    $record["translation"] = "Top right";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchAcquisitionStart";
+    $record["value"] = "bl";
+    $record["translation"] = "Bottom left";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchAcquisitionStart";
+    $record["value"] = "br";
+    $record["translation"] = "Bottom right";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAlignmentMode";
