@@ -573,6 +573,21 @@ class TaskSetting extends Setting
 
 
     /**
+     * Checks whether the restoration should allow for stitching.
+     * @param ParameterSetting $paramSetting An instance of the ParameterSetting
+     * class.
+     * @return bool True to enable the stitching option, false otherwise.
+     */
+    public function isEligibleForStitching(ParameterSetting $paramSetting)
+    {
+        if (!System::hasLicense("stitcher")) {
+            return false;
+        }
+        return true;
+    }
+
+    
+    /**
      * Checks whether the restoration should allow for CAC.
      * @return bool True to enable CAC, false otherwise.
      */
