@@ -69,8 +69,8 @@ if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
         || $_SESSION['task_setting']->isEligibleForStitching()) {
         header("Location: " . "stitching.php");
         exit();
-    } elseif (|| $_SESSION['task_setting']->isEligibleForCAC()
-              || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting']))) {
+    } else if ($_SESSION['task_setting']->isEligibleForCAC()
+              || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
         header("Location: " . "post_processing.php");
         exit();
     } else {
@@ -818,6 +818,8 @@ include("header.inc.php");
             if ($_SESSION['user']->isAdmin()
             || $_SESSION['task_setting']->isEligibleForStitching($_SESSION['setting'])) {
 
+
+            }
             ?>
 
         </div> <!-- Stitching -->
