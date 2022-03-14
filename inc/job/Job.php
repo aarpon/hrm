@@ -167,6 +167,7 @@ class Job
             'estimation'                      => 'Background estimation',
             'ratio'                           => 'Signal/Noise ratio',
             'array detector reduction mode'   => 'Array detector reduction mode',
+            'bleaching'                       => 'Bleaching Mode',
             'autocrop'                        => 'Autocrop',
             'z stabilization'                 => 'Z Stabilization',
             't stabilization'                 => 'T Stabilization');

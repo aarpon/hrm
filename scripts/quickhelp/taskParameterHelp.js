@@ -72,6 +72,10 @@ window.helpText[ "autocrop" ] =
   'Microscopic Parameters are taken into account, making sure that ' +
   'cropping will not have a negative impact on the deconvolution result.</p>';
 
+window.helpText[ "bleaching" ] =
+  '<p>If possible, apply bleaching correction. This will be the case' +
+  'for 3D widefield-based volumes as well as for all time series.</p>';
+
 window.helpText[ "arrayDetectorReductionMode" ] =
     '<p>The array detector reduction mode specifies which pixel reassignment method ' +
     'to use in order to combine the data from all the detectors in the array. ' +
