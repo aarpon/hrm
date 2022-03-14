@@ -192,6 +192,7 @@ function initChromaticChannelReference() {
         chan = searchChromaticChannelReference();
     }
 
+    clearChromaticChannelReference();
     setChromaticChannelReference( chan );
 }
 
@@ -246,7 +247,7 @@ function setChromaticChannelReference( chan ) {
         id = id.concat(chan);
         id += "_";
         id = id.concat(component);
-
+        
         inputElement = document.getElementById(id);
         inputElement.readOnly = true;
         inputElement.style.backgroundColor="#888";
@@ -257,13 +258,19 @@ function setChromaticChannelReference( chan ) {
             inputElement.value = 0;
         }
     }
-
+    
+    var id = channelTag + "DiscardOtherCh" + chan;
+    buttonElement = document.getElementById(id);
+    buttonElement.setAttribute('hidden', true);
+    
+    // todo: make sure it is "reset" in the case of 14 parameters.
+    
     var tag = "ReferenceChannel";
     inputElement = document.getElementById(tag);
     inputElement.value = chan;
 }
 
-function removeChromaticChannelReference( ) {
+function clearChromaticChannelReference( ) {
     var tableTag   = "ChromaticAberrationTable";
     var channelTag = "ChromaticAberration";
 
@@ -273,22 +280,62 @@ function removeChromaticChannelReference( ) {
     componentCnt = table.rows[0].cells.length - 1;
 
     for (var chan = 0; chan < channelCnt; chan++) {
+
+        // If there are 14 parameters known for this chanenl don't make
+        // it editable.
+        var id = channelTag + "DiscardOtherCh";
+        id = id.concat(chan);
+        inputElement = document.getElementById(id);
+        var nonEditable14params = !inputElement.getAttribute('hidden');
+        
         for (var component = 0; component < componentCnt; component++) {
             var id = channelTag + "Ch";
             id = id.concat(chan);
             id += "_";
             id = id.concat(component);
-
             inputElement = document.getElementById(id);
-            inputElement.readOnly = false;
-            inputElement.style.backgroundColor="";
+
+            if (nonEditable14params) {
+                inputElement.readOnly = true;
+                inputElement.style.backgroundColor="#666";
+            } else {
+                inputElement.readOnly = false;
+                inputElement.style.backgroundColor="";
+            }
         }
     }
 }
 
 function changeChromaticChannelReference(selectObj) {
-    removeChromaticChannelReference( );
+    clearChromaticChannelReference( );
     setChromaticChannelReference( selectObj.value );
+}
+
+function editChromaticChannelWith14Params(channel) {
+    // Hide the discard button.
+    var tag = "ChromaticAberrationDiscardOtherCh" + channel;
+    butElement = document.getElementById(tag);
+    butElement.setAttribute('hidden', true);
+    clearChromaticChannelReference( );
+
+    // Round the values to 5 decimals. This both makes it easier to edit and
+    // ensures the new values are saved properly. 
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
+    table = document.getElementById(tableTag);
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    for (var component = 0; component < componentCnt; component++) {
+        var id = channelTag + "Ch" + channel + "_" + component;
+        inputElement = document.getElementById(id);
+        var rounded = Math.round(inputElement.value * 100000) / 100000;
+        inputElement.value = rounded;
+    }
+
+    // Call setChromaticChannelReference to properly redo the layout.
+    var tag = "ReferenceChannel";
+    refElement = document.getElementById(tag);
+    setChromaticChannelReference( refElement.value );
 }
 
 

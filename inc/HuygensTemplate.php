@@ -378,7 +378,7 @@ class HuygensTemplate
 
         $this->jobInfoArray =
             array('title'        => 'Batch Processing template',
-                  'version'      => '2.3',
+                  'version'      => '2.4',
                   'templateName' => '',
                   'date'         => '',
                   'listID'       => 'info');
@@ -1166,13 +1166,14 @@ class HuygensTemplate
         if (empty($channelsArray)) {
             return $allTasksDescr;
         }
-
-        $chromaticParam = $this->deconSetting->parameter("ChromaticAberration");
+        
         foreach ($channelsArray as $chanKey => $chan) {
             $taskDescr = "";
-            /** @var ChromaticAberration $chromaticParam */
-            $chanVector = implode(' ', $chromaticParam->chanValue($chan));
-
+            /** @var ChromaticAberrationCh$chan $chromaticParam */
+            $chromaticParam =
+                $this->deconSetting->parameter("ChromaticAberrationCh" . $chan);
+            $chanVector = implode(' ', $chromaticParam->value());
+            
             foreach ($this->chromaticArray as $chromKey => $chromValue) {
                 if ($chromKey != "listID") {
                     $taskDescr .= " " . $chromKey . " ";
@@ -1196,7 +1197,7 @@ class HuygensTemplate
                         $taskDescr .= $this->string2tcllist($chanVector);
                         break;
                     case 'reference':
-                        if ($chanVector == "0 0 0 0 1") {
+                        if (trim($chanVector) == "0 0 0 0 1") {
                             $reference = 1;
                         } else {
                             $reference = 0;
@@ -2290,11 +2291,12 @@ class HuygensTemplate
             return $channelsArray;
         }
 
-        /** @var ChromaticAberration $chromaticParam */
-        $chromaticParam = $this->deconSetting->parameter("ChromaticAberration");
-
+        
         for ($chan = 0; $chan < $chanCnt; $chan++) {
-            $chromaticChan = $chromaticParam->chanValue($chan);
+            /** @var ChromaticAberrationCh$chan $chromaticParamCh$chan */
+            $chromaticParam =
+                $this->deconSetting->parameter("ChromaticAberrationCh" . $chan);
+            $chromaticChan = $chromaticParam->value();
 
             foreach ($chromaticChan as $component => $value) {
                 if (isset($value) && $value > 0) {

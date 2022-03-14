@@ -516,8 +516,8 @@ class DatabaseConnection
             }
 
             // Accumulate the successes (or failures) of the queries. If a query
-            // fails, the return of $this->execute() will be === false; otherwise
-            // it is an ADORecordSet.
+            // fails, the return of $this->execute() will be === false;
+            // otherwise it is an ADORecordSet.
             $result &= ($this->execute($query) !== false);
         }
 
@@ -673,7 +673,12 @@ class DatabaseConnection
                     case "PinholeSpacing":
                     case "SignalNoiseRatio":
                     case "BackgroundOffsetPercent":
-                    case "ChromaticAberration":
+                    case "ChromaticAberrationCh0":
+                    case "ChromaticAberrationCh1":
+                    case "ChromaticAberrationCh2":
+                    case "ChromaticAberrationCh3":
+                    case "ChromaticAberrationCh4":
+                    case "ChromaticAberrationCh5":
                     case "StedDepletionMode":
                     case "StedWavelength":
                     case "StedSaturationFactor":
@@ -689,7 +694,7 @@ class DatabaseConnection
                     case "ColocChannel":
                     case "ColocThreshold":
                     case "ColocCoefficient":
-		    case "HotPixelCorrection":	
+                    case "HotPixelCorrection":
                     case "PSF":
                         /* Extract and continue to explode. */
                         $newValue = substr($newValue, 1);
@@ -791,7 +796,12 @@ class DatabaseConnection
                     case "EmissionWavelength":
                     case "SignalNoiseRatio":
                     case "BackgroundOffsetPercent":
-                    case "ChromaticAberration":
+                    case "ChromaticAberrationCh0":
+                    case "ChromaticAberrationCh1":
+                    case "ChromaticAberrationCh2":
+                    case "ChromaticAberrationCh3":
+                    case "ChromaticAberrationCh4":
+                    case "ChromaticAberrationCh5":
                         /* Extract and continue to explode. */
                         $newValue = substr($newValue, 1);
                     default:
