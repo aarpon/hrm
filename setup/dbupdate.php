@@ -6451,6 +6451,21 @@ if ($current_revision < $n) {
         return;
     }
 
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchPrefilterMode";
+    $record["value"] = "on";
+    $record["translation"] = "On";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
     
     $tabname = "possible_values";
     $record = array();
@@ -6465,7 +6480,37 @@ if ($current_revision < $n) {
         write_to_error($msg);
         return;
     }
-    
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchVignettingMode";
+    $record["value"] = "auto";
+    $record["translation"] = "Auto";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "StitchVignettingMode";
+    $record["value"] = "manual";
+    $record["translation"] = "Manual";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
 
     $tabname = "possible_values";
     $record = array();
