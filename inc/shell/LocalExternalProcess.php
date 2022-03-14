@@ -116,6 +116,8 @@ class LocalExternalProcess extends ExternalProcess
         // therefore nothing to do
     }
 
+    // TODO: a rename function?
+
     /**
      * Executes a command.
      * @param string $command Command to be executed on the host.

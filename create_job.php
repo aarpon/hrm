@@ -57,6 +57,11 @@ if (isset($_POST['create'])) {
     // save preferred output file format
     if ($_SESSION['task_setting']->save()) {
         // TODO source/destination folder names should be given to JobDescription
+        // Call to sanitize files this will replace special characters with
+        // underscores. A warning is shown in the case this would actually
+        // change any file names.
+        $_SESSION['fileserver']->sanitizeFiles();
+        
         $job = new JobDescription();
         $job->setParameterSetting($_SESSION['setting']);
         $job->setTaskSetting($_SESSION['task_setting']);
@@ -73,7 +78,7 @@ if (isset($_POST['create'])) {
         }
     } else {
         $message = "An unknown error has occurred. " .
-        "Please inform the administrator";
+                   "Please inform the administrator";
     }
 } elseif (isset($_POST['OK'])) {
     header("Location: " . "select_parameter_settings.php");
@@ -379,6 +384,7 @@ echo $_SESSION['analysis_setting']->displayString();
                       readonly="readonly">
 <?php
 
+// Show the files selected.
 $files = $_SESSION['fileserver']->selectedFiles();
 foreach ($files as $file) {
     echo " " . $file . "\n";
@@ -456,6 +462,13 @@ foreach ($files as $file) {
 
         echo "<p>$message</p>";
 
+        if (!$_SESSION['fileserver']->checkSanitization()) {
+            echo "<p>Warning: files containing special characters in their " .
+                "names have been selected. These files will automatically " .
+                "be renamed on disk if you continue.</p>" .
+                "<p>For example a file called \"B@d img(náme).h5\" " .
+                "would be renamed to \"B_d_img_n__me_.h5\".</p>";
+        }
         ?>
     </div>
 

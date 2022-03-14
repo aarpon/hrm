@@ -376,7 +376,7 @@ class JobDescription
             $result &= $db->addFileToJob($id, $this->owner, $file, $this->autoseries);
 
             // Now add a Job to the queue for this file
-            $result &= $db->queueJob($id, $settingsId, $ownerName);
+            $result &= ($db->queueJob($id, $settingsId, $ownerName) !== false);
         }
 
         // Assign priorities

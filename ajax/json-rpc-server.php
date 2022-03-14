@@ -1069,6 +1069,20 @@ function jsonRemoveFilesFromSelection($fileList)
 
 function processFilesAndSelectedFilesLists($allFiles, $selectedFiles, $fileServer, $format)
 {
+    // Sanity checks
+    if ($allFiles === null) {
+        $allFiles = [];
+    }
+    if ($selectedFiles === null) {
+        $selectedFiles = [];
+    }
+    if (gettype($allFiles) == "string") {
+        $allFiles = [$allFiles];
+    }
+    if (gettype($selectedFiles) == "string") {
+        $selectedFiles = [$selectedFiles];
+    }
+
     // Are the selected files compatible with the current format?
     if (count($selectedFiles) > 0 && !$fileServer->checkAgainstFormat($selectedFiles[0], $format)) {
         $fileServer->removeAllFilesFromSelection();

@@ -122,6 +122,7 @@ class Fileserver
         $this->selectedFiles = NULL;
         $this->destFiles = NULL;
         $this->imageExtensions = NULL;
+        $this->selectionSanitized = false;
 
         // Set the valid image extensions
         $db = DatabaseConnection::get();
@@ -624,6 +625,129 @@ class Fileserver
         $this->expandSubImages = $bool;
     }
 
+    
+    /**
+     * Returns a postfixed version of the given path, so that it is unique.
+     * It will add "_$inx" as suffix, whith $inx = 0,1,2... until 100. Returns
+     * false if nothing was found.
+     */
+    private function getPostfixedPath($path)
+    {
+        $dir  = pathinfo($path, PATHINFO_DIRNAME);
+        $file = pathinfo($path, PATHINFO_FILENAME);
+        $ext  = pathinfo($path, PATHINFO_EXTENSION);
+        
+        for ($inx = 0; $inx <= 100; $inx+=1) {
+            $suffixed = $dir . "/" . $file . "_" . $inx . "." . $ext;
+            if (!realpath($suffixed)) {
+                return $suffixed;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Returns true if sanization of the selection is not needed or already
+     * done. Otherwise returns false.
+     */
+    public function checkSanitization()
+    {
+        if ($this->selectionSanitized) {
+            return true;
+        }
+        if ($this->selectedFiles == NULL) {
+            $this->selectionSanitized = true;
+            return true;
+        }
+
+        // Compare the filename with it's sanitized version. If not the same
+        // it needs sanitization.
+        foreach ($this->selectedFiles as $key => $file) {
+            $fileName = pathinfo($file, PATHINFO_FILENAME);
+            $sanitized = FileserverV2::sanitizeFileName($fileName);
+            
+            if (strcmp($fileName, $sanitized) !== 0) {
+                $this->selectionSanitized = false;
+                return false;
+            }
+        }
+        $this->selectionSanitized = true;
+        return true;
+    }
+    
+    /**
+     * Returns the list of selected files after sanitizing bad filenames. It
+     * will rename the files on disk.
+     * @return array Array of file names after sanitation.
+     */
+    public function sanitizeFiles()
+    {
+        if ($this->selectedFiles == null) {
+            $this->selectedFiles = array();
+        }
+        if ($this->selectionSanitized) {
+            return $this->selectedFiles;
+        }
+        
+        // Compare the filename and it's sanitized version, enter sanitization
+        // when they are not the same.
+        $renamesDone = array();
+        foreach ($this->selectedFiles as $key => $file) {
+            $fileName = pathinfo($file, PATHINFO_FILENAME);
+            $sanitized = FileserverV2::sanitizeFileName($fileName);
+            
+            if (strcmp($fileName, $sanitized) !== 0) {
+
+                // Create the actual paths of the files (the extension might
+                // have to be modified, so it is processed a little bit).
+                $extension = pathinfo($file, PATHINFO_EXTENSION);
+                $extensionProcessed = explode(" ", $extension)[0];
+                
+                $oldPath = $this->sourceFolder() .
+                    "/" . $fileName . "." . $extensionProcessed;
+                $newPath = $this->sourceFolder() .
+                    "/" . $sanitized . "." . $extensionProcessed;
+                
+                // Check if the old path exists. If not it might have already
+                // been renamed, so check $renamesDone. 
+                if (!realpath($oldPath)) {
+                    
+                    if (array_key_exists($fileName, $renamesDone)) {
+                        $sanitized = $renamesDone[$fileName];
+                        $this->selectedFiles[$key] = $sanitized . "." .
+                            $extension;
+                    } else {
+                        error_log("Path " . $oldPath . " can't be found " .
+                                  "during sanitization.");
+                    }
+                    continue;
+                }
+                
+                // Check the new path. If it exsists already find an
+                // alternative path by adding a postfix. 
+                if (realpath($newPath)) {
+                    $newPath = $this->getPostfixedPath($newPath);
+                    if (!$newPath) {
+                        error_log("Path ". $newPath . " already exists and " .
+                                  "no viable suffixed alternative was found. " .
+                                  "Sanitization skipped for " . $oldPath . ".");
+                        continue;
+                    } else {
+                        $sanitized = pathinfo($newPath, PATHINFO_FILENAME);
+                    }
+                }
+                rename($oldPath, $newPath);
+                $renamesDone[$fileName] = $sanitized;
+                $this->selectedFiles[$key] = $sanitized . "." . $extension;
+            }
+        }
+
+        $this->selectionSanitized = true;
+        $this->getFiles();
+        return $this->selectedFiles;
+    }
+
+
     /**
      * Returns the list of selected files that will be added to a job.
      * @return array Array of selected file names.
@@ -649,6 +773,9 @@ class Fileserver
         $new = array_diff($files, $selected);
         $this->selectedFiles = array_merge($new, $this->selectedFiles);
         sort($this->selectedFiles);
+
+        // After adding any files, set the selectionSanitized to false.
+        $this->selectionSanitized = false;
     }
 
     /**
@@ -1237,17 +1364,20 @@ class Fileserver
     {
         $filename = strtolower($filename);
         $ext = $this->getFileNameExtension($filename);
+        if ($ext === "") {
+            return false;
+        }
         if ($ext === "gz") {
             // Use two suffixes as extension
             $filename = basename($filename, ".gz");
             $ext = $this->getFileNameExtension($filename) . ".gz";
         }
-        $result = False;
+        $result = false;
         if (in_array($ext, $this->validImageExtensions)) {
-            $result = True;
+            $result = true;
         }
         if ($alsoExtras && (in_array($ext, $this->validImageExtensionsExtras))) {
-            $result = True;
+            $result = true;
         }
         return $result;
     }
@@ -1605,11 +1735,15 @@ class Fileserver
         if ($compare > 0) {
             $compare = 400;
         }
+        
+        // Also supply the sanitized name, to see if renaming is needed and
+        // handle it properly.
+        $sanitized = FileserverV2::sanitizeFileName($file);
 
         return
             "imgPrev('" . rawurlencode($file) . "', $mode, " .
-            (int)$genThumbnails . ", $compare, $index, '$dir', " .
-            "'$referer', $data)";
+            (int)$genThumbnails . ", '" . rawurlencode($sanitized) .
+            "', $compare, $index, '$dir', '$referer', $data)";
     }
 
     /**
@@ -2401,6 +2535,31 @@ class Fileserver
 
         if ($src == "src") {
             $psrc = $this->sourceFolder();
+            
+            // Check "src" files for sanitization, since they might not have
+            // been santized before.
+            $fileName = pathinfo($file, PATHINFO_FILENAME);
+            $sanitized = FileserverV2::sanitizeFileName($fileName);
+            if (strcmp($fileName, $sanitized) !== 0) {
+
+                // Backup the current selection, then set the current file as
+                // selection. 
+                $selectedBackup = $this->selectedFiles();
+                $this->removeAllFilesFromSelection();
+                $fileArray = array(0 => $file);
+                $this->addFilesToSelection($fileArray);
+                $result = $this->sanitizeFiles();
+                if ($result) {
+                    // Successfull rename.
+                    $updateSelection = array_search($file, $selectedBackup);
+                    if ($updateSelection) {
+                        $selectedBackup[$updateSelection] = $result[0];
+                    }
+                    $file = $result[0];
+                }
+                $this->removeAllFilesFromSelection();
+                $this->addFilesToSelection($selectedBackup);
+            }
         } else {
             $psrc = $this->destinationFolder();
         }
@@ -3506,6 +3665,10 @@ class Fileserver
     {
         // Process the path information
         $info = pathinfo($filename);
+        if (! array_key_exists("extension", $info)) {
+            return "";
+        }
+
         $allExtensions = FileserverV2::getAllValidExtensions();
         if (in_array(strtolower($info["extension"]), $allExtensions)) {
             return $info["extension"];
