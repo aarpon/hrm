@@ -1,4 +1,13 @@
+<?php
+// This file is part of the Huygens Remote Manager
+// Copyright and license notice: see license.txt
 
+use hrm\DatabaseConnection;
+use hrm\Nav;
+use hrm\setting\TaskSetting;
+use hrm\Util;
+
+require_once dirname(__FILE__) . '/inc/bootstrap.php';
 
 
 
@@ -37,3 +46,7 @@ if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
 } else {
     $message = $_SESSION['task_setting']->message();
 }
+
+
+
+?>
