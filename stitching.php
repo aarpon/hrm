@@ -227,6 +227,59 @@ include("header.inc.php");
         </div> <!-- StitchAcquisitionPattern -->
 
 
+        <?php
+        /***************************************************************************
+         *
+         * StitchAcquisitionStart
+         ***************************************************************************/
+
+        /** @var StitchAcquisitionStart $stitchOAcquisitionStart */
+        ?>
+        <div id="StitchAcquisitionStart">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchacquisitionstart');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Acquisition Start
+                </legend>
+
+                <select id="StitchAcquisitionStart"
+                        title="StitchAcquisitionStart"
+                        name="StitchAcquisitionStart"
+                        class="selection">
+                    <?php
+
+                    /*
+                          STITCHACQUISITIONSTART
+                    */
+                    $parameterAcqStart =
+                        $_SESSION['task_setting']->parameter("StitchAcquisitionStart");
+                    $possibleValues = $parameterAcqStart->possibleValues();
+                    $selectedMode = $parameterAcqStart->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterAcqStart->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- StitchAcquisitionStart -->
 
 
 
