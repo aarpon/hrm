@@ -233,7 +233,7 @@ include("header.inc.php");
          * StitchAcquisitionStart
          ***************************************************************************/
 
-        /** @var StitchAcquisitionStart $stitchOAcquisitionStart */
+        /** @var StitchAcquisitionStart $stitchAcquisitionStart */
         ?>
         <div id="StitchAcquisitionStart">
             <fieldset class="setting provided"
@@ -281,9 +281,96 @@ include("header.inc.php");
                 </select>
         </div> <!-- StitchAcquisitionStart -->
 
+            
+        <?php
+        /***************************************************************************
+         *
+         * StitchPatternWidth
+         ***************************************************************************/
+
+        /** @var StitchPatternWidth $stitchPatternWidth */
+        ?>
+        <div id="StitchPatternWidth">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchpatternwidth');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Pattern Width
+                </legend>
+
+                <?php
+                $parameterPatternWidth =
+                        $_SESSION['task_setting']->parameter("StitchPatternWidth");
+                $value = $parameterPatternWidth->value();
+                ?>
+
+                <input id="PatternWidth"
+                       name="PatternWidth"
+                       title="Pattern Width"
+                       type="text"
+                       size="8"
+                       value="<?php echo $value ?>"/>
+
+            </fieldset>
+        </div> <!-- StitchPatternWidth -->
+
+                           
+
+        <?php
+        /***************************************************************************
+         *
+         * StitchPatternHeight
+         ***************************************************************************/
+
+        /** @var StitchPatternHeight $stitchPatternHeight */
+        ?>
+        <div id="StitchPatternHeight">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchpatternheight');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Pattern Height
+                </legend>
+
+                <?php
+                $parameterPatternHeight =
+                        $_SESSION['task_setting']->parameter("StitchPatternHeight");
+                $value = $parameterPatternHeight->value();
+                ?>
+
+                <input id="PatternHeight"
+                       name="PatternHeight"
+                       title="Pattern Height"
+                       type="text"
+                       size="8"
+                       value="<?php echo $value ?>"/>
+
+            </fieldset>
+        </div> <!-- StitchPatternHeight -->
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+            
 
 
 
