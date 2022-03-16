@@ -189,7 +189,7 @@ include("header.inc.php");
                         'http://www.svi.nl/HelpStitcher')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    Initial Offsets
+                    Acquisition Pattern
                 </legend>
 
                 <select id="StitchAcquisitionPattern"
