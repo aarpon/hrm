@@ -49,7 +49,8 @@ class TaskSetting extends Setting
             'TStabilizationMethod',
             'TStabilizationRotation',
             'TStabilizationCropping',
-	    'HotPixelCorrection');
+            'StitchOffsetsInit',
+	        'HotPixelCorrection');
 
         // Instantiate the Parameter objects
         foreach ($parameterClasses as $class) {
