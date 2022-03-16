@@ -6444,6 +6444,137 @@ if ($current_revision < $n) {
             return;
         }
     }
+    
+    // In HRM 3.8.0 the SNR values are always numeric in order to match the
+    // current behaviour in the Huygens software. However, the database may
+    // still be storing qualitative SNR values for restoration templates if the
+    // deconvolution algorithm was set to QMLE. The qualitative values would be
+    // saved as integers and mapped according to "1" => "low", "2" => "fair",
+    // "3" => "good", "4" => "inf". Search through the database and replace
+    // these instances with appropriate numeric values.
+    unset($temp);
+    $tabname = "task_parameter";
+    $fields_set = array('owner','setting','name','value');
+    $algName = "DeconvolutionAlgorithm";
+    $snrName = "SignalNoiseRatio";
+    $snrQMLEArray = array("1" => "5.6", "2" => "16.0",
+                          "3" => "33.3", "4" => "1000.0");
+
+    // Select all decon algorithm entries.
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $algName . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+            $array = explode('#', $row[3]);
+            $setting = $row[1];
+            
+            // Use the setting to find the corresponding SNR values.
+            $snrVals = $db->execute("SELECT * FROM " . $tabname .
+                                    " WHERE setting = '" . $setting .
+                                    "' AND name ='" . $snrName . "'");
+            if ($snrVals) {
+                // Should be just a single row.
+                $snrRow = $snrVals->FetchRow();
+                
+                // If the decon algorithm entries contain a 'qmle' value, modify
+                // them according to the conversion array.
+                for ($ch = 0; $ch < count($array); $ch++) {
+                    if ($array[$ch] == 'qmle') {
+                        $snrArray = explode('#', $snrRow[3]);
+                        $snrArray[$ch] = $snrQMLEArray[$snrArray[$ch]];
+                        $snrRow[3] = implode('#', $snrArray);
+                    }
+                }
+                for ($i = 0; $i <count($fields_set); $i++) {
+                    $temp[$fields_set[$i]] = $snrRow[$i];
+                }
+
+                // Delete the entry.
+                if (!$db->Execute("DELETE FROM " . $tabname .
+                                  " WHERE owner='" . $snrRow[0] .
+                                  "' AND setting='" . $snrRow[1] .
+                                  "' AND name='" . $snrName . "'")) {
+                    $msg = "An error occurred while updating " .
+                         "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_log($msg);
+                    write_to_error($msg);
+                    return;
+                }
+                    
+                // Reinsert the entry in the database.
+                $insertSQL = $db->GetInsertSQL($tabname, $temp);
+                if (!$db->Execute($insertSQL)) {
+                    $msg = "An error occurred while updating " .
+                         "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+        }
+    }
+    
+    // Re-do all of the above for the shared templates.
+    $tabname = "shared_task_parameter";
+    $fields_set = array('id','setting_id','owner','setting','name','value');
+    
+    // Select all decon algorithm entries.
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $algName . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+            $array = explode('#', $row[5]);
+            $setting = $row[3];
+            
+            // Use the setting to find the corresponding SNR values.
+            $snrVals = $db->execute("SELECT * FROM " . $tabname .
+                                    " WHERE setting = '" . $setting .
+                                    "' AND name ='" . $snrName . "'");
+            if ($snrVals) {
+                // Should be just a single row.
+                $snrRow = $snrVals->FetchRow();
+                
+                // If the decon algorithm entries contain a 'qmle' value, modify
+                // them according to the conversion array.
+                for ($ch = 0; $ch < count($array); $ch++) {
+                    if ($array[$ch] == 'qmle') {
+                        $snrArray = explode('#', $snrRow[5]);
+                        $snrArray[$ch] = $snrQMLEArray[$snrArray[$ch]];
+                        $snrRow[5] = implode('#', $snrArray);
+                    }
+                }
+                for ($i = 0; $i <count($fields_set); $i++) {
+                    $temp[$fields_set[$i]] = $snrRow[$i];
+                }
+                
+                // Delete the entry.
+                if (!$db->Execute("DELETE FROM " . $tabname .
+                                  " WHERE id='" . $snrRow[0] .
+                                  "' AND setting_id='" . $snrRow[1] .
+                                  "' AND owner='" . $snrRow[2] .
+                                  "' AND setting='" . $snrRow[3] .
+                                  "' AND name='" . $snrName . "'")) {
+                    $msg = "An error occurred while updating " .
+                         "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_log($msg);
+                    write_to_error($msg);
+                    return;
+                }
+                
+                // Reinsert the entry in the database.
+                $insertSQL = $db->GetInsertSQL($tabname, $temp);
+                if (!$db->Execute($insertSQL)) {
+                    $msg = "An error occurred while updating " .
+                         "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+        }
+    }    
 
     // Update revision
     if (!update_dbrevision($n))

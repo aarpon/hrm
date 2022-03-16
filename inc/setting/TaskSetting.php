@@ -742,14 +742,7 @@ class TaskSetting extends Setting
         $algorithm->setValue($algArray);
 
         // SNR.
-        $snrQMLEArray = array("low" => "5.6", "fair" => "16.0", "good" => "33.3", "inf" => "1000.0");
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
-            
-            // Starting from template version 2.5, snr instead of sn is used
-            // to signify SNR. Most conversion cases are handled by the
-            // template::loadCommon proc, but if we encounter an sn entry we
-            // overwrite the snr entry for backwards compatibility.
-            
             if ($algArray[$chan] == "cmle") {
                 $key = "cmle:" . $chan . " snr";
             } elseif ($algArray[$chan] == "gmle") {
@@ -760,22 +753,6 @@ class TaskSetting extends Setting
             
             if (isset($huArray[$key])) {
                 $snr[$chan] = $huArray[$key];
-            }
-            
-            if ($algArray[$chan] == "cmle") {
-                $key = "cmle:" . $chan . " sn";
-            } elseif ($algArray[$chan] == "gmle") {
-                $key = "gmle:" . $chan . " sn";
-            } elseif ($algArray[$chan] == "qmle") {
-                $key = "qmle:" . $chan . " sn";
-            }
-
-            if (isset($huArray[$key])) {
-                if ($algArray[$chan] == "qmle" && array_key_exists($huArray[$key], $snrQMLEArray)) {
-                    $snr[$chan] = $snrQMLEArray[$huArray[$key]];
-                } else {
-                    $snr[$chan] = $huArray[$key];
-                }
             }
         }
         
