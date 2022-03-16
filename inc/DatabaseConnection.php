@@ -672,6 +672,7 @@ class DatabaseConnection
                     case "PinholeSize":
                     case "PinholeSpacing":
                     case "SignalNoiseRatio":
+                    case "Acuity":
                     case "BackgroundOffsetPercent":
                     case "ChromaticAberrationCh0":
                     case "ChromaticAberrationCh1":
@@ -795,6 +796,7 @@ class DatabaseConnection
                     case "ExcitationWavelength":
                     case "EmissionWavelength":
                     case "SignalNoiseRatio":
+                    case "Acuity":
                     case "BackgroundOffsetPercent":
                     case "ChromaticAberrationCh0":
                     case "ChromaticAberrationCh1":

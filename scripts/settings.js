@@ -151,6 +151,18 @@ function switchTStabilizationMode() {
     }
 }
 
+function switchAcuityMode() {
+    if ($('#AcuityMode').val() == 'on') {
+        for (var chan = 0; chan < 6; chan++) {
+            $('#acuity-' + chan).show();
+        }
+    } else {
+        for (var chan = 0; chan < 6; chan++) {
+            $('#acuity-' + chan).hide();
+        }
+    }
+}
+
 function switchAdvancedCorrection() {
     var element = document.getElementById('AberrationCorrectionMode');
     var chosenoption = element.options[element.selectedIndex];

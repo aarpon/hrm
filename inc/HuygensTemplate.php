@@ -454,7 +454,7 @@ class HuygensTemplate
         $this->imgProcessTasksArray =
             array('open'                  => 'imgOpen',
                 'setParameters'           => 'setp',
-		'hotPixelCorrection'      => 'hotPix',
+		        'hotPixelCorrection'      => 'hotPix',
                 'autocrop'                => 'autocrop',
                 'adjustBaseline'          => 'adjbl',
                 'ZStabilization'          => 'stabilize',
@@ -591,8 +591,10 @@ class HuygensTemplate
                   'it'         => '',
                   'bgMode'     => '',
                   'bg'         => '',
-                  'sn'         => '',
-                  'blMode'     => '',
+                  'snr'        => '',
+                  'acuity'     => '',
+                  'acuityMode' => '',
+                  'blMode'     => 'auto',
                   'pad'        => 'auto',
                   'reduceMode' => 'auto',
                   'psfMode'    => '',
@@ -1987,8 +1989,14 @@ class HuygensTemplate
                 case 'bg':
                     $taskDescr .= $this->getBgValue($channel);
                     break;
-                case 'sn':
+                case 'snr':
                     $taskDescr .= $this->getSnrValue($channel);
+                    break;
+                case 'acuity':
+                    $taskDescr .= $this->getAcuityValue($channel);
+                    break;
+                case 'acuityMode':
+                    $taskDescr .= $this->getAcuityMode();
                     break;
                 case 'psfMode':
                     $taskDescr .= $this->getPsfMode();
@@ -2180,13 +2188,38 @@ class HuygensTemplate
         $snrRate = $deconSetting->parameter("SignalNoiseRatio")->value();
         $snrValue = $snrRate[$channel];
 
-        if ($this->getAlgorithm($channel) == "qmle") {
-            $indexValues = array(1, 2, 3, 4, 5);
-            $snrArray = array("low", "fair", "good", "inf", "auto");
-            $snrValue = str_replace($indexValues, $snrArray, $snrValue);
-        }
-
         return $snrValue;
+    }
+
+    /**
+     * Gets the acuity value. One channel.
+     * @param int $channel A channel
+     * @return int|string The acuity value.
+     */
+    private function getAcuityValue($channel)
+    {
+        /** @var TaskSetting $deconSetting */
+        $deconSetting = $this->deconSetting;
+        $acuityRate = $deconSetting->parameter("Acuity")->value();
+        $acuityValue = $acuityRate[$channel];
+	    
+	if ($acuityValue == "") {
+	    $acuityValue = 0;
+	}
+
+        return $acuityValue;
+    }
+
+    /**
+     * Gets the acuity mode.
+     * @return string Acuity mode.
+     */
+    private function getAcuityMode()
+    {
+        $deconSetting = $this->deconSetting;
+        $acuityMode = $deconSetting->parameter("AcuityMode")->value();
+        
+        return $acuityMode;
     }
 
     /**
