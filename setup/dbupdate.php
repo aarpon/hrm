@@ -6434,8 +6434,7 @@ if ($current_revision < $n) {
     $record["min_included"] = 't';
     $record["max_included"] = 't';
     $record["standard"] = null;
-    $rs = $db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "' AND standard='" . $record["standard"] . "'");
-    if ($rs->EOF) {
+    if ($db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "'")->RecordCount() == 0) {
         $insertSQL = $db->GetInsertSQL($tabname, $record);
         if (!$db->Execute($insertSQL)) {
             $msg = "An error occurred while updating the database to revision " . $n . ".";
