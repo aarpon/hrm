@@ -164,8 +164,9 @@ else if (isset($_POST['OK']) && $_POST['OK']=="OK" ) {
       channel have all their values set properly.
     */
     $ok = True;
-    $ok = $ok && $_SESSION['task_setting']->parameter(
-        'Acuity' )->check();
+    $ok = $ok && ($_SESSION['task_setting']->parameter(
+        'Acuity' )->check() || $_SESSION['task_setting']->parameter(
+        'AcuityMode' )->value() == 'off');
     $ok = $ok && $_SESSION['task_setting']->parameter(
         'SignalNoiseRatio' )->check();
     $ok = $ok && $_SESSION['task_setting']->parameter(

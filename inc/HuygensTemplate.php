@@ -671,7 +671,6 @@ class HuygensTemplate
         $this->template .= $this->jobTasksList . "\n";
         $this->template .= $this->envList . "\n ";
         $this->template .= $this->imgProcessList;
-        error_log("ASSEMBLE TEMPLATE ".$this->template);
     }
 
     /**
@@ -2186,6 +2185,10 @@ class HuygensTemplate
         $deconSetting = $this->deconSetting;
         $acuityRate = $deconSetting->parameter("Acuity")->value();
         $acuityValue = $acuityRate[$channel];
+	    
+	if ($acuityValue == "") {
+	    $acuityValue = 0;
+	}
 
         return $acuityValue;
     }

@@ -6171,7 +6171,7 @@ if ($current_revision < $n) {
     $record["parameter"] = 'AcuityMode';
     $record["value"] = 'on';
     $record["translation"] = 'Enable acuity mode';
-    $record["isDefault"] = 't';
+    $record["isDefault"] = 'f';
     
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
@@ -6192,7 +6192,7 @@ if ($current_revision < $n) {
     $record["parameter"] = 'AcuityMode';
     $record["value"] = 'off';
     $record["translation"] = 'Use legacy SNR';
-    $record["isDefault"] = 'f';
+    $record["isDefault"] = 't';
 
     // Skip it if the row is already there.
     $query = "SELECT * FROM " . $tabname .
