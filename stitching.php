@@ -113,9 +113,80 @@ include("header.inc.php");
 
     <form method="post" action="" id="stitch">
 
+    <h4>How should your images be stitched?</h4>
+
+
+        <?php
+        /***************************************************************************
+         *
+         * StitchOffsetsInit
+         ***************************************************************************/
+
+        /** @var StitchOffsetsInit $stitchOffsetsInit */
+        ?>
+        <div id="StitchOffsetsInit">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchoffsetsinit');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Initial Offsets
+                </legend>
+
+                <select id="StitchOffsetsInit"
+                        title="StitchOffsetsInit"
+                        name="StitchOffsetsInit"
+                        class="selection">
+                    <?php
+
+                    /*
+                          STITCHOFFSETSINIT
+                    */
+                    $parameterOffsetsInit =
+                        $_SESSION['task_setting']->parameter("StitchOffsetsInit");
+                    $possibleValues = $parameterOffsetsInit->possibleValues();
+                    $selectedMode = $parameterOffsetsInit->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterOffsetsInit->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- StitchOffsetsInit -->
+       
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                    
                                     
                           
     <div><input name="OK" type="hidden"/></div>
