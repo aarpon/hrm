@@ -172,6 +172,59 @@ include("header.inc.php");
        
 
 
+        <?php
+        /***************************************************************************
+         *
+         * StitchAcquisitionPattern
+         ***************************************************************************/
+
+        /** @var StitchAcquisitionPattern $stitchOAcquisitionPattern */
+        ?>
+        <div id="StitchAcquisitionPattern">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchacquisitionpattern');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Initial Offsets
+                </legend>
+
+                <select id="StitchAcquisitionPattern"
+                        title="StitchAcquisitionPattern"
+                        name="StitchAcquisitionPattern"
+                        class="selection">
+                    <?php
+
+                    /*
+                          STITCHACQUISITIONPATTERN
+                    */
+                    $parameterAcqPattern =
+                        $_SESSION['task_setting']->parameter("StitchAcquisitionPattern");
+                    $possibleValues = $parameterAcqPattern->possibleValues();
+                    $selectedMode = $parameterAcqPattern->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterAcqPattern->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- StitchAcquisitionPattern -->
 
 
 

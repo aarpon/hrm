@@ -50,6 +50,7 @@ class TaskSetting extends Setting
             'TStabilizationRotation',
             'TStabilizationCropping',
             'StitchOffsetsInit',
+            'StitchAcquisitionPattern',
 	        'HotPixelCorrection');
 
         // Instantiate the Parameter objects
