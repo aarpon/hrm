@@ -27,15 +27,40 @@ $message = "";
 
 
 
+/* *****************************************************************************
+ *
+ * MANAGE FLATFIELD FILE NAMES
+ *
+ **************************************************************************** */
+
+/** @var Flatfield $flatfieldParam */
+$flatfieldParam = $_SESSION['task_setting']->parameter("StitchVignettingFlatfield");
+$flatfield = $flatfieldParam->value();
+
+if (isset($_POST["flatfield"])) {
+    $flatfield = $_POST["flatfield"];
+}
+
+$flatfieldParam->setValue($flatfield);
+$_SESSION['task_setting']->set($flatfieldParam);
 
 
+/* *****************************************************************************
+ *
+ * MANAGE DARKFRAME FILE NAMES
+ *
+ **************************************************************************** */
 
+/** @var Darkframe $darkframeParam */
+$darkframeParam = $_SESSION['task_setting']->parameter("StitchVignettingDarkframe");
+$darkframe = $darkframeParam->value();
 
+if (isset($_POST["darkframe"])) {
+    $darkframe = $_POST["darkframe"];
+}
 
-
-
-
-
+$darkframeParam->setValue($darkframe);
+$_SESSION['task_setting']->set($darkframeParam);
 
 
 
@@ -797,7 +822,7 @@ include("header.inc.php");
 
                     ?>
                     <p>
-                        <input name="StitchVignettingFlatfield"
+                        <input name="flatfield"
                                title="Select a flatfield reference image"
                                type="text"
                                value="<?php echo $value[0] ?>"
@@ -875,7 +900,7 @@ include("header.inc.php");
 
                     ?>
                     <p>
-                        <input name="StitchVignettingDarkframe"
+                        <input name="darkframe"
                                title="Select a darkframe reference image"
                                type="text"
                                value="<?php echo $value[0] ?>"
