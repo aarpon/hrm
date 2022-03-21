@@ -675,11 +675,200 @@ include("header.inc.php");
         </div> <!-- StitchVignettingModel -->
 
 
+            
+        <?php
+        /***************************************************************************
+         *
+         * StitchVignettingAdjustment
+         ***************************************************************************/
+
+        /** @var StitchVignettingAdjustment $stitchVignettingAdjustment */
+        ?>
+        <div id="StitchVignettingAdjustment">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchvignettingadjustment');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Vignetting Adjustment
+                </legend>
+
+                <?php
+                $parameterVignettingAdjustment =
+                        $_SESSION['task_setting']->parameter("StitchVignettingAdjustment");
+                $value = $parameterVignettingAdjustment->value();
+                ?>
+
+                <input id="VignettingAdjustment"
+                       name="VignettingAdjustment"
+                       title="Vignetting Adjustment"
+                       type="text"
+                       size="6"
+                       value="<?php echo $value ?>"/>
+
+            </fieldset>
+        </div> <!-- StitchVignettingAdjustment -->
 
 
 
+        <?php
+        /***************************************************************************
+         *
+         * StitchVignettingFlatfield
+         ***************************************************************************/
 
-                                    
+        /** @var StitchVignettingFlatfield $stitchVignettingFlatfield */
+        ?>
+        <div id="StitchVignettingFlatfield" class="provided">
+             <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchvignettingflatfield');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Vignetting - Flatfield Image
+                </legend>
+
+            <?php
+                $parameter = $_SESSION['task_setting']->parameter("StitchVignettingFlatfield");
+                $value = $parameter->value();
+                $missing = False;
+                $_SESSION['fileserver']->imageExtensions();
+                $files = $_SESSION['fileserver']->allFiles();
+                if ($files != null) {
+                    if (!in_array($value[0], $files)) {
+                        $missing = True;
+                    }
+
+                    ?>
+                    <p>
+                        <input name="StitchVignettingFlatfield"
+                               title="Select a flatfield reference image"
+                               type="text"
+                               value="<?php echo $value[0] ?>"
+                               class="
+                           <?php
+                               if ($missing) {
+                                   echo "missing flatfield reference image";
+                               } else {
+                                   echo "flatfield reference image file";
+                               } ?>"
+                               readonly="readonly"/>
+                        <input type="button"
+                               onclick="seek('0', 'flatfield')"
+                               value="browse"/>
+                        <input type="button"
+			       onclick="flatfieldReset()"
+                               value="reset"/>
+                    </p>
+                    <?php
+
+                } else {
+                    if (!file_exists($_SESSION['fileserver']->sourceFolder())) {
+
+                        ?>
+                        <p class="info">Source image folder not found! Make sure
+                            the
+                            folder <?php echo $_SESSION['fileserver']->sourceFolder() ?>
+                            exists.</p>
+                        <?php
+
+                    } else {
+
+                        ?>
+                        <p class="info">No images found on the server!</p>
+                        <?php
+
+                    }
+                }
+            ?>
+     	    <p class="info">The correction is optional: leave empty for skipping.</p>
+            </fieldset>
+        </div> <!-- StitchVignettingFlatfield -->
+
+
+        <?php
+        /***************************************************************************
+         *
+         * StitchVignettingDarkframe
+         ***************************************************************************/
+
+        /** @var StitchVignettingDarkframe $stitchVignettingDarkframe */
+        ?>
+        <div id="StitchVignettingDarkframe" class="provided">
+             <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchvignettingdarkframe');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Vignetting - Darkframe Image
+                </legend>
+
+            <?php
+                $parameter = $_SESSION['task_setting']->parameter("StitchVignettingDarkframe");
+                $value = $parameter->value();
+                $missing = False;
+                $_SESSION['fileserver']->imageExtensions();
+                $files = $_SESSION['fileserver']->allFiles();
+                if ($files != null) {
+                    if (!in_array($value[0], $files)) {
+                        $missing = True;
+                    }
+
+                    ?>
+                    <p>
+                        <input name="StitchVignettingDarkframe"
+                               title="Select a darkframe reference image"
+                               type="text"
+                               value="<?php echo $value[0] ?>"
+                               class="
+                           <?php
+                               if ($missing) {
+                                   echo "missing darkframe reference image";
+                               } else {
+                                   echo "darkframe reference image file";
+                               } ?>"
+                               readonly="readonly"/>
+                        <input type="button"
+                               onclick="seek('0', 'darkframe')"
+                               value="browse"/>
+                        <input type="button"
+			       onclick="darkframeReset()"
+                               value="reset"/>
+                    </p>
+                    <?php
+
+                } else {
+                    if (!file_exists($_SESSION['fileserver']->sourceFolder())) {
+
+                        ?>
+                        <p class="info">Source image folder not found! Make sure
+                            the
+                            folder <?php echo $_SESSION['fileserver']->sourceFolder() ?>
+                            exists.</p>
+                        <?php
+
+                    } else {
+
+                        ?>
+                        <p class="info">No images found on the server!</p>
+                        <?php
+
+                    }
+                }
+            ?>
+     	    <p class="info">The correction is optional: leave empty for skipping.</p>
+            </fieldset>
+        </div> <!-- StitchVignettingDarkframe -->
+                           
                                     
                           
     <div><input name="OK" type="hidden"/></div>
