@@ -281,7 +281,8 @@ include("header.inc.php");
                 </select>
         </div> <!-- StitchAcquisitionStart -->
 
-            
+
+        <table><tr><td>    
         <?php
         /***************************************************************************
          *
@@ -318,7 +319,7 @@ include("header.inc.php");
             </fieldset>
         </div> <!-- StitchPatternWidth -->
 
-                           
+        </td><td>                   
 
         <?php
         /***************************************************************************
@@ -356,7 +357,7 @@ include("header.inc.php");
             </fieldset>
         </div> <!-- StitchPatternHeight -->
 
-
+        </td></tr></table>
 
 
 
