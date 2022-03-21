@@ -357,6 +357,45 @@ include("header.inc.php");
             </fieldset>
         </div> <!-- StitchPatternHeight -->
 
+        </td><td>
+
+
+        <?php
+        /***************************************************************************
+         *
+         * StitchAcquisitionOverlap
+         ***************************************************************************/
+
+        /** @var StitchAcquisitionOverlap $stitchAcquisitionOverlap */
+        ?>
+        <div id="StitchAcquisitionOverlap">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchacquisitionoverlap');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Tile Overlap
+                </legend>
+
+                <?php
+                $parameterAcqOverlap =
+                        $_SESSION['task_setting']->parameter("StitchAcquisitionOverlap");
+                $value = $parameterAcqOverlap->value();
+                ?>
+
+                <input id="AcquisitionOverlap"
+                       name="AcquisitionOverlap"
+                       title="Acquisition Overlap"
+                       type="text"
+                       size="8"
+                       value="<?php echo $value ?>"/>
+
+            </fieldset>
+        </div> <!-- StitchAcquisitionOverlap -->
+
         </td></tr></table>
 
 

@@ -54,6 +54,7 @@ class TaskSetting extends Setting
             'StitchAcquisitionStart',
             'StitchPatternWidth',
             'StitchPatternHeight',
+            'StitchAcquisitionOverlap',
 	        'HotPixelCorrection');
 
         // Instantiate the Parameter objects
