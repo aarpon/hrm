@@ -456,8 +456,59 @@ include("header.inc.php");
 
 
 
+        <?php
+        /***************************************************************************
+         *
+         * StitchPrefilterMode
+         ***************************************************************************/
 
+        /** @var StitchPrefilterMode $stitchPrefilterMode */
+        ?>
+        <div id="StitchPrefilterMode">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchalignmentmode');">
 
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Prefilter Mode
+                </legend>
+
+                <select id="StitchPrefilterMode"
+                        title="StitchPrefilterMode"
+                        name="StitchPrefilterMode"
+                        class="selection">
+                    <?php
+
+                    /*
+                          STITCHPREFILTERMODE
+                    */
+                    $parameterPrefilterMode =
+                        $_SESSION['task_setting']->parameter("StitchPrefilterMode");
+                    $possibleValues = $parameterPrefilterMode->possibleValues();
+                    $selectedMode = $parameterPrefilterMode->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterPrefilterMode->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- StitchPrefilterMode -->
 
 
 
