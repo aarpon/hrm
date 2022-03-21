@@ -568,6 +568,55 @@ include("header.inc.php");
         </div> <!-- StitchVignettingMode -->
 
 
+
+                    <?php
+        /***************************************************************************
+         *
+         * StitchVignettingChannels
+         ***************************************************************************/
+
+        /** @var StitchVignettingChannels $stitchVignettingChannels */
+        ?>
+
+        <div id="StitchVignettingChannels">
+            <fieldset class="setting"
+                      onmouseover="changeQuickHelp( 'channels' );">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/Stitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Channels For Estimation Of Vignetting
+                </legend>
+
+                <?php
+                $parameterVignettingChannels =
+                    $_SESSION['task_setting']->parameter("StitchVignettingChannels");
+
+                $selectedValues = $parameterVignettingChannels->value();
+
+                for ($chan = 0;
+                     $chan < $_SESSION['task_setting']->numberOfChannels();
+                     $chan++) {
+                    if (true == Util::isValueInArray($selectedValues, $chan)) {
+                        $checked = "checked";
+                    } else {
+                        $checked = "";
+                    }
+
+                    ?>
+                    Ch. <?php echo $chan; ?>: <input type="checkbox"
+                                                     title="Vignetting channel <?php echo $chan; ?>"
+                                                     name="StitchingVignettingChannel[]"
+                                                     value=<?php echo $chan;
+                                                     if ($checked) {
+                                                     ?> checked=<?php echo $checked;
+                    } ?>
+                    />
+                <?php } ?>
+            </fieldset>
+        </div> <!-- StitchVignettingChannels -->
             
 
 

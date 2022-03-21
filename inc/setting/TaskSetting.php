@@ -58,6 +58,7 @@ class TaskSetting extends Setting
             'StitchAlignmentMode',
             'StitchPrefilterMode',
             'StitchVignettingMode',
+            'StitchVignettingChannels',
 	        'HotPixelCorrection');
 
         // Instantiate the Parameter objects
