@@ -399,6 +399,56 @@ include("header.inc.php");
         </td></tr></table>
 
 
+        <?php
+        /***************************************************************************
+         *
+         * StitchOptimizationChannels
+         ***************************************************************************/
+
+        /** @var StitchOptimizationChannels $stitchOptimizationChannels */
+        ?>
+
+        <div id="StitchOptimizationChannels">
+            <fieldset class="setting"
+                      onmouseover="changeQuickHelp( 'channels' );">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/Stitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Channels Used For Optimization Of Tile Positions
+                </legend>
+
+                <?php
+                $parameterOptimizationChannels =
+                    $_SESSION['task_setting']->parameter("StitchOptimizationChannels");
+
+                $selectedValues = $parameterOptimizationChannels->value();
+
+                for ($chan = 0;
+                     $chan < $_SESSION['task_setting']->numberOfChannels();
+                     $chan++) {
+                    if (true == Util::isValueInArray($selectedValues, $chan)) {
+                        $checked = "checked";
+                    } else {
+                        $checked = "";
+                    }
+
+                    ?>
+                    Ch. <?php echo $chan; ?>: <input type="checkbox"
+                                                     title="Optimization channel <?php echo $chan; ?>"
+                                                     name="StitchingOptimizationChannel[]"
+                                                     value=<?php echo $chan;
+                                                     if ($checked) {
+                                                     ?> checked=<?php echo $checked;
+                    } ?>
+                    />
+                <?php } ?>
+            </fieldset>
+        </div> <!-- StitchOptimizationChannels -->
+
+                           
 
         <?php
         /***************************************************************************
@@ -568,7 +618,7 @@ include("header.inc.php");
 
 
 
-                    <?php
+        <?php
         /***************************************************************************
          *
          * StitchVignettingChannels
