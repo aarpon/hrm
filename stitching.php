@@ -313,8 +313,8 @@ include("header.inc.php");
                        name="PatternWidth"
                        title="Pattern Width"
                        type="text"
-                       size="8"
-                       value="<?php echo $value ?>"/>
+                       size="6"
+                       value="<?php echo $value ?>"/> 
 
             </fieldset>
         </div> <!-- StitchPatternWidth -->
@@ -351,8 +351,8 @@ include("header.inc.php");
                        name="PatternHeight"
                        title="Pattern Height"
                        type="text"
-                       size="8"
-                       value="<?php echo $value ?>"/>
+                       size="6"
+                       value="<?php echo $value ?>"/> 
 
             </fieldset>
         </div> <!-- StitchPatternHeight -->
@@ -390,7 +390,7 @@ include("header.inc.php");
                        name="AcquisitionOverlap"
                        title="Acquisition Overlap"
                        type="text"
-                       size="8"
+                       size="6"
                        value="<?php echo $value ?>"/>
 
             </fieldset>
@@ -400,6 +400,59 @@ include("header.inc.php");
 
 
 
+        <?php
+        /***************************************************************************
+         *
+         * StitchAlignmentMode
+         ***************************************************************************/
+
+        /** @var StitchAlignmentMode $stitchAlignmentMode */
+        ?>
+        <div id="StitchAlignmentMode">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchalignmentmode');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Alignment Mode
+                </legend>
+
+                <select id="StitchAlignmentMode"
+                        title="StitchAlignmentMode"
+                        name="StitchAlignmentMode"
+                        class="selection">
+                    <?php
+
+                    /*
+                          STITCHALIGNMENTMODE
+                    */
+                    $parameterAlignmentMode =
+                        $_SESSION['task_setting']->parameter("StitchAlignmentMode");
+                    $possibleValues = $parameterAlignmentMode->possibleValues();
+                    $selectedMode = $parameterAlignmentMode->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterAlignmentMode->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- StitchAligmentMode -->
 
 
 
