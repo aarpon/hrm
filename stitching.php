@@ -513,6 +513,60 @@ include("header.inc.php");
 
 
 
+        <?php
+        /***************************************************************************
+         *
+         * StitchVignettingMode
+         ***************************************************************************/
+
+        /** @var StitchVignettingMode $stitchVignettingMode */
+        ?>
+        <div id="StitchVignettingMode">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchalignmentmode');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Vignetting Mode
+                </legend>
+
+                <select id="StitchVignettingMode"
+                        title="StitchVignettingMode"
+                        name="StitchVignettingMode"
+                        class="selection">
+                    <?php
+
+                    /*
+                          STITCHVIGNETTINGMODE
+                    */
+                    $parameterVignettingMode =
+                        $_SESSION['task_setting']->parameter("StitchVignettingMode");
+                    $possibleValues = $parameterVignettingMode->possibleValues();
+                    $selectedMode = $parameterVignettingMode->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterVignettingMode->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- StitchVignettingMode -->
+
 
             
 
