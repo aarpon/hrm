@@ -6480,11 +6480,13 @@ if ($current_revision < $n) {
                 for ($ch = 0; $ch < count($array); $ch++) {
                     if ($array[$ch] == 'qmle') {
                         $snrArray = explode('#', $snrRow[3]);
-                        $snrArray[$ch] = $snrQMLEArray[$snrArray[$ch]];
-                        $snrRow[3] = implode('#', $snrArray);
+                        if (in_array($snrArray[$ch], array("1","2","3","4"))) {
+                            $snrArray[$ch] = $snrQMLEArray[$snrArray[$ch]];
+                            $snrRow[3] = implode('#', $snrArray);
+                        }
                     }
                 }
-                for ($i = 0; $i <count($fields_set); $i++) {
+                for ($i = 0; $i < count($fields_set); $i++) {
                     $temp[$fields_set[$i]] = $snrRow[$i];
                 }
 
@@ -6539,8 +6541,10 @@ if ($current_revision < $n) {
                 for ($ch = 0; $ch < count($array); $ch++) {
                     if ($array[$ch] == 'qmle') {
                         $snrArray = explode('#', $snrRow[5]);
-                        $snrArray[$ch] = $snrQMLEArray[$snrArray[$ch]];
-                        $snrRow[5] = implode('#', $snrArray);
+                        if (in_array($snrArray[$ch], array("1","2","3","4"))) {
+                            $snrArray[$ch] = $snrQMLEArray[$snrArray[$ch]];
+                            $snrRow[5] = implode('#', $snrArray);
+                        }
                     }
                 }
                 for ($i = 0; $i <count($fields_set); $i++) {
