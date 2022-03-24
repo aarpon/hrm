@@ -136,7 +136,7 @@ include("header.inc.php");
 <div id="content">
     <h3>Restoration - Stitching</h3>
 
-    <form method="post" action="" id="stitch">
+    <form method="post" action="stitching.php" id="stitch">
 
     <h4>How should your images be stitched?</h4>
 

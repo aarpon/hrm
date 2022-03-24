@@ -36,8 +36,8 @@ if (!isset($_SESSION['fileserver'])) {
         <!--
         function lock(l) {
             var darkframe = l.options[l.options.selectedIndex].value;
-            window.opener.document.forms["select"].elements["darkframe"].value = darkframe;
-            window.opener.document.forms["select"].elements["darkframe"].style.color = "black";
+            window.opener.document.forms["stitch"].elements["darkframe"].value = darkframe;
+            window.opener.document.forms["stitch"].elements["darkframe"].style.color = "black";
         }
         //-->
     </script>
