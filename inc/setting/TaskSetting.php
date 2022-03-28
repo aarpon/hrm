@@ -338,11 +338,10 @@ class TaskSetting extends Setting
     {
         if (count($postedParameters) == 0) {
             $this->message = '';
-            return false;
+            return False;
         }
 
         $this->message = '';
-        $noErrorsFound = true;
 
         // StitchSwitch: enable/disable stitching.
         // Shorthand for later.
@@ -354,13 +353,13 @@ class TaskSetting extends Setting
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
             $stitchSwitch = $postedParameters["StitchSwitch"];
         }
 
         if ($stitchSwitch == "off") {
-            return $noErrorsFound;
+            return True;
         }
 
         // StitchOffsetsInit: how to interpret the tile offsets.
@@ -371,7 +370,7 @@ class TaskSetting extends Setting
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
         }
 
@@ -383,7 +382,7 @@ class TaskSetting extends Setting
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
         }
         
@@ -395,7 +394,7 @@ class TaskSetting extends Setting
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
         }
 
@@ -407,7 +406,7 @@ class TaskSetting extends Setting
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
         }
 
@@ -419,7 +418,7 @@ class TaskSetting extends Setting
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
         }
 
@@ -431,19 +430,23 @@ class TaskSetting extends Setting
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
         }
-
+       
         // StitchOptimizationChannels.
-        if (isset($postedParameters["StitchOptimizationChannels"])
+        if (!isset($postedParameters["StitchOptimizationChannels"])
             || $postedParameters["StitchOptimizationChannels"] == '') {
+            $this->message = "Please indicate the channel(s) to use for ";
+            $this->message .= "the optimization of tile positions.";
+            return False;
+        } else {
             $parameter = $this->parameter("StitchOptimizationChannels");
             $parameter->setValue($postedParameters["StitchOptimizationChannels"]);
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
         }
 
@@ -455,7 +458,7 @@ class TaskSetting extends Setting
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
         }
 
@@ -467,7 +470,7 @@ class TaskSetting extends Setting
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
         }
 
@@ -481,7 +484,7 @@ class TaskSetting extends Setting
             $this->set($parameter);
             if (!$parameter->check()) {
                 $this->message = $parameter->message();
-                $noErrorsFound = false;
+                return False;
             }
 
             // A shorthand for later.
@@ -497,7 +500,7 @@ class TaskSetting extends Setting
                 $this->set($parameter);
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
-                    $noErrorsFound = false;
+                    return False;
                 }
             }
         }
@@ -511,7 +514,7 @@ class TaskSetting extends Setting
                 $this->set($parameter);
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
-                    $noErrorsFound = false;
+                    return False;
                 }
             }
         }
@@ -525,7 +528,7 @@ class TaskSetting extends Setting
                 $this->set($parameter);
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
-                    $noErrorsFound = false;
+                    return False;
                 }
             }
         }
@@ -539,7 +542,7 @@ class TaskSetting extends Setting
                 $this->set($parameter);
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
-                    $noErrorsFound = false;
+                    return False;
                 }
             }
             
@@ -551,13 +554,13 @@ class TaskSetting extends Setting
                 $this->set($parameter);
                 if (!$parameter->check()) {
                     $this->message = $parameter->message();
-                    $noErrorsFound = false;
+                    return False;
                 }
             }
         }
 
         
-        return $noErrorsFound;
+        return True;
     }
 
     

@@ -26,4 +26,17 @@ class StitchPatternHeight extends NumericalParameter
     {
         parent::__construct("StitchPatternHeight");
     }
+
+    /**
+     * Checks whether the Parameter is valid.
+     * @return bool True if the Parameter is valid, false otherwise.
+     */
+    public function check()
+    {
+        $result = parent::check();
+        if ($result == false) {
+            $this->message = "Pattern Height: " . $this->message;
+        }
+        return $result;
+    }
 }

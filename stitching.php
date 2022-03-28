@@ -390,8 +390,8 @@ include("header.inc.php");
                 $value = $parameterPatternWidth->value();
                 ?>
 
-                <input id="PatternWidth"
-                       name="PatternWidth"
+                <input id="StitchPatternWidth"
+                       name="StitchPatternWidth"
                        title="Pattern Width"
                        type="text"
                        size="6"
@@ -428,8 +428,8 @@ include("header.inc.php");
                 $value = $parameterPatternHeight->value();
                 ?>
 
-                <input id="PatternHeight"
-                       name="PatternHeight"
+                <input id="StitchPatternHeight"
+                       name="StitchPatternHeight"
                        title="Pattern Height"
                        type="text"
                        size="6"
@@ -467,8 +467,8 @@ include("header.inc.php");
                 $value = $parameterAcqOverlap->value();
                 ?>
 
-                <input id="AcquisitionOverlap"
-                       name="AcquisitionOverlap"
+                <input id="StitchAcquisitionOverlap"
+                       name="StitchAcquisitionOverlap"
                        title="Acquisition Overlap"
                        type="text"
                        size="6"
@@ -519,7 +519,7 @@ include("header.inc.php");
                     ?>
                     Ch. <?php echo $chan; ?>: <input type="checkbox"
                                                      title="Optimization channel <?php echo $chan; ?>"
-                                                     name="StitchingOptimizationChannel[]"
+                                                     name="StitchOptimizationChannels[]"
                                                      value=<?php echo $chan;
                                                      if ($checked) {
                                                      ?> checked=<?php echo $checked;
@@ -739,7 +739,7 @@ include("header.inc.php");
                     ?>
                     Ch. <?php echo $chan; ?>: <input type="checkbox"
                                                      title="Vignetting channel <?php echo $chan; ?>"
-                                                     name="StitchingVignettingChannel[]"
+                                                     name="StitchVignettingChannels[]"
                                                      value=<?php echo $chan;
                                                      if ($checked) {
                                                      ?> checked=<?php echo $checked;
@@ -834,8 +834,8 @@ include("header.inc.php");
                 $value = $parameterVignettingAdjustment->value();
                 ?>
 
-                <input id="VignettingAdjustment"
-                       name="VignettingAdjustment"
+                <input id="StitchVignettingAdjustment"
+                       name="StitchVignettingAdjustment"
                        title="Vignetting Adjustment"
                        type="text"
                        size="6"
@@ -879,7 +879,7 @@ include("header.inc.php");
 
                     ?>
                     <p>
-                        <input name="flatfield"
+                        <input name="StitchVignettingFlatfield"
                                title="Select a flatfield reference image"
                                type="text"
                                value="<?php echo $value[0] ?>"
@@ -957,7 +957,7 @@ include("header.inc.php");
 
                     ?>
                     <p>
-                        <input name="darkframe"
+                        <input name="StitchVignettingDarkframe"
                                title="Select a darkframe reference image"
                                type="text"
                                value="<?php echo $value[0] ?>"

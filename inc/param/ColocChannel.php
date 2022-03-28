@@ -47,7 +47,7 @@ class ColocChannel extends NumericalArrayParameter
 
     /**
      * Returns the string representation of the Parameter
-     * @param int $numberOfChannels Numbeor of channels (ignored).
+     * @param int $numberOfChannels Number of channels (ignored).
      * @return string String representation of the Parameter.
      */
     public function displayString($numberOfChannels = 0)
