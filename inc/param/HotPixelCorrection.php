@@ -36,12 +36,12 @@ class HotPixelCorrection extends AnyTypeArrayParameter
      */
     public function check()
     {
-	return True;
+        return True;
     }
 
     /**
      * Returns the string representation of the HotPixelCorrection parameter.
-     * @param int $numberOfChannels Number of channels.
+     * @param int $numberOfChannels Number of channels (redundant).
      * @return string String representation of the HotPixelCorrection Parameter.
      */
     public function displayString($numberOfChannels = 0)

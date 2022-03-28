@@ -26,4 +26,32 @@ class StitchVignettingDarkframe extends AnyTypeArrayParameter
     {
         parent::__construct('StitchVignettingDarkframe');
     }
+
+    /**
+     * Checks whether the Darkframe parameter is valid
+     * @return bool Always true. Whatever the selection, it should be accepted.
+     */
+    public function check()
+    {
+        return True;
+    }
+    
+
+    /**
+     * Returns the string representation of the Darkframe file name.
+     * @param int $numberOfChannels Number of channels (redundant).
+     * @return string String representation of the Darkframe file name .
+     */
+    public function displayString($numberOfChannels = 0)
+    {
+        $result = $this->formattedName("stitch vignetting darkframe");
+     
+        if ($this->notSet()) {
+            $result = $result . "*not set*" . "\n";
+        } else {
+            $result = $result . $this->value[0] . "\n";
+        }
+
+        return $result;
+    }
 }
