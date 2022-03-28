@@ -947,6 +947,7 @@ function imgPrev(infile, mode, gen, sanitized, compare, index,
                  dir, referer, data) {
     var file = unescape(infile);
     var tip, html, link, onClick = "";
+    var regexpRes;
     
     if (mode == 0 && gen == 1) {
         try
@@ -1003,8 +1004,16 @@ function imgPrev(infile, mode, gen, sanitized, compare, index,
                    + '>'
                    + '<img src="images/eye.png"> '
                    + 'Click to generate preview';
+
+               // Check if the (base)names of the sanitized and original name
+               // are the same, otherwise mention that it will rename the file.
                if ( infile != sanitized ) {
-                   html = html + ' (the file will be renamed)';
+                   regexpRes =  /^(.+)\ \(.+\)$/g.exec(file);
+                   if (regexpRes && sanitized.startsWith(regexpRes[1])) {
+                       // It is not a subimage or the basename is the same.
+                   } else {
+                       html = html + ' (the file will be renamed)';
+                   }
                }
                html = html + '</div>';
            }
