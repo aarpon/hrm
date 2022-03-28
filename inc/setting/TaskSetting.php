@@ -227,7 +227,8 @@ class TaskSetting extends Setting
         }
 
         // Background estimation
-        if (!isset($postedParameters["BackgroundEstimationMode"]) || $postedParameters["BackgroundEstimationMode"] == '') {
+        if (!isset($postedParameters["BackgroundEstimationMode"])
+            || $postedParameters["BackgroundEstimationMode"] == '') {
             $this->message = 'Please choose a background estimation mode!';
             $noErrorsFound = false;
         } else {
@@ -265,7 +266,8 @@ class TaskSetting extends Setting
         }
 
         // Number of iterations
-        if (isset($postedParameters["NumberOfIterations"]) || $postedParameters["NumberOfIterations"] == '') {
+        if (isset($postedParameters["NumberOfIterations"])
+            || $postedParameters["NumberOfIterations"] == '') {
             $parameter = $this->parameter("NumberOfIterations");
             $parameter->setValue($postedParameters["NumberOfIterations"]);
             $this->set($parameter);
@@ -276,7 +278,8 @@ class TaskSetting extends Setting
         }
 
         // Quality change
-        if (isset($postedParameters["QualityChangeStoppingCriterion"]) || $postedParameters["QualityChangeStoppingCriterion"] == '') {
+        if (isset($postedParameters["QualityChangeStoppingCriterion"])
+            || $postedParameters["QualityChangeStoppingCriterion"] == '') {
             $parameter = $this->parameter("QualityChangeStoppingCriterion");
             $parameter->setValue($postedParameters["QualityChangeStoppingCriterion"]);
             $this->set($parameter);
@@ -287,7 +290,8 @@ class TaskSetting extends Setting
         }
 
         // Stabilization in Z
-        if (isset($postedParameters["ZStabilization"]) || $postedParameters["ZStabilization"] == '') {
+        if (isset($postedParameters["ZStabilization"])
+            || $postedParameters["ZStabilization"] == '') {
             $parameter = $this->parameter("ZStabilization");
             $parameter->setValue($postedParameters["ZStabilization"]);
             $this->set($parameter);
@@ -309,7 +313,8 @@ class TaskSetting extends Setting
         }
 
         // ArrayDetectorReductionMode
-        if (isset($postedParameters["ArrayDetectorReductionMode"]) || $postedParameters["ArrayDetectorReductionMode"] == '') {
+        if (isset($postedParameters["ArrayDetectorReductionMode"])
+            || $postedParameters["ArrayDetectorReductionMode"] == '') {
             $parameter = $this->parameter("ArrayDetectorReductionMode");
             $parameter->setValue($postedParameters["ArrayDetectorReductionMode"]);
             $this->set($parameter);
@@ -338,6 +343,201 @@ class TaskSetting extends Setting
 
         $this->message = '';
         $noErrorsFound = true;
+
+        // StitchSwitch: enable/disable stitching.
+        if (isset($postedParameters["StitchSwitch"])
+            || $postedParameters["StitchSwitch"] == '') {
+            $parameter = $this->parameter("StitchSwitch");
+            $parameter->setValue($postedParameters["StitchSwitch"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchOffsetsInit: how to interpret the tile offsets.
+        if (isset($postedParameters["StitchOffsetsInit"])
+            || $postedParameters["StitchOffsetsInit"] == '') {
+            $parameter = $this->parameter("StitchOffsetsInit");
+            $parameter->setValue($postedParameters["StitchOffsetsInit"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchAcquisitionPattern.
+        if (isset($postedParameters["StitchAcquisitionPattern"])
+            || $postedParameters["StitchAcquisitionPattern"] == '') {
+            $parameter = $this->parameter("StitchAcquisitionPattern");
+            $parameter->setValue($postedParameters["StitchAcquisitionPattern"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+        
+        // StitchAcquisitionStart.
+        if (isset($postedParameters["StitchAcquisitionStart"])
+            || $postedParameters["StitchAcquisitionStart"] == '') {
+            $parameter = $this->parameter("StitchAcquisitionStart");
+            $parameter->setValue($postedParameters["StitchAcquisitionStart"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchPatternWidth.
+        if (isset($postedParameters["StitchPatternWidth"])
+            || $postedParameters["StitchPatternWidth"] == '') {
+            $parameter = $this->parameter("StitchPatternWidth");
+            $parameter->setValue($postedParameters["StitchPatternWidth"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchPatternHeight.
+        if (isset($postedParameters["StitchPatternHeight"])
+            || $postedParameters["StitchPatternHeight"] == '') {
+            $parameter = $this->parameter("StitchPatternHeight");
+            $parameter->setValue($postedParameters["StitchPatternHeight"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchAcquisitionOverlap.
+        if (isset($postedParameters["StitchAcquisitionOverlap"])
+            || $postedParameters["StitchAcquisitionOverlap"] == '') {
+            $parameter = $this->parameter("StitchAcquisitionOverlap");
+            $parameter->setValue($postedParameters["StitchAcquisitionOverlap"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchOptimizationChannels.
+        if (isset($postedParameters["StitchOptimizationChannels"])
+            || $postedParameters["StitchOptimizationChannels"] == '') {
+            $parameter = $this->parameter("StitchOptimizationChannels");
+            $parameter->setValue($postedParameters["StitchOptimizationChannels"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchAlignmentMode.
+        if (isset($postedParameters["StitchAlignmentMode"])
+            || $postedParameters["StitchAlignmentMode"] == '') {
+            $parameter = $this->parameter("StitchAlignmentMode");
+            $parameter->setValue($postedParameters["StitchAlignmentMode"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchPrefilterMode.
+        if (isset($postedParameters["StitchPrefilterMode"])
+            || $postedParameters["StitchPrefilterMode"] == '') {
+            $parameter = $this->parameter("StitchPrefilterMode");
+            $parameter->setValue($postedParameters["StitchPrefilterMode"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchVignettingMode.
+        if (isset($postedParameters["StitchVignettingMode"])
+            || $postedParameters["StitchVignettingMode"] == '') {
+            $parameter = $this->parameter("StitchVignettingMode");
+            $parameter->setValue($postedParameters["StitchVignettingMode"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchVignettingChannels.
+        if (isset($postedParameters["StitchVignettingChannels"])
+            || $postedParameters["StitchVignettingChannels"] == '') {
+            $parameter = $this->parameter("StitchVignettingChannels");
+            $parameter->setValue($postedParameters["StitchVignettingChannels"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchVignettingModel.
+        if (isset($postedParameters["StitchVignettingModel"])
+            || $postedParameters["StitchVignettingModel"] == '') {
+            $parameter = $this->parameter("StitchVignettingModel");
+            $parameter->setValue($postedParameters["StitchVignettingModel"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchVignettingAdjustment.
+        if (isset($postedParameters["StitchVignettingAdjustment"])
+            || $postedParameters["StitchVignettingAdjustment"] == '') {
+            $parameter = $this->parameter("StitchVignettingAdjustment");
+            $parameter->setValue($postedParameters["StitchVignettingAdjustment"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchVignettingFlatfield.
+        if (isset($postedParameters["StitchVignettingFlatfield"])
+            || $postedParameters["StitchVignettingFlatfield"] == '') {
+            $parameter = $this->parameter("StitchVignettingFlatfield");
+            $parameter->setValue($postedParameters["StitchVignettingFlatfield"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // StitchVignettingDarkframe.
+        if (isset($postedParameters["StitchVignettingDarkframe"])
+            || $postedParameters["StitchVignettingDarkframe"] == '') {
+            $parameter = $this->parameter("StitchVignettingDarkframe");
+            $parameter->setValue($postedParameters["StitchVignettingDarkframe"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        
+        return $noErrorsFound;
     }
 
     
@@ -410,7 +610,8 @@ class TaskSetting extends Setting
         $noErrorsFound = true;
         
         // Stabilization in T
-        if (isset($postedParameters["TStabilization"]) || $postedParameters["TStabilization"] == '') {
+        if (isset($postedParameters["TStabilization"])
+            || $postedParameters["TStabilization"] == '') {
             $parameter = $this->parameter("TStabilization");
             $parameter->setValue($postedParameters["TStabilization"]);
             $this->set($parameter);
@@ -421,7 +622,8 @@ class TaskSetting extends Setting
         }
 
         // Stabilization in T: Method
-        if (isset($postedParameters["TStabilizationMethod"]) || $postedParameters["TStabilizationMethod"] == '') {
+        if (isset($postedParameters["TStabilizationMethod"])
+            || $postedParameters["TStabilizationMethod"] == '') {
             $parameter = $this->parameter("TStabilizationMethod");
             $parameter->setValue($postedParameters["TStabilizationMethod"]);
             $this->set($parameter);
@@ -432,7 +634,8 @@ class TaskSetting extends Setting
         }
 
         // Stabilization in T: Rotations
-        if (isset($postedParameters["TStabilizationRotation"]) || $postedParameters["TStabilizationRotation"] == '') {
+        if (isset($postedParameters["TStabilizationRotation"])
+            || $postedParameters["TStabilizationRotation"] == '') {
             $parameter = $this->parameter("TStabilizationRotation");
             $parameter->setValue($postedParameters["TStabilizationRotation"]);
             $this->set($parameter);
@@ -443,7 +646,8 @@ class TaskSetting extends Setting
         }
 
         // Stabilization in T: Cropping
-        if (isset($postedParameters["TStabilizationCropping"]) || $postedParameters["TStabilizationCropping"] == '') {
+        if (isset($postedParameters["TStabilizationCropping"])
+            || $postedParameters["TStabilizationCropping"] == '') {
             $parameter = $this->parameter("TStabilizationCropping");
             $parameter->setValue($postedParameters["TStabilizationCropping"]);
             $this->set($parameter);
