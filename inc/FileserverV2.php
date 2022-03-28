@@ -568,8 +568,9 @@ class FileserverV2
         $string = str_replace($search, $replace, $string);
 
         // Replace non-ASCII characters and any characters that are not
-        // one of the following: "!%^&=',._" "0-9" "A-Z" "a-z" with "_".
-        $string = preg_replace("/[^\!\%\^\&\=\'\,\.\_0-9A-Za-z]/","_", $string);
+        // one of the following: "!%^&=',.-_" "0-9" "A-Z" "a-z" with "_".
+        $string = preg_replace("/[^\!\%\^\&\=\'\,\.\-\_0-9A-Za-z]/","_",
+                               $string);
 
         return $string;
     }
