@@ -139,7 +139,64 @@ include("header.inc.php");
 
     <form method="post" action="stitching.php" id="stitch">
 
-    <h4>How should your images be stitched?</h4>
+    <h4>Should the images be stitched?</h4>
+
+       <?php
+        /***************************************************************************
+         *
+         * StitchSwitch
+         ***************************************************************************/
+
+        /** @var StitchSwitch $stitchSwitch */
+        ?>
+        <div id="StitchSwitchDiv">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('stitchswitch');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpStitcher')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Enable Stitching
+                </legend>
+
+                <select id="StitchSwitch"
+                        title="StitchSwitch"
+                        name="StitchSwitch"
+                        class="selection">
+                    <?php
+
+                    /*
+                          STITCHSWITCH
+                    */
+                    $parameterSwitch =
+                        $_SESSION['task_setting']->parameter("StitchSwitch");
+                    $possibleValues = $parameterSwitch->possibleValues();
+                    $selectedMode = $parameterSwitch->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterSwitch->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- StitchSwitchDiv -->
+                                 
+    <br /><br />                                             
+    <h4>How should the stitching procedure take place?</h4>
 
 
         <?php

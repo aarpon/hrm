@@ -49,6 +49,7 @@ class TaskSetting extends Setting
             'TStabilizationMethod',
             'TStabilizationRotation',
             'TStabilizationCropping',
+            'StitchSwitch',
             'StitchOffsetsInit',
             'StitchAcquisitionPattern',
             'StitchAcquisitionStart',

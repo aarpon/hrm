@@ -6213,13 +6213,13 @@ $n = 20;
 if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "StitchEnabled";
+    $record["parameter"] = "StitchSwitch";
     $record["value"] = "off";
     $record["translation"] = "Off";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        $msg = "A An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
@@ -6228,13 +6228,13 @@ if ($current_revision < $n) {
 
     $tabname = "possible_values";
     $record = array();
-    $record["parameter"] = "StitchEnabled";
+    $record["parameter"] = "StitchSwitch";
     $record["value"] = "on";
     $record["translation"] = "On";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
-        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        $msg = "B An error occurred while updating the database to revision " . $n . ".";
         write_message($msg);
         write_to_error($msg);
         return;
