@@ -292,7 +292,7 @@ function changeChromaticChannelReference(selectObj) {
 }
 
 
-function updateStitchVignettingOptions() {
+function updateStitchingVignettingOptions() {
     
     var vignettingMode = document.getElementById("StitchVignettingMode");
 
@@ -314,6 +314,42 @@ function updateStitchVignettingOptions() {
 	$('#StitchVignettingChannelsDiv').show();
 	$('#StitchVignettingModelDiv').show();
 	$('#StitchVignettingAdjustmentDiv').show();
+    }
+}
+
+
+function updateStitchingOptions() {
+
+    var stitchingSwitch = document.getElementById("StitchSwitch");
+
+    if (stitchingSwitch.value === "off") {	
+	$('#StitchOffsetsInitDiv').hide();
+	$('#StitchAcquisitionPatternDiv').hide();
+	$('#StitchAcquisitionStartDiv').hide();
+	$('#StitchPatternWidthDiv').hide();
+	$('#StitchPatternHeightDiv').hide();
+	$('#StitchAcquisitionOverlapDiv').hide();
+	$('#StitchOptimizationChannelsDiv').hide();
+	$('#StitchAlignmentModeDiv').hide();
+	$('#StitchPrefilterModeDiv').hide();
+	$('#StitchVignettingModeDiv').hide();	
+	$('#StitchVignettingChannelsDiv').hide();
+	$('#StitchVignettingModelDiv').hide();
+	$('#StitchVignettingAdjustmentDiv').hide();
+	$('#StitchVignettingFlatfieldDiv').hide();
+	$('#StitchVignettingDarkframeDiv').hide();
+    } else {
+	$('#StitchOffsetsInitDiv').show();
+	$('#StitchAcquisitionPatternDiv').show();
+	$('#StitchAcquisitionStartDiv').show();
+	$('#StitchPatternWidthDiv').show();
+	$('#StitchPatternHeightDiv').show();
+	$('#StitchAcquisitionOverlapDiv').show();
+	$('#StitchOptimizationChannelsDiv').show();
+	$('#StitchAlignmentModeDiv').show();
+	$('#StitchPrefilterModeDiv').show();
+	$('#StitchVignettingModeDiv').show();
+	updateStitchingVignettingOptions();
     }
 }
 

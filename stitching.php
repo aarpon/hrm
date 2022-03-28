@@ -139,7 +139,7 @@ include("header.inc.php");
 
     <form method="post" action="stitching.php" id="stitch">
 
-    <h4>Should the images be stitched?</h4>
+    <h4>Should the images be stitched? How?</h4>
 
        <?php
         /***************************************************************************
@@ -164,6 +164,7 @@ include("header.inc.php");
                 <select id="StitchSwitch"
                         title="StitchSwitch"
                         name="StitchSwitch"
+                        onchange="updateStitchingOptions()"
                         class="selection">
                     <?php
 
@@ -193,10 +194,7 @@ include("header.inc.php");
                     ?>
 
                 </select>
-        </div> <!-- StitchSwitchDiv -->
-                                 
-    <br /><br />                                             
-    <h4>How should the stitching procedure take place?</h4>
+        </div> <!-- StitchSwitchDiv -->                                 
 
 
         <?php
@@ -207,7 +205,7 @@ include("header.inc.php");
 
         /** @var StitchOffsetsInit $stitchOffsetsInit */
         ?>
-        <div id="StitchOffsetsInit">
+        <div id="StitchOffsetsInitDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchoffsetsinit');">
 
@@ -251,7 +249,7 @@ include("header.inc.php");
                     ?>
 
                 </select>
-        </div> <!-- StitchOffsetsInit -->
+        </div> <!-- StitchOffsetsInitDiv -->
        
 
 
@@ -263,7 +261,7 @@ include("header.inc.php");
 
         /** @var StitchAcquisitionPattern $stitchOAcquisitionPattern */
         ?>
-        <div id="StitchAcquisitionPattern">
+        <div id="StitchAcquisitionPatternDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchacquisitionpattern');">
 
@@ -307,7 +305,7 @@ include("header.inc.php");
                     ?>
 
                 </select>
-        </div> <!-- StitchAcquisitionPattern -->
+        </div> <!-- StitchAcquisitionPatternDiv -->
 
 
         <?php
@@ -318,7 +316,7 @@ include("header.inc.php");
 
         /** @var StitchAcquisitionStart $stitchAcquisitionStart */
         ?>
-        <div id="StitchAcquisitionStart">
+        <div id="StitchAcquisitionStartDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchacquisitionstart');">
 
@@ -362,7 +360,7 @@ include("header.inc.php");
                     ?>
 
                 </select>
-        </div> <!-- StitchAcquisitionStart -->
+        </div> <!-- StitchAcquisitionStartDiv -->
 
 
         <table><tr><td>    
@@ -374,7 +372,7 @@ include("header.inc.php");
 
         /** @var StitchPatternWidth $stitchPatternWidth */
         ?>
-        <div id="StitchPatternWidth">
+        <div id="StitchPatternWidthDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchpatternwidth');">
 
@@ -400,7 +398,7 @@ include("header.inc.php");
                        value="<?php echo $value ?>"/> 
 
             </fieldset>
-        </div> <!-- StitchPatternWidth -->
+        </div> <!-- StitchPatternWidthDiv -->
 
         </td><td>                   
 
@@ -412,7 +410,7 @@ include("header.inc.php");
 
         /** @var StitchPatternHeight $stitchPatternHeight */
         ?>
-        <div id="StitchPatternHeight">
+        <div id="StitchPatternHeightDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchpatternheight');">
 
@@ -438,7 +436,7 @@ include("header.inc.php");
                        value="<?php echo $value ?>"/> 
 
             </fieldset>
-        </div> <!-- StitchPatternHeight -->
+        </div> <!-- StitchPatternHeightDiv -->
 
         </td><td>
 
@@ -451,7 +449,7 @@ include("header.inc.php");
 
         /** @var StitchAcquisitionOverlap $stitchAcquisitionOverlap */
         ?>
-        <div id="StitchAcquisitionOverlap">
+        <div id="StitchAcquisitionOverlapDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchacquisitionoverlap');">
 
@@ -477,7 +475,7 @@ include("header.inc.php");
                        value="<?php echo $value ?>"/>
 
             </fieldset>
-        </div> <!-- StitchAcquisitionOverlap -->
+        </div> <!-- StitchAcquisitionOverlapDiv -->
 
         </td></tr></table>
 
@@ -491,7 +489,7 @@ include("header.inc.php");
         /** @var StitchOptimizationChannels $stitchOptimizationChannels */
         ?>
 
-        <div id="StitchOptimizationChannels">
+        <div id="StitchOptimizationChannelsDiv">
             <fieldset class="setting"
                       onmouseover="changeQuickHelp( 'channels' );">
 
@@ -529,7 +527,7 @@ include("header.inc.php");
                     />
                 <?php } ?>
             </fieldset>
-        </div> <!-- StitchOptimizationChannels -->
+        </div> <!-- StitchOptimizationChannelsDiv -->
 
                            
 
@@ -541,7 +539,7 @@ include("header.inc.php");
 
         /** @var StitchAlignmentMode $stitchAlignmentMode */
         ?>
-        <div id="StitchAlignmentMode">
+        <div id="StitchAlignmentModeDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchalignmentmode');">
 
@@ -585,7 +583,7 @@ include("header.inc.php");
                     ?>
 
                 </select>
-        </div> <!-- StitchAligmentMode -->
+        </div> <!-- StitchAligmentModeDiv -->
 
 
 
@@ -597,7 +595,7 @@ include("header.inc.php");
 
         /** @var StitchPrefilterMode $stitchPrefilterMode */
         ?>
-        <div id="StitchPrefilterMode">
+        <div id="StitchPrefilterModeDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchalignmentmode');">
 
@@ -641,7 +639,7 @@ include("header.inc.php");
                     ?>
 
                 </select>
-        </div> <!-- StitchPrefilterMode -->
+        </div> <!-- StitchPrefilterModeDiv -->
 
 
 
@@ -668,7 +666,7 @@ include("header.inc.php");
                 <select id="StitchVignettingMode"
                         title="StitchVignettingMode"
                         name="StitchVignettingMode"
-                        onchange="updateStitchVignettingOptions()"
+                        onchange="updateStitchingVignettingOptions()"
                         class="selection">
                     <?php
 
@@ -1053,7 +1051,7 @@ include("header.inc.php");
 
 
 <script type="text/javascript">
-   updateStitchVignettingOptions();
+   updateStitchingOptions();
 </script>
     
 
