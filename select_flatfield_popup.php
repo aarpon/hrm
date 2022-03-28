@@ -36,8 +36,8 @@ if (!isset($_SESSION['fileserver'])) {
         <!--
         function lock(l) {
             var flatfield = l.options[l.options.selectedIndex].value;
-            window.opener.document.forms["stitch"].elements["flatfield"].value = flatfield;
-            window.opener.document.forms["stitch"].elements["flatfield"].style.color = "black";
+            window.opener.document.forms["stitch"].elements["StitchVignettingFlatfield"].value = flatfield;
+            window.opener.document.forms["stitch"].elements["StitchVignettingFlatfield"].style.color = "black";
         }
         //-->
     </script>

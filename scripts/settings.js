@@ -98,6 +98,17 @@ function hpcReset() {
     select.elements["hpc"].value = "";
 }
 
+function flatfieldReset() {
+    var form = document.getElementById("stitch");
+    form.elements["StitchVignettingFlatfield"].value = "";
+}
+
+function darkframeReset() {
+    var form = document.getElementById("stitch");
+    form.elements["StitchVignettingDarkframe"].value = "";
+}
+
+
 window.onunload = function() {if (snitch != null) snitch.close()};
 
 function switchSnrMode(algorithm, channel) {    
