@@ -491,7 +491,7 @@ include("header.inc.php");
 
         <div id="StitchOptimizationChannelsDiv">
             <fieldset class="setting"
-                      onmouseover="changeQuickHelp( 'channels' );">
+                      onmouseover="changeQuickHelp( 'stitchoptimizationchannels' );">
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -711,7 +711,7 @@ include("header.inc.php");
 
         <div id="StitchVignettingChannelsDiv">
             <fieldset class="setting"
-                      onmouseover="changeQuickHelp( 'channels' );">
+                      onmouseover="changeQuickHelp( 'stitchvignettingchannels' );">
 
                 <legend>
                     <a href="javascript:openWindow(
@@ -762,7 +762,7 @@ include("header.inc.php");
         ?>
         <div id="StitchVignettingModelDiv">
             <fieldset class="setting provided"
-                      onmouseover="changeQuickHelp('stitchalignmentmodel');">
+                      onmouseover="changeQuickHelp('stitchvignettingmodel');">
 
                 <legend>
                     <a href="javascript:openWindow(
