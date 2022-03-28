@@ -70,18 +70,19 @@ $_SESSION['task_setting']->set($darkframeParam);
  *
  **************************************************************************** */
 
-if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
-    if ($_SESSION['user']->isAdmin()
-    || $_SESSION['task_setting']->isEligibleForCAC()
-    || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
-        header("Location: " . "post_processing.php");
-        exit();
+if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForStitching()) {
+    if ($_SESSION['task_setting']->checkPostedStitchingParameters($_POST)) {
+        if ($_SESSION['task_setting']->isEligibleForCAC()
+            || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+            header("Location: " . "post_processing.php");
+            exit();
+        } else {
+            header("Location: " . "select_hpc.php");
+            exit();
+        }
     } else {
-        header("Location: " . "select_hpc.php");
-        exit();
+        $message = $_SESSION['task_setting']->message();
     }
-} else {
-    $message = $_SESSION['task_setting']->message();
 }
 
 

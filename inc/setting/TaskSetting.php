@@ -322,6 +322,25 @@ class TaskSetting extends Setting
     }
 
     /**
+     * Checks that the posted Stitching Parameters are defined.
+     * This correction is optional.
+     * @param array $postedParameters The array of posted parameters.
+     * @return bool True if all Parameters are defined and valid, false
+     * otherwise.
+     */
+    public function checkPostedStitchingParameters(array $postedParameters)
+    {
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return false;
+        }
+
+        $this->message = '';
+        $noErrorsFound = true;
+    }
+
+    
+    /**
      * Checks that the posted Aberration Correction Parameters are defined.
      * This correction is optional.
      * @param array $postedParameters The array of posted parameters.
