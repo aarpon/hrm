@@ -92,8 +92,8 @@ if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
  **************************************************************************** */
 
 // Javascript includes
-$script = array("settings.js", "quickhelp/help.js",
-    "quickhelp/postProcessingHelp.js");
+$script = array("settings.js", "quickhelp/help.js", "common.js",
+    "quickhelp/stitchingHelp.js");
 
 include("header.inc.php");
 ?>
@@ -548,7 +548,7 @@ include("header.inc.php");
                         'http://www.svi.nl/HelpStitcher')">
                         <img src="images/help.png" alt="?"/>
                     </a>
-                    Prefilter Mode
+                    Hotpixel Prefilter Mode
                 </legend>
 
                 <select id="StitchPrefilterMode"
@@ -595,7 +595,7 @@ include("header.inc.php");
 
         /** @var StitchVignettingMode $stitchVignettingMode */
         ?>
-        <div id="StitchVignettingMode">
+        <div id="StitchVignettingModeDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchalignmentmode');">
 
@@ -610,6 +610,7 @@ include("header.inc.php");
                 <select id="StitchVignettingMode"
                         title="StitchVignettingMode"
                         name="StitchVignettingMode"
+                        onchange="updateStitchVignettingOptions()"
                         class="selection">
                     <?php
 
@@ -639,7 +640,7 @@ include("header.inc.php");
                     ?>
 
                 </select>
-        </div> <!-- StitchVignettingMode -->
+        </div> <!-- StitchVignettingModeDiv -->
 
 
 
@@ -652,7 +653,7 @@ include("header.inc.php");
         /** @var StitchVignettingChannels $stitchVignettingChannels */
         ?>
 
-        <div id="StitchVignettingChannels">
+        <div id="StitchVignettingChannelsDiv">
             <fieldset class="setting"
                       onmouseover="changeQuickHelp( 'channels' );">
 
@@ -690,7 +691,7 @@ include("header.inc.php");
                     />
                 <?php } ?>
             </fieldset>
-        </div> <!-- StitchVignettingChannels -->
+        </div> <!-- StitchVignettingChannelsDiv -->
             
 
 
@@ -703,7 +704,7 @@ include("header.inc.php");
 
         /** @var StitchVignettingModel $stitchVignettingModel */
         ?>
-        <div id="StitchVignettingModel">
+        <div id="StitchVignettingModelDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchalignmentmodel');">
 
@@ -747,7 +748,7 @@ include("header.inc.php");
                     ?>
 
                 </select>
-        </div> <!-- StitchVignettingModel -->
+        </div> <!-- StitchVignettingModelDiv -->
 
 
             
@@ -759,7 +760,7 @@ include("header.inc.php");
 
         /** @var StitchVignettingAdjustment $stitchVignettingAdjustment */
         ?>
-        <div id="StitchVignettingAdjustment">
+        <div id="StitchVignettingAdjustmentDiv">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchvignettingadjustment');">
 
@@ -785,7 +786,7 @@ include("header.inc.php");
                        value="<?php echo $value ?>"/>
 
             </fieldset>
-        </div> <!-- StitchVignettingAdjustment -->
+        </div> <!-- StitchVignettingAdjustmentDiv -->
 
 
 
@@ -797,7 +798,7 @@ include("header.inc.php");
 
         /** @var StitchVignettingFlatfield $stitchVignettingFlatfield */
         ?>
-        <div id="StitchVignettingFlatfield" class="provided">
+        <div id="StitchVignettingFlatfieldDiv" class="provided">
              <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchvignettingflatfield');">
 
@@ -864,7 +865,7 @@ include("header.inc.php");
             ?>
      	    <p class="info">The correction is optional: leave empty for skipping.</p>
             </fieldset>
-        </div> <!-- StitchVignettingFlatfield -->
+        </div> <!-- StitchVignettingFlatfieldDiv -->
 
 
         <?php
@@ -875,7 +876,7 @@ include("header.inc.php");
 
         /** @var StitchVignettingDarkframe $stitchVignettingDarkframe */
         ?>
-        <div id="StitchVignettingDarkframe" class="provided">
+        <div id="StitchVignettingDarkframeDiv" class="provided">
              <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('stitchvignettingdarkframe');">
 
@@ -942,7 +943,7 @@ include("header.inc.php");
             ?>
      	    <p class="info">The correction is optional: leave empty for skipping.</p>
             </fieldset>
-        </div> <!-- StitchVignettingDarkframe -->
+        </div> <!-- StitchVignettingDarkframeDiv -->
                            
                                     
                           
@@ -993,7 +994,12 @@ include("header.inc.php");
 </div> <!-- rightpanel -->
 
 
-<?php      
+<script type="text/javascript">
+   updateStitchVignettingOptions();
+</script>
+    
+
+<?php   
 include("footer.inc.php");
 
 // Workaround for IE

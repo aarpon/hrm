@@ -292,6 +292,32 @@ function changeChromaticChannelReference(selectObj) {
 }
 
 
+function updateStitchVignettingOptions() {
+    
+    var vignettingMode = document.getElementById("StitchVignettingMode");
+
+    if (vignettingMode.value === "off") {
+	$('#StitchVignettingChannelsDiv').hide();
+	$('#StitchVignettingModelDiv').hide();
+	$('#StitchVignettingAdjustmentDiv').hide();
+	$('#StitchVignettingFlatfieldDiv').hide();
+	$('#StitchVignettingDarkframeDiv').hide();
+    } else if (vignettingMode.value === "manual") {
+	$('#StitchVignettingModelDiv').hide();
+	$('#StitchVignettingAdjustmentDiv').hide();
+	$('#StitchVignettingChannelsDiv').show();
+	$('#StitchVignettingFlatfieldDiv').show();
+	$('#StitchVignettingDarkframeDiv').show();
+    } else if (vignettingMode.value === "auto") {
+	$('#StitchVignettingFlatfieldDiv').hide();
+	$('#StitchVignettingDarkframeDiv').hide();
+	$('#StitchVignettingChannelsDiv').show();
+	$('#StitchVignettingModelDiv').show();
+	$('#StitchVignettingAdjustmentDiv').show();
+    }
+}
+
+
 // Grey out selected input fields when the decon algorithm is set to 'skip'.
 function updateDeconEntryProperties( ) {
     var deconTag             =  "DeconvolutionAlgorithm";
