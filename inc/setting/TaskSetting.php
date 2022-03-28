@@ -345,6 +345,8 @@ class TaskSetting extends Setting
         $noErrorsFound = true;
 
         // StitchSwitch: enable/disable stitching.
+        // Shorthand for later.
+        $stitchSwitch = "";
         if (isset($postedParameters["StitchSwitch"])
             || $postedParameters["StitchSwitch"] == '') {
             $parameter = $this->parameter("StitchSwitch");
@@ -354,6 +356,11 @@ class TaskSetting extends Setting
                 $this->message = $parameter->message();
                 $noErrorsFound = false;
             }
+            $stitchSwitch = $postedParameters["StitchSwitch"];
+        }
+
+        if ($stitchSwitch == "off") {
+            return $noErrorsFound;
         }
 
         // StitchOffsetsInit: how to interpret the tile offsets.
@@ -465,6 +472,8 @@ class TaskSetting extends Setting
         }
 
         // StitchVignettingMode.
+        // A shorthand for later.
+        $vignettingMode = '';
         if (isset($postedParameters["StitchVignettingMode"])
             || $postedParameters["StitchVignettingMode"] == '') {
             $parameter = $this->parameter("StitchVignettingMode");
@@ -474,65 +483,76 @@ class TaskSetting extends Setting
                 $this->message = $parameter->message();
                 $noErrorsFound = false;
             }
+
+            // A shorthand for later.
+            $vignettingMode = $postedParameters["StitchVignettingMode"];
         }
 
         // StitchVignettingChannels.
-        if (isset($postedParameters["StitchVignettingChannels"])
-            || $postedParameters["StitchVignettingChannels"] == '') {
-            $parameter = $this->parameter("StitchVignettingChannels");
-            $parameter->setValue($postedParameters["StitchVignettingChannels"]);
-            $this->set($parameter);
-            if (!$parameter->check()) {
-                $this->message = $parameter->message();
-                $noErrorsFound = false;
+        if (in_array($vignettingMode, array("manual", "auto"))) {
+            if (isset($postedParameters["StitchVignettingChannels"])
+                || $postedParameters["StitchVignettingChannels"] == '') {
+                $parameter = $this->parameter("StitchVignettingChannels");
+                $parameter->setValue($postedParameters["StitchVignettingChannels"]);
+                $this->set($parameter);
+                if (!$parameter->check()) {
+                    $this->message = $parameter->message();
+                    $noErrorsFound = false;
+                }
             }
         }
-
+        
         // StitchVignettingModel.
-        if (isset($postedParameters["StitchVignettingModel"])
-            || $postedParameters["StitchVignettingModel"] == '') {
-            $parameter = $this->parameter("StitchVignettingModel");
-            $parameter->setValue($postedParameters["StitchVignettingModel"]);
-            $this->set($parameter);
-            if (!$parameter->check()) {
-                $this->message = $parameter->message();
-                $noErrorsFound = false;
+        if ($vignettingMode == "auto") {
+            if (isset($postedParameters["StitchVignettingModel"])
+                || $postedParameters["StitchVignettingModel"] == '') {
+                $parameter = $this->parameter("StitchVignettingModel");
+                $parameter->setValue($postedParameters["StitchVignettingModel"]);
+                $this->set($parameter);
+                if (!$parameter->check()) {
+                    $this->message = $parameter->message();
+                    $noErrorsFound = false;
+                }
             }
         }
-
+        
         // StitchVignettingAdjustment.
-        if (isset($postedParameters["StitchVignettingAdjustment"])
-            || $postedParameters["StitchVignettingAdjustment"] == '') {
-            $parameter = $this->parameter("StitchVignettingAdjustment");
-            $parameter->setValue($postedParameters["StitchVignettingAdjustment"]);
-            $this->set($parameter);
-            if (!$parameter->check()) {
-                $this->message = $parameter->message();
-                $noErrorsFound = false;
+        if ($vignettingMode == "auto") {
+            if (isset($postedParameters["StitchVignettingAdjustment"])
+                || $postedParameters["StitchVignettingAdjustment"] == '') {
+                $parameter = $this->parameter("StitchVignettingAdjustment");
+                $parameter->setValue($postedParameters["StitchVignettingAdjustment"]);
+                $this->set($parameter);
+                if (!$parameter->check()) {
+                    $this->message = $parameter->message();
+                    $noErrorsFound = false;
+                }
             }
         }
 
-        // StitchVignettingFlatfield.
-        if (isset($postedParameters["StitchVignettingFlatfield"])
-            || $postedParameters["StitchVignettingFlatfield"] == '') {
-            $parameter = $this->parameter("StitchVignettingFlatfield");
-            $parameter->setValue($postedParameters["StitchVignettingFlatfield"]);
-            $this->set($parameter);
-            if (!$parameter->check()) {
-                $this->message = $parameter->message();
-                $noErrorsFound = false;
+        // StitchVignettingFlatfield: it may be empty.
+        if ($vignettingMode == "manual") {
+            if (isset($postedParameters["StitchVignettingFlatfield"])
+                && $postedParameters["StitchVignettingFlatfield"] != '') {
+                $parameter = $this->parameter("StitchVignettingFlatfield");
+                $parameter->setValue($postedParameters["StitchVignettingFlatfield"]);
+                $this->set($parameter);
+                if (!$parameter->check()) {
+                    $this->message = $parameter->message();
+                    $noErrorsFound = false;
+                }
             }
-        }
-
-        // StitchVignettingDarkframe.
-        if (isset($postedParameters["StitchVignettingDarkframe"])
-            || $postedParameters["StitchVignettingDarkframe"] == '') {
-            $parameter = $this->parameter("StitchVignettingDarkframe");
-            $parameter->setValue($postedParameters["StitchVignettingDarkframe"]);
-            $this->set($parameter);
-            if (!$parameter->check()) {
-                $this->message = $parameter->message();
-                $noErrorsFound = false;
+            
+            // StitchVignettingDarkframe: it may be empty.
+            if (isset($postedParameters["StitchVignettingDarkframe"])
+                && $postedParameters["StitchVignettingDarkframe"] != '') {
+                $parameter = $this->parameter("StitchVignettingDarkframe");
+                $parameter->setValue($postedParameters["StitchVignettingDarkframe"]);
+                $this->set($parameter);
+                if (!$parameter->check()) {
+                    $this->message = $parameter->message();
+                    $noErrorsFound = false;
+                }
             }
         }
 
