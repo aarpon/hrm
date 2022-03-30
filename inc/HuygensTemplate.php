@@ -1279,9 +1279,17 @@ class HuygensTemplate
                 case 'selection':
                 case 'channels':
                 case 'pattern':
+                    $taskDescr .= $this->getStitchAcquisitionPattern();
+                    break;
                 case 'start':
+                    $taskDescr .= $this->getStitchAcquisitionStart();
+                    break;
                 case 'alignmentMode':
+                    $taskDescr .= $this->getStitchAlignmentMode();
+                    break;
                 case 'prefilterMode':
+                    $taskDescr .= $this->getStitchPrefilterMode();
+                    break;
                 case 'vignChans':
                     $taskDescr .= $this->getVignettingChannels();
                     break;
@@ -2572,7 +2580,51 @@ class HuygensTemplate
         }
     }
 
+    
+    /**
+     * Gets the mode for the acquisition pattern.
+     * @return string Whether 'cs' (column snake), 'cl', 'rs', 'rl', 'sc', or 'sa'.
+     */
+    private function getStitchAcquisitionPattern()
+    {
+        $deconSetting = $this->deconSetting;
+        return $deconSetting->parameter("StitchAcquisitionPattern")->value();        
+    }
 
+    
+    /**
+     * Gets the mode for the acquisition start.
+     * @return string Whether 'br' (bottom right), 'bl', 'tr', or 'tl'.
+     */
+    private function getStitchAcquisitionStart()
+    {
+        $deconSetting = $this->deconSetting;
+        return $deconSetting->parameter("StitchAcquisitionStart")->value();        
+    }
+    
+    
+    /**
+     * Gets the alignment mode specifying the dimensions to take into consideration.
+     * @return string Whether 'xyz', 'xy_zcenter', or 'none'.
+     */
+    private function getStitchAlignmentMode()
+    {
+        $deconSetting = $this->deconSetting;
+        return $deconSetting->parameter("StitchAlignmentMode")->value();        
+    }
+    
+
+    /**
+     * Gets the prefilter mode. This is useful for getting rid of hotpixels during stitching.
+     * @return string Whether 'on' or 'off'.
+     */
+    private function getStitchPrefilterMode()
+    {
+        $deconSetting = $this->deconSetting;
+        return $deconSetting->parameter("StitchPrefilterMode")->value();        
+    }
+
+    
     /**
      * Gets the vignetting channels.
      * @return string Containing a list of channels used for estimating the vignetting 
