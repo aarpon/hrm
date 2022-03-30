@@ -448,7 +448,7 @@ class HuygensTemplate
         $this->imgProcessTasksArray =
             array('open'                  => 'imgOpen',
                 'setParameters'           => 'setp',
-		'hotPixelCorrection'      => 'hotPix',
+                'hotPixelCorrection'      => 'hotPix',
                 'autocrop'                => 'autocrop',
                 'adjustBaseline'          => 'adjbl',
                 'ZStabilization'          => 'stabilize',
@@ -456,6 +456,7 @@ class HuygensTemplate
                 'TStabilization'          => 'stabilize:post',
                 'colocalization'          => 'coloc',
                 'chromatic'               => 'shift',
+                'stitching'               => 'stitch',
                 '2Dhistogram'             => 'hist',
                 'XYXZRawAtSrcDir'         => 'previewGen',
                 'XYXZRawSubImgAtSrcDir'   => 'previewGen',
@@ -571,6 +572,33 @@ class HuygensTemplate
                   'estMethod'  => '2',
                   'listID'     => 'shift');
 
+        /* Options for the 'stitching' action */
+        $this->stitchArray =
+            array('templateOrigin'   => '',
+                  'templateName'     => '',
+                  'dimensions'       => '',
+                  'frameCnt'         => '',
+                  'chanCnt'          => '',
+                  'detectorCnt'      => '',
+                  'offsets'          => '',
+                  'stitchMode'       => '',
+                  'cols'             => '',
+                  'rows'             => '',
+                  'overlap'          => '',
+                  'selection'        => '',
+                  'channels'         => '',
+                  'pattern'          => '',
+                  'start'            => '',
+                  'alignmentMode'    => '',
+                  'prefilterMode'    => '',
+                  'vignChans'        => '',
+                  'vignModelParams'  => '',
+                  'vignMode'         => '',
+                  'vignModel'        => '',
+                  'flatImg'          => '',
+                  'darkImg'          => '',
+                  'listID'           => 'stitch');
+        
         /* Supported deconvolution algorithms. */          
         $this->deconArray = array('cmle'  => 'cmle', 
                                   'qmle'  => 'qmle',
@@ -858,12 +886,13 @@ class HuygensTemplate
                 case 'open':
                 case 'save':
                 case 'setParameters':
-		case 'hotPixelCorrection':
+		        case 'hotPixelCorrection':
                 case 'autocrop':
                 case 'adjustBaseline':
                 case 'ZStabilization':
                 case 'algorithms':
                 case 'chromatic':
+                case 'stitching':
                 case 'TStabilization':
                 case 'colocalization':
                 case '2Dhistogram':
@@ -940,6 +969,9 @@ class HuygensTemplate
                     break;
                 case 'chromatic':
                     $tasksDescr .= $this->getImgTaskDescrChromatic();
+                    break;
+                case 'stitching':
+                    $tasksDescr .= $this->getImgTaskDescrStitching();
                     break;
                 case 'TStabilization':
                     $tasksDescr .= $this->getImgTaskDescrTStabilize();
@@ -1072,7 +1104,7 @@ class HuygensTemplate
             }
 
             if ($key != "listID" && $key != "completeChanCnt") {
-                $taskDescr .= $this->getParameter($key, $value);
+                $taskDescr .= $this->getMicrParameter($key, $value);
             }
         }
 
@@ -1213,6 +1245,65 @@ class HuygensTemplate
         return $allTasksDescr;
     }
 
+    /**
+     * Gets options for the 'stitching' task.
+     * @return string Tcl list with the 'stitching' task and its options.
+     */
+    private function getImgTaskDescrStitching()
+    {
+
+        $allTasksDescr = "";
+
+        $stitchParam = $this->deconSetting->parameter("ChromaticAberration");
+        foreach ($channelsArray as $chanKey => $chan) {
+            $taskDescr = "";
+            /** @var ChromaticAberration $chromaticParam */
+            $chanVector = implode(' ', $chromaticParam->chanValue($chan));
+
+            foreach ($this->chromaticArray as $chromKey => $chromValue) {
+                if ($chromKey != "listID") {
+                    $taskDescr .= " " . $chromKey . " ";
+                }
+
+                /* Notice that we force a 'sorted' channel correction, i.e.,
+                   there's no matching done based on wavelengths, etc. */
+                switch ($chromKey) {
+                    case 'q':
+                    case 'lambdaEm':
+                    case 'lambdaEx':
+                    case 'lambdaSted':
+                    case 'mType':
+                    case 'estMethod':
+                        $taskDescr .= $chromValue;
+                        break;
+                    case 'channel':
+                        $taskDescr .= $chan;
+                        break;
+                    case 'vector':
+                        $taskDescr .= $this->string2tcllist($chanVector);
+                        break;
+                    case 'reference':
+                        if ($chanVector == "0 0 0 0 1") {
+                            $reference = 1;
+                        } else {
+                            $reference = 0;
+                        }
+                        $taskDescr .= $reference;
+                        break;
+                    case 'listID':
+                        $taskDescr = $this->string2tcllist($taskDescr);
+                        $allTasksDescr .= $chromValue . ":$chanKey ";
+                        $allTasksDescr .= $taskDescr . " ";
+                        break;
+                    default:
+                        Log::error("Image shift option $chromKey not yet implemented.");
+                }
+            }
+        }
+
+        return $allTasksDescr;
+    }
+    
     /**
      * Get options for the 'TStabilize' task.
      * @return string Tcl list with the 'TStabilize' task and its options.
@@ -1357,6 +1448,85 @@ class HuygensTemplate
     }
 
     /**
+     * Gets options for the 'algorithm' task. One channel.
+     * @param int $channel A channel.
+     * @return string Tcl list with the deconvolution 'algorithm' task + its
+     * options.
+     */
+    private function getTaskDescrAlgorithm($channel)
+    {
+
+        $taskDescr = "";
+
+        foreach ($this->algArray as $key => $value) {
+
+            if ($key != "mode" && $key != "reduceMode" 
+                && $key != "itMode" && $key != 'listID') {
+                $taskDescr .= " " . $key . " ";
+            }
+
+            switch ($key) {
+                case 'timeOut':
+                case 'pad':
+                case 'blMode':
+                    $taskDescr .= $value;
+                    break;
+                case 'q':
+                    $taskDescr .= $this->getQualityFactor();
+                    break;
+                case 'brMode':
+                    $taskDescr .= $this->getBrMode();
+                    break;
+                case 'varPsf':
+                    $taskDescr .= $this->getVarPsf($channel);
+                    break;
+                case 'it':
+                    $taskDescr .= $this->getIterations();
+                    break;
+                case 'bgMode':
+                    $taskDescr .= $this->getBgMode();
+                    break;
+                case 'bg':
+                    $taskDescr .= $this->getBgValue($channel);
+                    break;
+                case 'sn':
+                    $taskDescr .= $this->getSnrValue($channel);
+                    break;
+                case 'psfMode':
+                    $taskDescr .= $this->getPsfMode();
+                    break;
+                case 'psfPath':
+                    $taskDescr .= $this->getPsfPath($channel);
+                    break;
+                case 'mode':
+                    if ($this->getAlgorithm($channel) == "cmle") {
+                        $taskDescr .= " " . $key . " ";
+                        $taskDescr .= $value;
+                    }
+                    break;
+                case 'itMode':
+                    if ($this->getAlgorithm($channel) == "qmle") {
+                        $taskDescr .= " " . $key . " ";
+                        $taskDescr .= $value;
+                    }
+                    break;
+                case 'reduceMode':
+                    if ($this->getAlgorithm($channel) == "cmle") {
+                        $taskDescr .= " " . $key . " ";
+                        $taskDescr .= $this->getArrDetReductionMode();
+                    }                    
+                    break;                
+                case 'listID':
+                    break;
+                default:
+                    Log::error("Deconvolution option $key not yet implemented");
+            }
+        }
+
+        return $this->string2tcllist($taskDescr);
+    }
+
+    /**
      * Gets options for all the 'colocalization' tasks.
      * @return string Tcl list with the 'colocalization' tasks and their options.
      */
@@ -1395,6 +1565,74 @@ class HuygensTemplate
         return $allTasksDescr;
     }
 
+    /**
+     * Gets options for the 'colocalization' task.
+     * @param int $chanR A channel number acting as red channel.
+     * @param int $chanG A channel number acting as green channel.
+     * @param int $runCnt The number of colocalization tasks
+     * @return string Tcl list with the 'colocalization' task and its options.
+     */
+    private function getTaskDescrColoc($chanR, $chanG, $runCnt)
+    {
+
+        $taskDescr = "";
+
+        foreach ($this->colocArray as $key => $value) {
+
+            if ($key != "listID") {
+                if ($key == "threshPercR" || $key == "threshPercG") {
+                    if ($this->getColocThreshMode() != "manual") {
+                        continue;
+                    }
+                }
+                $taskDescr .= " " . $key . " ";
+            }
+
+            switch ($key) {
+                case 'chanR':
+                    $taskDescr .= $chanR;
+                    break;
+                case 'chanG':
+                    $taskDescr .= $chanG;
+                    break;
+                case 'threshMode':
+                    $taskDescr .= $this->getColocThreshMode();
+                    break;
+                case 'threshPercR':
+                    $taskDescr .= $this->getColocThreshValue($chanR);
+                    break;
+                case 'threshPercG':
+                    $taskDescr .= $this->getColocThreshValue($chanG);
+                    break;
+                case 'coefficients':
+                    $coefficients = $this->getColocCoefficients();
+                    $taskDescr .= $this->string2tcllist($coefficients);
+                    break;
+                case 'map':
+                    $taskDescr .= $this->getColocMap();
+                    break;
+                case 'destDir':
+                    $destDir = $this->getDestDir() . "/hrm_previews";
+                    $taskDescr .= $this->string2tcllist($destDir);
+                    break;
+                case 'destFile':
+                    $destFile = $this->getThumbBaseName() . ".";
+                    $destFile .= $this->getColocMap() . ".map_chan";
+                    $destFile .= $chanR . "_" . "chan" . $chanG;
+                    $taskDescr .= $destFile;
+                    break;
+                case 'listID':
+                    $taskDescr = $this->string2tcllist($taskDescr);
+                    $taskDescr = $value . ":" . $runCnt . " " . $taskDescr . " ";
+                    break;
+                default:
+                    Log::error("Colocalization option '$key' not yet implemented.");
+            }
+        }
+
+        return $taskDescr;
+    }
+    
     /**
      * Gets options for the '2Dhistogram' task.
      * @return string Tcl list with the '2Dhistogram' task and its options.
@@ -1435,7 +1673,52 @@ class HuygensTemplate
         return $allTasksDescr;
     }
 
+    /**
+     * Gets options for the 'histogram' task.
+     * @param int $chanR A channel number acting as red channel.
+     * @param int $chanG A channel number acting as green channel.
+     * @param int $runCnt The number of histogram tasks
+     * @return string Tcl list with the 'histogram' task and its options.
+     */
+    private function getTaskDescrHistogram($chanR, $chanG, $runCnt)
+    {
 
+        $taskDescr = "";
+
+        foreach ($this->histoArray as $key => $value) {
+
+            if ($key != "listID") {
+                $taskDescr .= " " . $key . " ";
+            }
+
+            switch ($key) {
+                case 'chanR':
+                    $taskDescr .= $chanR;
+                    break;
+                case 'chanG':
+                    $taskDescr .= $chanG;
+                    break;
+                case 'destDir':
+                    $destDir = $this->getDestDir() . "/hrm_previews";
+                    $taskDescr .= $this->string2tcllist($destDir);
+                    break;
+                case 'destFile':
+                    $destFile = $this->getThumbBaseName() . ".hist_chan" . $chanR;
+                    $destFile .= "_" . "chan" . $chanG;
+                    $taskDescr .= $destFile;
+                    break;
+                case 'listID':
+                    $taskDescr = $this->string2tcllist($taskDescr);
+                    $taskDescr = $value . ":" . $runCnt . " " . $taskDescr . " ";
+                    break;
+                default:
+                    Log::error("2D histogram option '$key' not yet implemented.");
+            }
+        }
+
+        return $taskDescr;
+    }
+    
     /**
      * Gets options for the thumbnail generation task.
      * @todo Document input arguments!
@@ -1493,6 +1776,61 @@ class HuygensTemplate
         return $taskDescr;
     }
 
+    /**
+     * Gets options for each of the thumbnail tasks.
+     * @param string $taskKey A thumbnail type of task
+     * @param int $thumbID The number of this thumbnail task.
+     * @return string Tcl-compliant list with the thumbnail generation details.
+     */
+    private function getThumbnailTaskDescr($taskKey, $thumbID)
+    {
+
+        /* Get the Huygens task name of the thumbnail task */
+        $task = $this->getTaskName($taskKey, $thumbID);
+        if ($task == "") {
+            // @todo Return something usable!
+            return;
+        }
+
+        $taskDescr = "";
+
+        foreach ($this->thumbArray as $key => $value) {
+
+            if ($key == "image" && !isset($this->thumbFrom)) {
+                $taskDescr .= " ";
+            } else {
+                $taskDescr .= " " . $key . " ";
+            }
+
+            /* Notice that the 'size' is added to all thumbnail tasks even
+             though some of them don't need it. */
+            switch ($key) {
+                case 'image':
+                    $taskDescr .= $this->thumbFrom;
+                    break;
+                case 'destDir':
+                    $taskDescr .= $this->thumbToDir;
+                    break;
+                case 'destFile':
+                    $taskDescr .= $this->getThumbnailName();
+                    break;
+                case 'type':
+                    $taskDescr .= $this->thumbType;
+                    break;
+                case 'size':
+                    $taskDescr .= $value;
+                    break;
+                default:
+                    Log::error("Thumb preview option $key not yet implemented");
+            }
+        }
+
+        $taskDescr = $this->string2tcllist($taskDescr);
+        $taskDescr = " " . $task . " " . $taskDescr;
+
+        return $taskDescr;
+    }
+    
     /**
      * Gets options for the 'image save' task.
      * @return string Tcl list with the 'Image save' task and its options.
@@ -1777,7 +2115,7 @@ class HuygensTemplate
      */
     private function getPinholeSpacing($channel)
     {
-        if ($this->getParameterValue("micr", $channel) != "nipkow") {
+        if ($this->getMicrParameterValue("micr", $channel) != "nipkow") {
             return "";
         }
 
@@ -1938,84 +2276,6 @@ class HuygensTemplate
 
     /* -------------------------- Algorithm task ----------------------------- */
 
-    /**
-     * Gets options for the 'algorithm' task. One channel.
-     * @param int $channel A channel.
-     * @return string Tcl list with the deconvolution 'algorithm' task + its
-     * options.
-     */
-    private function getTaskDescrAlgorithm($channel)
-    {
-
-        $taskDescr = "";
-
-        foreach ($this->algArray as $key => $value) {
-
-            if ($key != "mode" && $key != "reduceMode" 
-                && $key != "itMode" && $key != 'listID') {
-                $taskDescr .= " " . $key . " ";
-            }
-
-            switch ($key) {
-                case 'timeOut':
-                case 'pad':
-                case 'blMode':
-                    $taskDescr .= $value;
-                    break;
-                case 'q':
-                    $taskDescr .= $this->getQualityFactor();
-                    break;
-                case 'brMode':
-                    $taskDescr .= $this->getBrMode();
-                    break;
-                case 'varPsf':
-                    $taskDescr .= $this->getVarPsf($channel);
-                    break;
-                case 'it':
-                    $taskDescr .= $this->getIterations();
-                    break;
-                case 'bgMode':
-                    $taskDescr .= $this->getBgMode();
-                    break;
-                case 'bg':
-                    $taskDescr .= $this->getBgValue($channel);
-                    break;
-                case 'sn':
-                    $taskDescr .= $this->getSnrValue($channel);
-                    break;
-                case 'psfMode':
-                    $taskDescr .= $this->getPsfMode();
-                    break;
-                case 'psfPath':
-                    $taskDescr .= $this->getPsfPath($channel);
-                    break;
-                case 'mode':
-                    if ($this->getAlgorithm($channel) == "cmle") {
-                        $taskDescr .= " " . $key . " ";
-                        $taskDescr .= $value;
-                    }
-                    break;
-                case 'itMode':
-                    if ($this->getAlgorithm($channel) == "qmle") {
-                        $taskDescr .= " " . $key . " ";
-                        $taskDescr .= $value;
-                    }
-                    break;
-                case 'reduceMode':
-                    if ($this->getAlgorithm($channel) == "cmle") {
-                        $taskDescr .= " " . $key . " ";
-                        $taskDescr .= $this->getArrDetReductionMode();                        
-                    }                    
-                    break;                
-                case 'listID':
-                    break;
-                default:
-                    Log::error("Deconvolution option $key not yet implemented");
-            }
-        }
-
-        return $this->string2tcllist($taskDescr);
-    }
 
     /**
      * Gets the brick mode.
@@ -2100,7 +2360,7 @@ class HuygensTemplate
                 $reductionModeStr = "aggr";
                 break;            
             default:
-                Log::error("Reduction mode '$reductionModeValue' not yet implemented.");                
+                Log::error("Reduction mode '$reductionModeValue' not yet implemented.");    
         }
 
         return $reductionModeStr;
@@ -2254,9 +2514,10 @@ class HuygensTemplate
     {
         return $this->microSetting->getAberractionCorrectionParameters();
     }
-
+    
     /* -------------- Chromatic Aberration correction tasks ------------------ */
 
+    
     /**
      * Creates an array with the target channels.
      * @return array The target array.
@@ -2289,74 +2550,6 @@ class HuygensTemplate
 
 
     /* --------------------- Colocalization tasks ---------------------------- */
-
-    /**
-     * Gets options for the 'colocalization' task.
-     * @param int $chanR A channel number acting as red channel.
-     * @param int $chanG A channel number acting as green channel.
-     * @param int $runCnt The number of colocalization tasks
-     * @return string Tcl list with the 'colocalization' task and its options.
-     */
-    private function getTaskDescrColoc($chanR, $chanG, $runCnt)
-    {
-
-        $taskDescr = "";
-
-        foreach ($this->colocArray as $key => $value) {
-
-            if ($key != "listID") {
-                if ($key == "threshPercR" || $key == "threshPercG") {
-                    if ($this->getColocThreshMode() != "manual") {
-                        continue;
-                    }
-                }
-                $taskDescr .= " " . $key . " ";
-            }
-
-            switch ($key) {
-                case 'chanR':
-                    $taskDescr .= $chanR;
-                    break;
-                case 'chanG':
-                    $taskDescr .= $chanG;
-                    break;
-                case 'threshMode':
-                    $taskDescr .= $this->getColocThreshMode();
-                    break;
-                case 'threshPercR':
-                    $taskDescr .= $this->getColocThreshValue($chanR);
-                    break;
-                case 'threshPercG':
-                    $taskDescr .= $this->getColocThreshValue($chanG);
-                    break;
-                case 'coefficients':
-                    $coefficients = $this->getColocCoefficients();
-                    $taskDescr .= $this->string2tcllist($coefficients);
-                    break;
-                case 'map':
-                    $taskDescr .= $this->getColocMap();
-                    break;
-                case 'destDir':
-                    $destDir = $this->getDestDir() . "/hrm_previews";
-                    $taskDescr .= $this->string2tcllist($destDir);
-                    break;
-                case 'destFile':
-                    $destFile = $this->getThumbBaseName() . ".";
-                    $destFile .= $this->getColocMap() . ".map_chan";
-                    $destFile .= $chanR . "_" . "chan" . $chanG;
-                    $taskDescr .= $destFile;
-                    break;
-                case 'listID':
-                    $taskDescr = $this->string2tcllist($taskDescr);
-                    $taskDescr = $value . ":" . $runCnt . " " . $taskDescr . " ";
-                    break;
-                default:
-                    Log::error("Colocalization option '$key' not yet implemented.");
-            }
-        }
-
-        return $taskDescr;
-    }
 
     /**
      * Gets the value of the boolean choice 'Colocalization Analysis'.
@@ -2442,110 +2635,7 @@ class HuygensTemplate
     }
 
 
-    /* --------------------- Histogram tasks ---------------------------- */
-
-    /**
-     * Gets options for the 'histogram' task.
-     * @param int $chanR A channel number acting as red channel.
-     * @param int $chanG A channel number acting as green channel.
-     * @param int $runCnt The number of histogram tasks
-     * @return string Tcl list with the 'histogram' task and its options.
-     */
-    private function getTaskDescrHistogram($chanR, $chanG, $runCnt)
-    {
-
-        $taskDescr = "";
-
-        foreach ($this->histoArray as $key => $value) {
-
-            if ($key != "listID") {
-                $taskDescr .= " " . $key . " ";
-            }
-
-            switch ($key) {
-                case 'chanR':
-                    $taskDescr .= $chanR;
-                    break;
-                case 'chanG':
-                    $taskDescr .= $chanG;
-                    break;
-                case 'destDir':
-                    $destDir = $this->getDestDir() . "/hrm_previews";
-                    $taskDescr .= $this->string2tcllist($destDir);
-                    break;
-                case 'destFile':
-                    $destFile = $this->getThumbBaseName() . ".hist_chan" . $chanR;
-                    $destFile .= "_" . "chan" . $chanG;
-                    $taskDescr .= $destFile;
-                    break;
-                case 'listID':
-                    $taskDescr = $this->string2tcllist($taskDescr);
-                    $taskDescr = $value . ":" . $runCnt . " " . $taskDescr . " ";
-                    break;
-                default:
-                    Log::error("2D histogram option '$key' not yet implemented.");
-            }
-        }
-
-        return $taskDescr;
-    }
-
     /* ------------------------ Thumbnail tasks------------------------------- */
-
-    /**
-     * Gets options for each of the thumbnail tasks.
-     * @param string $taskKey A thumbnail type of task
-     * @param int $thumbID The number of this thumbnail task.
-     * @return string Tcl-compliant list with the thumbnail generation details.
-     */
-    private function getThumbnailTaskDescr($taskKey, $thumbID)
-    {
-
-        /* Get the Huygens task name of the thumbnail task */
-        $task = $this->getTaskName($taskKey, $thumbID);
-        if ($task == "") {
-            // @todo Return something usable!
-            return;
-        }
-
-        $taskDescr = "";
-
-        foreach ($this->thumbArray as $key => $value) {
-
-            if ($key == "image" && !isset($this->thumbFrom)) {
-                $taskDescr .= " ";
-            } else {
-                $taskDescr .= " " . $key . " ";
-            }
-
-            /* Notice that the 'size' is added to all thumbnail tasks even
-             though some of them don't need it. */
-            switch ($key) {
-                case 'image':
-                    $taskDescr .= $this->thumbFrom;
-                    break;
-                case 'destDir':
-                    $taskDescr .= $this->thumbToDir;
-                    break;
-                case 'destFile':
-                    $taskDescr .= $this->getThumbnailName();
-                    break;
-                case 'type':
-                    $taskDescr .= $this->thumbType;
-                    break;
-                case 'size':
-                    $taskDescr .= $value;
-                    break;
-                default:
-                    Log::error("Thumb preview option $key not yet implemented");
-            }
-        }
-
-        $taskDescr = $this->string2tcllist($taskDescr);
-        $taskDescr = " " . $task . " " . $taskDescr;
-
-        return $taskDescr;
-    }
 
     /**
      * Gets the destination file name of the thumbnail.
@@ -2676,7 +2766,7 @@ class HuygensTemplate
      * @param string $paramName The parameter name.
      * @return string The confidence level.
      */
-    private function getParameterConfidence($paramName)
+    private function getMicrParameterConfidence($paramName)
     {
         switch ($paramName) {
             case 'pr':
@@ -2744,7 +2834,7 @@ class HuygensTemplate
     {
 
         /* Parameter not set by the user, should be read from the metadata. */
-        $parameterValue = $this->getParameterValue($parameter, $channel);
+        $parameterValue = $this->getMicrParameterValue($parameter, $channel);
         if (strpos($parameterValue, '*') !== FALSE) {
             return "default";
         }
@@ -2762,12 +2852,12 @@ class HuygensTemplate
     }
 
     /**
-     * Gets the value and confidence level of specific job parameters.
+     * Gets the value and confidence level of specific micr. parameters.
      * @param string $paramName The name of the parameter.
      * @param string $default A default value for the parameter.
      * @return string A Tcl-compliant list with values and confidence levels.
      */
-    private function getParameter($paramName, $default = null)
+    private function getMicrParameter($paramName, $default = null)
     {
 
         /* Start by adding the parameter name */
@@ -2810,7 +2900,7 @@ class HuygensTemplate
                 $param = "";
                 for ($chan = 0; $chan < $chanCnt; $chan++) {
                     if (!$default) {
-                        $param .= $this->getParameterValue($paramName, $chan);
+                        $param .= $this->getMicrParameterValue($paramName, $chan);
                         $param .= " ";
                     } else {
                         $param .= $default . " ";
@@ -2824,18 +2914,18 @@ class HuygensTemplate
 
         /* Then add the parameter confidence level */
         $paramList .= " " . $this->setpConfArray[$paramName] . " ";
-        $paramList .= $this->getParameterConfidence($paramName);
+        $paramList .= $this->getMicrParameterConfidence($paramName);
 
         return $paramList;
     }
 
     /**
      * Gets the value of specific parameters.
-     * @param string $paramName The parameter name
+     * @param string $paramName The micr. parameter name
      * @param int $channel A channel number
      * @return string|int|float The parameter value when existing, '*' otherwise.
      */
-    private function getParameterValue($paramName, $channel)
+    private function getMicrParameterValue($paramName, $channel)
     {
         switch ($paramName) {
             case 'micr':
