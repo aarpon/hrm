@@ -1258,10 +1258,13 @@ class HuygensTemplate
         }        
         
         foreach ($this->stitchingArray as $stitchingKey => $stitchingValue) {
+
+            /* As always, on each iteration over the array add the option key. */
             if ($stitchingKey != "listID") {
                 $taskDescr .= " " . $stitchingKey . " ";
             }
-            
+
+            /* Then proceed to adding the option value. */
             switch ($stitchingKey) {
                 case 'templateOrigin':
                 case 'templateName':
@@ -1284,9 +1287,14 @@ class HuygensTemplate
                 case 'vignMode':
                 case 'vignModel':
                 case 'flatImg':
+                    $taskDescr .= $this->getVignettingFlatfield();
+                    break;
                 case 'darkImg':
+                    $taskDescr .= $this->getVignettingDarkframe();
+                    break;
                 case 'listID':
                     $taskDescr = $this->string2tcllist($taskDescr);
+                    $taskDescr = $value . " " . $taskDescr;
                     break;
                 default:
                     Log::error("Image stitching option $stitchingKey not yet implemented.");
@@ -2556,6 +2564,47 @@ class HuygensTemplate
         }
     }
 
+    
+    /**
+     * Gets the path to the file containing the flatfield pattern.
+     * @return string Path to the flatfield file.
+     */
+    private function getVignettingFlatfield()
+    {
+        $flatfieldPath = "";
+        $deconSetting = $this->deconSetting;
+        
+        if ($deconSetting->parameter("StitchVignettingMode")->value() != "manual") {
+            return $flatfieldPath;
+        }        
+
+        $userFileArea  = $this->jobDescription->sourceFolder();
+        $flatfieldFile = $deconSetting->parameter("StitchVignettingFlatfield")->value();
+        $flatfieldPath = trim($userFileArea . $flatfieldFile[0]);
+
+        return $flatfieldPath
+    }
+
+    
+    /**
+     * Gets the path to the file containing the darkframe pattern.
+     * @return string Path to the darkframe file.
+     */
+    private function getVignettingDarkframe()
+    {
+        $darkframePath = "";
+        $deconSetting = $this->deconSetting;
+        
+        if ($deconSetting->parameter("StitchVignettingMode")->value() != "manual") {
+            return $darkframePath;
+        }        
+
+        $userFileArea  = $this->jobDescription->sourceFolder();
+        $darkframeFile = $deconSetting->parameter("StitchVignettingDarkframe")->value();
+        $darkframePath = trim($userFileArea . $darkframeFile[0]);
+
+        return $darkframePath
+    }        
 
     
     /* --------------------- Colocalization tasks ---------------------------- */
