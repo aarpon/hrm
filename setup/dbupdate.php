@@ -6244,7 +6244,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchOffsetsInit";
-    $record["value"] = "pattern and overlap settings";
+    $record["value"] = "pattern_overlap";
     $record["translation"] = "Pattern and overlap settings";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6259,7 +6259,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchOffsetsInit";
-    $record["value"] = "list of saved offsets";
+    $record["value"] = "list_offsets";
     $record["translation"] = "List of saved offsets";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6274,7 +6274,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchOffsetsInit";
-    $record["value"] = "meta data from image format";
+    $record["value"] = "metadata";
     $record["translation"] = "Meta data from image format";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6289,7 +6289,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionPattern";
-    $record["value"] = "row snake";
+    $record["value"] = "rs";
     $record["translation"] = "Row snake";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6304,7 +6304,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionPattern";
-    $record["value"] = "row line";
+    $record["value"] = "rl";
     $record["translation"] = "Row line";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6319,7 +6319,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionPattern";
-    $record["value"] = "column snake";
+    $record["value"] = "cs";
     $record["translation"] = "Column snake";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6334,7 +6334,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionPattern";
-    $record["value"] = "column line";
+    $record["value"] = "cl";
     $record["translation"] = "Column line";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6349,7 +6349,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionPattern";
-    $record["value"] = "spiral clockwise";
+    $record["value"] = "sc";
     $record["translation"] = "Spiral clockwise";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6364,7 +6364,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionPattern";
-    $record["value"] = "spiral counterclockwise";
+    $record["value"] = "sa";
     $record["translation"] = "Spiral counterclockwise";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6379,7 +6379,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionStart";
-    $record["value"] = "top left";
+    $record["value"] = "tl";
     $record["translation"] = "Top left";
     $record["isDefault"] = "t";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6394,7 +6394,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionStart";
-    $record["value"] = "top right";
+    $record["value"] = "tr";
     $record["translation"] = "Top right";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6409,7 +6409,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionStart";
-    $record["value"] = "bottom left";
+    $record["value"] = "bl";
     $record["translation"] = "Bottom left";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6424,7 +6424,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAcquisitionStart";
-    $record["value"] = "bottom right";
+    $record["value"] = "br";
     $record["translation"] = "Bottom right";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6454,7 +6454,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAlignmentMode";
-    $record["value"] = "xy at z center";
+    $record["value"] = "xy_zcenter";
     $record["translation"] = "Only X,Y displacement optimization based on the central Z plane.";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6469,7 +6469,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchAlignmentMode";
-    $record["value"] = "no optimization";
+    $record["value"] = "none";
     $record["translation"] = "No optimization. Use the input tile offsets.";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
@@ -6574,7 +6574,7 @@ if ($current_revision < $n) {
     $tabname = "possible_values";
     $record = array();
     $record["parameter"] = "StitchVignettingModel";
-    $record["value"] = "anisotropic";
+    $record["value"] = "aniso";
     $record["translation"] = "Anisotropic";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);

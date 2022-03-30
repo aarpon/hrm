@@ -26,4 +26,34 @@ class StitchAcquisitionStart extends ChoiceParameter
     {
         parent::__construct("StitchAcquisitionStart");
     }
+
+    
+    /**
+     * Returns the string representation of the Parameter.
+     * @param int $numberOfChannels Number of channels (ignored).
+     * @return string String representation of the Parameter.
+     */
+    public function displayString($numberOfChannels = 0)
+    {
+        switch($this->value()) {
+            case 'tl':
+                $value = "top left";
+                break;
+            case 'tr':
+                $value = "top right";
+                break;
+            case 'bl':
+                $value = "bottom left";
+                break;
+            case 'br':
+                $value = "bottom right";
+                break;
+            default:
+                Log::error("Unknown option '" . $this->value() . "'.");
+        }
+
+        $result = $this->formattedName();
+        $result = $result . $value . "\n";
+        return $result;
+    }
 }

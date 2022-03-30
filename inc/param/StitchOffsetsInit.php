@@ -26,4 +26,31 @@ class StitchOffsetsInit extends ChoiceParameter
     {
         parent::__construct("StitchOffsetsInit");
     }
+
+
+    /**
+     * Returns the string representation of the Parameter.
+     * @param int $numberOfChannels Number of channels (ignored).
+     * @return string String representation of the Parameter.
+     */
+    public function displayString($numberOfChannels = 0)
+    {
+        switch($this->value()) {
+            case 'pattern_overlap':
+                $value = "pattern and overlap settings";
+                break;
+            case 'list_offsets':
+                $value = "list of saved offsets";
+                break;
+            case 'metadata':
+                $value = "meta data from image format";
+                break;
+            default:
+                Log::error("Unknown option '" . $this->value() . "'.");
+        }
+
+        $result = $this->formattedName();
+        $result = $result . $value . "\n";
+        return $result;
+    }
 }

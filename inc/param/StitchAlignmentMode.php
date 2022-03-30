@@ -26,4 +26,30 @@ class StitchAlignmentMode extends ChoiceParameter
     {
         parent::__construct("StitchAlignmentMode");
     }
+
+    
+    /**
+     * Returns the string representation of the Parameter.
+     * @param int $numberOfChannels Number of channels (ignored).
+     * @return string String representation of the Parameter.
+     */
+    public function displayString($numberOfChannels = 0)
+    {
+        switch($this->value()) {
+            case 'xyz':
+                $value = "xyz";
+                break;
+            case 'none':
+                $value = "no optimization";
+            case 'xy_zcenter':
+                $value = "xy at z center";
+                break;
+            default:
+                Log::error("Unknown option '" . $this->value() . "'.");
+        }
+
+        $result = $this->formattedName();
+        $result = $result . $value . "\n";
+        return $result;
+    }
 }
