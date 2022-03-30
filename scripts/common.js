@@ -321,7 +321,7 @@ function updateStitchingVignettingOptions() {
 function updateStitchingOptions() {
 
     var stitchingSwitch = document.getElementById("StitchSwitch");
-
+    
     if (stitchingSwitch.value === "off") {	
 	$('#StitchOffsetsInitDiv').hide();
 	$('#StitchAcquisitionPatternDiv').hide();
@@ -340,11 +340,22 @@ function updateStitchingOptions() {
 	$('#StitchVignettingDarkframeDiv').hide();
     } else {
 	$('#StitchOffsetsInitDiv').show();
-	$('#StitchAcquisitionPatternDiv').show();
-	$('#StitchAcquisitionStartDiv').show();
-	$('#StitchPatternWidthDiv').show();
-	$('#StitchPatternHeightDiv').show();
-	$('#StitchAcquisitionOverlapDiv').show();
+
+	var offsetsInit = document.getElementById("StitchOffsetsInit");
+	if (offsetsInit.value === "pattern_overlap") {
+	    $('#StitchAcquisitionPatternDiv').show();
+	    $('#StitchAcquisitionStartDiv').show();
+	    $('#StitchPatternWidthDiv').show();
+	    $('#StitchPatternHeightDiv').show();
+	    $('#StitchAcquisitionOverlapDiv').show();
+	} else {
+	    $('#StitchAcquisitionPatternDiv').hide();
+	    $('#StitchAcquisitionStartDiv').hide();
+	    $('#StitchPatternWidthDiv').hide();
+	    $('#StitchPatternHeightDiv').hide();
+	    $('#StitchAcquisitionOverlapDiv').hide();
+	}
+	
 	$('#StitchOptimizationChannelsDiv').show();
 	$('#StitchAlignmentModeDiv').show();
 	$('#StitchPrefilterModeDiv').show();

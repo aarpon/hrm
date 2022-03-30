@@ -751,7 +751,9 @@ class TaskSetting extends Setting
         // These parameters are important to properly display other parameters.
         $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
         $TStabilization = $this->parameter('TStabilization')->value();
-        $vignettingMode = $this->parameter('StitchVignettingMode')->value();
+        $stitchOffsetsInit = $this->parameter('StitchOffsetsInit')->value();
+        $stitchVignettingMode = $this->parameter('StitchVignettingMode')->value();
+
         foreach ($this->parameter as $parameter) {
             /** @var SignalNoiseRatio $parameter */
             if ($parameter->name() == 'SignalNoiseRatio') {
@@ -769,40 +771,70 @@ class TaskSetting extends Setting
             if ($parameter->name() == 'TStabilization' && $timeInterval == 0) {
                 continue;
             }
-            if ($parameter->name() == 'TStabilizationMethod' && ($TStabilization == 0 || $timeInterval == 0)) {
+            if ($parameter->name() == 'TStabilizationMethod'
+                && ($TStabilization == 0 || $timeInterval == 0)) {
                 continue;
             }
-            if ($parameter->name() == 'TStabilizationRotation' && ($TStabilization == 0 || $timeInterval == 0)) {
+            if ($parameter->name() == 'TStabilizationRotation'
+                && ($TStabilization == 0 || $timeInterval == 0)) {
                 continue;
             }
-            if ($parameter->name() == 'TStabilizationCropping' && ($TStabilization == 0 || $timeInterval == 0)) {
+            if ($parameter->name() == 'TStabilizationCropping'
+                && ($TStabilization == 0 || $timeInterval == 0)) {
                 continue;
             }
-            if ($parameter->name() == 'ChromaticAberration' && $numberOfChannels == 1) {
+            if ($parameter->name() == 'ChromaticAberration'
+                && $numberOfChannels == 1) {
                 continue;
             }
-            if ($parameter->name() == 'ArrayDetectorReductionMode' && !strstr($micrType, "array detector confocal")) {
+            if ($parameter->name() == 'ArrayDetectorReductionMode'
+                && !strstr($micrType, "array detector confocal")) {
                 continue;
             }
-            if ($parameter->name() == 'StitchVignettingFlatfield' && $vignettingMode != 'manual') {
+            if ($parameter->name() == 'StitchAcquisitionPattern'
+                && $stitchOffsetsInit != 'pattern_overlap') {
                 continue;
             }
-            if ($parameter->name() == 'StitchVignettingDarkframe' && $vignettingMode != 'manual') {
+            if ($parameter->name() == 'StitchAcquisitionStart'
+                && $stitchOffsetsInit != 'pattern_overlap') {
                 continue;
             }
-            if ($parameter->name() == 'StitchVignettingFlatfield' && $vignettingMode != 'manual') {
+            if ($parameter->name() == 'StitchPatternWidth'
+                && $stitchOffsetsInit != 'pattern_overlap') {
                 continue;
             }
-            if ($parameter->name() == 'StitchVignettingModel' && $vignettingMode != 'auto') {
+            if ($parameter->name() == 'StitchPatternHeight'
+                && $stitchOffsetsInit != 'pattern_overlap') {            
                 continue;
             }
-            if ($parameter->name() == 'StitchVignettingAdjustment' && $vignettingMode != 'auto') {
+            if ($parameter->name() == 'StitchAcquisitionOverlap'
+                && $stitchOffsetsInit != 'pattern_overlap') {
                 continue;
             }
-            if ($parameter->name() == 'StitchVignettingChannels' && $vignettingMode == 'off') {
+            if ($parameter->name() == 'StitchVignettingFlatfield'
+                && $stitchVignettingMode != 'manual') {
                 continue;
             }
-
+            if ($parameter->name() == 'StitchVignettingDarkframe'
+                && $stitchVignettingMode != 'manual') {
+                continue;
+            }
+            if ($parameter->name() == 'StitchVignettingFlatfield'
+                && $stitchVignettingMode != 'manual') {
+                continue;
+            }
+            if ($parameter->name() == 'StitchVignettingModel'
+                && $stitchVignettingMode != 'auto') {
+                continue;
+            }
+            if ($parameter->name() == 'StitchVignettingAdjustment'
+                && $stitchVignettingMode != 'auto') {
+                continue;
+            }
+            if ($parameter->name() == 'StitchVignettingChannels'
+                && $stitchVignettingMode == 'off') {
+                continue;
+            }
             
             $result = $result . $parameter->displayString($numberOfChannels);
         }

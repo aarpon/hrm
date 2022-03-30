@@ -49,7 +49,7 @@ class StitchOffsetsInit extends ChoiceParameter
                 Log::error("Unknown option '" . $this->value() . "'.");
         }
 
-        $result = $this->formattedName();
+        $result = $this->formattedName("stitch offsets based on");
         $result = $result . $value . "\n";
         return $result;
     }

@@ -220,6 +220,7 @@ include("header.inc.php");
                 <select id="StitchOffsetsInit"
                         title="StitchOffsetsInit"
                         name="StitchOffsetsInit"
+                        onchange="updateStitchingOptions()"
                         class="selection">
                     <?php
 
