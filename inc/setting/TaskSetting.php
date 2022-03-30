@@ -751,6 +751,7 @@ class TaskSetting extends Setting
         // These parameters are important to properly display other parameters.
         $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
         $TStabilization = $this->parameter('TStabilization')->value();
+        $vignettingMode = $this->parameter('StitchVignettingMode')->value();
         foreach ($this->parameter as $parameter) {
             /** @var SignalNoiseRatio $parameter */
             if ($parameter->name() == 'SignalNoiseRatio') {
@@ -783,6 +784,26 @@ class TaskSetting extends Setting
             if ($parameter->name() == 'ArrayDetectorReductionMode' && !strstr($micrType, "array detector confocal")) {
                 continue;
             }
+            if ($parameter->name() == 'StitchVignettingFlatfield' && $vignettingMode != 'manual') {
+                continue;
+            }
+            if ($parameter->name() == 'StitchVignettingDarkframe' && $vignettingMode != 'manual') {
+                continue;
+            }
+            if ($parameter->name() == 'StitchVignettingFlatfield' && $vignettingMode != 'manual') {
+                continue;
+            }
+            if ($parameter->name() == 'StitchVignettingModel' && $vignettingMode != 'auto') {
+                continue;
+            }
+            if ($parameter->name() == 'StitchVignettingAdjustment' && $vignettingMode != 'auto') {
+                continue;
+            }
+            if ($parameter->name() == 'StitchVignettingChannels' && $vignettingMode == 'off') {
+                continue;
+            }
+
+            
             $result = $result . $parameter->displayString($numberOfChannels);
         }
         return $result;
