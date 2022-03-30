@@ -891,8 +891,8 @@ class HuygensTemplate
                 case 'adjustBaseline':
                 case 'ZStabilization':
                 case 'algorithms':
-                case 'chromatic':
                 case 'stitching':
+                case 'chromatic':
                 case 'TStabilization':
                 case 'colocalization':
                 case '2Dhistogram':
@@ -927,7 +927,7 @@ class HuygensTemplate
     }
 
     /**
-     * Gets details of specific deconvolution subtasks.
+     * Gets details of specific subtasks.
      * @return string The Tcl-compliant nested list with subtask details.
      */
     private function getImgProcessTasksDescr()
@@ -1251,54 +1251,46 @@ class HuygensTemplate
      */
     private function getImgTaskDescrStitching()
     {
+        $tasksDescr = "";
 
-        $allTasksDescr = "";
-
-        $stitchParam = $this->deconSetting->parameter("ChromaticAberration");
-        foreach ($channelsArray as $chanKey => $chan) {
-            $taskDescr = "";
-            /** @var ChromaticAberration $chromaticParam */
-            $chanVector = implode(' ', $chromaticParam->chanValue($chan));
-
-            foreach ($this->chromaticArray as $chromKey => $chromValue) {
-                if ($chromKey != "listID") {
-                    $taskDescr .= " " . $chromKey . " ";
-                }
-
-                /* Notice that we force a 'sorted' channel correction, i.e.,
-                   there's no matching done based on wavelengths, etc. */
-                switch ($chromKey) {
-                    case 'q':
-                    case 'lambdaEm':
-                    case 'lambdaEx':
-                    case 'lambdaSted':
-                    case 'mType':
-                    case 'estMethod':
-                        $taskDescr .= $chromValue;
-                        break;
-                    case 'channel':
-                        $taskDescr .= $chan;
-                        break;
-                    case 'vector':
-                        $taskDescr .= $this->string2tcllist($chanVector);
-                        break;
-                    case 'reference':
-                        if ($chanVector == "0 0 0 0 1") {
-                            $reference = 1;
-                        } else {
-                            $reference = 0;
-                        }
-                        $taskDescr .= $reference;
-                        break;
-                    case 'listID':
-                        $taskDescr = $this->string2tcllist($taskDescr);
-                        $allTasksDescr .= $chromValue . ":$chanKey ";
-                        $allTasksDescr .= $taskDescr . " ";
-                        break;
-                    default:
-                        Log::error("Image shift option $chromKey not yet implemented.");
-                }
+        if (!$this->isStitchingOn()) {
+            return $tasksDescr;
+        }        
+        
+        foreach ($this->stitchingArray as $stitchingKey => $stitchingValue) {
+            if ($stitchingKey != "listID") {
+                $taskDescr .= " " . $stitchingKey . " ";
             }
+            
+            switch ($stitchingKey) {
+                case 'templateOrigin':
+                case 'templateName':
+                case 'dimensions':
+                case 'frameCnt':
+                case 'detectorCnt':
+                case 'offsets':
+                case 'stitchMode':
+                case 'cols':
+                case 'rows':
+                case 'overlap':
+                case 'selection':
+                case 'channels':
+                case 'pattern':
+                case 'start':
+                case 'alignmentMode':
+                case 'prefilterMode':
+                case 'vignChans':
+                case 'vignModelParams':
+                case 'vignMode':
+                case 'vignModel':
+                case 'flatImg':
+                case 'darkImg':
+                case 'listID':
+                    $taskDescr = $this->string2tcllist($taskDescr);
+                    break;
+                default:
+                    Log::error("Image stitching option $stitchingKey not yet implemented.");
+            }            
         }
 
         return $allTasksDescr;
@@ -1535,7 +1527,7 @@ class HuygensTemplate
 
         $allTasksDescr = "";
 
-        if (!$this->getColocalization()) {
+        if (!$this->isColocalizationOn()) {
             return $allTasksDescr;
         }
 
@@ -1643,7 +1635,7 @@ class HuygensTemplate
         $allTasksDescr = "";
 
         /* There should be one 2D histogram per colocalization run. */
-        if (!$this->getColocalization()) {
+        if (!$this->isColocalizationOn()) {
             return $allTasksDescr;
         }
 
@@ -2548,16 +2540,37 @@ class HuygensTemplate
         return $channelsArray;
     }
 
+    
+    /* ---------------------------- Stitching tasks -------------------------- */
 
+    /**
+     * Gets the value of the boolean choice 'Stitch Switch'.
+     * @return bool Whether or not stitching should be performed.
+     */
+    private function isStitchingOn()
+    {
+        if ($this->deconSetting->parameter('StitchSwitch')->value() == "on") {
+            return True;
+        } else {
+            return False;
+        }
+    }
+
+
+    
     /* --------------------- Colocalization tasks ---------------------------- */
 
     /**
      * Gets the value of the boolean choice 'Colocalization Analysis'.
      * @return bool Whether or not colocalization analysis should be performed.
      */
-    private function getColocalization()
+    private function isColocalizationOn()
     {
-        return $this->analysisSetting->parameter('ColocAnalysis')->value();
+        if ($this->analysisSetting->parameter('ColocAnalysis')->value() == "1") {
+            return True;
+        } else {
+            return False;
+        }
     }
 
     /**
@@ -3038,6 +3051,7 @@ class HuygensTemplate
             case 'setp':
             case 'autocrop':
             case 'adjbl':
+            case 'stitching':
             case 'imgSave':
             case 'stabilize':
             case 'stabilize:post':   
@@ -3172,7 +3186,7 @@ class HuygensTemplate
 
         $colocRuns = 0;
 
-        if ($this->getColocalization() == "1") {
+        if ($this->isColocalizationOn()) {
 
             $chanCnt = count($this->getColocChannels());
 
