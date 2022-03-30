@@ -2632,9 +2632,10 @@ class Fileserver
      * Create hard links into the ${auxType}_sharing/buffer folder from the
      * folder of the sharing user and return an array of full paths
      * created links.
-     * @param array $auxfiles Array of auxiliary files for running jobs (PSFs, HPCs) with paths 
-     *              relative to current user.
-     * @param string $auxType whether 'psf' or 'hpc'.
+     * @param array $auxfiles Array of auxiliary files for running jobs 
+                              (PSFs, HPCs, Flatfields, Darkframes) with paths 
+     *                        relative to current user.
+     * @param string $auxType whether 'psf', 'hpc', 'flatfield', or 'darkframe'.
      * @param string $targetUser name of the target user.
      * @return array Array of destination paths.
      */
@@ -2643,7 +2644,7 @@ class Fileserver
         global $image_folder;
 
 
-        if (!in_array($auxType, array('psf', 'hpc'))) {
+        if (!in_array($auxType, array('psf', 'hpc', 'flatfield', 'darkframe'))) {
 	    Log::error("Unimplemented file type '$auxType' found in shared hard links infrastructure.");
             return null;
         }
@@ -2717,9 +2718,10 @@ class Fileserver
      * Create hard links into the folder of the target user from
      * the aux_sharing/buffer folder and return an array of full paths
      * created links.
-     * @param array $auxFiles Array of auxiliary files for running jobs (PSFs, HPCs) with paths 
-     *              relative to current user.
-     * @param string $auxType whether 'psf' or 'hpc'.
+     * @param array $auxFiles Array of auxiliary files for running jobs 
+                              (PSFs, HPCs, Flatfields, Darkframes) with paths 
+     *                        relative to current user.
+     * @param string $auxType whether 'psf', 'hpc', 'flatfield', or 'darkframe'.
      * @param string $targetUser Name of the target user.
      * @param string $previousUser Name of the previous (source) user.
      * @return array Array of destination aux paths.
@@ -2730,7 +2732,7 @@ class Fileserver
         global $image_source;
 
 
-        if (!in_array($auxType, array('psf', 'hpc'))) {
+        if (!in_array($auxType, array('psf', 'hpc', 'flatfield', 'darkframe'))) {
 	    Log::error("Unimplemented file type '$auxType' found in shared hard links infrastructure.");
             return null;
         }
@@ -2829,16 +2831,17 @@ class Fileserver
     /**
      * Delete auxiliary files (hard links) with given relative path from
      * the ${auxType}_sharing/buffer folder.
-     * @param array $auxFiles Array of auxiliary files for running jobs (PSFs, HPCs) with paths 
-     *              relative to the file server root.
-     * @param string $auxType whether 'psf' or 'hpc'.
+     * @param array $auxFiles Array of auxiliary files for running jobs 
+                              (PSFs, HPCs, Flatfields, Darkframes) with paths 
+     *                        relative to the file server root.
+     * @param string $auxType whether 'psf', 'hpc', 'flatfield', or 'darkframe'.
      */
     public static function deleteSharedAuxFilesFromBuffer(array $auxFiles, $auxType)
     {
         global $image_folder;
 
 
-        if (!in_array($auxType, array('psf', 'hpc'))) {
+        if (!in_array($auxType, array('psf', 'hpc', 'flatfield', 'darkframe'))) {
 	    Log::error("Unimplemented file type '$auxType' found in shared hard links infrastructure.");
             return null;
         }

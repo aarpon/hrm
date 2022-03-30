@@ -603,6 +603,27 @@ class DatabaseConnection
                         $parameterValue, "hpc", $targetUserName);
                 }
 
+                // Special treatment for the Flatfield parameter.
+                if ($parameter->name() == "StitchVignettingFlatfield") {
+
+                    // Create hard links and update paths to the flatfield files
+                    // to point to the hard-links.
+                    $fileServer = new Fileserver($original_user);
+                    $parameterValue = $fileServer->createHardLinksToSharedAuxFiles(
+                        $parameterValue, "flatfield", $targetUserName);
+                }
+
+                // Special treatment for the Darkframe parameter.
+                if ($parameter->name() == "StitchVignettingDarkframe") {
+
+                    // Create hard links and update paths to the darkframe files
+                    // to point to the hard-links.
+                    $fileServer = new Fileserver($original_user);
+                    $parameterValue = $fileServer->createHardLinksToSharedAuxFiles(
+                        $parameterValue, "darkframe", $targetUserName);
+                }
+
+                
                 /*!
                   @todo Currently there are not longer "range values" (values
                   separated by /). In the future they will be reintroduced.
@@ -689,7 +710,9 @@ class DatabaseConnection
                     case "ColocChannel":
                     case "ColocThreshold":
                     case "ColocCoefficient":
-		    case "HotPixelCorrection":	
+                    case "HotPixelCorrection":
+                    case "StitchVignettingFlatfield":
+                    case "StitchVignettingDarkframe":	
                     case "PSF":
                         /* Extract and continue to explode. */
                         $newValue = substr($newValue, 1);
@@ -697,7 +720,11 @@ class DatabaseConnection
                         $newValues = explode("#", $newValue);
                 }
 
-                if (!in_array($parameterName, array("PSF", "HotPixelCorrection")) && strpos($newValue, "/")) {
+                if (!in_array($parameterName, array("PSF",
+                                                    "HotPixelCorrection",
+                                                    "StitchVignettingFlatfield",
+                                                    "StitchVignettingDarkframe"))
+                    && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
                         if (strpos($newValues[$i], "/")) {
@@ -798,7 +825,11 @@ class DatabaseConnection
                         $newValues = explode("#", $newValue);
                 }
 
-                if (!in_array($parameterName, array("PSF", "HotPixelCorrection")) && strpos($newValue, "/")) {
+                if (!in_array($parameterName, array("PSF",
+                                                    "HotPixelCorrection",
+                                                    "StitchVignettingFlatfield",
+                                                    "StitchVignettingDarkframe"))
+                    && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
                         //$val = explode("/", $newValues[$i]);
@@ -965,6 +996,44 @@ class DatabaseConnection
                 // Update the entries for the database
                 $record["value"] = "#" . implode('#', $newHPCFiles);
 
+            } elseif ($record["name"] == "StitchVignettingFlatfield") {
+
+                // Instantiate a Fileserver object for the target user
+                $fileserver = new Fileserver($owner);
+
+                // Get the array of Flatfield names
+                $values = $row["value"];
+                if ($values[0] == "#") {
+                    $values = substr($values, 1);
+                }
+                $flatfieldFiles = explode('#', $values);
+
+                // Create hard-links to the target user folder
+                $newFlatfieldFiles = $fileserver->createHardLinksFromSharedAuxFiles(
+                    $flatfieldFiles, "flatfield", $owner, $previous_owner);
+
+                // Update the entries for the database
+                $record["value"] = "#" . implode('#', $newFlatfieldFiles);
+
+            } elseif ($record["name"] == "StitchVignettingDarkframe") {
+
+                // Instantiate a Fileserver object for the target user
+                $fileserver = new Fileserver($owner);
+
+                // Get the array of Darkframe names
+                $values = $row["value"];
+                if ($values[0] == "#") {
+                    $values = substr($values, 1);
+                }
+                $darkframeFiles = explode('#', $values);
+
+                // Create hard-links to the target user folder
+                $newDarkframeFiles = $fileserver->createHardLinksFromSharedAuxFiles(
+                    $darkframeFiles, "darkframe", $owner, $previous_owner);
+
+                // Update the entries for the database
+                $record["value"] = "#" . implode('#', $newDarkframeFiles);
+                
             } else {
                 $record["value"] = $row["value"];
             }
@@ -1084,6 +1153,39 @@ class DatabaseConnection
             }
         }
 
+        // Delete shared flatfield files if any exist
+        if ($sourceParameterTable == "shared_parameter") {
+            $query = "select value from $sourceParameterTable where setting_id=$id and name='StitchVignettingFlatfield'";
+            $flatfieldFiles = $this->queryLastValue($query);
+            if (null != $flatfieldFiles && $flatfieldFiles != "#####") {
+                if ($flatfieldFiles[0] == "#") {
+                    $flatfieldFiles = substr($flatfieldFiles, 1);
+                }
+
+                // Extract Flatfield file paths from the string
+                $flatfieldFiles = explode("#", $flatfieldFiles);
+
+                // Delete them
+                Fileserver::deleteSharedAuxFilesFromBuffer($flatfieldFiles, "flatfield");
+            }
+        }
+
+        // Delete shared darkframe files if any exist
+        if ($sourceParameterTable == "shared_parameter") {
+            $query = "select value from $sourceParameterTable where setting_id=$id and name='StitchVignettingDarkframe'";
+            $darkframeFiles = $this->queryLastValue($query);
+            if (null != $darkframeFiles && $darkframeFiles != "#####") {
+                if ($darkframeFiles[0] == "#") {
+                    $darkframeFiles = substr($darkframeFiles, 1);
+                }
+
+                // Extract Darkframe file paths from the string
+                $darkframeFiles = explode("#", $darkframeFiles);
+
+                // Delete them
+                Fileserver::deleteSharedAuxFilesFromBuffer($darkframeFiles, "darkframe");
+            }
+        }
 
         $this->connection()->BeginTrans();
 
@@ -2323,7 +2425,9 @@ class DatabaseConnection
             case 'PerformAberrationCorrection':
             case 'AberrationCorrectionMode':
             case 'AdvancedCorrectionOptions':
-	    case 'HotPixelCorrection':
+	        case 'HotPixelCorrection':
+            case 'StitchVignettingFlatfield':
+            case 'StitchVignettingDarkframe':
             case 'PSF' :
                 return "provided";
             case 'Binning':
