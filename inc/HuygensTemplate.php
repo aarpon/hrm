@@ -165,6 +165,12 @@ class HuygensTemplate
     private $chromaticArray;
 
     /**
+     * Array with information on the available stitching options.
+     * @var array
+     */
+    private $stitchArray;
+
+    /**
      * Array with information on the available deconvolution algorithms.
      * @var array
      */
@@ -217,18 +223,6 @@ class HuygensTemplate
      * @var array
      */
     private $thumbArray;
-
-    /**
-     * A Tcl list with information for the 'set parameter' subtask.
-     * @var string
-     */
-    private $setpList;
-
-    /**
-     * A Tcl list with information for the 'hot pixel correction' subtask.
-     * @var string
-     */
-    private $hpcList;
 
     /**
      * Path and name of the source 'raw' image.
@@ -1033,6 +1027,7 @@ class HuygensTemplate
     {
 
         $taskDescr = "";
+        $setpList  = "";
 
         foreach ($this->setpArray as $key => $value) {
 
@@ -1070,7 +1065,7 @@ class HuygensTemplate
                     break;
                 case 'listID':
                     $taskDescr = $this->string2tcllist($taskDescr);
-                    $this->setpList = $value . " " . $taskDescr;
+                    $setpList = $value . " " . $taskDescr;
                     break;
                 default:
                     Log::error("Setp field $key not yet implemented.");
@@ -1081,7 +1076,7 @@ class HuygensTemplate
             }
         }
 
-        return $this->setpList;
+        return $setpList;
     }
 
     /**
@@ -1091,6 +1086,7 @@ class HuygensTemplate
     private function getImgTaskDescrHotPixelCorrection()
     {
         $taskDescr = "";
+        $hpcList   = "";
 
         /* The HPC mask may be located in a different subfolder than the raw 
            data. Thus, its path must be found independently of the raw images. */
@@ -1111,14 +1107,14 @@ class HuygensTemplate
 		case 'timeOut':
 		    $taskDescr .= $value;
                 case 'listID':
-                    $this->hpcList = $value . " " . $this->string2tcllist($taskDescr);
+                    $hpcList = $value . " " . $this->string2tcllist($taskDescr);
                     break;
                 default:
                     Log::error("Hot pixel correction field $key not yet implemented.");
             }
         }
 
-        return $this->hpcList;
+        return $hpcList;
     }
 
     /**
