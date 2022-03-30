@@ -36,7 +36,7 @@ class StitchOffsetsInit extends ChoiceParameter
     public function displayString($numberOfChannels = 0)
     {
         switch($this->value()) {
-            case 'pattern_overlap':
+            case 'overlap':
                 $value = "pattern and overlap settings";
                 break;
             case 'list_offsets':

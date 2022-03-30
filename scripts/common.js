@@ -342,7 +342,7 @@ function updateStitchingOptions() {
 	$('#StitchOffsetsInitDiv').show();
 
 	var offsetsInit = document.getElementById("StitchOffsetsInit");
-	if (offsetsInit.value === "pattern_overlap") {
+	if (offsetsInit.value === "overlap") {
 	    $('#StitchAcquisitionPatternDiv').show();
 	    $('#StitchAcquisitionStartDiv').show();
 	    $('#StitchPatternWidthDiv').show();

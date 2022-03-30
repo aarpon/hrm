@@ -792,23 +792,23 @@ class TaskSetting extends Setting
                 continue;
             }
             if ($parameter->name() == 'StitchAcquisitionPattern'
-                && $stitchOffsetsInit != 'pattern_overlap') {
+                && $stitchOffsetsInit != 'overlap') {
                 continue;
             }
             if ($parameter->name() == 'StitchAcquisitionStart'
-                && $stitchOffsetsInit != 'pattern_overlap') {
+                && $stitchOffsetsInit != 'overlap') {
                 continue;
             }
             if ($parameter->name() == 'StitchPatternWidth'
-                && $stitchOffsetsInit != 'pattern_overlap') {
+                && $stitchOffsetsInit != 'overlap') {
                 continue;
             }
             if ($parameter->name() == 'StitchPatternHeight'
-                && $stitchOffsetsInit != 'pattern_overlap') {            
+                && $stitchOffsetsInit != 'overlap') {            
                 continue;
             }
             if ($parameter->name() == 'StitchAcquisitionOverlap'
-                && $stitchOffsetsInit != 'pattern_overlap') {
+                && $stitchOffsetsInit != 'overlap') {
                 continue;
             }
             if ($parameter->name() == 'StitchVignettingFlatfield'
