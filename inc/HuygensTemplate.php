@@ -1272,12 +1272,24 @@ class HuygensTemplate
                 case 'frameCnt':
                 case 'detectorCnt':
                 case 'offsets':
+                    // $taskDescr .= $this->getStitchOffsetList();
+                    break;
                 case 'stitchMode':
+                    $taskDescr .= $this->getStitchOffsetsInit();
+                    break;
                 case 'cols':
+                    $taskDescr .= $this->getStitchPatternWidth();
+                    break;
                 case 'rows':
+                    $taskDescr .= $this->getStitchPatternHeight();
+                    break;
                 case 'overlap':
+                    $taskDescr .= $this->getStitchAcquisitionOverlap();
+                    break;
                 case 'selection':
                 case 'channels':
+                    $taskDescr .= $this->getStitchOptimizationChannels();
+                    break;
                 case 'pattern':
                     $taskDescr .= $this->getStitchAcquisitionPattern();
                     break;
@@ -2580,6 +2592,67 @@ class HuygensTemplate
         }
     }
 
+
+    /**
+     * Gets the offset mode. This tells Huygens if the initial offsets should be based on
+     * the meta data or on the pattern start, type, width, height, and overlap indicated
+     * by the user.
+     * @return string Whether 'metadata', 'list_offssets', or 'overlap'.
+     */
+    private function getStitchOffsetsInit()
+    {
+        $deconSetting = $this->deconSetting;
+        return $deconSetting->parameter("StitchOffsetsInit")->value();        
+    }
+
+    
+    /**
+     * Gets the number of columns indicated by the user.
+     * @return string Containing an integer for the number of columns.
+     */
+    private function getStitchPatternWidth()
+    {
+        $deconSetting = $this->deconSetting;        
+        return $deconSetting->parameter("StitchPatternWidth")->value();
+    }
+
+    
+    /**
+     * Gets the number of rows indicated by the user.
+     * @return string Containing an integer for the number of rows.
+     */
+    private function getStitchPatternHeight()
+    {
+        $deconSetting = $this->deconSetting;        
+        return $deconSetting->parameter("StitchPatternHeight")->value();
+    }
+
+
+    /**
+     * Gets the percentage of overlap across tiles indicated by the user.
+     * @return string Containing a real number for the percentage.
+     */
+    private function getStitchAcquisitionOverlap()
+    {
+        $deconSetting = $this->deconSetting;        
+        return $deconSetting->parameter("StitchAcquisitionOverlap")->value();
+    }
+    
+
+    /**
+     * Gets the optimization channels.
+     * @return string Containing the list of channels used for the optimization of the
+     *                the tile positions.
+     */
+    private function getStitchOptimizationChannels()
+    {
+        $deconSetting = $this->deconSetting;
+        $optChannels = $deconSetting->parameter("StitchOptimizationChannels")->value();
+        
+           /* Do not count empty elements. Do count channel '0'. */
+        return array_filter($optChannels, 'strlen');
+    }
+    
     
     /**
      * Gets the mode for the acquisition pattern.
@@ -2628,7 +2701,7 @@ class HuygensTemplate
     /**
      * Gets the vignetting channels.
      * @return string Containing a list of channels used for estimating the vignetting 
-     *                pattern when on vignetting mode 'auto'..
+     *                pattern when on vignetting mode 'auto'.
      */
     private function getVignettingChannels()
     {
