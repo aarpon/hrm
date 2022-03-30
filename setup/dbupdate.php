@@ -6545,7 +6545,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "StitchVignettingMode";
     $record["value"] = "manual";
-    $record["translation"] = "Manual";
+    $record["translation"] = "Measured";
     $record["isDefault"] = "f";
     $insertSQL = $db->GetInsertSQL($tabname, $record);
     if(!$db->Execute($insertSQL)) {
