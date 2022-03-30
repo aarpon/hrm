@@ -1283,9 +1283,17 @@ class HuygensTemplate
                 case 'alignmentMode':
                 case 'prefilterMode':
                 case 'vignChans':
+                    $taskDescr .= $this->getVignettingChannels();
+                    break;
                 case 'vignModelParams':
+                    $taskDescr .= $this->getVignettingAdjustment();
+                    break;
                 case 'vignMode':
+                    $taskDescr .= $this->getVignettingMode();
+                    break;
                 case 'vignModel':
+                    $taskDescr .= $this->getVignettingModel();
+                    break;
                 case 'flatImg':
                     $taskDescr .= $this->getVignettingFlatfield();
                     break;
@@ -2562,6 +2570,54 @@ class HuygensTemplate
         } else {
             return False;
         }
+    }
+
+
+    /**
+     * Gets the vignetting channels.
+     * @return string Containing a list of channels used for estimating the vignetting 
+     *                pattern when on vignetting mode 'auto'..
+     */
+    private function getVignettingChannels()
+    {
+        $deconSetting = $this->deconSetting;
+        $vignettingChannels = $deconSetting->parameter("StitchVignettingChannels")->value();
+        
+           /* Do not count empty elements. Do count channel '0'. */
+        return array_filter($vignettingChannels, 'strlen');
+    }
+
+    
+    /**
+     * Gets the vignetting adjustment for when on vignetting mode 'auto'.
+     * @return string Containing a real number.
+     */
+    private function getVignettingAdjustment()
+    {
+        $deconSetting = $this->deconSetting;        
+        return $deconSetting->parameter("StitchVignettingAdjustment")->value();
+    }
+
+    
+    /**
+     * Gets the vignetting mode.
+     * @return string Whether 'auto', 'manual', or 'off'.
+     */
+    private function getVignettingMode()
+    {
+        $deconSetting = $this->deconSetting;        
+        return $deconSetting->parameter("StitchVignettingMode")->value();
+    }
+
+    
+    /**
+     * Gets the vignetting model used when on 'auto' vignetting mode.
+     * @return string Whether 'circular' or 'anisotropic' model.
+     */
+    private function getVignettingModel()
+    {
+        $deconSetting = $this->deconSetting;        
+        return $deconSetting->parameter("StitchVignettingModel")->value();
     }
 
     
