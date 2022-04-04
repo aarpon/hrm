@@ -1267,9 +1267,17 @@ class HuygensTemplate
             /* Then proceed to adding the option value. */
             switch ($stitchingKey) {
                 case 'templateOrigin':
+                    $taskDescr .= $this->getStitchTemplOrigin();
+                    break;
                 case 'templateName':
+                    $taskDescr .= $this->getStitchTemplName();
+                    break;
                 case 'dimensions':
+                    $taskDescr .= $this->getStitchDimsList();
+                    break;
                 case 'frameCnt':
+                    $taskDescr .= $this->getStitchFrameCnt();
+                    break;
                 case 'detectorCnt':
                     $taskDescr .= $this->getStitchDetectorCnt();
                     break;
@@ -1289,6 +1297,8 @@ class HuygensTemplate
                     $taskDescr .= $this->getStitchAcquisitionOverlap();
                     break;
                 case 'selection':
+                    $taskDescr .= $this->getStitchTileSelection();
+                    break;
                 case 'channels':
                     $taskDescr .= $this->getStitchOptimizationChannels();
                     break;
@@ -2596,6 +2606,54 @@ class HuygensTemplate
 
 
     /**
+     * Gets the value for the template origin field. 
+     * @return string With an identifier for HRM.
+     */
+    private function getStitchTemplOrigin()
+    {
+        // Inspired by the Huygens Workflow Processor.
+        return "{Huygens Remote Manager}";
+    }
+
+    
+    /**
+     * Gets the value for the template name field. 
+     * @return string With a default name.
+     */
+    private function getStitchTemplName()
+    {
+        // Inspired by the Huygens Workflow Processor.
+        return "defaultTemplate";
+    }
+
+    
+    /**
+     * Gets the dimensions list. For now this is a repetition of dummys ({100 100 100}). 
+     * The real dimensions are assembled during run time by Huygens.
+     * @return string With 1 dummy per image.
+     */
+    private function getStitchDimsList()
+    {
+        $dummyDims = "{100 100 100} ";
+                   
+        #TODO: we should derive the number of tiles in the compound job somehow.
+        $tileCnt = 1;
+        
+        return str_repeat($dummyDims, $tileCnt);
+    }
+
+
+    /**
+     * Gets a dummy for the frame count.
+     * @return string Always '1' for now. The real number will be deduced by Huygens.
+     */
+    private function getStitchFrameCnt()
+    {
+        return '1';
+    }
+
+
+    /**
      * Gets the detector count (of array detector images).
      * @return string Either '1' for non-array-detector images of '32' for 
      *                classic array detector images.
@@ -2632,8 +2690,12 @@ class HuygensTemplate
      */
     private function getStitchOffsetsList()
     {
-        $deconSetting = $this->deconSetting;
+        $dummyOffsets = "{0 0 0} ";
+
         #TODO: we should derive the number of tiles in the compound job somehow.
+        $tileCnt = 1;
+        
+        return str_repeat($dummyOffsets, $tileCnt);
     }
 
 
@@ -2681,7 +2743,21 @@ class HuygensTemplate
         $deconSetting = $this->deconSetting;        
         return $deconSetting->parameter("StitchAcquisitionOverlap")->value();
     }
-    
+
+
+    /**
+     * Gets the list with tile IDs. This includes all tiles. It's not possible in HRM
+     * to have a selection of tiles within the parent selection.
+     * @return string With increasing numbers, one per tile.
+     */
+    private function getStitchTileSelection()
+    {
+        #TODO: we should derive the number of tiles in the compound job somehow.
+        $tileCnt = 1;
+        
+        return "{" . implode(range(0, $tileCnt - 1), " ") . "}";
+    }
+
 
     /**
      * Gets the optimization channels.
