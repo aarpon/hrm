@@ -1271,8 +1271,10 @@ class HuygensTemplate
                 case 'dimensions':
                 case 'frameCnt':
                 case 'detectorCnt':
+                    $taskDescr .= $this->getStitchDetectorCnt();
+                    break;
                 case 'offsets':
-                    // $taskDescr .= $this->getStitchOffsetList();
+                    $taskDescr .= $this->getStitchOffsetsList();
                     break;
                 case 'stitchMode':
                     $taskDescr .= $this->getStitchOffsetsInit();
@@ -2590,6 +2592,48 @@ class HuygensTemplate
         } else {
             return False;
         }
+    }
+
+
+    /**
+     * Gets the detector count (of array detector images).
+     * @return string Either '1' for non-array-detector images of '32' for 
+     *                classic array detector images.
+     */
+    private function getStitchDetectorCnt()
+    {
+        $micrType = $this->getMicroscopeType(0);
+        if ($micrType != 'arrDetConf') {
+            return 1;
+        } else {
+
+            // Try to discern among the Airyscan 1 modes.
+            $sX = $this->getSamplingSizeX();
+            $sY = $this->getSamplingSizeY();
+
+            if ($sY >= 4 * $sX) {
+                // 'Fast' Y Airyscan 1.
+                return 16;               
+            } else {
+                // 'Classic' Airyscan 1.
+                return 32;
+            }
+        }
+        
+        $deconSetting = $this->deconSetting;
+    }
+
+    
+    /**
+     * Gets the offset list. For now this is a repetition of dummys ({0 0 0}). The real
+     * offsets are assembled during run time by Huygens. Their values will then be 
+     * influenced by the 'offsets init' choice.
+     * @return string With 1 dummy per image.
+     */
+    private function getStitchOffsetsList()
+    {
+        $deconSetting = $this->deconSetting;
+        #TODO: we should derive the number of tiles in the compound job somehow.
     }
 
 
