@@ -514,9 +514,9 @@ class HuygensTemplate
                   'to,tileX'         => '0',
                   'step,tileX'       => '1',
                   'count'            => '',
-                  'mode,0'           => 'z',
-                  'mode,1'           => 't',
-                  'mode,2'           => 'c',
+                  'mode,0'           => '',
+                  'mode,1'           => '',
+                  'mode,2'           => '',
                   'pattern,0'        => '',
                   'pattern,1'        => '',
                   'pattern,2'        => '',
@@ -2031,42 +2031,58 @@ class HuygensTemplate
     {
         $fileSeriesDict = "";
 
-        /* Initialization. */
+        /* Initialization. See template for meaning of these variables. */
         $fromZ = $fromT = $fromC = $toZ = $toT = $toC = 0;
+        $nameModes    = array('{}', '{}', '{}');
+        $namePatterns = array('{}', '{}', '{}');
+        $patternCnt   = 0
 
         /* Extract the initial 'from' values from the file. */
-        $RE  = "/([^_]+?)(_[zZtTcC][0-9]+)?";
-        $RE .= "(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?\.\w+/";
-        
         $file = basename($this->srcImage);
+        $RE  = "/([^_]+?)(_[zZtTcC][0-9]+)?";
+        $RE .= "(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?\.\w+/";        
 
         if(preg_match($RE, $file, $matches)) {
             $nameBase = matches[1];
             
-            if (isset(matches[2])) {                
+            if (isset(matches[2])) {           
                 $dim   = matches[2][1];
                 $value = substr(matches[2], 2);
                 
                 stripos($dim, 'z') ? $fromZ = $value;
                 stripos($dim, 't') ? $fromT = $value;
-                stripos($dim, 'c') ? $fromC = $value;                
+                stripos($dim, 'c') ? $fromC = $value;
+
+                /* This name pattern does not get prepended by a '_' unlike
+                   the other ones below (see template for rationale). */
+                $namePatterns[0] = $dim;
+                $nameModes[0]    = $dim;
+                $patternCnt++;
             }
-            if (isset(matches[3])) {                
+            if (isset(matches[3])) {
                 $dim   = matches[3][1];
                 $value = substr(matches[3], 2);
                 
                 stripos($dim, 'z') ? $fromZ = $value;
                 stripos($dim, 't') ? $fromT = $value;
-                stripos($dim, 'c') ? $fromC = $value;                
+                stripos($dim, 'c') ? $fromC = $value;
+                
+                $namePatterns[1] = "_" . $dim;
+                $nameModes[1]    = $dim;
+                $patternCnt++;                                
             }
-            if (isset(matches[4])) {                
+            if (isset(matches[4])) {
                 $dim   = matches[4][1];
                 $value = substr(matches[4], 2);
                 
                 stripos($dim, 'z') ? $fromZ = $value;
                 stripos($dim, 't') ? $fromT = $value;
-                stripos($dim, 'c') ? $fromC = $value;                
-            }
+                stripos($dim, 'c') ? $fromC = $value;
+
+                $namePatterns[2] = "_" . $dim;
+                $nameModes[2]    = $dim;
+                $patternCnt++;                                
+            }            
         }
 
         /* Try to find all other files that belong to the series and extract
@@ -2087,7 +2103,7 @@ class HuygensTemplate
                     stripos($dim, 't') && $value > $toT ? $toT = $value;
                     stripos($dim, 'c') && $value > $toC ? $toC = $value;       
                 }
-                if (isset(matches[3])) {                
+                if (isset(matches[3])) {
                     $dim = matches[3][1];
                     $value = substr(matches[3], 2);
                     
@@ -2108,7 +2124,8 @@ class HuygensTemplate
 
         /* Build the Tcl dict. */
         foreach ($this->stitchSeriesDictArray as $key => $value) {
-            $fileSeriesDict .= " " . $key . " ";
+            $fileSeriesDict .= " " . $key . " ";            
+            
             switch($key) {
                 case 'dirname':
                     $fileSeriesDict .= $this->getSrcDir();
@@ -2168,24 +2185,28 @@ class HuygensTemplate
                     $fileSeriesDict .= $value;
                     break;
                 case 'count':
+                    $fileSeriesDict .= $patternCnt;
                     break;
                 case 'mode,0':
-                    $fileSeriesDict .= $value;
+                    $fileSeriesDict .= $nameModes[0];
                     break;
                 case 'mode,1':
-                    $fileSeriesDict .= $value;
+                    $fileSeriesDict .= $nameModes[1];
                     break;
                 case 'mode,2':
-                    $fileSeriesDict .= $value;
+                    $fileSeriesDict .= $nameModes[2];
                     break;
                 case 'pattern,0':
-                    $fileSeriesDict .= $value;
+                    $fileSeriesDict .= $basename . "_" . $namePatterns[0];
                     break;
                 case 'pattern,1':
+                    $fileSeriesDict .= $namePatterns[1];
                     break;
                 case 'pattern,2':
+                    $fileSeriesDict .= $namePatterns[2];
                     break;
                 case 'pattern,3':
+                    $fileSeriesDict .= pathinfo($file, PATHINFO_EXTENSION);;
                     break;
                 default:
                     Log::error("Unknown stitch series dict option: $key");
