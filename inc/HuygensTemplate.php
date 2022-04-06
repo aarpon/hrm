@@ -476,11 +476,15 @@ class HuygensTemplate
 
         /* Options for the 'open image' action */
         $this->imgOpenArray =
-            array('path'   => '',
-                  'subImg' => '',
-                  'series' => '',
-                  'index'  => '0',
-                  'listID' => 'imgOpen');
+            array('path'           => '',
+                  'subImg'         => '',
+                  'series'         => '',
+                  'index'          => '0',
+                  'type'           => '',
+                  'fileSeriesDict' => '',
+                  'stitcherList'   => '',
+                  'subImagesInfo'  => '',
+                  'listID'         => 'imgOpen');
         
         /* Options for the 'set image parameter' action */
         $this->setpArray =
@@ -1017,9 +1021,13 @@ class HuygensTemplate
 
         $taskDescr = "";
 
+        $openStitchOptions = array('type', 'fileSeriesDict',
+                                   'stitcherList', 'subImagesInfo');
+
         foreach ($this->imgOpenArray as $key => $value) {
 
-            if ($key != "subImg" && $key != 'listID') {
+            if ($key != "subImg" && $key != 'listID'
+                && !in_array($key, $openStitchOptions)) {
                 $taskDescr .= " " . $key . " ";
             }
 
@@ -1038,6 +1046,12 @@ class HuygensTemplate
                         $taskDescr .= " " . $key . " ";
                         $taskDescr .= $this->string2tcllist($this->subImage);
                     }
+                    break;
+                case 'type':
+                case 'fileSeriesDict':
+                case 'stitcherList':
+                case 'subImagesInfo':
+                    $taskDescr .= $this->getImgOpenStitchDescr($key);
                     break;
                 case 'listID':
                     $taskDescr = $this->string2tcllist($taskDescr);
@@ -1906,6 +1920,34 @@ class HuygensTemplate
         return $taskDescr;
     }
 
+
+    /* -------------------------- imgOpen task ------------------------------ */
+
+    /**
+     * Gets options for the stitching fields of the 'image open' task.
+     * @param string $stitchOpenOption One of the stitching open options,
+     *               whether 'subImagesInfo', 'fileSeriesDict', 
+     *               'stitcherList', or 'type'.
+     * @return string Tcl list with stitching fields for the open task.
+     */
+    private function getImgOpenStitchDescr($stitchOpenOption)
+    {
+        $stitchOpenDescr = "";
+        
+        if (!$this->isStitchingOn) {
+            return $stitchOpenDescr;
+        }
+
+        /* Start by appending the option to the result. This function is a 
+           bit different than the rest in that respect since the name of the
+           option does not get appended by the calling function. */
+        $openStitchDescr .= $stitchOpenOption;
+
+        /* TODO: add code for the options. */ 
+
+        return $openStitchDescr;
+    }
+    
     /* -------------------------- Setp task ---------------------------------- */
 
     /**
