@@ -1021,6 +1021,8 @@ class HuygensTemplate
 
         $taskDescr = "";
 
+        /* These should only be included when the user has actually 
+           enabled stitching. */
         $openStitchOptions = array('type', 'fileSeriesDict',
                                    'stitcherList', 'subImagesInfo');
 
@@ -1938,12 +1940,49 @@ class HuygensTemplate
             return $stitchOpenDescr;
         }
 
+        $stitchOpenDescr .= " " . $stitchOpenOption . " ";
+        
+        $this->getSeriesMode() == "off" ? $series = False; : $series = True;
+        
         /* Start by appending the option to the result. This function is a 
            bit different than the rest in that respect since the name of the
            option does not get appended by the calling function. */
         $openStitchDescr .= $stitchOpenOption;
 
-        /* TODO: add code for the options. */ 
+        /* TODO: add code for the options. */
+        switch($stitchOpenOption) {
+            case 'type':
+                if ($series) {
+                    $stitchOpenDescr .= "fileSeries";
+                } else {
+                    $stitchOpenDescr .= "multiImg";
+                }
+                break;
+            case 'fileSeriesDict':
+                if ($series) {
+                    $stitchOpenDescr .= $this->getOpenStitchSeriesDict();
+                } else {
+                    $stitchOpenDescr .= $this->string2tcllist("");
+                }
+                break;
+            case 'stitcherList':
+                if ($series) {
+                    $stitchOpenDescr .= $this->getOpenStitcherList();
+                } else {
+                    $stitchOpenDescr .= $this->string2tcllist("");
+                }
+                break;
+            case 'subImagesInfo':
+                if ($series) {
+                    $stitchOpenDescr .= $this->string2tcllist("");
+                } else {
+                    $stitchOpenDescr .= $this->getOpenStitchSubImagesInfo();
+                }
+                break;
+            default:
+                Log::error("Unknown open-stitching option: $stitchOpenOption");
+        }
+        
 
         return $openStitchDescr;
     }
