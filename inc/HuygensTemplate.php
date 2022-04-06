@@ -497,22 +497,22 @@ class HuygensTemplate
             array('dirname'          => '',
                   'from,z'           => '',
                   'to,z'             => '',
-                  'step,z'           => '',
+                  'step,z'           => '1',
                   'from,t'           => '',
                   'to,t'             => '',
-                  'step,t'           => '',
+                  'step,t'           => '1',
                   'from,c'           => '',
                   'to,c'             => '',
-                  'step,c'           => ''
+                  'step,c'           => '1'
                   'from,p'           => '0';
                   'to,p'             => '0',
                   'step,p'           => '1',
-                  'from,tileY'       => '',
-                  'to,tileY'         => '',
-                  'step,tileY'       => '',
-                  'from,tileX'       => '',
-                  'to,tileX'         => '',
-                  'step,tileX'       => '',
+                  'from,tileY'       => '0',
+                  'to,tileY'         => '0',
+                  'step,tileY'       => '1',
+                  'from,tileX'       => '0',
+                  'to,tileX'         => '0',
+                  'step,tileX'       => '1',
                   'count'            => '',
                   'pattern,0'        => '',
                   'pattern,1'        => '',
@@ -2027,6 +2027,17 @@ class HuygensTemplate
     private function getOpenStitchSeriesDict()
     {
         $fileSeriesDict = "";
+
+        /* Try to find all files that belong to the series and to extract
+           valuable patterns from it for stitching. */
+        $RE = "/[^_]+_(Z|z)([0-9]+?)_(T|t)([0-9]+?)_(C|c)([0-9]+?)\.\w+/";
+        $file = basename($this->srcImage);
+
+        if(preg_match($pattern, $file, $matches)) {
+            $fromZ = $matches[2];
+            $fromT = $matches[4];
+            $fromC = $matches[6];
+        }
         
         foreach ($this->stitchSeriesDictArray as $key => $value) {
             $fileSeriesDict .= " " . $key . " ";
@@ -2035,40 +2046,55 @@ class HuygensTemplate
                     $fileSeriesDict .= $this->getSrcDir();
                     break;
                 case 'from,z':
+                    $fileSeriesDict .= $fromZ;
                     break;
                 case 'to,z':
                     break;
                 case 'step,z':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'from,t':
+                    $fileSeriesDict .= $fromT;
                     break;
                 case 'to,t':
                     break;
                 case 'step,t':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'from,c':
+                    $fileSeriesDict .= $fromC;
                     break;
                 case 'to,c':
                     break;
                 case 'step,c':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'from,p':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'to,p':
-                    break;
+                    $fileSeriesDict .= $value;
+                    break;                    
                 case 'step,p':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'from,tileY':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'to,tileY':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'step,tileY':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'from,tileX':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'to,tileX':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'step,tileX':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'count':
                     break;
