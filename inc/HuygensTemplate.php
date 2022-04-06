@@ -2028,17 +2028,42 @@ class HuygensTemplate
     {
         $fileSeriesDict = "";
 
-        /* Try to find all files that belong to the series and to extract
-           valuable patterns from it for stitching. */
-        $RE = "/[^_]+_(Z|z)([0-9]+?)_(T|t)([0-9]+?)_(C|c)([0-9]+?)\.\w+/";
+        /* Initialization. */
+        $fromZ = $fromT = $fromC = $toZ = $toT = $toC = 0;
+
+        /* Extract the initial 'from' values from the file. */
+        /* TODO: use a more sophisticated RE that can deal with different
+           orders for Z, T, C. */
+        $RE = "/([^_]+?)_(Z|z)([0-9]+?)_(T|t)([0-9]+?)_(C|c)([0-9]+?)\.\w+/";
         $file = basename($this->srcImage);
 
-        if(preg_match($pattern, $file, $matches)) {
-            $fromZ = $matches[2];
-            $fromT = $matches[4];
-            $fromC = $matches[6];
+        if(preg_match($RE, $file, $matches)) {
+            $fromZ = $matches[3];
+            $fromT = $matches[5];
+            $fromC = $matches[7];
         }
-        
+
+        /* Try to find all other files that belong to the series. */
+        $RE  = "/" . $matches[1];
+        $RE .= "+_(Z|z)([0-9]+?)_(T|t)([0-9]+?)_(C|c)([0-9]+?)\.\w+/";
+
+        $allFiles = scandir($this->getSrcDir());
+        foreach ($allFiles => $candidateFile) {            
+            if($candidateFile != $file
+               && preg_match($RE, $candidateFile, $matches)) {
+                if ($matches[2] > $toZ) {
+                    $toZ = $matches[2];
+                }
+                if ($matches[4] > $toT) {
+                    $toT = $matches[4];
+                }
+                if ($matches[6] > $toC) {
+                    $toC = $matches[6];
+                }
+            }            
+        }
+
+        /* Build the Tcl dict. */
         foreach ($this->stitchSeriesDictArray as $key => $value) {
             $fileSeriesDict .= " " . $key . " ";
             switch($key) {
@@ -2049,6 +2074,7 @@ class HuygensTemplate
                     $fileSeriesDict .= $fromZ;
                     break;
                 case 'to,z':
+                    $fileSeriesDict .= $toZ;
                     break;
                 case 'step,z':
                     $fileSeriesDict .= $value;
@@ -2057,6 +2083,7 @@ class HuygensTemplate
                     $fileSeriesDict .= $fromT;
                     break;
                 case 'to,t':
+                    $fileSeriesDict .= $toT;
                     break;
                 case 'step,t':
                     $fileSeriesDict .= $value;
@@ -2065,6 +2092,7 @@ class HuygensTemplate
                     $fileSeriesDict .= $fromC;
                     break;
                 case 'to,c':
+                    $fileSeriesDict .= $toC;
                     break;
                 case 'step,c':
                     $fileSeriesDict .= $value;
