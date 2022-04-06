@@ -142,6 +142,13 @@ class HuygensTemplate
     private $stitchSeriesDictArray
 
     /**
+     * Array with information on the list of files from a series that are 
+     * to be stitched.
+     * @var array
+     */
+    private $stitcherListArray
+        
+    /**
      * Array with information on the image save subtask.
      * @var array
      */
@@ -493,6 +500,15 @@ class HuygensTemplate
                   'subImagesInfo'    => '',
                   'listID'           => 'imgOpen');
 
+        $this->stitcherListArray =
+            array('subImages'        => '',
+                  'dims'             => '',
+                  'offsets'          => '',
+                  'path'             => '',
+                  'tileCnt'          => '',
+                  'index'            => '0',
+                  'timeOut'          => '86400')
+        
         $this->stitchSeriesDictArray =
             array('dirname'          => '',
                   'from,z'           => '',
@@ -2023,6 +2039,224 @@ class HuygensTemplate
     }
 
 
+    /**
+     * For file series it gets the list of files, dimensions and offsets to
+     * pass to Huygens.
+     * @return string Tcl list with the options for the field.
+     */
+    private function getOpenStitcherList()
+    {
+        $stitcherList = "";
+
+        /* Initialization. 
+           Dummy lists of dims and offsets. */
+        $dims    = "{100 100 100 1 1} ";
+        $offsets = "{100 100 100 1 1} ";
+        
+        /* The following block can be put into a utility function in order
+           to reuse it since it's a direct copy from the next function below. */
+        $fromZ = $fromT = $fromC = $toZ = $toT = $toC = 0;
+        $nameModes    = array('{}', '{}', '{}');
+        $namePatterns = array('{}', '{}', '{}');
+        $patternCnt   = 0
+
+        /* Extract the initial 'from' values from the file. */
+        $file = basename($this->srcImage);
+        $RE  = "/([^_]+?)(_[zZtTcC][0-9]+)?";
+        $RE .= "(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?\.\w+/";        
+
+        if(preg_match($RE, $file, $matches)) {
+            $nameBase = matches[1];
+            
+            if (isset(matches[2])) {
+                $dim   = matches[2][1];
+                $value = substr(matches[2], 2);
+                
+                stripos($dim, 'z') ? $fromZ = $value;
+                stripos($dim, 't') ? $fromT = $value;
+                stripos($dim, 'c') ? $fromC = $value;
+
+                /* This name pattern does not get prepended by a '_' unlike
+                   the other ones below (see template for rationale). */
+                $namePatterns[0] = $dim;
+                $nameModes[0]    = $dim;
+                $patternCnt++;
+            }
+            if (isset(matches[3])) {
+                $dim   = matches[3][1];
+                $value = substr(matches[3], 2);
+                
+                stripos($dim, 'z') ? $fromZ = $value;
+                stripos($dim, 't') ? $fromT = $value;
+                stripos($dim, 'c') ? $fromC = $value;
+                
+                $namePatterns[1] = "_" . $dim;
+                $nameModes[1]    = $dim;
+                $patternCnt++;                     
+            }
+            if (isset(matches[4])) {
+                $dim   = matches[4][1];
+                $value = substr(matches[4], 2);
+                
+                stripos($dim, 'z') ? $fromZ = $value;
+                stripos($dim, 't') ? $fromT = $value;
+                stripos($dim, 'c') ? $fromC = $value;
+
+                $namePatterns[2] = "_" . $dim;
+                $nameModes[2]    = $dim;
+                $patternCnt++;                                
+            }            
+        }
+
+        /* Try to find all other files that belong to the series and extract
+           the 'to' values. */
+        $RE  = "/" . $nameBase;
+        $RE .= "(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?\.\w+/";
+
+        $allFiles = scandir($this->getSrcDir());
+        foreach ($allFiles => $candidateFile) {            
+            if($candidateFile != $file
+               && preg_match($RE, $candidateFile, $matches)) {
+                
+                if (isset(matches[2])) {                
+                    $dim = matches[2][1];
+                    $value = substr(matches[2], 2);
+                    
+                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
+                    stripos($dim, 't') && $value > $toT ? $toT = $value;
+                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
+                }
+                if (isset(matches[3])) {
+                    $dim = matches[3][1];
+                    $value = substr(matches[3], 2);
+                    
+                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
+                    stripos($dim, 't') && $value > $toT ? $toT = $value;
+                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
+                }
+                if (isset(matches[4])) {                
+                    $dim = matches[4][1];
+                    $value = substr(matches[4], 2);
+                    
+                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
+                    stripos($dim, 't') && $value > $toT ? $toT = $value;
+                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
+                }
+            }
+        }
+
+        /* Now build the list of images in the right order. */
+        $subImageList  = "";
+        $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
+
+        $dim1 = $dim2 = $dim3 = "";
+        $fromDim1 = $fromDim2 = $fromDim3 = 0;
+        $toDim1 = $toDim2 = $toDim3 = 1;
+        
+        if (stripos($namePatterns[0], 'z')) {
+            $dim1     = 'z';
+            $fromDim1 = $fromZ;
+            $toDim1   = $toZ;
+        }
+        if (stripos($namePatterns[0], 't')) {
+            $dim1     = 't';
+            $fromDim1 = $fromT;
+            $toDim1   = $toT;
+        }
+        if (stripos($namePatterns[0], 'c')) {
+            $dim1     = 'c';
+            $fromDim1 = $fromC;
+            $toDim1   = $toC;
+        }
+        if (stripos($namePatterns[1], 'z')) {
+            $dim2     = 'z';
+            $fromDim2 = $fromZ;
+            $toDim2   = $toZ;
+        }
+        if (stripos($namePatterns[1], 't')) {
+            $dim2     = 't';
+            $fromDim2 = $fromT;
+            $toDim2   = $toT;
+        }
+        if (stripos($namePatterns[1], 'c')) {
+            $dim2     = 'c';
+            $fromDim2 = $fromC;
+            $toDim2   = $toC;
+        }
+        if (stripos($namePatterns[2], 'z')) {
+            $dim3     = 'z';
+            $fromDim3 = $fromZ;
+            $toDim3   = $toZ;
+        }
+        if (stripos($namePatterns[2], 't')) {
+            $dim3     = 't';
+            $fromDim3 = $fromT;
+            $toDim3   = $toT;
+        }
+        if (stripos($namePatterns[2], 'c')) {
+            $dim3     = 'c';
+            $fromDim3 = $fromC;
+            $toDim3   = $toC;
+        }
+        
+        for ($d3 = $fromDim3; $d3 < $toDim3; $d3++) {
+            for ($d2 = $fromDim2; $d2 < $toDim2; $d2++) {
+                for ($d1 = $fromDim1; $d1 < $toDim1; $d1++) {                  
+                    $file = $nameBase . "_";
+                    if ($namePatterns[0] != '{}') {
+                        $file .= $namePatterns[0] . $dim1 . $d1;
+                    }
+                    if ($namePatterns[1] != '{}') {
+                        $file .= $namePatterns[1] . $dim2 . $d2;
+                    }
+                    if ($namePatterns[2] != '{}') {
+                        $file .= $namePatterns[2] . $dim3 . $d3;
+                    }
+                    $file .= $fileExtension;
+                    $subImageList .= $file . " ".;
+                }
+            }
+        }
+        
+        /* Number of files. */
+        $fileCnt = max($toZ - $fromZ, 1) * max($toT - $fromT)
+                 * max($toC - $fromC);
+        
+        /* Build the Tcl dict. */
+        foreach ($this->stitcherListArray as $key => $value) {
+            $stitcherList .= " " . $key . " ";            
+
+            switch($key) {
+            case 'subImages':
+                $stitcherList .= $subImageList;
+                break;
+            case 'dims':
+                $stitcherList .= str_repeat($dims, $fileCnt) ;
+                break;
+            case 'offsets':
+                $stitcherList .= str_repeat($offsets, $fileCnt) ;
+                break;
+            case 'path':
+                $stitcherList .= $this->srcImage;
+                break;
+            case 'tileCnt':
+                $stitcherList .= $toT - $fromT;
+                break;
+            case 'index':
+                $stitcherList .= $value;
+                break;
+            case 'timeOut':
+                $stitcherList .= $value;
+                break;
+            default:
+                Log::error("Unknown stitcherList option: $key");
+            }                 
+        }
+        
+        return $stitcherList;
+    }   
+
+    
     /**
      * Gets options for the stitching field 'open -> fileSeriesDict'.
      * @return string Tcl list with the options for the field.
