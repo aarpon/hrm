@@ -135,6 +135,13 @@ class HuygensTemplate
     private $imgOpenArray;
 
     /**
+     * Array with information on the file series dict field within the
+     * open task.
+     * @var array
+     */
+    private $stitchSeriesDictArray
+
+    /**
      * Array with information on the image save subtask.
      * @var array
      */
@@ -476,15 +483,42 @@ class HuygensTemplate
 
         /* Options for the 'open image' action */
         $this->imgOpenArray =
-            array('path'           => '',
-                  'subImg'         => '',
-                  'series'         => '',
-                  'index'          => '0',
-                  'type'           => '',
-                  'fileSeriesDict' => '',
-                  'stitcherList'   => '',
-                  'subImagesInfo'  => '',
-                  'listID'         => 'imgOpen');
+            array('path'             => '',
+                  'subImg'           => '',
+                  'series'           => '',
+                  'index'            => '0',
+                  'type'             => '',
+                  'fileSeriesDict'   => '',
+                  'stitcherList'     => '',
+                  'subImagesInfo'    => '',
+                  'listID'           => 'imgOpen');
+
+        $this->stitchSeriesDictArray =
+            array('dirname'          => '',
+                  'from,z'           => '',
+                  'to,z'             => '',
+                  'step,z'           => '',
+                  'from,t'           => '',
+                  'to,t'             => '',
+                  'step,t'           => '',
+                  'from,c'           => '',
+                  'to,c'             => '',
+                  'step,c'           => ''
+                  'from,p'           => '0';
+                  'to,p'             => '0',
+                  'step,p'           => '1',
+                  'from,tileY'       => '',
+                  'to,tileY'         => '',
+                  'step,tileY'       => '',
+                  'from,tileX'       => '',
+                  'to,tileX'         => '',
+                  'step,tileX'       => '',
+                  'count'            => '',
+                  'pattern,0'        => '',
+                  'pattern,1'        => '',
+                  'pattern,2'        => '',
+                  'pattern,3'        => '');
+
         
         /* Options for the 'set image parameter' action */
         $this->setpArray =
@@ -1949,7 +1983,6 @@ class HuygensTemplate
            option does not get appended by the calling function. */
         $openStitchDescr .= $stitchOpenOption;
 
-        /* TODO: add code for the options. */
         switch($stitchOpenOption) {
             case 'type':
                 if ($series) {
@@ -1983,9 +2016,80 @@ class HuygensTemplate
                 Log::error("Unknown open-stitching option: $stitchOpenOption");
         }
         
-
         return $openStitchDescr;
     }
+
+
+    /**
+     * Gets options for the stitching field 'open -> fileSeriesDict'.
+     * @return string Tcl list with the options for the field.
+     */
+    private function getOpenStitchSeriesDict()
+    {
+        $fileSeriesDict = "";
+        
+        foreach ($this->stitchSeriesDictArray as $key => $value) {
+            $fileSeriesDict .= " " . $key . " ";
+            switch($key) {
+                case 'dirname':
+                    $fileSeriesDict .= $this->getSrcDir();
+                    break;
+                case 'from,z':
+                    break;
+                case 'to,z':
+                    break;
+                case 'step,z':
+                    break;
+                case 'from,t':
+                    break;
+                case 'to,t':
+                    break;
+                case 'step,t':
+                    break;
+                case 'from,c':
+                    break;
+                case 'to,c':
+                    break;
+                case 'step,c':
+                    break;
+                case 'from,p':
+                    break;
+                case 'to,p':
+                    break;
+                case 'step,p':
+                    break;
+                case 'from,tileY':
+                    break;
+                case 'to,tileY':
+                    break;
+                case 'step,tileY':
+                    break;
+                case 'from,tileX':
+                    break;
+                case 'to,tileX':
+                    break;
+                case 'step,tileX':
+                    break;
+                case 'count':
+                    break;
+                case 'pattern,0':
+                    break;
+                case 'pattern,1':
+                    break;
+                case 'pattrn,2':
+                    break;
+                case 'pattern,3':
+                    break;
+                default:
+                    Log::error("Unknown stitch series dict option: $key");
+            }
+        }
+
+        
+        return $fileSeriesDict;
+    }
+
+
     
     /* -------------------------- Setp task ---------------------------------- */
 
