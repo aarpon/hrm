@@ -1255,9 +1255,9 @@ class HuygensTemplate
 
         if (!$this->isStitchingOn()) {
             return $tasksDescr;
-        }        
+        }
         
-        foreach ($this->stitchingArray as $stitchingKey => $stitchingValue) {
+        foreach ($this->stitchArray as $stitchingKey => $stitchingValue) {
 
             /* As always, on each iteration over the array add the option key. */
             if ($stitchingKey != "listID") {
@@ -1277,6 +1277,9 @@ class HuygensTemplate
                     break;
                 case 'frameCnt':
                     $taskDescr .= $this->getStitchFrameCnt();
+                    break;
+                case 'chanCnt':
+                    $taskDescr .= $this->getStitchChanCnt();
                     break;
                 case 'detectorCnt':
                     $taskDescr .= $this->getStitchDetectorCnt();
@@ -1341,7 +1344,7 @@ class HuygensTemplate
             }            
         }
 
-        return $allTasksDescr;
+        return $taskDescr;
     }
     
     /**
@@ -2652,6 +2655,15 @@ class HuygensTemplate
         return '1';
     }
 
+    /**
+     * Gets a dummy for the chan count.
+     * @return string Always '1' for now. 
+     */
+    private function getStitchChanCnt()
+    {
+        # todo: get channels somehow.
+        return '1';
+    }
 
     /**
      * Gets the detector count (of array detector images).
@@ -2753,7 +2765,7 @@ class HuygensTemplate
     private function getStitchTileSelection()
     {
         #TODO: we should derive the number of tiles in the compound job somehow.
-        $tileCnt = 1;
+        $tileCnt = 9;
         
         return "{" . implode(range(0, $tileCnt - 1), " ") . "}";
     }
@@ -2770,7 +2782,8 @@ class HuygensTemplate
         $optChannels = $deconSetting->parameter("StitchOptimizationChannels")->value();
         
            /* Do not count empty elements. Do count channel '0'. */
-        return array_filter($optChannels, 'strlen');
+        $optChannels =  array_filter($optChannels, 'strlen');
+        return "{" . implode($optChannels, " ") . "}";
     }
     
     
@@ -2829,7 +2842,8 @@ class HuygensTemplate
         $vignettingChannels = $deconSetting->parameter("StitchVignettingChannels")->value();
         
            /* Do not count empty elements. Do count channel '0'. */
-        return array_filter($vignettingChannels, 'strlen');
+        $vignettingChannels = array_filter($vignettingChannels, 'strlen');
+        return "{" . implode($vignettingChannels, " ") . "}";
     }
 
     
@@ -2882,8 +2896,8 @@ class HuygensTemplate
         $userFileArea  = $this->jobDescription->sourceFolder();
         $flatfieldFile = $deconSetting->parameter("StitchVignettingFlatfield")->value();
         $flatfieldPath = trim($userFileArea . $flatfieldFile[0]);
-
-        return $flatfieldPath
+        
+        return "{".$flatfieldPath."}";
     }
 
     
@@ -2904,7 +2918,7 @@ class HuygensTemplate
         $darkframeFile = $deconSetting->parameter("StitchVignettingDarkframe")->value();
         $darkframePath = trim($userFileArea . $darkframeFile[0]);
 
-        return $darkframePath
+        return "{".$darkframePath."}";
     }        
 
     
