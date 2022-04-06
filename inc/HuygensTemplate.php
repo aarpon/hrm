@@ -514,6 +514,9 @@ class HuygensTemplate
                   'to,tileX'         => '0',
                   'step,tileX'       => '1',
                   'count'            => '',
+                  'mode,0'           => 'z',
+                  'mode,1'           => 't',
+                  'mode,2'           => 'c',
                   'pattern,0'        => '',
                   'pattern,1'        => '',
                   'pattern,2'        => '',
@@ -2032,35 +2035,75 @@ class HuygensTemplate
         $fromZ = $fromT = $fromC = $toZ = $toT = $toC = 0;
 
         /* Extract the initial 'from' values from the file. */
-        /* TODO: use a more sophisticated RE that can deal with different
-           orders for Z, T, C. */
-        $RE = "/([^_]+?)_(Z|z)([0-9]+?)_(T|t)([0-9]+?)_(C|c)([0-9]+?)\.\w+/";
+        $RE  = "/([^_]+?)(_[zZtTcC][0-9]+)?";
+        $RE .= "(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?\.\w+/";
+        
         $file = basename($this->srcImage);
 
         if(preg_match($RE, $file, $matches)) {
-            $fromZ = $matches[3];
-            $fromT = $matches[5];
-            $fromC = $matches[7];
+            $nameBase = matches[1];
+            
+            if (isset(matches[2])) {                
+                $dim   = matches[2][1];
+                $value = substr(matches[2], 2);
+                
+                stripos($dim, 'z') ? $fromZ = $value;
+                stripos($dim, 't') ? $fromT = $value;
+                stripos($dim, 'c') ? $fromC = $value;                
+            }
+            if (isset(matches[3])) {                
+                $dim   = matches[3][1];
+                $value = substr(matches[3], 2);
+                
+                stripos($dim, 'z') ? $fromZ = $value;
+                stripos($dim, 't') ? $fromT = $value;
+                stripos($dim, 'c') ? $fromC = $value;                
+            }
+            if (isset(matches[4])) {                
+                $dim   = matches[4][1];
+                $value = substr(matches[4], 2);
+                
+                stripos($dim, 'z') ? $fromZ = $value;
+                stripos($dim, 't') ? $fromT = $value;
+                stripos($dim, 'c') ? $fromC = $value;                
+            }
         }
 
-        /* Try to find all other files that belong to the series. */
-        $RE  = "/" . $matches[1];
-        $RE .= "+_(Z|z)([0-9]+?)_(T|t)([0-9]+?)_(C|c)([0-9]+?)\.\w+/";
+        /* Try to find all other files that belong to the series and extract
+           the 'to' values. */
+        $RE  = "/" . $nameBase;
+        $RE .= "(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?\.\w+/";
 
         $allFiles = scandir($this->getSrcDir());
         foreach ($allFiles => $candidateFile) {            
             if($candidateFile != $file
                && preg_match($RE, $candidateFile, $matches)) {
-                if ($matches[2] > $toZ) {
-                    $toZ = $matches[2];
+                
+                if (isset(matches[2])) {                
+                    $dim = matches[2][1];
+                    $value = substr(matches[2], 2);
+                    
+                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
+                    stripos($dim, 't') && $value > $toT ? $toT = $value;
+                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
                 }
-                if ($matches[4] > $toT) {
-                    $toT = $matches[4];
+                if (isset(matches[3])) {                
+                    $dim = matches[3][1];
+                    $value = substr(matches[3], 2);
+                    
+                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
+                    stripos($dim, 't') && $value > $toT ? $toT = $value;
+                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
                 }
-                if ($matches[6] > $toC) {
-                    $toC = $matches[6];
+                if (isset(matches[4])) {                
+                    $dim = matches[4][1];
+                    $value = substr(matches[4], 2);
+                    
+                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
+                    stripos($dim, 't') && $value > $toT ? $toT = $value;
+                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
                 }
-            }            
+            }
         }
 
         /* Build the Tcl dict. */
@@ -2126,11 +2169,21 @@ class HuygensTemplate
                     break;
                 case 'count':
                     break;
+                case 'mode,0':
+                    $fileSeriesDict .= $value;
+                    break;
+                case 'mode,1':
+                    $fileSeriesDict .= $value;
+                    break;
+                case 'mode,2':
+                    $fileSeriesDict .= $value;
+                    break;
                 case 'pattern,0':
+                    $fileSeriesDict .= $value;
                     break;
                 case 'pattern,1':
                     break;
-                case 'pattrn,2':
+                case 'pattern,2':
                     break;
                 case 'pattern,3':
                     break;
