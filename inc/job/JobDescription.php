@@ -294,6 +294,62 @@ class JobDescription
         $this->autoseries = $autoseries;
     }
 
+    public function findFilesType()
+    {
+        error_log("Entering findFilesType");
+        if (count($this->files()) < 2) {
+            error_log("Too few files.");
+            return 'normal';
+        }
+        $firstFile = $this->files[0];
+            
+        // Check if it is a multiImg.
+        if (preg_match("/^(.*\.(lif|czi|lof|nd))\s\((.*)\)/i",
+                       $firstFile, $match)){
+            $srcImage = $match[1];
+            $subImage = $match[3];
+
+            $multiImg = 1;
+            foreach ($this->files() as $key => $file) {
+                if (preg_match("/^(.*\.(lif|czi|lof|nd))\s\((.*)\)/i",
+                               $file, $match)) {
+                    if (strcmp($srcImage, $match[1]) == 0) {
+                        continue;
+                    }
+                }
+                $multiImg = 0;
+                break;
+            }
+            if ($multiImg) {
+                return 'multiImg';
+            }
+        }
+
+        // todo: Check if it is a fileSeries.
+        
+        return 'normal';
+    }
+    
+    public function isValidStitchJob()
+    {
+        error_log("Entering isValidStitchJob");
+        if (strcmp($this->taskSetting->parameter('StitchSwitch')->value(),
+                   'on') != 0) {
+            error_log($this->taskSetting->parameter('StitchSwitch')->value());
+            return 0;
+        }
+        
+        $filesType = $this->findFilesType();
+        error_log("isValidStitchJob ". $filesType);
+        if (strcmp($filesType, 'multiImg') == 0) {
+            return 1;
+        }
+        if (strcmp($filesType, 'fileSeries') == 0) {
+            return 1;
+        }
+        return 0;
+    }
+
     /**
      * Returns the group of the user associated with the job.
      * @return string Group of the user.
@@ -366,17 +422,37 @@ class JobDescription
         $owner = $this->owner();
         $ownerName = $owner->name();
 
-        // Now add a Job per file to the queue
-        foreach ($this->files() as $file) {
-            // Get a new id for the elementary job
+        // Check if this is a stitching job and if the files used are viable
+        // for a stitching job, if so set a flag to handle the files
+        // differently.
+        $isStitchJob = $this->isValidStitchJob();
+
+        // For stitch jobs add all files to the same job.
+        if ($isStitchJob) {
             $id = JobDescription::newID();
+            foreach ($this->files() as $key => $file) {
+                $result &= $db->addFileToJob($id, $this->owner,
+                                             $file, $this->autoseries);
+            }
 
-            // Add a new Job with the newly generated ID that owns the file
-            // and links to the master id of the compound job.
-            $result &= $db->addFileToJob($id, $this->owner, $file, $this->autoseries);
-
-            // Now add a Job to the queue for this file
+            // Queue the job.
             $result &= $db->queueJob($id, $settingsId, $ownerName);
+        } else {
+        
+            // Now add a Job per file to the queue
+            foreach ($this->files() as $key => $file) {
+            
+                // Get a new id for the elementary job
+                    $id = JobDescription::newID();
+
+                // Add a new Job with the newly generated ID that owns the file
+                // and links to the master id of the compound job.
+                $result &= $db->addFileToJob($id, $this->owner,
+                                             $file, $this->autoseries);
+
+                // Now add a Job to the queue for this file
+                $result &= $db->queueJob($id, $settingsId, $ownerName);
+            }
         }
 
         // Assign priorities
@@ -449,6 +525,9 @@ class JobDescription
     public function sourceImageName()
     {
         $files = $this->files();
+        if (count($files) < 1) {
+            $files = $files[0];
+        }
         // avoid redundant slashes in path
         $result = $this->sourceFolder() . preg_replace("#^/#", "", end($files));
         return $result;

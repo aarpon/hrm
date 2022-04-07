@@ -139,14 +139,14 @@ class HuygensTemplate
      * open task.
      * @var array
      */
-    private $stitchSeriesDictArray
+    private $stitchSeriesDictArray;
 
     /**
      * Array with information on the list of files from a series that are 
      * to be stitched.
      * @var array
      */
-    private $stitcherListArray
+    private $stitcherListArray;
         
     /**
      * Array with information on the image save subtask.
@@ -507,7 +507,7 @@ class HuygensTemplate
                   'path'             => '',
                   'tileCnt'          => '',
                   'index'            => '0',
-                  'timeOut'          => '86400')
+                  'timeOut'          => '86400');
         
         $this->stitchSeriesDictArray =
             array('dirname'          => '',
@@ -519,8 +519,8 @@ class HuygensTemplate
                   'step,t'           => '1',
                   'from,c'           => '',
                   'to,c'             => '',
-                  'step,c'           => '1'
-                  'from,p'           => '0';
+                  'step,c'           => '1',
+                  'from,p'           => '0',
                   'to,p'             => '0',
                   'step,p'           => '1',
                   'from,tileY'       => '0',
@@ -994,8 +994,8 @@ class HuygensTemplate
 
         $this->initializeThumbCounter();
         foreach ($this->imgProcessTasksArray as $key => $value) {
-	    if ($key == 'hotPixelCorrection' && !$this->hotPixelMaskExists()) {
-	        continue;
+            if ($key == 'hotPixelCorrection' && !$this->hotPixelMaskExists()) {
+                continue;
             }
 
             $tasksDescr .= " ";
@@ -1076,25 +1076,33 @@ class HuygensTemplate
 
         /* These should only be included when the user has actually 
            enabled stitching. */
-        $openStitchOptions = array('type', 'fileSeriesDict',
-                                   'stitcherList', 'subImagesInfo');
+        $removedOpenOptions = array('type', 'fileSeriesDict',
+                                    'stitcherList', 'subImagesInfo');
+        if ($this->jobDescription->isValidStitchJob()) {
+            if (!strcmp($this->jobDescription->findFilesType(), 'multiImg')) {
+                $removedOpenOptions = array('fileSeriesDict', 'stitcherList',
+                                            'index', 'subImg');
+            } else {
+                $removedOpenOptions = array('subImagesInfo', 'index', 'subImg');
+            }
+        }
 
         foreach ($this->imgOpenArray as $key => $value) {
 
-            if ($key != "subImg" && $key != 'listID'
-                && !in_array($key, $openStitchOptions)) {
-                $taskDescr .= " " . $key . " ";
+            if (in_array($key, $removedOpenOptions)) {
+                continue;
             }
 
             switch ($key) {
                 case 'path':
-                    $taskDescr .= $this->string2tcllist($this->srcImage);
+                    $taskDescr .= " " . $key . " ".
+                        $this->string2tcllist($this->srcImage);
                     break;
                 case 'series':
-                    $taskDescr .= $this->getSeriesMode();
+                    $taskDescr .= " " . $key . " " . $this->getSeriesMode();
                     break;
                 case 'index':
-                    $taskDescr .= " " . $value . " ";
+                    $taskDescr .= " " . $key . " " . $value;
                     break;
                 case 'subImg':
                     if (isset($this->subImage)) {
@@ -1103,10 +1111,17 @@ class HuygensTemplate
                     }
                     break;
                 case 'type':
+                    $taskDescr .= " " . $key . " " .
+                        $this->jobDescription->findFilesType();
+                    break;
                 case 'fileSeriesDict':
+                    $taskDescr .= $this->getOpenStitchSeriesDict();
+                    break;
                 case 'stitcherList':
+                     $taskDescr .= $this->getOpenStitcherList();
+                    break;
                 case 'subImagesInfo':
-                    $taskDescr .= $this->getImgOpenStitchDescr($key);
+                    $taskDescr .= $this->getOpenStitchSubImagesInfo();
                     break;
                 case 'listID':
                     $taskDescr = $this->string2tcllist($taskDescr);
@@ -1117,6 +1132,8 @@ class HuygensTemplate
             }
         }
 
+        error_log($taskDescr);
+        
         return $taskDescr;
     }
 
@@ -1323,7 +1340,7 @@ class HuygensTemplate
         $tasksDescr = "";
 
         if (!$this->isStitchingOn()) {
-            return $tasksDescr;
+            return "{}";
         }
         
         foreach ($this->stitchArray as $stitchingKey => $stitchingValue) {
@@ -1978,66 +1995,6 @@ class HuygensTemplate
 
     /* -------------------------- imgOpen task ------------------------------ */
 
-    /**
-     * Gets options for the stitching fields of the 'image open' task.
-     * @param string $stitchOpenOption One of the stitching open options,
-     *               whether 'subImagesInfo', 'fileSeriesDict', 
-     *               'stitcherList', or 'type'.
-     * @return string Tcl list with stitching fields for the open task.
-     */
-    private function getImgOpenStitchDescr($stitchOpenOption)
-    {
-        $stitchOpenDescr = "";
-        
-        if (!$this->isStitchingOn) {
-            return $stitchOpenDescr;
-        }
-
-        $stitchOpenDescr .= " " . $stitchOpenOption . " ";
-        
-        $this->getSeriesMode() == "off" ? $series = False; : $series = True;
-        
-        /* Start by appending the option to the result. This function is a 
-           bit different than the rest in that respect since the name of the
-           option does not get appended by the calling function. */
-        $openStitchDescr .= $stitchOpenOption;
-
-        switch($stitchOpenOption) {
-            case 'type':
-                if ($series) {
-                    $stitchOpenDescr .= "fileSeries";
-                } else {
-                    $stitchOpenDescr .= "multiImg";
-                }
-                break;
-            case 'fileSeriesDict':
-                if ($series) {
-                    $stitchOpenDescr .= $this->getOpenStitchSeriesDict();
-                } else {
-                    $stitchOpenDescr .= $this->string2tcllist("");
-                }
-                break;
-            case 'stitcherList':
-                if ($series) {
-                    $stitchOpenDescr .= $this->getOpenStitcherList();
-                } else {
-                    $stitchOpenDescr .= $this->string2tcllist("");
-                }
-                break;
-            case 'subImagesInfo':
-                if ($series) {
-                    $stitchOpenDescr .= $this->string2tcllist("");
-                } else {
-                    $stitchOpenDescr .= $this->getOpenStitchSubImagesInfo();
-                }
-                break;
-            default:
-                Log::error("Unknown open-stitching option: $stitchOpenOption");
-        }
-        
-        return $openStitchDescr;
-    }
-
 
     /**
      * For file series it gets the list of files, dimensions and offsets to
@@ -2058,7 +2015,7 @@ class HuygensTemplate
         $fromZ = $fromT = $fromC = $toZ = $toT = $toC = 0;
         $nameModes    = array('{}', '{}', '{}');
         $namePatterns = array('{}', '{}', '{}');
-        $patternCnt   = 0
+        $patternCnt   = 0;
 
         /* Extract the initial 'from' values from the file. */
         $file = basename($this->srcImage);
@@ -2066,15 +2023,15 @@ class HuygensTemplate
         $RE .= "(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?\.\w+/";        
 
         if(preg_match($RE, $file, $matches)) {
-            $nameBase = matches[1];
+            $nameBase = $matches[1];
             
-            if (isset(matches[2])) {
-                $dim   = matches[2][1];
-                $value = substr(matches[2], 2);
+            if (isset($matches[2])) {
+                $dim   = $matches[2][1];
+                $value = substr($matches[2], 2);
                 
-                stripos($dim, 'z') ? $fromZ = $value;
-                stripos($dim, 't') ? $fromT = $value;
-                stripos($dim, 'c') ? $fromC = $value;
+                if (stripos($dim, 'z')) { $fromZ = $value; }
+                if (stripos($dim, 't')) { $fromT = $value; }
+                if (stripos($dim, 'c')) { $fromC = $value; }
 
                 /* This name pattern does not get prepended by a '_' unlike
                    the other ones below (see template for rationale). */
@@ -2082,25 +2039,25 @@ class HuygensTemplate
                 $nameModes[0]    = $dim;
                 $patternCnt++;
             }
-            if (isset(matches[3])) {
-                $dim   = matches[3][1];
-                $value = substr(matches[3], 2);
+            if (isset($matches[3])) {
+                $dim   = $matches[3][1];
+                $value = substr($matches[3], 2);
                 
-                stripos($dim, 'z') ? $fromZ = $value;
-                stripos($dim, 't') ? $fromT = $value;
-                stripos($dim, 'c') ? $fromC = $value;
+                if (stripos($dim, 'z')) { $fromZ = $value; }
+                if (stripos($dim, 't')) { $fromT = $value; }
+                if (stripos($dim, 'c')) { $fromC = $value; }
                 
                 $namePatterns[1] = "_" . $dim;
                 $nameModes[1]    = $dim;
                 $patternCnt++;                     
             }
-            if (isset(matches[4])) {
-                $dim   = matches[4][1];
-                $value = substr(matches[4], 2);
+            if (isset($matches[4])) {
+                $dim   = $matches[4][1];
+                $value = substr($matches[4], 2);
                 
-                stripos($dim, 'z') ? $fromZ = $value;
-                stripos($dim, 't') ? $fromT = $value;
-                stripos($dim, 'c') ? $fromC = $value;
+                if (stripos($dim, 'z')) { $fromZ = $value; }
+                if (stripos($dim, 't')) { $fromT = $value; }
+                if (stripos($dim, 'c')) { $fromC = $value; }
 
                 $namePatterns[2] = "_" . $dim;
                 $nameModes[2]    = $dim;
@@ -2114,33 +2071,51 @@ class HuygensTemplate
         $RE .= "(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?\.\w+/";
 
         $allFiles = scandir($this->getSrcDir());
-        foreach ($allFiles => $candidateFile) {            
+        foreach ($allFiles as $key => $candidateFile) {            
             if($candidateFile != $file
                && preg_match($RE, $candidateFile, $matches)) {
                 
-                if (isset(matches[2])) {                
-                    $dim = matches[2][1];
-                    $value = substr(matches[2], 2);
+                if (isset($matches[2])) {                
+                    $dim = $matches[2][1];
+                    $value = substr($matches[2], 2);
                     
-                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
-                    stripos($dim, 't') && $value > $toT ? $toT = $value;
-                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
+                    if (stripos($dim, 'z') && $value > $toZ) {
+                        $toZ = $value;
+                    }
+                    if (stripos($dim, 't') && $value > $toT) {
+                        $toT = $value;
+                    }
+                    if (stripos($dim, 'c') && $value > $toC) {
+                        $toC = $value;
+                    }
                 }
-                if (isset(matches[3])) {
-                    $dim = matches[3][1];
-                    $value = substr(matches[3], 2);
+                if (isset($matches[3])) {
+                    $dim = $matches[3][1];
+                    $value = substr($matches[3], 2);
                     
-                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
-                    stripos($dim, 't') && $value > $toT ? $toT = $value;
-                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
+                    if (stripos($dim, 'z') && $value > $toZ) {
+                        $toZ = $value;
+                    }
+                    if (stripos($dim, 't') && $value > $toT) {
+                        $toT = $value;
+                    }
+                    if (stripos($dim, 'c') && $value > $toC) {
+                        $toC = $value;
+                    }
                 }
-                if (isset(matches[4])) {                
-                    $dim = matches[4][1];
-                    $value = substr(matches[4], 2);
+                if (isset($matches[4])) {                
+                    $dim = $matches[4][1];
+                    $value = substr($matches[4], 2);
                     
-                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
-                    stripos($dim, 't') && $value > $toT ? $toT = $value;
-                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
+                    if (stripos($dim, 'z') && $value > $toZ) {
+                        $toZ = $value;
+                    }
+                    if (stripos($dim, 't') && $value > $toT) {
+                        $toT = $value;
+                    }
+                    if (stripos($dim, 'c') && $value > $toC) {
+                        $toC = $value;
+                    }
                 }
             }
         }
@@ -2213,14 +2188,14 @@ class HuygensTemplate
                         $file .= $namePatterns[2] . $dim3 . $d3;
                     }
                     $file .= $fileExtension;
-                    $subImageList .= $file . " ".;
+                    $subImageList .= $file . " ";
                 }
             }
         }
         
         /* Number of files. */
         $fileCnt = max($toZ - $fromZ, 1) * max($toT - $fromT)
-                 * max($toC - $fromC);
+            * max($toC - $fromC);
         
         /* Build the Tcl dict. */
         foreach ($this->stitcherListArray as $key => $value) {
@@ -2253,7 +2228,7 @@ class HuygensTemplate
             }                 
         }
         
-        return $stitcherList;
+        return ' stitcherList {' . $stitcherList . '}';
     }   
 
     
@@ -2269,7 +2244,7 @@ class HuygensTemplate
         $fromZ = $fromT = $fromC = $toZ = $toT = $toC = 0;
         $nameModes    = array('{}', '{}', '{}');
         $namePatterns = array('{}', '{}', '{}');
-        $patternCnt   = 0
+        $patternCnt   = 0;
 
         /* Extract the initial 'from' values from the file. */
         $file = basename($this->srcImage);
@@ -2277,15 +2252,15 @@ class HuygensTemplate
         $RE .= "(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?\.\w+/";        
 
         if(preg_match($RE, $file, $matches)) {
-            $nameBase = matches[1];
+            $nameBase = $matches[1];
             
-            if (isset(matches[2])) {           
-                $dim   = matches[2][1];
-                $value = substr(matches[2], 2);
+            if (isset($matches[2])) {           
+                $dim   = $matches[2][1];
+                $value = substr($matches[2], 2);
                 
-                stripos($dim, 'z') ? $fromZ = $value;
-                stripos($dim, 't') ? $fromT = $value;
-                stripos($dim, 'c') ? $fromC = $value;
+                if (stripos($dim, 'z')) { $fromZ = $value; }
+                if (stripos($dim, 't')) { $fromT = $value; }
+                if (stripos($dim, 'c')) { $fromC = $value; }
 
                 /* This name pattern does not get prepended by a '_' unlike
                    the other ones below (see template for rationale). */
@@ -2293,25 +2268,25 @@ class HuygensTemplate
                 $nameModes[0]    = $dim;
                 $patternCnt++;
             }
-            if (isset(matches[3])) {
-                $dim   = matches[3][1];
-                $value = substr(matches[3], 2);
+            if (isset($matches[3])) {
+                $dim   = $matches[3][1];
+                $value = substr($matches[3], 2);
                 
-                stripos($dim, 'z') ? $fromZ = $value;
-                stripos($dim, 't') ? $fromT = $value;
-                stripos($dim, 'c') ? $fromC = $value;
+                if (stripos($dim, 'z')) { $fromZ = $value; }
+                if (stripos($dim, 't')) { $fromT = $value; }
+                if (stripos($dim, 'c')) { $fromC = $value; }
                 
                 $namePatterns[1] = "_" . $dim;
                 $nameModes[1]    = $dim;
                 $patternCnt++;                                
             }
-            if (isset(matches[4])) {
-                $dim   = matches[4][1];
-                $value = substr(matches[4], 2);
+            if (isset($matches[4])) {
+                $dim   = $matches[4][1];
+                $value = substr($matches[4], 2);
                 
-                stripos($dim, 'z') ? $fromZ = $value;
-                stripos($dim, 't') ? $fromT = $value;
-                stripos($dim, 'c') ? $fromC = $value;
+                if (stripos($dim, 'z')) { $fromZ = $value; }
+                if (stripos($dim, 't')) { $fromT = $value; }
+                if (stripos($dim, 'c')) { $fromC = $value; }
 
                 $namePatterns[2] = "_" . $dim;
                 $nameModes[2]    = $dim;
@@ -2325,33 +2300,51 @@ class HuygensTemplate
         $RE .= "(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?(_[zZtTcC][0-9]+)?\.\w+/";
 
         $allFiles = scandir($this->getSrcDir());
-        foreach ($allFiles => $candidateFile) {            
+        foreach ($allFiles as $key => $candidateFile) {            
             if($candidateFile != $file
                && preg_match($RE, $candidateFile, $matches)) {
                 
-                if (isset(matches[2])) {                
-                    $dim = matches[2][1];
-                    $value = substr(matches[2], 2);
+                if (isset($matches[2])) {                
+                    $dim = $matches[2][1];
+                    $value = substr($matches[2], 2);
                     
-                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
-                    stripos($dim, 't') && $value > $toT ? $toT = $value;
-                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
+                    if (stripos($dim, 'z') && $value > $toZ) {
+                        $toZ = $value;
+                    }
+                    if (stripos($dim, 't') && $value > $toT) {
+                        $toT = $value;
+                    }
+                    if (stripos($dim, 'c') && $value > $toC) {
+                        $toC = $value;
+                    }
                 }
-                if (isset(matches[3])) {
-                    $dim = matches[3][1];
-                    $value = substr(matches[3], 2);
+                if (isset($matches[3])) {
+                    $dim = $matches[3][1];
+                    $value = substr($matches[3], 2);
                     
-                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
-                    stripos($dim, 't') && $value > $toT ? $toT = $value;
-                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
+                    if (stripos($dim, 'z') && $value > $toZ) {
+                        $toZ = $value;
+                    }
+                    if (stripos($dim, 't') && $value > $toT) {
+                        $toT = $value;
+                    }
+                    if (stripos($dim, 'c') && $value > $toC) {
+                        $toC = $value;
+                    }
                 }
-                if (isset(matches[4])) {                
-                    $dim = matches[4][1];
-                    $value = substr(matches[4], 2);
+                if (isset($matches[4])) {                
+                    $dim = $matches[4][1];
+                    $value = substr($matches[4], 2);
                     
-                    stripos($dim, 'z') && $value > $toZ ? $toZ = $value;
-                    stripos($dim, 't') && $value > $toT ? $toT = $value;
-                    stripos($dim, 'c') && $value > $toC ? $toC = $value;       
+                    if (stripos($dim, 'z') && $value > $toZ) {
+                        $toZ = $value;
+                    }
+                    if (stripos($dim, 't') && $value > $toT) {
+                        $toT = $value;
+                    }
+                    if (stripos($dim, 'c') && $value > $toC) {
+                        $toC = $value;
+                    }
                 }
             }
         }
@@ -2440,7 +2433,7 @@ class HuygensTemplate
                     $fileSeriesDict .= $namePatterns[2];
                     break;
                 case 'pattern,3':
-                    $fileSeriesDict .= pathinfo($file, PATHINFO_EXTENSION);;
+                    $fileSeriesDict .= pathinfo($file, PATHINFO_EXTENSION);
                     break;
                 default:
                     Log::error("Unknown stitch series dict option: $key");
@@ -2448,9 +2441,68 @@ class HuygensTemplate
         }
 
         
-        return $fileSeriesDict;
+        return ' fileSeriesDict {' . $fileSeriesDict . '}';
     }
 
+
+    private function getOpenStitchSubImagesInfo()
+    {
+        $subImagesInfo = '';
+        $files = $this->jobDescription->files();
+
+        // Get some basic info.
+        $subImages = array();
+        foreach ($files as $key => $img) {
+            if (!preg_match("/^(.*\.(lif|czi|lof|nd))\s\((.*)\)/i",
+                            $img, $match)) {
+                continue;
+            }
+            $subImages[] = $match[3];
+        }
+        $tileCnt = count($subImages);
+        
+        
+        // subImages
+        $subImagesInfo .= 'subImages {';
+        $subImagesInfo .= implode(" ", $subImages);
+        $subImagesInfo .= '} ';
+            
+        // subIndices
+        $subImagesInfo .= 'subIndices {';
+        $subImagesInfo .= implode(range(0,$tileCnt));
+        $subImagesInfo .= '} ';
+
+        // dims
+        $subImagesInfo .= 'dims {';
+        $subImagesInfo .= str_repeat('{100 100 1 1 1 1} ', $tileCnt);
+        $subImagesInfo .= '} ';
+        
+        // offsets
+        $subImagesInfo .= 'offsets {';
+        $subImagesInfo .= str_repeat('{50 50 0 0 0 0} ', $tileCnt);
+        $subImagesInfo .= '} ';
+
+        
+        // TODO: The rest of the parameters use "dummy" values.
+        
+        // joinedNames
+        $subImagesInfo .= 'joinedNames {';
+        $subImagesInfo .= '} ';
+            
+        // hasDuplicates
+        $subImagesInfo .= 'hasDuplicates 0 ';
+            
+        // subSubNames
+        $subImagesInfo .= 'subSubNames {';
+        $subImagesInfo .= '} ';
+        
+        // nestedIndices
+        $subImagesInfo .= 'nestedIndices {';
+        $subImagesInfo .= str_repeat('{} ', $tileCnt);
+        $subImagesInfo .= '} ';
+        
+        return ' subImagesInfo {' . $subImagesInfo . '}';
+    }
 
     
     /* -------------------------- Setp task ---------------------------------- */
@@ -4264,13 +4316,13 @@ class HuygensTemplate
     private function setSrcImage()
     {
         $this->srcImage = $this->jobDescription->sourceImageName();
-
+        
         /*If a (string) comes after the file name, the string is interpreted
          as a subimage. Currently this is for LIF, LOF and CZI files only. */
         if (preg_match("/^(.*\.(lif|czi|lof|nd))\s\((.*)\)/i",
             $this->srcImage, $match)) {
             $this->srcImage = $match[1];
-            $this->subImage = $match[3]; // @todo Is this correct?
+            $this->subImage = $match[3];
         }
     }
 

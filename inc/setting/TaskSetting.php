@@ -327,6 +327,8 @@ class TaskSetting extends Setting
         return $noErrorsFound;
     }
 
+    
+    
     /**
      * Checks that the posted Stitching Parameters are defined.
      * This correction is optional.
