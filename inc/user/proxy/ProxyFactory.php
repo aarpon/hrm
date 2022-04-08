@@ -10,12 +10,9 @@
 
 namespace hrm\user\proxy;
 
-// Include the HRM configuration files.
 use hrm\DatabaseConnection;
 use hrm\Log;
 use hrm\System;
-
-require_once dirname(__FILE__) . '/../../bootstrap.php';
 
 /**
  * Returns the Proxy object to be used to manage the user based on the

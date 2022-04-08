@@ -11,8 +11,6 @@ namespace hrm\param;
 
 use hrm\param\base\BooleanParameter;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * A BooleanParameter that distinguishes between single- and multi-channel
  * images.

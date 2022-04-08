@@ -9,8 +9,6 @@
  */
 namespace hrm;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
-
 /**
  * Static class with some commodity functionality (version 2).
  */

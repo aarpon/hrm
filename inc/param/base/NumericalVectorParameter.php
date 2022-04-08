@@ -9,8 +9,6 @@
  */
 namespace hrm\param\base;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * Class for a channel Parameter consisting of N components.
  *
@@ -91,12 +89,11 @@ class NumericalVectorParameter extends NumericalParameter
      * The value must be an array with as many components as $componentCnt
      * @param array $value Array of values for the NumericalVectorParameter.
      */
-    public function setValue($value)
+    public function setValue($values)
     {
-        $n = count($value);
-        for ($i = 0; $i < $this->componentCnt; $i++) {
-            if ($i < $n) {
-                $this->value[$i] = $value[$i];
+        foreach ($values as $i => $value) {
+            if ($i < $this->componentCnt) {
+                $this->value[$i] = $value;
             } else {
                 $this->value[$i] = null;
             }

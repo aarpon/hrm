@@ -15,7 +15,11 @@ window.helpText[ "chromatic" ] =
     '<b>Chromatic Aberration Corrector</b> in <b>Huygens Professional</b> ' +
     'or <b>Huygens Essential</b>. The values estimated by Huygens can ' +
     'be used in this table to correct the images for chromatic aberration ' +
-    'in batch mode.</p><p>To <b>skip</b> this step just leave the table ' +
+    'in batch mode.</p><p>Chromatic aberration parameters from a Huygens ' +
+    'template can contain more parameters than listed here. While these ' +
+    'other parameters exist the shown components cannot be edited. A button ' +
+    'will appear which can be used to discard them and enable editing. ' +
+    '</p><p>To <b>skip</b> this step just leave the table ' +
     'fields empty.';
 window.helpText[ "default" ] =
     '<p>On this page you specify the parameters of those ' +

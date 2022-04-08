@@ -14,8 +14,6 @@ use Exception;
 use hrm\user\UserManager;
 use hrm\user\UserConstants;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * Abstract base proxy class that provides an interface for concrete
  * classes to establish communication with external user management systems

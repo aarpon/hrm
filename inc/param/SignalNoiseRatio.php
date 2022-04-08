@@ -9,6 +9,7 @@
  */
 namespace hrm\param;
 
+use hrm\DatabaseConnection;
 use hrm\param\base\NumericalArrayParameter;
 
 /**
@@ -77,24 +78,23 @@ class SignalNoiseRatio extends NumericalArrayParameter
      */
     public function displayString($numberOfChannels = 0)
     {
-        $snrQMLEArray = array("1" => "low", "2" => "fair", "3" => "good", "4" => "inf");
-
         $result = $this->formattedName();
-
-        for ($ch = 0; $ch < $numberOfChannels; $ch++) {            
+        
+        if (!is_numeric($numberOfChannels)) {
+            $db = DatabaseConnection::get();
+            $numberOfChannels = $db->getMaxChanCnt();
+        }
+        
+        for ($ch = 0; $ch < $numberOfChannels; $ch++) {
             $snrChan = "*not set*";
 
             switch ($this->algorithm[$ch]) {
                 case "skip":
                     $snrChan = "-";
-                break;
-                case "qmle":        
-                    if (array_key_exists($this->value[$ch], $snrQMLEArray)) {
-                        $snrChan = $snrQMLEArray[$this->value[$ch]];                    
-                    }
-                break;                
+                    break;
+                case "qmle":  
                 case "gmle":
-                case "cmle" :                
+                case "cmle":                
                 default:
                     if (isset($this->value[$ch]) && $this->value[$ch] != "") {
                         $snrChan = $this->value[$ch];

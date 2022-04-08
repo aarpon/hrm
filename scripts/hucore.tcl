@@ -85,7 +85,7 @@ proc reportImageDimensions { } {
 # Return 1 if the image is of a type that supports sub-images. Currently, only
 # LIF, LOF and CZI.
 proc isMultiImgFile { filename } {
-    set multiImgExtensions { ".lif" ".lof" ".czi"}
+    set multiImgExtensions { ".lif" ".lof" ".czi" ".nd"}
 
     set ext [file extension $filename]
     set isMulti 0
@@ -160,6 +160,8 @@ proc reportSubImages {} {
         # Parse CZIs and 1st nesting level LIFs accordingly.
         set extension [file extension $path]
         if { [string equal -nocase $extension ".czi"] } {
+            set subImages [lindex $contents 1]
+        } elseif { [string equal -nocase $extension ".nd"] } {
             set subImages [lindex $contents 1]
         } elseif { [string equal -nocase $extension ".lif"]
                || [string equal -nocase $extension ".lof"]} {
@@ -518,6 +520,7 @@ proc getDeconDataFromHuTemplate {} {
 
 proc estimateSnrFromImage {} {
 
+
     if { [info proc ::WebTools::estimateSnrFromImage] == "" } {
         reportError "This tool requires Huygens Core 3.5.1 or higher"
         return
@@ -527,6 +530,7 @@ proc estimateSnrFromImage {} {
     set error [ getInputVariables {
         basename src series dest snrVersion returnImages
     } ]
+    
     if { $error } { exit 1 }
 
     # Optional arguments:
@@ -535,7 +539,15 @@ proc estimateSnrFromImage {} {
 
     # Opening images
     set srcImg [ hrmImgOpen $src $basename -series $series ]
+    
+    array set params [$srcImg setp -tclReturn]
+    if {"generic" in $params(mType)} {
+     	reportError "The image meta data specifies no microscope type.\
+                     Impossible to continue."
+    	return
+    }
 
+    
     if { $s != -1 } {
         reportMsg "Setting voxel size $s"
         if { [ catch { eval $srcImg setp -s {$s} } err ] } {

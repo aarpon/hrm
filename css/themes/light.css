@@ -266,6 +266,10 @@ input.noPreview {
     background: url("../../images/no_preview_button.png") no-repeat center;
 }
 
+input.omero {
+    background: url("../../images/omero_data_pos.png") no-repeat center;
+}
+
 select {
     width: 100%;
     text-align: center;
@@ -348,4 +352,62 @@ select {
 .highlight {
     background-color: yellow;
     padding: 2px;
+}
+
+#colocCoefficients td.title {
+    text-align: center;
+    font-weight: bold;
+    background-color: #BFFFB3;
+}
+
+#colocCoefficients td.header {
+    width: 60px;
+    font-weight: bold;
+    background-color: #CFD7F2;
+    border: solid thin #B6ECFF;
+}
+
+#colocCoefficients td.coefficient {
+    background-color: #DAFFDA;
+}
+
+#colocCoefficients td.thresh {
+    background-color: #EEFFEE;
+}
+
+#colocCoefficients td.cell {
+    background-color: #DAFFDA;
+}
+
+#colocCoefficients td.marked {
+    background-color: #B6ECFF;
+}
+
+/* Override color of jqTree items */
+.jqtree-tree .jqtree-title {
+    color: #1C4257;
+}
+
+ul.jqtree-tree .jqtree-toggler {
+    color: #333;
+}
+
+ul.jqtree-tree .jqtree-toggler:hover {
+    color: #000;
+}
+
+/* Overrides for selections (NOTE: using 'background: unset;' doesn't work) */
+ul.jqtree-tree li.jqtree-selected > .jqtree-element,
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
+    background-color: #9ebbcf;
+    background: -webkit-gradient(linear, left top, left bottom, from(#9ebbcf), to(#9ebbcf));
+    background: -moz-linear-gradient(top, #9ebbcf, #9ebbcf);
+    background: -ms-linear-gradient(top, #9ebbcf, #9ebbcf);
+    background: -o-linear-gradient(top, #9ebbcf, #9ebbcf);
+    text-shadow: unset;
+}
+
+#OmeroData {
+    border: 1px solid #b3d1e0;
+    background: #f0f5ff;
 }

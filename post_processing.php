@@ -29,11 +29,14 @@ $message = "";
  **************************************************************************** */
 
 /** @var ChromaticAberration $parameter */
-$chromaticParam = $_SESSION['task_setting']->parameter("ChromaticAberration");
 $chanCnt = $_SESSION['task_setting']->numberOfChannels();
-$componentCnt = $chromaticParam->componentCnt();
-$chromaticArray = $chromaticParam->value();
-ksort($chromaticArray);
+$chromaticArray = array();
+for ($ch=0; $ch<$chanCnt; $ch++) {
+    $chromaticParam[$ch] = 
+        $_SESSION['task_setting']->parameter("ChromaticAberrationCh" . $ch);
+}
+$maxComponentCnt = $chromaticParam[0]->maxComponentCnt();
+$shownComponentCnt = $chromaticParam[0]->shownComponentCnt();
 
 
 /* *****************************************************************************
@@ -52,11 +55,14 @@ if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForTSta
         $postErrors++;
     }
 }
+if (!$_SESSION['task_setting']->checkPostedHotPixelCorrectionParameters($_POST)) {
+    $postErrors++;
+}
 
 if ($postErrors == 0) {
     $saved = $_SESSION['task_setting']->save();
     if ($saved) {
-        header("Location: " . "select_task_settings.php");
+        header("Location: " . "select_hpc.php");
         exit();
     } else {
         $message = $_SESSION['task_setting']->message();
@@ -169,14 +175,13 @@ if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForCAC(
 
                     <?php
                     for ($chan = 0; $chan < $chanCnt; $chan++) {
-                        $offset = $chan * $componentCnt;
                         ?>
                         <tr>
                             <td class="header"><?php echo $chan; ?></td>
 
                             <?php
 
-                            for ($component = 0; $component < $componentCnt; $component++) {
+                            for ($component = 0; $component < $shownComponentCnt; $component++) {
                                 ?>
 
                                 <td><input
@@ -185,12 +190,19 @@ if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForCAC(
                                         title="Channel <?php echo $chan; ?>, component <?php echo $component; ?>"
                                         type="text"
                                         size="1"
-                                        value="<?php echo $chromaticArray[$offset]; ?>"
+                                        value="<?php echo $chromaticParam[$chan]->value()[$component]; ?>"
                                         class="multichannelinput"/></td>
                                 <?php
-                                $offset++;
                             }
+                        
                             ?>
+                             <td><input type="button"
+                                     id="ChromaticAberrationDiscardOtherCh<?php echo $chan?>"
+                                     name="ChromaticAberrationDiscardOtherCh<?php echo $chan?>"
+                                     title="Discard this channel's other components to edit the remaining"
+                                     value="Discard other"
+                                     <?php if ($chromaticParam[$chan]->value()[13] == null) { echo 'hidden=true'; }?>
+                                     onclick="editChromaticChannelWith14Params(<?php echo $chan?>)"/></td>
                         </tr>
                         <?php
                     }
@@ -431,8 +443,8 @@ if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForTSta
                onmouseout="UnTip()"
                onclick="deleteValuesAndRedirect(
                     'select_task_settings.php' );"/>
-        <input type="submit" value="" class="icon save"
-               onmouseover="TagToTip('ttSpanSave' )"
+        <input type="submit" value="" class="icon next"
+               onmouseover="TagToTip('ttSpanForward' )"
                onmouseout="UnTip()"
                onclick="process()"/>
     </div>

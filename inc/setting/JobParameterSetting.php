@@ -9,10 +9,6 @@
  */
 namespace hrm\setting;
 
-
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
-
 /**
  * A JobParameterSetting is a ParameterSetting that is used when a Job is
  * executed by the queue manager. It uses different database tables and knows

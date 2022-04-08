@@ -16,9 +16,6 @@ use hrm\DatabaseConnection;
 use hrm\System;
 use hrm\user\proxy\ProxyFactory;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
-
 /**
  * Manages Users.
  *

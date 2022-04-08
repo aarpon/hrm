@@ -13,8 +13,6 @@ namespace hrm\user\proxy;
 use hrm\Log;
 use Auth0\SDK\Auth0;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * Manages authentication against the internal HRM  user database.
  *

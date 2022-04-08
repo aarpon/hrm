@@ -192,6 +192,7 @@ function initChromaticChannelReference() {
         chan = searchChromaticChannelReference();
     }
 
+    clearChromaticChannelReference();
     setChromaticChannelReference( chan );
 }
 
@@ -246,7 +247,7 @@ function setChromaticChannelReference( chan ) {
         id = id.concat(chan);
         id += "_";
         id = id.concat(component);
-
+        
         inputElement = document.getElementById(id);
         inputElement.readOnly = true;
         inputElement.style.backgroundColor="#888";
@@ -257,13 +258,19 @@ function setChromaticChannelReference( chan ) {
             inputElement.value = 0;
         }
     }
-
+    
+    var id = channelTag + "DiscardOtherCh" + chan;
+    buttonElement = document.getElementById(id);
+    buttonElement.setAttribute('hidden', true);
+    
+    // todo: make sure it is "reset" in the case of 14 parameters.
+    
     var tag = "ReferenceChannel";
     inputElement = document.getElementById(tag);
     inputElement.value = chan;
 }
 
-function removeChromaticChannelReference( ) {
+function clearChromaticChannelReference( ) {
     var tableTag   = "ChromaticAberrationTable";
     var channelTag = "ChromaticAberration";
 
@@ -273,22 +280,62 @@ function removeChromaticChannelReference( ) {
     componentCnt = table.rows[0].cells.length - 1;
 
     for (var chan = 0; chan < channelCnt; chan++) {
+
+        // If there are 14 parameters known for this chanenl don't make
+        // it editable.
+        var id = channelTag + "DiscardOtherCh";
+        id = id.concat(chan);
+        inputElement = document.getElementById(id);
+        var nonEditable14params = !inputElement.getAttribute('hidden');
+        
         for (var component = 0; component < componentCnt; component++) {
             var id = channelTag + "Ch";
             id = id.concat(chan);
             id += "_";
             id = id.concat(component);
-
             inputElement = document.getElementById(id);
-            inputElement.readOnly = false;
-            inputElement.style.backgroundColor="";
+
+            if (nonEditable14params) {
+                inputElement.readOnly = true;
+                inputElement.style.backgroundColor="#666";
+            } else {
+                inputElement.readOnly = false;
+                inputElement.style.backgroundColor="";
+            }
         }
     }
 }
 
 function changeChromaticChannelReference(selectObj) {
-    removeChromaticChannelReference( );
+    clearChromaticChannelReference( );
     setChromaticChannelReference( selectObj.value );
+}
+
+function editChromaticChannelWith14Params(channel) {
+    // Hide the discard button.
+    var tag = "ChromaticAberrationDiscardOtherCh" + channel;
+    butElement = document.getElementById(tag);
+    butElement.setAttribute('hidden', true);
+    clearChromaticChannelReference( );
+
+    // Round the values to 5 decimals. This both makes it easier to edit and
+    // ensures the new values are saved properly. 
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
+    table = document.getElementById(tableTag);
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    for (var component = 0; component < componentCnt; component++) {
+        var id = channelTag + "Ch" + channel + "_" + component;
+        inputElement = document.getElementById(id);
+        var rounded = Math.round(inputElement.value * 100000) / 100000;
+        inputElement.value = rounded;
+    }
+
+    // Call setChromaticChannelReference to properly redo the layout.
+    var tag = "ReferenceChannel";
+    refElement = document.getElementById(tag);
+    setChromaticChannelReference( refElement.value );
 }
 
 
@@ -303,6 +350,7 @@ function updateDeconEntryProperties( ) {
                                 "SignalNoiseRatioQMLE",
                                 "SignalNoiseRatioGMLE",
                                 "SignalNoiseRatioSKIP",
+                                "Acuity",
                                 "BackgroundOffsetPercent"];
 
     var skipAllChannels = true;
@@ -317,7 +365,7 @@ function updateDeconEntryProperties( ) {
         if (deconAlgorithm === undefined) continue;
         if (deconAlgorithm.value !== "skip") skipAllChannels = false;
 
-        // QMLE vs CMLE/GMLE.
+        // Show the input box relevant for the current algorithm.
         switchSnrMode(deconAlgorithm, chan);
 
         for (var tagIdx = 0; tagIdx < paramChanTagArray.length; tagIdx++) {
@@ -357,9 +405,9 @@ function updateDeconEntryProperties( ) {
 
 function copySnrToOtherAlgorithms(channel, inputObj) {
 
-    // QMLE is an exception here.
     var tagArray = ["SignalNoiseRatioCMLE",
                     "SignalNoiseRatioGMLE",
+                    "SignalNoiseRatioQMLE",
                     "SignalNoiseRatioSKIP"];
 
     for (var i = 0; i < tagArray.length; i++) {
@@ -547,6 +595,7 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'lof':
             case 'lsm':
             case 'oif':
+            case 'vsi':
             case 'pic':
             case 'r3d':
             case 'stk':
@@ -886,11 +935,20 @@ function cancelSelection() {
     changeDiv('selection', control);
 }
 
-function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
+function changeFileSelectionValueAt(index, newName) {
+    document.getElementById('fileSelection')[index].value = newName;
+    document.getElementById('fileSelection')[index].text = newName;
+    setActionToUpdate();
+    document.getElementById('file_browser').submit();
+    
+}
 
+function imgPrev(infile, mode, gen, sanitized, compare, index,
+                 dir, referer, data) {
     var file = unescape(infile);
     var tip, html, link, onClick = "";
-
+    var regexpRes;
+    
     if (mode == 0 && gen == 1) {
         try
         {
@@ -906,7 +964,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
             mode = 0;
         }
     }
-
+    
     switch (mode)
     {
         case 0:
@@ -919,30 +977,45 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
 
            // Preview doesn't exist, but you can create it now.
            link = "file_management.php?genPreview=" + infile + "&src=" + dir
-                  + "&data=" + data + '&index=' + index;
-
+                   + "&data=" + data + '&index=' + index;
+           
            onClick =  '<center><img src=\\\'images/spin.gif\\\' '
                 +                           'alt=\\\'busy\\\'><br />'
                 + '<small>Generating preview in another window.<br />'
                 + 'Please wait...</small></center>';
 
-           html = '<input type="button" name="genPreview" value="" '
-                  +    'class="icon noPreview" '
-                  +    'onclick="'
-                  +        'changeDiv(\'info\',\'' + onClick + '\'); '
-                  +        'openTool(\'' + link + '\'); '
-                  +    '"'
-                  + '>'
-                  + '<br />'
-                  + '<div class="expandedView" '
-                  +    'onclick="'
-                  +        'changeDiv(\'info\',\'' + onClick + '\'); '
-                  +        'openTool(\'' + link + '\'); '
-                  +    '"'
-                  + '>'
-                  + '<img src="images/eye.png"> '
-                  + 'Click to generate preview'
-                  + '</div>';
+               html = '<input type="button" name="genPreview" value="" '
+                   +    'class="icon noPreview" '
+                   +    'onclick="'
+                   +        'changeDiv(\'info\',\'' + onClick + '\'); '
+                   +        'openTool(\'' + link + '\'); '
+                   +    '"'
+                   + '>'
+                   + '<br />'
+                   + '<div class="expandedView" '
+                   +    'onclick="'
+                   +        'changeDiv(\'info\',\'' + onClick + '\'); '
+                   +        'openTool(\'' + link + '\'); ';
+               if ( infile != sanitized ) {
+                   html = html + 'changeFileSelectionValueAt(\''
+                       + index + '\', \'' + unescape(sanitized) + '\'); ';
+               }
+               html = html +    '"'
+                   + '>'
+                   + '<img src="images/eye.png"> '
+                   + 'Click to generate preview';
+
+               // Check if the (base)names of the sanitized and original name
+               // are the same, otherwise mention that it will rename the file.
+               if ( infile != sanitized ) {
+                   regexpRes =  /^(.+)\ \(.+\)$/g.exec(file);
+                   if (regexpRes && sanitized.startsWith(regexpRes[1])) {
+                       // It is not a subimage or the basename is the same.
+                   } else {
+                       html = html + ' (the file will be renamed)';
+                   }
+               }
+               html = html + '</div>';
            }
 
            break;

@@ -11,8 +11,6 @@ namespace hrm\param\base;
 
 use hrm\DatabaseConnection;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * Class for a Parameter that has an array of numbers as possible value,
  * where each entry represents a channel.
@@ -109,6 +107,7 @@ class NumericalArrayParameter extends NumericalParameter
      */
     public function check()
     {
+    
         $this->message = '';
         $result = True;
         // First check that all values are set
@@ -141,24 +140,23 @@ class NumericalArrayParameter extends NumericalParameter
      * be an array, since this requires a large refactoring that will be
      * done in a later stage.
      *
-     * @param array $value Array of values for the NumericalArrayParameter.
+     * @param array $values Array of values for the NumericalArrayParameter.
      */
-    public function setValue($value)
+    public function setValue($values)
     {
         $db = DatabaseConnection::get();
         $maxChanCnt = $db->getMaxChanCnt();
 
-        if (is_array($value)) {
-            $n = count($value);
-            for ($i = 0; $i < $maxChanCnt; $i++) {
-                if ($i < $n) {
-                    $this->value[$i] = $value[$i];
+        if (is_array($values)) {
+            foreach ($values as $i => $value) {
+                if ($i < $maxChanCnt) {
+                    $this->value[$i] = $value;
                 } else {
                     $this->value[$i] = null;
                 }
             }
         } else {
-            $this->value = array($value);
+            $this->value = array($values);
         }
     }
 

@@ -17,8 +17,6 @@ use hrm\Fileserver;
 use hrm\HuygensTemplate;
 use hrm\Log;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 
 /**
  * Stores all information for a deconvolution Job.
@@ -169,6 +167,7 @@ class Job
             'estimation'                      => 'Background estimation',
             'ratio'                           => 'Signal/Noise ratio',
             'array detector reduction mode'   => 'Array detector reduction mode',
+            'bleaching'                       => 'Bleaching Mode',
             'autocrop'                        => 'Autocrop',
             'z stabilization'                 => 'Z Stabilization',
             't stabilization'                 => 'T Stabilization');

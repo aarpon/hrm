@@ -1,4 +1,5 @@
 <?php
+
 /**
  * User
  *
@@ -16,9 +17,6 @@ use hrm\DatabaseConnection;
 use hrm\Log;
 use hrm\user\proxy\AbstractProxy;
 use hrm\user\proxy\ProxyFactory;
-
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 
 /**
  * Manages a User and its state and authenticates against the
@@ -398,7 +396,6 @@ class UserV2
 
             // Update the last access date in the database
             $this->setLastAccessDate();
-
         }
 
         return $this->isLoggedIn;
@@ -409,7 +406,7 @@ class UserV2
      */
     public function logOut()
     {
-        $this->isLoggedIn = False;
+        $this->isLoggedIn = false;
     }
 
     /**
@@ -573,8 +570,7 @@ class UserV2
         // Load all information for current user
         $result = $db->connection()->Execute("SELECT * FROM username WHERE name = ?;", array($this->name));
         $rows = $result->GetRows();
-        if (count($rows) == 0)
-        {
+        if (count($rows) == 0) {
             // A user with current name does not yet exist: we create it.
             $row = array();
             $row["name"] = $this->name();
@@ -587,7 +583,6 @@ class UserV2
             $row["last_access_date"] = $this->lastAccessDate();
             $row["status"] = $this->status();
             $row["id"] = -1;
-
         } else {
             $row = $rows[0];
         }

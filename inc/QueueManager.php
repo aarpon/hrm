@@ -217,6 +217,12 @@ class QueueManager
             $psf = $parameterSetting->parameter('PSF');
             $values = $psf->value();
             foreach ($values as $value) {
+
+                /* This loop goes over the max number of channels, even if
+		they are empty. To prevent sftp errors those channels have to
+		be skipped. */
+                if ($value == "") continue;
+	        
                 $path = explode("/", $value);
                 if (sizeof($path) > 0) {
                     for ($i = 0; $i < sizeof($path) - 1; $i++) {
@@ -254,7 +260,7 @@ class QueueManager
         foreach ($files as $file) {
             $counter++;
             $match = array();
-            if (preg_match("/^(.*\.(lif|lof|czi))\s\((.*)\)/i", $file, $match)) {
+            if (preg_match("/^(.*\.(lif|lof|czi|nd))\s\((.*)\)/i", $file, $match)) {
                 $filteredFiles[$counter] = $match[1];
             } else {
                 $filteredFiles[$counter] = $file;
@@ -275,7 +281,19 @@ class QueueManager
                 $image_source . "/" . $file;
             if (stristr($filename, ".ics")) {
                 $batch .= "put \"" . $filename . "\"\n";
-                $filename = substr($filename, 0, strrpos($filename, '.ics')) . ".ids";
+
+		// Get the 'c' from 'ics' in order to find its case.
+                $nameLength    = strlen($filename);
+                $extensionChar = $filename[$nameLength - 2];
+
+                if (ctype_upper($extensionChar)) {
+                    $extensionChar = "D";
+                } else {
+                    $extensionChar = "d";
+                }
+
+                $filename[$nameLength - 2] = $extensionChar;
+
                 $batch .= "put \"" . $filename . "\"\n";
             } elseif (stristr($filename, ".tif") || stristr($filename, ".tiff")) {
                 // TODO: if ImageFileFormat = single TIFF file, do not send
@@ -577,13 +595,17 @@ class QueueManager
             $remotePath  = $huygens_server_image_folder . "/";
             $remotePath .= $jobOwner->name() . "/" . $image_source . "/";
 
+	    $extension = $fileServer->getFileNameExtension($srcFile);
+	    $srcFile   = $fileServer->basename($srcFile);
+            $srcFile   = str_replace($srcFile, $extension, "");
+
             // If we are dealing with a series, remove all of its files.
             if ($fileSeries) {
-                $extension = $fileServer->getFileNameExtension($srcFile);
-                $srcFile   = $fileServer->basename($srcFile);
-                $srcFile   = str_replace($srcFile, $extension, "");
-                $srcFile  .= "*" . $extension;
+                $srcFile .= "*" . $extension;
+            } elseif ($extension == "ics") {
+	        $srcFile .= ".i*s"; 
             }
+	    
             $remoteFiles = $srcFile;
 
             $cmd .= "find " . $remotePath . " -name '" . $remoteFiles . "' -delete;";

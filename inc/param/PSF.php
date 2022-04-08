@@ -11,8 +11,6 @@ namespace hrm\param;
 
 use hrm\param\base\AnyTypeArrayParameter;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * An AnyTypeArrayParameter that handles the file names of the PSF files per
  * channel.

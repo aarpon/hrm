@@ -16,9 +16,6 @@ use hrm\param\SignalNoiseRatio;
 use hrm\setting\base\Setting;
 use hrm\System;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
-
 /**
  * A TaskSetting is a complete set of restoration parameters.
  *
@@ -37,6 +34,8 @@ class TaskSetting extends Setting
 
         // @todo Retrieve this information from the database.
         $parameterClasses = array(
+            'Acuity',
+            'AcuityMode',
             'Autocrop',
             'SignalNoiseRatio',
             'BackgroundOffsetPercent',
@@ -46,15 +45,32 @@ class TaskSetting extends Setting
             'QualityChangeStoppingCriterion',
             'DeconvolutionAlgorithm',
             'ArrayDetectorReductionMode',
+            'BleachingMode',
             'ZStabilization',
-            'ChromaticAberration',
+            'ChromaticAberrationCh0',
+            'ChromaticAberrationCh1',
+            'ChromaticAberrationCh2',
+            'ChromaticAberrationCh3',
+            'ChromaticAberrationCh4',
+            'ChromaticAberrationCh5',
             'TStabilization',
             'TStabilizationMethod',
             'TStabilizationRotation',
-            'TStabilizationCropping');
+            'TStabilizationCropping',
+            'HotPixelCorrection');
 
         // Instantiate the Parameter objects
         foreach ($parameterClasses as $class) {
+            if (strpos($class, 'ChromaticAberration') !== false) {
+                $ch = substr($class, -1, 1);
+                $className = 'hrm\\param\\ChromaticAberration';
+                $param = new $className($ch);
+                /** @var Parameter $param */
+                $name = $param->name();
+                $this->parameter[$name] = $param;
+                $this->numberOfChannels = null;
+                continue;
+            }
             $className = 'hrm\\param\\' . $class;
             $param = new $className;
             /** @var Parameter $param */
@@ -212,6 +228,44 @@ class TaskSetting extends Setting
             $noErrorsFound = false;
         }
 
+        
+        // Acuity mode
+        if (isset($postedParameters["AcuityMode"]) || $postedParameters["AcuityMode"] == '') {
+            $parameter = $this->parameter("AcuityMode");
+            $parameter->setValue($postedParameters["AcuityMode"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
+        // Acuity
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
+            $name = "Acuity$i";
+            if (isset($postedParameters[$name])) {
+                // We need to set a default value in case of skipped channels
+                // so that the parameter can get processed. Unfortunately,
+                // there's no default for this parameter in the DB. We also
+                // default to this value if acuity mode is disabled.
+                if ($deconAlgorithms[$i] == "skip" || $parameter->value() == "off") {
+                    $value[$i] = "0";
+                } else {
+                    $value[$i] = $postedParameters[$name];
+                }
+            }
+        }
+
+        /** @var Acuity $parameter */
+        $parameter = $this->parameter("Acuity");
+        $parameter->setValue($value);
+        $this->set($parameter);
+        if (!$skipDeconAll && !$parameter->check()) {
+            $this->message = $parameter->message();
+            $noErrorsFound = false;
+        }
+
         // Background estimation
         if (!isset($postedParameters["BackgroundEstimationMode"]) || $postedParameters["BackgroundEstimationMode"] == '') {
             $this->message = 'Please choose a background estimation mode!';
@@ -294,6 +348,17 @@ class TaskSetting extends Setting
             }
         }
 
+        // Bleaching Mode
+        if (isset($postedParameters["BleachingMode"]) || $postedParameters["BleachingMode"] == '') {
+            $parameter = $this->parameter("BleachingMode");
+            $parameter->setValue($postedParameters["BleachingMode"]);
+            $this->set($parameter);
+            if (!$parameter->check()) {
+                $this->message = $parameter->message();
+                $noErrorsFound = false;
+            }
+        }
+
         // ArrayDetectorReductionMode
         if (isset($postedParameters["ArrayDetectorReductionMode"]) || $postedParameters["ArrayDetectorReductionMode"] == '') {
             $parameter = $this->parameter("ArrayDetectorReductionMode");
@@ -339,22 +404,31 @@ class TaskSetting extends Setting
         if (!$noErrorsFound) {
             return $noErrorsFound;
         }
-
-        $parameter = $this->parameter("ChromaticAberration");
-
-        /* The posted parameters are received in increasing 'chan component'
-           order. */
-        $i = 0;
+        
+        // Set the values. Overwrite only when the value has changed,
+        // otherwise the higher order corrections (which when present are not
+        // editable) can be overwritten.
+        // Every 5 indexes are a channel.
+        $ch = 0;
+        $newVal = array();
         foreach ($postedParameters as $name => $param) {
             if (strpos($name, 'ChromaticAberration') === false) {
                 continue;
             }
-
-            $valuesArray[$i] = $param;
-            $i++;
+            
+            $newVal[] = $param;
+            if (count($newVal) == 5) {
+                $parameter = $this->parameter("ChromaticAberrationCh".$ch);
+                $oldVal    = $parameter->value();
+                if (array_splice($oldVal, 0, 5) == $newVal) {
+                    // The relevant values have not changed; no work needed.
+                } else {
+                    $parameter->setValue($newVal);
+                }
+                $ch++;
+                $newVal = array();
+            }
         }
-
-        $parameter->setValue($valuesArray);
 
         return $noErrorsFound;
     }
@@ -425,6 +499,28 @@ class TaskSetting extends Setting
 
 
     /**
+     * Checks that the posted Hot Pixel Correction Parameters are defined.
+     * This correction is optional.
+     * @param array $postedParameters The array of posted parameters.
+     * @return bool True if all Parameters are defined and valid, false
+     * otherwise.
+     */
+     // For now this is a dummy function as any hot pixel choice should be accepted. 
+    public function checkPostedHotPixelCorrectionParameters(array $postedParameters)
+    {
+        if (count($postedParameters) == 0) {
+            $this->message = '';
+            return false;
+        }
+
+        $this->message = '';
+        $noErrorsFound = true;
+        
+        return $noErrorsFound;
+    }
+
+
+    /**
      * Returns all Task Parameter names.
      * @return array Array of Task Parameter names.
      */
@@ -465,7 +561,7 @@ class TaskSetting extends Setting
         if ($numberOfChannels == 0) {
             $numberOfChannels = $this->numberOfChannels();
         }
-
+        
         // These parameters are important to properly display other parameters.
         $algorithm = $this->parameter('DeconvolutionAlgorithm')->value();
         $TStabilization = $this->parameter('TStabilization')->value();
@@ -495,7 +591,8 @@ class TaskSetting extends Setting
             if ($parameter->name() == 'TStabilizationCropping' && ($TStabilization == 0 || $timeInterval == 0)) {
                 continue;
             }
-            if ($parameter->name() == 'ChromaticAberration' && $numberOfChannels == 1) {
+            if (strpos($parameter->name(), 'ChromaticAberration') !== false
+                && $numberOfChannels == 1) {
                 continue;
             }
             if ($parameter->name() == 'ArrayDetectorReductionMode' && !strstr($micrType, "array detector confocal")) {
@@ -645,27 +742,73 @@ class TaskSetting extends Setting
         $algorithm->setValue($algArray);
 
         // SNR.
-        $snrQMLEArray = array("low" => "1", "fair" => "2", "good" => "3", "inf" => "4");
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             if ($algArray[$chan] == "cmle") {
-                $key = "cmle:" . $chan . " sn";
+                $key = "cmle:" . $chan . " snr";
             } elseif ($algArray[$chan] == "gmle") {
-                $key = "gmle:" . $chan . " sn";
+                $key = "gmle:" . $chan . " snr";
             } elseif ($algArray[$chan] == "qmle") {
-                $key = "qmle:" . $chan . " sn";
+                $key = "qmle:" . $chan . " snr";
             }
-
+            
             if (isset($huArray[$key])) {
-                if ($algArray[$chan] == "qmle" && array_key_exists($huArray[$key], $snrQMLEArray)) {
-                    $snr[$chan] = $snrQMLEArray[$huArray[$key]];
-                } else {
-                    $snr[$chan] = $huArray[$key];
-                }
+                $snr[$chan] = $huArray[$key];
             }
         }
+        
         if (isset($snr)) {
             $this->parameter['SignalNoiseRatio']->setValue($snr);
         }
+        
+        // Acuity.
+  
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($algArray[$chan] == "cmle") {
+                $key = "cmle:" . $chan . " acuity";
+            } elseif ($algArray[$chan] == "gmle") {
+                $key = "gmle:" . $chan . " acuity";
+            } elseif ($algArray[$chan] == "qmle") {
+                $key = "qmle:" . $chan . " acuity";
+            }
+            
+            if (isset($huArray[$key])) {
+                $acuity[$chan] = $huArray[$key];
+                $this->parameter['Acuity']->setValue($acuity);
+            }
+        }
+        
+        // Acuity mode. Turn it off unless there is at least one channel for
+        // which a value of on has been provided. 
+        
+        $globalAcuityMode = 'off';
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            if ($algArray[$chan] == "cmle") {
+                $key = "cmle:" . $chan . " acuityMode";
+            } elseif ($algArray[$chan] == "gmle") {
+                $key = "gmle:" . $chan . " acuityMode";
+            } elseif ($algArray[$chan] == "qmle") {
+                $key = "qmle:" . $chan . " acuityMode";
+            }
+
+            if (isset($huArray[$key])) {
+                $acuityMode = $huArray[$key];
+                
+                switch ($acuityMode) {
+                case 'auto':
+                    break;
+                case 'on':
+                    $globalAcuityMode = 'on';
+                    break;
+                case 'off':
+                    if ($globalAcuityMode != "on") $globalAcuityMode = 'off';
+                    break;
+                default:
+                    $this->message = 'Unknown acuity mode!';
+                    $noErrorsFound = false;
+                }
+            }
+        }
+        $this->parameter['AcuityMode']->setValue($globalAcuityMode);
 
         // Autocrop.
         if (isset($huArray['autocrop enabled'])) {
@@ -673,6 +816,16 @@ class TaskSetting extends Setting
             $this->parameter['Autocrop']->setValue($autocrop);
         }
 
+        // Bleaching mode.
+        for ($chan = 0; $chan < $maxChanCnt; $chan++) {
+            $key = $algArray[$chan] . ":" . $chan . " blMode";
+            if (isset($huArray[$key]) && $huArray[$key] != "off") {
+                $blMode = $huArray[$key];
+                $this->parameter('BleachingMode')->setValue($blMode);
+                break;
+            }
+        }
+        
         // Background.
         // Set it to manual only if all channels are specified.
         // Otherwise set it to the first other mode encountered.
@@ -771,7 +924,6 @@ class TaskSetting extends Setting
         }
         $this->parameter["QualityChangeStoppingCriterion"]->setValue($qMin);
 
-
         // Stabilization in Z.
         if (isset($huArray['stabilize enabled'])) {
             $stabilize = $huArray['stabilize enabled'];
@@ -779,32 +931,37 @@ class TaskSetting extends Setting
         }
 
         // Chromatic Aberration.
-        $compCnt = 5;
+        $maxCmp = $this->parameter['ChromaticAberrationCh0']->maxComponentCnt();
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
             $key = "shift:" . $chan . " vector";
-
+            
             unset($vector);
             if (isset($huArray[$key])) {
-                $vector = explode(" ", $huArray[$key], $compCnt);
+                $vector = explode(' ', $huArray[$key], $maxCmp);
             }
-
-            for ($comp = 0; $comp < $compCnt; $comp++) {
-                $compKey = $chan * $compCnt + $comp;
-
+            
+            unset($aberration);
+            for ($comp = 0; $comp < $maxCmp; $comp++) {
                 if (isset($vector[$comp])) {
-                    $aberration[$compKey] = $vector[$comp];
+                    $aberration[$comp] = $vector[$comp];
                 } else {
-                    if ($comp < $compCnt - 1) {
-                        $aberration[$compKey] = 0.;
-                    } else {
+                    // A CAC correction template should have one of 3, 4, 5 or
+                    // 14 components. The first 5 are editable and have to
+                    // exist. Components 6 to 14 are either present or should
+                    // not be present.
+                    if ($comp < 4) {
+                        $aberration[$comp] = 0.;
+                    } elseif ($comp < 5) {
                         // Scale component.
-                        $aberration[$compKey] = 1.;
+                        $aberration[$comp] = 1.;
+                    } else {
+                        $aberration[$comp] = null;
                     }
                 }
             }
-        }
-        if (isset($aberration)) {
-            $this->parameter['ChromaticAberration']->setValue($aberration);
+            if (isset($aberration)) {
+                $this->parameter['ChromaticAberrationCh' . $chan]->setValue($aberration);
+            }
         }
 
         // Stabilization in T.

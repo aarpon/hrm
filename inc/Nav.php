@@ -10,8 +10,6 @@
 
 namespace hrm;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
-
 /**
  * Commodity class to manage all links and actions of the navigation bar.
  *
@@ -405,7 +403,6 @@ EOT;
     public static function actionStyleToggle()
     {
         $html = <<<EOT
-<li>
 <div class="theme_div">
 <form>
 <label>Theme:</label>
@@ -413,7 +410,6 @@ EOT;
 <input type="submit" class="theme_name" onclick="switch_style('light');return false;" name="theme" value="light">
 </form>
 </div>
-</li>
 EOT;
         return $html;
     }

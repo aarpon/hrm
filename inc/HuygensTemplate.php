@@ -207,6 +207,12 @@ class HuygensTemplate
     private $setpConfArray;
 
     /**
+     * Array with information on the hot pixel correction subtask.
+     * @var array
+     */
+    private $hpcArray;
+
+    /**
      * Array with information on thumbnail projections.
      * @var array
      */
@@ -217,6 +223,12 @@ class HuygensTemplate
      * @var string
      */
     private $setpList;
+
+    /**
+     * A Tcl list with information for the 'hot pixel correction' subtask.
+     * @var string
+     */
+    private $hpcList;
 
     /**
      * Path and name of the source 'raw' image.
@@ -366,7 +378,7 @@ class HuygensTemplate
 
         $this->jobInfoArray =
             array('title'        => 'Batch Processing template',
-                  'version'      => '2.3',
+                  'version'      => '2.4',
                   'templateName' => '',
                   'date'         => '',
                   'listID'       => 'info');
@@ -394,7 +406,7 @@ class HuygensTemplate
                   'perJobThreadCnt'  => 'auto',
                   'concurrentJobCnt' => '1',
                   'OMP_DYNAMIC'      => '1',
-                  'timeOut'          => '10000',
+                  'timeOut'          => '100000',
                   'exportFormat'     => '',
                   'gpuDevice'        => '0',
                   'listID'           => 'setEnv');
@@ -442,6 +454,7 @@ class HuygensTemplate
         $this->imgProcessTasksArray =
             array('open'                  => 'imgOpen',
                 'setParameters'           => 'setp',
+		        'hotPixelCorrection'      => 'hotPix',
                 'autocrop'                => 'autocrop',
                 'adjustBaseline'          => 'adjbl',
                 'ZStabilization'          => 'stabilize',
@@ -538,6 +551,13 @@ class HuygensTemplate
                   'spimDir'          => 'parState,spimDir',
                   'listID'           => 'setp');
 
+        /* Options for the 'hot pixel correction' action */
+        $this->hpcArray =
+            array('hotPath'  => '',
+                  'timeOut'  => '10000',
+                  'listID'   => 'hotPix');
+
+
         /* Options for the 'adjust baseline' action */
         $this->adjblArray =
             array('enabled' => '0',
@@ -571,7 +591,9 @@ class HuygensTemplate
                   'it'         => '',
                   'bgMode'     => '',
                   'bg'         => '',
-                  'sn'         => '',
+                  'snr'        => '',
+                  'acuity'     => '',
+                  'acuityMode' => '',
                   'blMode'     => 'auto',
                   'pad'        => 'auto',
                   'reduceMode' => 'auto',
@@ -837,10 +859,14 @@ class HuygensTemplate
         $list = "";
 
         foreach ($this->imgProcessTasksArray as $key => $value) {
+	    if ($key == 'hotPixelCorrection' && !$this->hotPixelMaskExists()) {
+	        continue;
+            }
             switch ($key) {
                 case 'open':
                 case 'save':
                 case 'setParameters':
+		case 'hotPixelCorrection':
                 case 'autocrop':
                 case 'adjustBaseline':
                 case 'ZStabilization':
@@ -890,6 +916,10 @@ class HuygensTemplate
 
         $this->initializeThumbCounter();
         foreach ($this->imgProcessTasksArray as $key => $value) {
+	    if ($key == 'hotPixelCorrection' && !$this->hotPixelMaskExists()) {
+	        continue;
+            }
+
             $tasksDescr .= " ";
             switch ($key) {
                 case 'open':
@@ -900,6 +930,9 @@ class HuygensTemplate
                     break;
                 case 'setParameters':
                     $tasksDescr .= $this->getImgTaskDescrSetp();
+                    break;
+                case 'hotPixelCorrection':
+                    $tasksDescr .= $this->getImgTaskDescrHotPixelCorrection();
                     break;
                 case 'autocrop':
                     $tasksDescr .= $this->getImgTaskDescrAutocrop();
@@ -1054,6 +1087,43 @@ class HuygensTemplate
     }
 
     /**
+     * Gets options for the 'hot pixel correction' task.
+     * @return string Tcl list with the 'Hot Pixel Correction' task and its options.
+     */
+    private function getImgTaskDescrHotPixelCorrection()
+    {
+        $taskDescr = "";
+
+        /* The HPC mask may be located in a different subfolder than the raw 
+           data. Thus, its path must be found independently of the raw images. */
+        $userFileArea = $this->jobDescription->sourceFolder();
+        $deconSetting = $this->deconSetting;
+
+        foreach ($this->hpcArray as $key => $value) {
+            if ($key != "listID") {
+                $taskDescr .= " " . $key . " ";
+            }
+
+            switch ($key) {
+                case 'hotPath':		
+                    $hpcFile = $deconSetting->parameter("HotPixelCorrection")->value();
+                    $hpcPath = trim($userFileArea . $hpcFile[0]);
+                    $taskDescr .= $this->string2tcllist($hpcPath);
+                    break;
+		case 'timeOut':
+		    $taskDescr .= $value;
+                case 'listID':
+                    $this->hpcList = $value . " " . $this->string2tcllist($taskDescr);
+                    break;
+                default:
+                    Log::error("Hot pixel correction field $key not yet implemented.");
+            }
+        }
+
+        return $this->hpcList;
+    }
+
+    /**
      * Gets options for the 'adjust baseline' task.
      * @return string Tcl list with the 'Adjust baseline' task and its options.
      */
@@ -1098,13 +1168,14 @@ class HuygensTemplate
         if (empty($channelsArray)) {
             return $allTasksDescr;
         }
-
-        $chromaticParam = $this->deconSetting->parameter("ChromaticAberration");
+        
         foreach ($channelsArray as $chanKey => $chan) {
             $taskDescr = "";
-            /** @var ChromaticAberration $chromaticParam */
-            $chanVector = implode(' ', $chromaticParam->chanValue($chan));
-
+            /** @var ChromaticAberrationCh$chan $chromaticParam */
+            $chromaticParam =
+                $this->deconSetting->parameter("ChromaticAberrationCh" . $chan);
+            $chanVector = implode(' ', $chromaticParam->value());
+            
             foreach ($this->chromaticArray as $chromKey => $chromValue) {
                 if ($chromKey != "listID") {
                     $taskDescr .= " " . $chromKey . " ";
@@ -1128,7 +1199,7 @@ class HuygensTemplate
                         $taskDescr .= $this->string2tcllist($chanVector);
                         break;
                     case 'reference':
-                        if ($chanVector == "0 0 0 0 1") {
+                        if (trim($chanVector) == "0 0 0 0 1") {
                             $reference = 1;
                         } else {
                             $reference = 0;
@@ -1895,8 +1966,10 @@ class HuygensTemplate
             switch ($key) {
                 case 'timeOut':
                 case 'pad':
-                case 'blMode':
                     $taskDescr .= $value;
+                    break;
+                case 'blMode':
+                    $taskDescr .= $this->getBleachingMode();
                     break;
                 case 'q':
                     $taskDescr .= $this->getQualityFactor();
@@ -1916,8 +1989,14 @@ class HuygensTemplate
                 case 'bg':
                     $taskDescr .= $this->getBgValue($channel);
                     break;
-                case 'sn':
+                case 'snr':
                     $taskDescr .= $this->getSnrValue($channel);
+                    break;
+                case 'acuity':
+                    $taskDescr .= $this->getAcuityValue($channel);
+                    break;
+                case 'acuityMode':
+                    $taskDescr .= $this->getAcuityMode();
                     break;
                 case 'psfMode':
                     $taskDescr .= $this->getPsfMode();
@@ -2084,6 +2163,20 @@ class HuygensTemplate
     }
 
     /**
+     * Gets the bleaching mode.
+     * @return string Bleaching mode.
+     */
+    private function getBleachingMode()
+    {
+        /** @var TaskSetting $deconSetting */
+        $deconSetting = $this->deconSetting;
+
+        $blMode = $deconSetting->parameter("BleachingMode")->value();
+        
+        return $blMode;
+    }
+    
+    /**
      * Gets the SNR value. One channel.
      * @param int $channel A channel
      * @return int|string The SNR value.
@@ -2095,13 +2188,38 @@ class HuygensTemplate
         $snrRate = $deconSetting->parameter("SignalNoiseRatio")->value();
         $snrValue = $snrRate[$channel];
 
-        if ($this->getAlgorithm($channel) == "qmle") {
-            $indexValues = array(1, 2, 3, 4, 5);
-            $snrArray = array("low", "fair", "good", "inf", "auto");
-            $snrValue = str_replace($indexValues, $snrArray, $snrValue);
-        }
-
         return $snrValue;
+    }
+
+    /**
+     * Gets the acuity value. One channel.
+     * @param int $channel A channel
+     * @return int|string The acuity value.
+     */
+    private function getAcuityValue($channel)
+    {
+        /** @var TaskSetting $deconSetting */
+        $deconSetting = $this->deconSetting;
+        $acuityRate = $deconSetting->parameter("Acuity")->value();
+        $acuityValue = $acuityRate[$channel];
+	    
+	if ($acuityValue == "") {
+	    $acuityValue = 0;
+	}
+
+        return $acuityValue;
+    }
+
+    /**
+     * Gets the acuity mode.
+     * @return string Acuity mode.
+     */
+    private function getAcuityMode()
+    {
+        $deconSetting = $this->deconSetting;
+        $acuityMode = $deconSetting->parameter("AcuityMode")->value();
+        
+        return $acuityMode;
     }
 
     /**
@@ -2206,11 +2324,12 @@ class HuygensTemplate
             return $channelsArray;
         }
 
-        /** @var ChromaticAberration $chromaticParam */
-        $chromaticParam = $this->deconSetting->parameter("ChromaticAberration");
-
+        
         for ($chan = 0; $chan < $chanCnt; $chan++) {
-            $chromaticChan = $chromaticParam->chanValue($chan);
+            /** @var ChromaticAberrationCh$chan $chromaticParamCh$chan */
+            $chromaticParam =
+                $this->deconSetting->parameter("ChromaticAberrationCh" . $chan);
+            $chromaticChan = $chromaticParam->value();
 
             foreach ($chromaticChan as $component => $value) {
                 if (isset($value) && $value > 0) {
@@ -3031,6 +3150,24 @@ class HuygensTemplate
     }
 
     /**
+     * Checks whether a hot pixel correction mask exists.
+     * @param void
+     * @return bool true if it exists false otherwise.
+     */
+    private function hotPixelMaskExists()
+    {
+        $userFileArea = $this->jobDescription->sourceFolder();
+        $deconSetting = $this->deconSetting;
+        $hpcFile = $deconSetting->parameter("HotPixelCorrection")->value();
+
+        if ($hpcFile[0] == "") {
+	    return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
      * Checks whether a JPEG can be made from the image.
      * @param string $image The image to be checked.
      * @return void
@@ -3170,7 +3307,7 @@ class HuygensTemplate
 
         /*If a (string) comes after the file name, the string is interpreted
          as a subimage. Currently this is for LIF, LOF and CZI files only. */
-        if (preg_match("/^(.*\.(lif|czi|lof))\s\((.*)\)/i",
+        if (preg_match("/^(.*\.(lif|czi|lof|nd))\s\((.*)\)/i",
             $this->srcImage, $match)) {
             $this->srcImage = $match[1];
             $this->subImage = $match[3]; // @todo Is this correct?

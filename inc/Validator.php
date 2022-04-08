@@ -10,8 +10,6 @@
 
 namespace hrm;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
-
 /**
  * Validates and in very rare cases sanitizes relevant user input.
  *

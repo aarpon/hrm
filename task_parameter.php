@@ -71,14 +71,8 @@ if ($_SESSION['task_setting']->checkPostedTaskParameters($_POST)) {
         header("Location: " . "post_processing.php");
         exit();
     } else {
-
-        $saved = $_SESSION['task_setting']->save();
-        if ($saved) {
-            header("Location: " . "select_task_settings.php");
-            exit();
-        } else {
-            $message = $_SESSION['task_setting']->message();
-        }
+        header("Location: " . "select_hpc.php");
+        exit();
     }
 } else {
     $message = $_SESSION['task_setting']->message();
@@ -260,7 +254,6 @@ include("header.inc.php");
                     $_SESSION['task_setting']->parameter("SignalNoiseRatio");
                 $signalNoiseRatioValue = $signalNoiseRatioParam->value();
 
-
                     /* Loop over the channels. */
                 for ($ch = 0; $ch < $chanCnt; $ch++) {
 
@@ -340,45 +333,24 @@ include("header.inc.php");
                     $value = $signalNoiseRatioValue[$ch];
                 ?>
 
+
                     <div id="qmle-snr-<?php echo $ch;?>"
                      class="multichannel"<?php echo $visibility ?>>
 
                      <span class="nowrap">Ch<?php echo $ch; ?>:
-                            <select class="snrselect"
+                        &nbsp;&nbsp;&nbsp;
+                            <span class="multichannel">
+                                <input
+                                    id="SignalNoiseRatioQMLE<?php echo $ch; ?>"
+                                    name="SignalNoiseRatioQMLE<?php echo $ch; ?>"
                                     title="Signal-to-noise ratio (QMLE)"
-                                    class="selection"
-                                    name="SignalNoiseRatioQMLE<?php echo $ch ?>">
-                        <?php
-
-                            for ($optionIdx = 1; $optionIdx <= 4; $optionIdx++) {
-                                $option = "                                <option ";
-                                if (isset($signalNoiseRatioValue)) {
-                                    if ($signalNoiseRatioValue[$ch] >= 1
-                                       && $signalNoiseRatioValue[$ch] <= 4) {
-                                        if ($optionIdx == $signalNoiseRatioValue[$ch])
-                                            $option .= "selected=\"selected\" ";
-                                    } else {
-                                        if ($optionIdx == 2)
-                                            $option .= "selected=\"selected\" ";
-                                    }
-                                } else {
-                                    if ($optionIdx == 2)
-                                        $option .= "selected=\"selected\" ";
-                                }
-                                $option .= "value=\"" . $optionIdx . "\">";
-                                if ($optionIdx == 1)
-                                    $option .= "low</option>";
-                                else if ($optionIdx == 2)
-                                    $option .= "fair</option>";
-                                else if ($optionIdx == 3)
-                                    $option .= "good</option>";
-                                else if ($optionIdx == 4)
-                                    $option .= "inf</option>";
-                                echo $option;
-                            }
-
-                            ?>
-                            </select>
+                                    type="text"
+                                    size="8"
+                                    value="<?php echo $value; ?>"
+                                    class="multichannelinput"
+                                    onchange="copySnrToOtherAlgorithms(<?php echo $ch; ?>,this)"/>
+                                    </span>&nbsp;
+                                </span>
                     </div><!-- qmle-snr-channelNumber-->
 
 
@@ -448,6 +420,121 @@ include("header.inc.php");
 
 
 
+            <!-- acuity mode -->
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('acuity');">
+
+                <legend>
+                <a href="javascript:openWindow(
+                            'http://www.svi.nl/acuity')">
+                        <img src="images/help.png" alt="?"/></a>
+                    Acuity Mode
+                </legend>
+
+                <div id="acuity mode">
+
+                    <tr>
+                        <td>Acuity mode:</td>
+                        
+                        <td>
+                <select id="AcuityMode"
+                        title="Acuity mode"
+                        name="AcuityMode"
+                        class="selection"
+                       onchange="switchAcuityMode(this)">
+
+                                    <?php
+                    
+                             /*         
+                                      ACUITY MODE
+                     */
+                              $parameterAcuityMode =
+                                  $_SESSION['task_setting']->parameter("AcuityMode");
+                                  $possibleValues = $parameterAcuityMode->possibleValues();
+                                  $selectedMode = $parameterAcuityMode->value();
+
+                          foreach ($possibleValues as $possibleValue) {
+                                          $translatedValue =
+                                          $parameterAcuityMode->translatedValueFor($possibleValue);
+
+                                          if ($possibleValue == $selectedMode) {
+                                              $selected = " selected=\"selected\"";
+                                          } else {
+                                              $selected = "";
+                                          }
+                                          ?>
+                                          <option <?php echo $selected; ?>
+                                              value="<?php echo $possibleValue?>">
+                                              <?php echo $translatedValue ?>
+                                          </option>
+                                          <?php
+                                      }                    /* End of loop for select options. */
+                                      ?>
+                        </select>
+                        </td>
+                    </tr>
+
+
+
+                <!-- start the acuity table-->
+                <table><tr>
+
+                <?php
+                
+                /*                ACUITY                    */
+
+                    $visibility = " style=\"display: none\"";
+                    if ($selectedMode == "on") {
+                        $visibility = " style=\"display: block\"";
+                    }
+
+                $acuityParam = $_SESSION['task_setting']->parameter("Acuity");
+                $acuityValue = $acuityParam->value();
+
+                     /* Loop over the channels. */
+                for ($ch = 0; $ch < $chanCnt; $ch++) {
+                
+                    // All acuity divs need to be initialized with the value from the saved parameter.
+                    $value = $acuityValue[$ch];
+                 ?>
+
+                    <td>
+                    <div id="acuity-<?php echo $ch;?>"
+                     class="multichannel"<?php echo $visibility ?>>
+
+                     <span class="nowrap">Ch<?php echo $ch; ?>:
+                        &nbsp;&nbsp;&nbsp;
+                              <span class="multichannel">
+                                  <input
+                                      id="Acuity<?php echo $ch; ?>"
+                                      name="Acuity<?php echo $ch; ?>"
+                                      title="Acuity"
+                                      type="text"
+                                      size="8"
+                                      value="<?php echo $value; ?>"
+                                      class="multichannelinput"/>
+                                        </span>&nbsp;
+                                    </span>
+
+                    </div><!-- acuity-channelNumber-->
+                </td>
+                
+                    <?php
+                    /* Start a new table row after a number of entries. */
+                    if ($ch == 2) echo "</tr><tr>";
+                }
+                ?>
+                
+
+                <!-- Close the last row and table-->
+                </tr></table>
+                
+                </div> <!-- acuity mode div -->
+
+            </fieldset> <!-- acuity mode fieldset-->
+
+
+
         <div id="Autocrop">
             <fieldset class="setting provided"
                       onmouseover="changeQuickHelp('autocrop');">
@@ -494,6 +581,54 @@ include("header.inc.php");
                 </select>
         </div> <!-- Autocrop -->
 
+            
+        <div id="BleachingMode">
+            <fieldset class="setting provided"
+                      onmouseover="changeQuickHelp('bleaching');">
+
+                <legend>
+                    <a href="javascript:openWindow(
+                        'http://www.svi.nl/HelpBleaching')">
+                        <img src="images/help.png" alt="?"/>
+                    </a>
+                    Bleaching Correction
+                </legend>
+
+                <select id="BleachingMode"
+                        title="Bleaching Mode"
+                        name="BleachingMode"
+                        class="selection">
+                    <?php
+
+                    /*
+                          BLEACHINIG MODE
+                    */
+                    $parameterBlMode =
+                        $_SESSION['task_setting']->parameter("BleachingMode");
+                    $possibleValues = $parameterBlMode->possibleValues();
+                    $selectedMode = $parameterBlMode->value();
+
+                    foreach ($possibleValues as $possibleValue) {
+                        $translation =
+                            $parameterBlMode->translatedValueFor($possibleValue);
+                        if ($possibleValue == $selectedMode) {
+                            $option = "selected=\"selected\"";
+                        } else {
+                            $option = "";
+                        }
+                        ?>
+                        <option <?php echo $option ?>
+                            value="<?php echo $possibleValue ?>">
+                            <?php echo $translation ?>
+                        </option>
+                        <?php
+                    }
+                    ?>
+
+                </select>
+        </div> <!-- BleachingMode -->
+
+            
         <div id="ArrayDetectorReductionMode">
         <?php
             if ($_SESSION['user']->isAdmin()
@@ -826,29 +961,10 @@ include("header.inc.php");
                    onmouseover="TagToTip('ttSpanCancel' )"
                    onmouseout="UnTip()"
                    onclick="deleteValuesAndRedirect('select_task_settings.php' );"/>
-
-            <?php
-            /* Don't proceed to the post processing page. */
-            if ($_SESSION['user']->isAdmin()
-            || $_SESSION['task_setting']->isEligibleForCAC()
-            || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
-                ?>
                 <input type="submit" value="" class="icon next"
                        onmouseover="TagToTip('ttSpanForward' )"
                        onmouseout="UnTip()"
                        onclick="process()"/>
-                <?php
-            } else {
-                ?>
-                <input type="submit" value=""
-                       class="icon save"
-                       onmouseover="TagToTip('ttSpanSave')"
-                       onmouseout="UnTip()"
-                       onclick="process()"/>
-
-                <?php
-            }
-            ?>
 
         </div>
 

@@ -11,8 +11,6 @@ namespace hrm\param\base;
 
 use hrm\DatabaseConnection;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * The ChoiceParameter can assume a limited number of possible values.
  *

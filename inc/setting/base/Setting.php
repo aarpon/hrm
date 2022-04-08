@@ -13,8 +13,6 @@ use hrm\DatabaseConnection;
 use hrm\param\base\Parameter;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * (Abstract) base class for all specific Setting classes.
  *

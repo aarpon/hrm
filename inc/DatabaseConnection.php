@@ -22,8 +22,6 @@ use hrm\setting\ParameterSetting;
 use hrm\setting\TaskSetting;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . "/bootstrap.php";
-
 /**
  * Manages the database connection through the ADOdb library.
  *
@@ -518,8 +516,8 @@ class DatabaseConnection
             }
 
             // Accumulate the successes (or failures) of the queries. If a query
-            // fails, the return of $this->execute() will be === false; otherwise
-            // it is an ADORecordSet.
+            // fails, the return of $this->execute() will be === false;
+            // otherwise it is an ADORecordSet.
             $result &= ($this->execute($query) !== false);
         }
 
@@ -591,9 +589,18 @@ class DatabaseConnection
                     // Create hard links and update paths to the PSF files
                     // to point to the hard-links.
                     $fileServer = new Fileserver($original_user);
-                    $parameterValue = $fileServer->createHardLinksToSharedPSFs(
-                        $parameterValue, $targetUserName);
+                    $parameterValue = $fileServer->createHardLinksToSharedAuxFiles(
+                        $parameterValue, "psf", $targetUserName);
+                }
 
+                // Special treatment for the HotPixelCorrection parameter.
+                if ($parameter->name() == "HotPixelCorrection") {
+
+                    // Create hard links and update paths to the HPC files
+                    // to point to the hard-links.
+                    $fileServer = new Fileserver($original_user);
+                    $parameterValue = $fileServer->createHardLinksToSharedAuxFiles(
+                        $parameterValue, "hpc", $targetUserName);
                 }
 
                 /*!
@@ -657,7 +664,7 @@ class DatabaseConnection
             }
 
 
-            if ($newValue{0} == '#') {
+            if ($newValue[0] == '#') {
                 switch ($parameterName) {
                     case "DeconvolutionAlgorithm":
                     case "ExcitationWavelength":
@@ -665,8 +672,14 @@ class DatabaseConnection
                     case "PinholeSize":
                     case "PinholeSpacing":
                     case "SignalNoiseRatio":
+                    case "Acuity":
                     case "BackgroundOffsetPercent":
-                    case "ChromaticAberration":
+                    case "ChromaticAberrationCh0":
+                    case "ChromaticAberrationCh1":
+                    case "ChromaticAberrationCh2":
+                    case "ChromaticAberrationCh3":
+                    case "ChromaticAberrationCh4":
+                    case "ChromaticAberrationCh5":
                     case "StedDepletionMode":
                     case "StedWavelength":
                     case "StedSaturationFactor":
@@ -682,6 +695,7 @@ class DatabaseConnection
                     case "ColocChannel":
                     case "ColocThreshold":
                     case "ColocCoefficient":
+                    case "HotPixelCorrection":
                     case "PSF":
                         /* Extract and continue to explode. */
                         $newValue = substr($newValue, 1);
@@ -689,9 +703,7 @@ class DatabaseConnection
                         $newValues = explode("#", $newValue);
                 }
 
-                if (strcmp($parameterName, "PSF") != 0
-                    && strpos($newValue, "/")
-                ) {
+                if (!in_array($parameterName, array("PSF", "HotPixelCorrection")) && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
                         if (strpos($newValues[$i], "/")) {
@@ -778,21 +790,27 @@ class DatabaseConnection
                     continue;
                 }
             }
-            if ($newValue{0} == '#') {
+            if ($newValue[0] == '#') {
                 switch ($parameterName) {
                     case "DeconvolutionAlgorithm":
                     case "ExcitationWavelength":
                     case "EmissionWavelength":
                     case "SignalNoiseRatio":
+                    case "Acuity":
                     case "BackgroundOffsetPercent":
-                    case "ChromaticAberration":
+                    case "ChromaticAberrationCh0":
+                    case "ChromaticAberrationCh1":
+                    case "ChromaticAberrationCh2":
+                    case "ChromaticAberrationCh3":
+                    case "ChromaticAberrationCh4":
+                    case "ChromaticAberrationCh5":
                         /* Extract and continue to explode. */
                         $newValue = substr($newValue, 1);
                     default:
                         $newValues = explode("#", $newValue);
                 }
 
-                if (strcmp($parameterName, "PSF") != 0 && strpos($newValue, "/")) {
+                if (!in_array($parameterName, array("PSF", "HotPixelCorrection")) && strpos($newValue, "/")) {
                     $newValue = array();
                     for ($i = 0; $i < count($newValues); $i++) {
                         //$val = explode("/", $newValues[$i]);
@@ -934,16 +952,33 @@ class DatabaseConnection
                 $psfFiles = explode('#', $values);
 
                 // Create hard-links to the target user folder
-                $newPSFFiles = $fileserver->createHardLinksFromSharedPSFs(
-                    $psfFiles, $owner, $previous_owner);
+                $newPSFFiles = $fileserver->createHardLinksFromSharedAuxFiles(
+                    $psfFiles, "psf", $owner, $previous_owner);
 
                 // Update the entries for the database
                 $record["value"] = "#" . implode('#', $newPSFFiles);
+		
+            } elseif ($record["name"] == "HotPixelCorrection") {
+
+                // Instantiate a Fileserver object for the target user
+                $fileserver = new Fileserver($owner);
+
+                // Get the array of HPC names
+                $values = $row["value"];
+                if ($values[0] == "#") {
+                    $values = substr($values, 1);
+                }
+                $hpcFiles = explode('#', $values);
+
+                // Create hard-links to the target user folder
+                $newHPCFiles = $fileserver->createHardLinksFromSharedAuxFiles(
+                    $hpcFiles, "hpc", $owner, $previous_owner);
+
+                // Update the entries for the database
+                $record["value"] = "#" . implode('#', $newHPCFiles);
 
             } else {
-
                 $record["value"] = $row["value"];
-
             }
 
             $insertSQL = $this->connection()->GetInsertSQL($destParameterTable,
@@ -1040,9 +1075,27 @@ class DatabaseConnection
                 $psfFiles = explode("#", $psfFiles);
 
                 // Delete them
-                Fileserver::deleteSharedFSPFilesFromBuffer($psfFiles);
+                Fileserver::deleteSharedAuxFilesFromBuffer($psfFiles, "psf");
             }
         }
+
+        // Delete shared HPC files if any exist
+        if ($sourceParameterTable == "shared_parameter") {
+            $query = "select value from $sourceParameterTable where setting_id=$id and name='HotPixelCorrection'";
+            $hpcFiles = $this->queryLastValue($query);
+            if (null != $hpcFiles && $hpcFiles != "#####") {
+                if ($hpcFiles[0] == "#") {
+                    $hpcFiles = substr($hpcFiles, 1);
+                }
+
+                // Extract HPC file paths from the string
+                $hpcFiles = explode("#", $hpcFiles);
+
+                // Delete them
+                Fileserver::deleteSharedAuxFilesFromBuffer($hpcFiles, "hpc");
+            }
+        }
+
 
         $this->connection()->BeginTrans();
 
@@ -2282,6 +2335,7 @@ class DatabaseConnection
             case 'PerformAberrationCorrection':
             case 'AberrationCorrectionMode':
             case 'AdvancedCorrectionOptions':
+	    case 'HotPixelCorrection':
             case 'PSF' :
                 return "provided";
             case 'Binning':

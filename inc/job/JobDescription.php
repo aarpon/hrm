@@ -376,7 +376,7 @@ class JobDescription
             $result &= $db->addFileToJob($id, $this->owner, $file, $this->autoseries);
 
             // Now add a Job to the queue for this file
-            $result &= $db->queueJob($id, $settingsId, $ownerName);
+            $result &= ($db->queueJob($id, $settingsId, $ownerName) !== false);
         }
 
         // Assign priorities
@@ -506,7 +506,7 @@ class JobDescription
         //$parameterSetting = $this->parameterSetting;
         //$parameter = $parameterSetting->parameter('ImageFileFormat');
         //$fileFormat = $parameter->value();
-        if (preg_match("/^(.*)\.(lif|lof|czi)\s\((.*)\)/i", $inputFile[0], $match)) {
+        if (preg_match("/^(.*)\.(lif|lof|czi|nd)\s\((.*)\)/i", $inputFile[0], $match)) {
             $inputFile = $match[1] . '_' . $match[2];
         } else {
             $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));

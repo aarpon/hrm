@@ -12,9 +12,6 @@ namespace hrm\param\base;
 
 use hrm\DatabaseConnection;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
-
 /**
  * (Abstract) base class for all Parameter types in HRM.
  */

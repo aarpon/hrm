@@ -11,8 +11,6 @@ namespace hrm\param;
 
 use hrm\param\base\NumericalParameter;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * A NumericalParameter to represent the numerical aperture of the objective.
  *

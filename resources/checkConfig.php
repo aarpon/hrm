@@ -4,7 +4,7 @@
 
 // $ php checkConfig.php /path/to/config/file
 //
-// Example: php checkConfig.php /var/www/html/hrm/config/hrm_server_config.inc
+// Example: php checkConfig.php /var/www/html/hrm/config/hrm_config.inc
 
 require_once dirname(__FILE__) . '/../inc/bootstrap.php';
 
@@ -28,7 +28,7 @@ switch ($argc) {
 function displayUsage()
 {
     echo PHP_EOL . "Usage: php checkConfig.php /path/to/config/file" . PHP_EOL . PHP_EOL .
-        "Example: php checkConfig.php /var/www/html/hrm/config/hrm_server_config.inc" .
+        "Example: php checkConfig.php /var/www/html/hrm/config/hrm_config.inc" .
     PHP_EOL . PHP_EOL;
 }
 

@@ -10,8 +10,6 @@
 
 namespace hrm;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
-
 /**
  * Takes care of all file handling to and from the image area (version 2).
  *
@@ -20,32 +18,13 @@ require_once dirname(__FILE__) . '/bootstrap.php';
 class FileserverV2
 {
     /**
-     * Get the compression command (with %DEST% placeholder for the source)
-     *
-     * Note: when serving a compressed file for download, remember to set the
-     * MIME type to "application/x-force-download".
-     *
-     * @return array Array with the command for each supported compressor (currently only zip).
-     */
-    private static function getCompressor()
-    {
-        // Replace the array of compression options from the
-        // (deprecated) configuration files with the only supported
-        // option: zip.
-        $compressBin['zip'] = "cd %DEST% \n /usr/bin/zip -0 ";
-        return $compressBin;
-    }
-
-    /**
      * Get the decompression command (with %DEST% placeholder for the target)
      * @return array Array with the command for each supported decompressor (currently only zip).
      */
-    private static function getDecompressor()
+    private static function getDecompressors()
     {
-        // Replace the array of decompression options from the
-        // (deprecated) configuration files with the only supported
-        // option: zip.
-        $decompressBin['zip'] = "cd %DEST% \n /usr/bin/unzip -o ";
+        // Get the archive file extensions from the configuration files.
+        global $decompressBin;
         return $decompressBin;
     }
 
@@ -68,7 +47,7 @@ class FileserverV2
         }
 
         // Drop path info and sanitize file name
-        $destBaseName = str_replace(" ", "_", basename($file));
+        $destBaseName = FileserverV2::sanitizeFileName(basename($file));
 
         // Full path of destination file
         $destFile = $destDir . "/" . $destBaseName;
@@ -136,11 +115,8 @@ class FileserverV2
      */
     public static function decompressArchive($file, $destDir)
     {
-        // Replace the array of decompression options from the
-        // (deprecated) configuration files with the only supported
-        // option: zip.
-        // @TODO: Simplify.
-        $decompressBin = self::getDecompressor();
+        // Get the archive file extensions from the configuration files.
+        $decompressBin = self::getDecompressors();
 
         // Create the output directory
         if (!is_dir($destDir)) {
@@ -189,11 +165,7 @@ class FileserverV2
     public static function isArchiveFile($fileName)
     {
         // Get the archive file extensions from the configuration files.
-        // Replace the array of decompression options from the
-        // (deprecated) configuration files with the only supported
-        // option: zip.
-        // @TODO: Simplify.
-        $decompressBin = self::getDecompressor();
+        $decompressBin = self::getDecompressors();
 
         // Get the file extension
         $extension = FileserverV2::getFileNameExtension($fileName);
@@ -252,11 +224,8 @@ class FileserverV2
      */
     public static function getArchiveExtensions()
     {
-        // Replace the array of decompression options from the
-        // (deprecated) configuration files with the only supported
-        // option: zip.
-        // @TODO: Simplify.
-        $decompressBin = self::getDecompressor();
+        // Get the archive file extensions from the configuration files.
+        $decompressBin = self::getDecompressors();
 
         // Archive extensions
         return array_keys($decompressBin);
@@ -271,7 +240,7 @@ class FileserverV2
     public static function getImageExtrasExtensions()
     {
         // Return the image extras extensions
-        return array("ids", 'idx.gz');
+        return array("ids", 'ids.gz');
     }
 
     /**
@@ -319,18 +288,19 @@ class FileserverV2
     {
         // Process the path information
         $info = pathinfo($filename);
+        $allExtensions = FileserverV2::getAllValidExtensions();
+        if (in_array(strtolower($info["extension"]), $allExtensions)) {
+            return $info["extension"];
+        }
+
+        # Process possibly composed extension
         $info_ext = pathinfo($info["filename"], PATHINFO_EXTENSION);
         if ($info_ext == "") {
             return $info["extension"];
         } else {
-            if (strlen($info_ext) > 4) {
-                // Avoid pathological cases with dots somewhere in the file name.
-                return $info["extension"];
-            }
-            $allExtensions = FileserverV2::getAllValidExtensions();
-            $composedExt = $info_ext . "." . $info["extension"];
+            $composedExt = strtolower($info_ext . "." . $info["extension"]);
             if (in_array($composedExt, $allExtensions)) {
-                return $composedExt;
+                return $info_ext . "." . $info["extension"];
             } else {
                 return $info["extension"];
             }
@@ -468,13 +438,19 @@ class FileserverV2
         if (isset($allowHttpTransfer) && $allowHttpTransfer == true) {
             // Does the download directory exist?
             if (!is_dir($httpDownloadTempFilesDir)) {
-                // Try creating it
+                Log::info("Trying to create " . $httpDownloadTempFilesDir);
                 $result &= mkdir($httpDownloadTempFilesDir, 0775);
                 if (! $result) {
-                    // @todo Report!
+                    Log::error("ERROR creating " . $httpDownloadTempFilesDir);
                     return false;
                 }
 
+            }
+
+            // $perms = substr(sprintf('%o', fileperms($httpDownloadTempFilesDir)), -4);
+            // Log::info("Permissions: " . $perms);
+            if (! chmod($httpDownloadTempFilesDir, 0775)) {
+                Log::warning("Adjusting permissions failed on " . $httpDownloadTempFilesDir);
             }
 
             // Check that the download directory is writable
@@ -496,12 +472,16 @@ class FileserverV2
 
             // Does the chunk upload directory exist?
             if (!is_dir($httpUploadTempChunksDir)) {
-                // Try creating it
+                Log::info("Trying to create " . $httpUploadTempChunksDir);
                 $result &= mkdir($httpUploadTempChunksDir, 0775);
                 if (! $result) {
-                    // @todo Report!
+                    Log::error("Error creating " . $httpUploadTempChunksDir);
                     return false;
                 }
+            }
+
+            if (! chmod($httpUploadTempChunksDir, 0775)) {
+                Log::warning("Adjusting permissions failed on " . $httpUploadTempChunksDir);
             }
 
             // Check that the chunk upload directory is writable
@@ -518,13 +498,17 @@ class FileserverV2
 
             // Does the file upload directory exist?
             if (!is_dir($httpUploadTempFilesDir)) {
-                // Try creating it
+                Log::info("Trying to create " . $httpUploadTempFilesDir);
                 $result &= mkdir($httpUploadTempFilesDir, 0775);
                 if (! $result) {
-                    // @todo Report!
+                    Log::error("Error creating " . $httpUploadTempFilesDir);
                     return false;
                 }
 
+            }
+
+            if (! chmod($httpUploadTempFilesDir, 0775)) {
+                Log::warning("Adjusting permissions failed on " . $httpUploadTempFilesDir);
             }
 
             // Check that the file upload directory is writable
@@ -541,5 +525,53 @@ class FileserverV2
 
         // Return global result
         return $result;
+    }
+
+    /**
+     * Remove any non-ASCII characters and convert known non-ASCII characters
+     * to their ASCII equivalents, if possible. Also, replaces blank spaces
+     * with "_".
+     *
+     * @param string $string
+     * @return string $string
+     * @author Jay Williams <myd3.com>
+     * @license MIT License
+     * @link http://gist.github.com/119517
+     *
+     * Modified by Aaron Ponti and Kevin Namink for the HRM project.
+     */
+    public static function sanitizeFileName($string)
+    {
+        // Replace Single Curly Quotes
+        $search[]  = chr(226).chr(128).chr(152);
+        $replace[] = "'";
+        $search[]  = chr(226).chr(128).chr(153);
+        $replace[] = "'";
+
+        // Replace En Dash
+        $search[]  = chr(226).chr(128).chr(147);
+        $replace[] = '--';
+
+        // Replace Em Dash
+        $search[]  = chr(226).chr(128).chr(148);
+        $replace[] = '---';
+
+        // Replace Ellipsis with three consecutive dots
+        $search[]  = chr(226).chr(128).chr(166);
+        $replace[] = '...';
+
+        // Replace blank spaces with underscores
+        $search[]  = " ";
+        $replace[] = "_";
+        
+        // Apply Replacements
+        $string = str_replace($search, $replace, $string);
+
+        // Replace non-ASCII characters and any characters that are not
+        // one of the following: "!%^&=',.-_" "0-9" "A-Z" "a-z" with "_".
+        $string = preg_replace("/[^\!\%\^\&\=\'\,\.\-\_0-9A-Za-z]/","_",
+                               $string);
+
+        return $string;
     }
 }

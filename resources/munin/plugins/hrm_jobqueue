@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# Minimal plugin for MUNIN to monitor HRM's job queue length
+#
+# Written 2020-10 by Niko Ehrenfeuchter <nikolaus.ehrenfeuchter@unibas.ch>
+#
+
+JOBCOLOUR='4169e1'             # Royal blue
+
+case "$1" in
+   "config")
+        cat << EOM
+graph_category processes
+graph_title HRM Job Queue
+graph_info The number of jobs in the HRM (Huygens Remote Manager) queue.
+graph_vlabel number of queued jobs
+jobs.label jobs in queue
+jobs.colour $JOBCOLOUR
+jobs.warning 200
+EOM
+        exit 0;;
+esac
+
+printf "jobs.value "
+mysql \
+    --user "$db_user" \
+    --password="$db_pass" \
+    --execute="SELECT COUNT(id) FROM job_queue;" \
+    --silent \
+    --skip-column-names \
+    "$db_name"

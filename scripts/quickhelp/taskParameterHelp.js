@@ -29,16 +29,26 @@ window.helpText[ "method" ] =
   'colocalization tasks.</p>';
 
 window.helpText[ "snr" ] =
-  '<p>The SNR controls the sharpness of the result: only with noise-free ' +
-  'images you can safely demand very sharp results (high SNR values) without ' +
-  'amplifying noise.</p>' +
+  '<p>The signal-to-noise ratio is a constant signifying the relative amount of ' +
+  'useful data as opposed to noise that is present in the image.' +
+  '<p>Though it is a constant, in legacy SNR mode it may be adjusted to control ' +
+  'the sharpness of the result at the risk of amplifying noise. ' +
+  'In acuity mode, it is best to provide or estimate this parameter as accurately ' +
+  'as possible and use the acuity parameter to adjust sharpness instead. </p>' +
   '<p>The different deconvolution algorithms have different requirements on ' +
   'the SNR parameter.</p>' +
-  '<p>For the <strong>CMLE and GMLE algorithms</strong>, you are asked to give a ' +
-  'numericalestimation of the SNR of your images. The SNR estimator can help you ' +
-  'calculate the SNR for your images.</p>' +
-  '<p>For the <strong>QMLE algorithm</strong>, only a coarser classification ' +
-  'of the SNR is required.</p>';
+  '<p>For each of the <strong>GMLE, CMLE and GMLE algorithms</strong>, you ' +
+  'are asked to give a numerical estimation of the SNR of your images. The SNR ' +
+  'estimator can help you calculate the SNR for your images.</p>';
+
+window.helpText[ "acuity" ] =
+  '<p>The acuity controls the sharpness of the result. If you want to suppress noise ' +
+  'use a negative value; if you want to increase sharpness and can tolerate the ' +
+  'potential amplification of noise use a positive value.</p>' +
+  '<p>This abstracted parameter is included for completeness and compatibility ' +
+  'with other Huygens products. If you are unfamiliar with the effects of this ' +
+  'setting it is advised to use the legacy SNR mode.</p>' +
+  '<p>Accepted values range between -100 and 100. </p>';
  
 window.helpText[ "background" ] =
   '<p>The background is any additive and approximately constant signal in ' +
@@ -71,6 +81,10 @@ window.helpText[ "autocrop" ] =
   'proposal for the crop region. In computing this initial proposal the ' +
   'Microscopic Parameters are taken into account, making sure that ' +
   'cropping will not have a negative impact on the deconvolution result.</p>';
+
+window.helpText[ "bleaching" ] =
+  '<p>If possible, apply bleaching correction. This will be the case' +
+  'for 3D widefield-based volumes as well as for all time series.</p>';
 
 window.helpText[ "arrayDetectorReductionMode" ] =
     '<p>The array detector reduction mode specifies which pixel reassignment method ' +

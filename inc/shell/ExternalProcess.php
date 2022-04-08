@@ -12,8 +12,6 @@ namespace hrm\shell;
 
 use hrm\Log;
 
-require_once dirname(__FILE__) . "/../bootstrap.php";
-
 global $hucore, $hutask;
 
 /** @todo Why is $hucore forced here? */

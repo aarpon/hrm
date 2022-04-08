@@ -3,6 +3,13 @@
 // This file is part of the Huygens Remote Manager
 // Copyright and license notice: see license.txt
 
+// clear OMERO connection related variables if "disconnectOmero" was requested:
+if (isset($_POST['disconnectOmero']) && isset($omeroConnection)) {
+    unset($omeroConnection);
+    unset($_SESSION['omeroConnection']);
+}
+
+
 // Dialog to ask for the OMERO credentials.
 if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
     ?>
@@ -67,8 +74,15 @@ if (isset($_POST['getOmeroData']) && !isset($omeroConnection)) {
 
 
 // if we are connected to an OMERO server, always show the tree by default:
-if (isset($omeroConnection)) {
+if (isset($omeroConnection) && !isset($_POST['disconnectOmero'])) {
     ?>
+
+    <script>
+        // hide the web up-/download button to prevent confusion with the
+        // OMERO transfer buttons as long as we're having an OMERO connection
+        hide("webTransferButton");
+    </script>
+
 
     <div id="activeTransfer" title="OMERO transfer in progress">
         <p>An OMERO transfer is currently running, please wait
@@ -90,6 +104,9 @@ if (isset($omeroConnection)) {
         }
 
     </script>
+
+    <fieldset id="OmeroData">
+    <legend id="legendOmeroData">Your OMERO data</legend>
 
     <div id="omeroSelection">
 
@@ -121,9 +138,9 @@ if (isset($omeroConnection)) {
                 }
                 ?>
 
-                <input type="button" class="icon abort"
+                <input type="button" class="icon clearlist"
                        onclick="UnTip(); cancelOmeroSelection()"
-                       onmouseover="Tip('Reset OMERO selection.')"
+                       onmouseover="Tip('Reset OMERO selection')"
                        onmouseout="UnTip()"/>
 
                 <input name="refreshOmero" type="submit"
@@ -132,15 +149,12 @@ if (isset($omeroConnection)) {
                        onmouseover="Tip('Reload Omero tree view')"
                        onmouseout="UnTip()"/>
 
-                <?php
-                if ($browse_folder == "src") {
-                    ?>
-                    <p><img alt="Disclaimer: " src="./images/note.png"/>
-                        HRM cannot guarantee that <b>OME-TIFFs</b>
-                        provided by OMERO contain the original metadata.</p>
-                    <?php
-                }
-                ?>
+                <input type="submit" class="icon abort" id="disconnectOmero"
+                       name="disconnectOmero"
+                       onclick="UnTip();"
+                       onmouseover="Tip('Disconnect from OMERO')"
+                       onmouseout="UnTip()"/>
+
                 <input name="OmeImages" type="hidden">
                 <input name="OmeDatasetId" type="hidden">
                 <input name="selectedFiles" type="hidden">
@@ -150,7 +164,6 @@ if (isset($omeroConnection)) {
         </form> <!-- omeroForm !-->
 
         <fieldset>
-            <legend>Your OMERO data</legend>
 
             <div id="omeroTree" data-url="omero_treeloader.php">
                 <br/> <br/>
@@ -201,7 +214,19 @@ if (isset($omeroConnection)) {
 
         </fieldset>
 
+        <?php
+                if ($browse_folder == "src") {
+                    ?>
+                    <p><img alt="Disclaimer: " src="./images/note.png"/>
+                        <b>OME-TIFFs</b> provided by OMERO might be missing the
+                        original metadata.</p>
+                    <?php
+                }
+                ?>
+
     </div> <!-- omeroSelection -->
+
+    </fieldset> <!-- fsOmeroData -->
 
 
     <?php

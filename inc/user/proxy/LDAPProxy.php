@@ -13,8 +13,6 @@ namespace hrm\user\proxy;
 use Exception;
 use hrm\Log;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * Manages LDAP connections through built-in PHP LDAP support
  *

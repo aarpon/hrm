@@ -44,6 +44,7 @@ if (!isset($_SESSION['fileserver']) || $_SESSION['fileserver'] == null) {
     // If there is no other action on this path, we assume it's entry on the page and initialize the Fileserver object.
     $_SESSION['fileserver'] = new Fileserver($name);
 }
+
 if (!isset($_SESSION['parametersetting'])) {
     $_SESSION['parametersetting'] = new ParameterSetting();
 }
@@ -68,7 +69,13 @@ include("header.inc.php");
 $info = "<h3>Quick help</h3>" .
     "<p>Here you can select the files to be restored from the list " .
     "of available images. The file names are filtered by the selected " .
-    "file format. Use SHIFT- and CTRL-click to select multiple files.</p>" .
+    "file format." .
+    "<p>Use SHIFT- and CTRL-click to select multiple files from any of the boxes.</p>" .
+    "<p>From the <b><i>Images available on server</i></b> box, select the images you " .
+    "want to process and use the <img src=\"images/add.png\" alt=\"Help\" width=\"22\" height=\"22\"/> " .
+    "button to add them to the <b><i>Selected Images</i></b> box.</p>".
+    "<p>To remove images, select them in the <b><i>Selected Images</i></b> box " .
+    "and hit the <img src=\"images/remove.png\" alt=\"Help\" width=\"22\" height=\"22\"/> button.</p>" .
     "<p>Where applicable, the files belonging to a series can be condensed " .
     "into one file name by checking the 'autoseries' option. These files " .
     "will be loaded and deconvolved as one large dataset. Unchecking " .
@@ -386,7 +393,7 @@ include("footer.inc.php");
         sortOptions("filesPerFormat");
     }
 
-    // Update bot files and selected files elements
+    // Update both files and selected files elements
     function updateFilesAndSelectedFiles(response) {
         if (response["success"] === "false") {
 

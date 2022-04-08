@@ -57,6 +57,11 @@ if (isset($_POST['create'])) {
     // save preferred output file format
     if ($_SESSION['task_setting']->save()) {
         // TODO source/destination folder names should be given to JobDescription
+        // Call to sanitize files this will replace special characters with
+        // underscores. A warning is shown in the case this would actually
+        // change any file names.
+        $_SESSION['fileserver']->sanitizeFiles();
+        
         $job = new JobDescription();
         $job->setParameterSetting($_SESSION['setting']);
         $job->setTaskSetting($_SESSION['task_setting']);
@@ -73,7 +78,7 @@ if (isset($_POST['create'])) {
         }
     } else {
         $message = "An unknown error has occurred. " .
-        "Please inform the administrator";
+                   "Please inform the administrator";
     }
 } elseif (isset($_POST['OK'])) {
     header("Location: " . "select_parameter_settings.php");
@@ -146,37 +151,37 @@ include("header.inc.php");
             $timeValue = $timeParameter->value();
 
             // Make sure that if we had TIFF (8 or 16 bit) as output file format and a
-            // multichannel dataset, we reset the value to ics
-            if (($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')) {
+            // multichannel dataset, we reset the value to ics2
+            if (($value == 'TIFF 8-bit') || ($value == 'TIFF 16-bit')) {
                 /** @var NumberOfChannels $nChannelsParameter */
                 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
                 $numberOfChannels = $nChannelsParameter->value();
                 if ($numberOfChannels > 1) {
-                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    $parameter->setValue("ICS2 (Image Cytometry Standard 2)");
                     $_SESSION['first_visit'] = false;
                 }
             }
 
             // Make sure that if we had RGB-TIFF 8 bit as output file format and a
-            // single-channel dataset or more than 3 channels, we reset the value to ics
+            // single-channel dataset or more than 3 channels, we reset the value to ics2
             if ($value == 'RGB TIFF 8-bit') {
                 $nChannelsParameter = $_SESSION['setting']->parameter("NumberOfChannels");
                 $numberOfChannels = $nChannelsParameter->value();
                 if (($numberOfChannels == 1 || $numberOfChannels > 3)) {
-                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    $parameter->setValue("ICS2 (Image Cytometry Standard 2)");
                     $_SESSION['first_visit'] = false;
                 }
             }
 
             // Make sure that if we had Imaris Classic, TIFF 8, or TIFF 16
             // as output file format and a time-series dataset, we reset
-            // the value to ics
+            // the value to ics2
             if (
                 ($value == 'IMS (Imaris Classic)') ||
-                ($value == 'TIFF 18-bit') || ($value == 'TIFF 16-bit')
+                ($value == 'TIFF 8-bit') || ($value == 'TIFF 16-bit')
             ) {
                 if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0)) {
-                    $parameter->setValue("ICS (Image Cytometry Standard)");
+                    $parameter->setValue("ICS2 (Image Cytometry Standard 2)");
                     $_SESSION['first_visit'] = false;
                 }
             }
@@ -231,13 +236,24 @@ include("header.inc.php");
                 // See config files.
                 if (!isset($_SESSION['first_visit'])) {
                     global $default_output_format;
-
-                    /* Fallback. */
-                    if (! in_array($default_output_format, $possibleValues)) {
-                        $default_output_format = "ICS (Image Cytometry Standard)";
+                    
+                    /* Notice that unfortunately 'values-translations' are inverted in
+                    parameter "OutputFileFormat" w.r.t "ImageFileFormat". Therefore, a
+                    translation is needed here. */
+                    $defaultFormatSet = False;
+                    foreach ($possibleValues as $possibleValue) {
+                        if ($parameter->translatedValueFor($possibleValue) == $default_output_format) {
+                             $parameter->setValue($possibleValue);
+                             $defaultFormatSet = True;
+                             break;
+                        }
                     }
 
-                    $parameter->setValue($default_output_format);
+                    /* Fallback */
+                    if ($defaultFormatSet === False) {
+                        $parameter->setValue("ICS2 (Image Cytometry Standard 2)");
+                    }
+
                     $_SESSION['first_visit'] = false;
                 }
 
@@ -368,6 +384,7 @@ echo $_SESSION['analysis_setting']->displayString();
                       readonly="readonly">
 <?php
 
+// Show the files selected.
 $files = $_SESSION['fileserver']->selectedFiles();
 foreach ($files as $file) {
     echo " " . $file . "\n";
@@ -445,6 +462,13 @@ foreach ($files as $file) {
 
         echo "<p>$message</p>";
 
+        if (!$_SESSION['fileserver']->checkSanitization()) {
+            echo "<p>Warning: files containing special characters in their " .
+                "names have been selected. These files will automatically " .
+                "be renamed on disk if you continue.</p>" .
+                "<p>For example a file called \"B@d img(náme).h5\" " .
+                "would be renamed to \"B_d_img_n__me_.h5\".</p>";
+        }
         ?>
     </div>
 

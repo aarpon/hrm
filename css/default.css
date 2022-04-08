@@ -620,7 +620,7 @@ input.upload {
 }
 
 input.omero {
-    background: url("../images/omero_data.png") no-repeat center;
+    background: url("../images/omero_data_neg.png") no-repeat center;
 }
 
 input.save {
@@ -679,6 +679,7 @@ input.apply {
 #actions td.label {
     font-weight: bold;
     width: 50px;
+    vertical-align: top;
 }
 
 #omeroActions {
@@ -960,6 +961,13 @@ table#Servers td {
     font-size: 90%;
 }
 
+#HotPixelCorrection p.info {
+    text-align: center;
+    margin-bottom: 0;
+    color: #4988DE;
+    font-size: 90%;
+}
+
 #AberrationCorrectionModeDiv {
     margin-top: 25px;
 }
@@ -1093,6 +1101,7 @@ table#Servers td {
 #colocCoefficients table {
     font-size: 100%;
     float: left;
+    color: black;
 }
 
 #colocCoefficients td {
@@ -1103,32 +1112,38 @@ table#Servers td {
     text-align: center;
     font-weight: bold;
     background-color: #BFFFB3;
-}
-
-#colocCoefficients td.header {
+    color: #3F4641;
+ }
+ 
+ #colocCoefficients td.header {
     width: 60px;
     font-weight: bold;
     background-color: #CFD7F2;
     border: solid thin #B6ECFF;
-}
+    color: #3F4641;
+ }
+ 
+ #colocCoefficients td.coefficient {
+    background-color: #A9A9A9;
+    color: #3F4641;
+ }
+ 
+ #colocCoefficients td.thresh {
+    background-color: #A9A9A9;
+    color: #3F4641;
+ }
+ 
+ #colocCoefficients td.cell {
+    background-color: #A9A9A9;
+    color: #3F4641;
+ }
+ 
+ #colocCoefficients td.marked {
+    background-color: #A9A9A9;
+    color: #3F4641;
+ }
 
-#colocCoefficients td.coefficient {
-    background-color: #DAFFDA;
-}
-
-#colocCoefficients td.thresh {
-    background-color: #EEFFEE;
-}
-
-#colocCoefficients td.cell {
-    background-color: #DAFFDA;
-}
-
-#colocCoefficients td.marked {
-    background-color: #B6ECFF;
-}
-
-#colocMap table {
+ #colocMap table {
     font-size: 100%;
     float: left;
 }
@@ -1608,6 +1623,12 @@ input.abort {
     background: url("../images/cancel_small.png") no-repeat center;
 }
 
+input.clearlist {
+    width: 60px;
+    height: 60px;
+    background: url("../images/clear-list.png") no-repeat center;
+}
+
 /* The dimensions are set to values smaller than the image to solve an
 issue in Chrome where some white padding is added to the image. */
 input.noPreview {
@@ -1617,7 +1638,7 @@ input.noPreview {
 }
 
 .expandedView {
-    font-size: 110%;
+    font-size: 175%;
     font-weight: bold;
     color: #4988de;
     cursor: pointer;
@@ -1653,6 +1674,10 @@ select {
     background-color: rgba(51, 51, 51, 0.918);
     color: #fff;
     padding: 5px;
+}
+
+select:disabled {
+    color: #777777;
 }
 
 select.snrselect {
@@ -2314,8 +2339,11 @@ div.StedDeplModeValues {
 }
 
 .theme_div {
-    margin-left: 35px;
-    font-size: 0.85em;
+    float: right;
+    font-size: 1.5em;
+    position: relative;
+    top: -18px;
+    color: lightslategrey;
 }
 
 .theme_div > form > label {
@@ -2330,4 +2358,54 @@ div.StedDeplModeValues {
 
 .highlighted {
     color: darkorange;
+}
+
+/* Override color of jqTree items */
+.jqtree-tree .jqtree-title {
+    color: #73A7C3;
+}
+
+ul.jqtree-tree .jqtree-toggler {
+    color: #aaa;
+}
+
+ul.jqtree-tree .jqtree-toggler:hover {
+    color: #fff;
+}
+
+/* Overrides for selections (NOTE: using 'background: unset;' doesn't work) */
+ul.jqtree-tree li.jqtree-selected > .jqtree-element,
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
+    background-color: #445662;
+    background: -webkit-gradient(linear, left top, left bottom, from(#445662), to(#445662));
+    background: -moz-linear-gradient(top, #445662, #445662);
+    background: -ms-linear-gradient(top, #445662, #445662);
+    background: -o-linear-gradient(top, #445662, #445662);
+    text-shadow: unset;
+}
+
+#OmeroData {
+    border: 1px solid #335c70;
+    border-radius: 10px;
+    padding: 5px;
+    background: #1e2a30;
+    margin-left: 15px;
+    margin-right: 10px;
+}
+
+#legendOmeroData {
+    width: unset;
+    margin-left: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#backproj_result {
+    color: #3f993f;
+}
+
+.result_value {
+    font-weight: bolder;
+    font-size: 1.2em;
+    font-style: normal;
 }

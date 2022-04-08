@@ -11,8 +11,6 @@ namespace hrm\param;
 
 use hrm\param\base\NumericalArrayParameter;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * A NumericalArrayParameter to represent the excitation wavelength.
  *
