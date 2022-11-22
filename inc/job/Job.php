@@ -166,6 +166,8 @@ class Job
             'absolute'                        => 'Background absolute value',
             'estimation'                      => 'Background estimation',
             'ratio'                           => 'Signal/Noise ratio',
+            'acuity mode'                     => 'Acuity mode',
+            'acuity'                          => 'Acuity',
             'array detector reduction mode'   => 'Array detector reduction mode',
             'bleaching'                       => 'Bleaching Mode',
             'autocrop'                        => 'Autocrop',
