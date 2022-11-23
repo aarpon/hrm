@@ -65,7 +65,9 @@ window.helpText[ "stopcrit" ] =
   '<p>Please notice that the maximum number of iterations is limited. If ' +
   'you are using the CMLE algorithm and you feel like you would need more ' +
   'iterations to converge to a solution, you might probably want to try ' +
-  'the GMLE algorithm instead.</p>';
+  'the GMLE algorithm instead.</p>' +
+  '<p>The stopping criteria can be set per channel. When a channel is ' +
+  'left unset the same value as the channel before it is used.</p>';
 
 window.helpText[ "zstabilization" ] =
   '<p>Due to the high lateral resolution, <b>STED</b> image ' +

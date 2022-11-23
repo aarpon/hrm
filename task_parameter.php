@@ -839,44 +839,97 @@ include("header.inc.php");
                             'http://www.svi.nl/MaxNumOfIterations')">
                             <img src="images/help.png" alt="?"/></a>
                         number of iterations:
-
+                    </p>
+<table><tr>
                         <?php
 
                         $parameter = $_SESSION['task_setting']->parameter("NumberOfIterations");
-                        $value = $parameter->value();
+                        $itValues = $parameter->value();
 
+                     /* Loop over the channels. */
+                for ($ch = 0; $ch < $chanCnt; $ch++) {
+                
+                    $value = $itValues[$ch];
+                    ?>
 
-                        ?>
-                        <input id="NumberOfIterations"
-                               name="NumberOfIterations"
-                               title="Number of iterations"
-                               type="text"
-                               size="8"
-                               value="<?php echo $value ?>"/>
+                    <td>
+                    <div id="NumberOfIterations-<?php echo $ch;?>"
+                        class="multichannel">
 
-                    </p>
+                     <span class="nowrap">Ch<?php echo $ch; ?>:
+                        &nbsp;&nbsp;&nbsp;
+                              <span class="multichannel">
+                                  <input
+                                      id="it<?php echo $ch; ?>"
+                                      name="it<?php echo $ch; ?>"
+                                      title="Quality change"
+                                      type="text"
+                                      size="8"
+                                      value="<?php echo $value; ?>"
+                                      class="multichannelinput"/>
+                                        </span>&nbsp;
+                                    </span>
 
+                    </div> <!-- QualityChangeStoppingCriterion -->
+                </td>
+                      
+                    <?php
+                    /* Start a new table row after a number of entries. */
+                    if ($ch == 2) echo "</tr><tr>";
+                }
+                ?>
+
+                <!-- Close the last row and table-->
+                </tr></table>
+                                   
                     <p><a href="javascript:openWindow(
                           'http://www.svi.nl/QualityCriterion')">
                             <img src="images/help.png" alt="?"/></a>
-                        quality change:
-
+                        Quality change:
+                    </p>
+<table><tr>
                         <?php
 
                         $parameter = $_SESSION['task_setting']->parameter("QualityChangeStoppingCriterion");
-                        $value = $parameter->value();
+                        $qValues = $parameter->value();
 
-                        ?>
-                        <input id="QualityChangeStoppingCriterion"
-                               name="QualityChangeStoppingCriterion"
-                               title="Quality change stopping criterion"
-                               type="text"
-                               size="3"
-                               value="<?php echo $value ?>"/>
-                    </p>
+                     /* Loop over the channels. */
+                for ($ch = 0; $ch < $chanCnt; $ch++) {
+                
+                    $value = $qValues[$ch];
+                    ?>
 
-                </div>
+                    <td>
+                    <div id="QualityChangeStoppingCriterion-<?php echo $ch;?>"
+                        class="multichannel">
 
+                     <span class="nowrap">Ch<?php echo $ch; ?>:
+                        &nbsp;&nbsp;&nbsp;
+                              <span class="multichannel">
+                                  <input
+                                      id="q<?php echo $ch; ?>"
+                                      name="q<?php echo $ch; ?>"
+                                      title="Quality change"
+                                      type="text"
+                                      size="8"
+                                      value="<?php echo $value; ?>"
+                                      class="multichannelinput"/>
+                                        </span>&nbsp;
+                                    </span>
+
+                    </div> <!-- QualityChangeStoppingCriterion -->
+                </td>
+                      
+                    <?php
+                    /* Start a new table row after a number of entries. */
+                    if ($ch == 2) echo "</tr><tr>";
+                }
+                ?>
+
+                <!-- Close the last row and table-->
+                </tr></table>
+                
+                      
             </fieldset>
 
         </div>

@@ -6597,10 +6597,13 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
+
 // -----------------------------------------------------------------------------
 // Update to revision 20
 // Description:
 //     * Remove "IMS (Imaris Classic)" from the list out output file formats.
+//     * Expand the QualityChangeStoppingCriterion to set values per channel.
+//     * Expand the NumberOfIterations to set values per channel.
 // -----------------------------------------------------------------------------
 $n = 20;
 if ($current_revision < $n) {
@@ -6617,6 +6620,188 @@ if ($current_revision < $n) {
             write_message($msg);
             write_to_error($msg);
             return;
+        }
+    }
+
+    // Expand the QualityChangeStoppingCriterion to set values per channel.
+    unset($temp);
+    $tabname = "task_parameter";
+    $fields_set = array('owner','setting','name','value');
+    $name = "QualityChangeStoppingCriterion";
+    $maxCh = 6;
+
+    // Select all QualityChangeStoppingCriterion entries.
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+
+            # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
+            $quality = $row[3];
+            $qualityArray = array_fill(0, $maxCh, $quality);
+            $qualityArray = array_merge(array(null), $qualityArray);
+            $row[3] = implode('#', $qualityArray);
+
+            # Delete old entry.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                              " WHERE owner='" . $row[0] .
+                              "' AND setting='" . $row[1] .
+                              "' AND name='" . $row[2] . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+
+            # Set new entry.
+            for ($i = 0; $i < count($fields_set); $i++) {
+                $temp[$fields_set[$i]] = $row[$i];
+            }
+            $insertSQL = $db->GetInsertSQL($tabname, $temp);
+            if (!$db->Execute($insertSQL)) {
+                
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+    
+    // Re-do all of the above for the shared templates.
+    $tabname = "shared_task_parameter";
+    $fields_set = array('id','setting_id','owner','setting','name','value');
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+
+            # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
+            $quality = $row[3];
+            $qualityArray = array_fill(0, $maxCh, $quality);
+            $qualityArray = array_merge(array(null), $qualityArray);
+            $row[3] = implode('#', $qualityArray);
+
+            # Delete old entry.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                              " WHERE owner='" . $row[0] .
+                              "' AND setting='" . $row[1] .
+                              "' AND name='" . $row[2] . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+
+            # Set new entry.
+            for ($i = 0; $i < count($fields_set); $i++) {
+                $temp[$fields_set[$i]] = $row[$i];
+            }
+            $insertSQL = $db->GetInsertSQL($tabname, $temp);
+            if (!$db->Execute($insertSQL)) {
+                
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // Expand the NumberOfIterations to set values per channel.
+    unset($temp);
+    $tabname = "task_parameter";
+    $fields_set = array('owner','setting','name','value');
+    $name = "NumberOfIterations";
+    $maxCh = 6;
+
+    // Select all QualityChangeStoppingCriterion entries.
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+
+            # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
+            $quality = $row[3];
+            $qualityArray = array_fill(0, $maxCh, $quality);
+            $qualityArray = array_merge(array(null), $qualityArray);
+            $row[3] = implode('#', $qualityArray);
+
+            # Delete old entry.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                              " WHERE owner='" . $row[0] .
+                              "' AND setting='" . $row[1] .
+                              "' AND name='" . $row[2] . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+
+            # Set new entry.
+            for ($i = 0; $i < count($fields_set); $i++) {
+                $temp[$fields_set[$i]] = $row[$i];
+            }
+            $insertSQL = $db->GetInsertSQL($tabname, $temp);
+            if (!$db->Execute($insertSQL)) {
+                
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+    
+    // Re-do all of the above for the shared templates.
+    $tabname = "shared_task_parameter";
+    $fields_set = array('id','setting_id','owner','setting','name','value');
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+
+            # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
+            $quality = $row[3];
+            $qualityArray = array_fill(0, $maxCh, $quality);
+            $qualityArray = array_merge(array(null), $qualityArray);
+            $row[3] = implode('#', $qualityArray);
+
+            # Delete old entry.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                              " WHERE owner='" . $row[0] .
+                              "' AND setting='" . $row[1] .
+                              "' AND name='" . $row[2] . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+
+            # Set new entry.
+            for ($i = 0; $i < count($fields_set); $i++) {
+                $temp[$fields_set[$i]] = $row[$i];
+            }
+            $insertSQL = $db->GetInsertSQL($tabname, $temp);
+            if (!$db->Execute($insertSQL)) {
+                
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
         }
     }
 
