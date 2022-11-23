@@ -673,6 +673,8 @@ class DatabaseConnection
                     case "PinholeSpacing":
                     case "SignalNoiseRatio":
                     case "Acuity":
+                    case "NumberOfIterations":
+                    case "QualityChangeStoppingCriterion":
                     case "BackgroundOffsetPercent":
                     case "ChromaticAberrationCh0":
                     case "ChromaticAberrationCh1":
@@ -725,7 +727,7 @@ class DatabaseConnection
     }
 
     /**
-     * Loads the parameter values for a setting fro mthe sharead tabled and
+     * Loads the parameter values for a setting from the shared table and
      * returns it.
      * @param int $id Setting id.
      * @param string $type Setting type (one of "parameter", "task", "analysis").
@@ -797,6 +799,8 @@ class DatabaseConnection
                     case "EmissionWavelength":
                     case "SignalNoiseRatio":
                     case "Acuity":
+                    case "NumberOfIterations":
+                    case "QualityChangeStoppingCriterion":
                     case "BackgroundOffsetPercent":
                     case "ChromaticAberrationCh0":
                     case "ChromaticAberrationCh1":
