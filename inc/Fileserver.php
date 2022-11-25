@@ -736,6 +736,26 @@ class Fileserver
                         $sanitized = pathinfo($newPath, PATHINFO_FILENAME);
                     }
                 }
+
+                # Vsi files have folders containing the data with them, the
+                # folder for "<imgname>.vsi" would be called "_<imgname>_".
+                $relatedFolderName = $this->sourceFolder() .
+                    "/_" . $fileName . "_";
+                if (realpath($relatedFolderName)) {
+                    $renamedFolderName = $this->sourceFolder() . "/_" .
+                        basename($newPath, "." . $extensionProcessed) . "_";
+                    if (!realpath($renamedFolderName)) {
+                        rename($relatedFolderName, $renamedFolderName);
+                    } else {
+                        error_log("Related folder " . $relatedFolderName .
+                                  "couldn't be renamed, the required name " .
+                                  "is already taken. Sanitization skipped " .
+                                  "for " . $oldPath . ".");
+                        continue;
+                    }
+                }
+                
+                
                 rename($oldPath, $newPath);
                 $renamesDone[$fileName] = $sanitized;
                 $this->selectedFiles[$key] = $sanitized . "." . $extension;
