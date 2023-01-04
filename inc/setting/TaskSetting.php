@@ -896,13 +896,15 @@ class TaskSetting extends Setting
             }
 
             if (isset($huArray[$key])) {
-                $it = $huArray[$key];
-                if ($it > $itMax) {
-                    $itMax = $it;
+                $it[$chan] = $huArray[$key];
+                if ($it[$chan] > $itMax) {
+                    $itMax = $it[$chan];
                 }
+            } else {
+                $it[$chan] = $itMax;
             }
         }
-        $this->parameter['NumberOfIterations']->setValue($itMax);
+        $this->parameter['NumberOfIterations']->setValue($it);
 
         // Array Detector Reduction Mode.
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
@@ -928,13 +930,15 @@ class TaskSetting extends Setting
             }
 
             if (isset($huArray[$key])) {
-                $q = $huArray[$key];
-                if ($q < $qMin) {
-                    $qMin = $q;
+                $q[$chan] = $huArray[$key];
+                if ($q[$chan] < $qMin) {
+                    $qMin = $q[$chan];
                 }
+            } else {
+                $q[$chan] = $qMin;
             }
         }
-        $this->parameter["QualityChangeStoppingCriterion"]->setValue($qMin);
+        $this->parameter["QualityChangeStoppingCriterion"]->setValue($q);
 
         // Stabilization in Z.
         if (isset($huArray['stabilize enabled'])) {
