@@ -5075,12 +5075,20 @@ if ($current_revision < $n) {
         // Drop current index on 'name' from old username table (if the
         // index is no longer there because the database update was run
         // more than once in developement, we silently continue).
-        $dropIndexSQL = $datadict->DropIndexSQL("idx_name", $tabname);
-        if (!$db->Execute($dropIndexSQL[0])) {
-            // The index could not be dropped. We continue.
+        // Please notice that in recent versions of MySQL, the renamed table
+        // `username` does no longer exist at this stage, in contrast to what
+        // happened in the past. Hence, we add an additional check.
+
+        // Refresh the list of tables
+        $tables = $db->MetaTables();
+        if (in_array($tabname, $tables)) {
+            $dropIndexSQL = $datadict->DropIndexSQL("idx_name", $tabname);
+            if (!$db->Execute($dropIndexSQL[0])) {
+                // The index could not be dropped. We continue.
+            }
         }
 
-        // Refresh the table list
+        // Refresh the table list once more
         $tables = $db->MetaTables();
 
         // Create new table: username
