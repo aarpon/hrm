@@ -134,7 +134,7 @@ if (isset($_POST['modify'])) {
     // Passwords
     if ($clean['pass1'] == "" || $clean['pass2'] == "") {
         $result = false;
-        $message = "Please fill in both password fields";
+        $message = "Please enter a valid password in both password fields";
     } else {
         if ($clean['pass1'] != $clean['pass2']) {
             $result = false;
