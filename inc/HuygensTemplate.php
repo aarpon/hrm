@@ -2266,8 +2266,8 @@ class HuygensTemplate
     private function getQualityFactor($channel)
     {
         $deconSetting = $this->deconSetting;
-        $parameter = $deconSetting->parameter('QualityChangeStoppingCriterion');
-        return $parameter->value()[$channel];
+        $q = $deconSetting->parameter('QualityChangeStoppingCriterion')->value();
+        return $q[$channel];
     }
 
     /**
