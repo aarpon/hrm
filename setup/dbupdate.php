@@ -6258,7 +6258,7 @@ if ($current_revision < $n) {
                 $inx = $ch * 5 + 1;
                 $currCh = array_slice($array, $inx, 5);
                 $currCh = array_merge(array(null), $currCh, $insertArray);
-                $row[3] = implode($currCh, '#');
+                $row[3] = implode('#', $currCh);
                 $row[2] = $name . "Ch" . $ch;
                 for ($i = 0; $i < count($fields_set); $i++) {
                     $temp[$fields_set[$i]] = $row[$i];
@@ -6306,7 +6306,7 @@ if ($current_revision < $n) {
                 $inx = $ch * 5 + 1;
                 $currCh = array_slice($array, $inx, 5);
                 $currCh = array_merge(array(null), $currCh, $insertArray);
-                $row[5] = implode($currCh, '#');
+                $row[5] = implode('#', $currCh);
                 $row[4] = $name . "Ch" . $ch;
                 for ($i = 0; $i < count($fields_set); $i++) {
                     $temp[$fields_set[$i]] = $row[$i];

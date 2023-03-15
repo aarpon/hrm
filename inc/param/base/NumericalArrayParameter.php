@@ -168,7 +168,7 @@ class NumericalArrayParameter extends NumericalParameter
     public function displayString($numberOfChannels = 0)
     {
         $value = array_slice($this->value, 0, $numberOfChannels);
-        $value = implode($value, ', ');
+        $value = implode(', ', $value);
         $result = $this->formattedName();
         if ($this->notSet()) {
             $result = $result . "*not set*" . "\n";
