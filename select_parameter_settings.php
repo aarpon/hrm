@@ -130,6 +130,12 @@ if (isset($_POST['copy_public'])) {
     }
 
     if ($setting != null) {
+
+        // Try to parse the filename to set the ImageFileFormat. Only
+        // parse when the fileFormat is set to "all".
+        if ($fileFormat == 'all') {
+            $fileFormat = $_SESSION['fileserver']->fileToConfidenceLevelFormat($filestring);
+        }
         // Need to set ImageFileFormat here, as for the template creation above.
         $setting->parameter("ImageFileFormat")->setValue($fileFormat);
         $_SESSION['setting'] = $setting;
