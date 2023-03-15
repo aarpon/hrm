@@ -6721,17 +6721,17 @@ if ($current_revision < $n) {
     $name = "NumberOfIterations";
     $maxCh = 6;
 
-    // Select all QualityChangeStoppingCriterion entries.
+    // Select all NumberOfIterations entries.
     $rs = $db->execute("SELECT * FROM " . $tabname .
                        " WHERE name = '" . $name . "'");
     if ($rs) {
         while ($row = $rs->FetchRow()) {
 
             # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
-            $quality = $row[3];
-            $qualityArray = array_fill(0, $maxCh, $quality);
-            $qualityArray = array_merge(array(null), $qualityArray);
-            $row[3] = implode('#', $qualityArray);
+            $iterations = $row[3];
+            $iterationsArray = array_fill(0, $maxCh, $iterations);
+            $iterationsArray = array_merge(array(null), $iterationsArray);
+            $row[3] = implode('#', $iterationsArray);
 
             # Delete old entry.
             if (!$db->Execute("DELETE FROM " . $tabname .
@@ -6771,10 +6771,10 @@ if ($current_revision < $n) {
         while ($row = $rs->FetchRow()) {
 
             # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
-            $quality = $row[3];
-            $qualityArray = array_fill(0, $maxCh, $quality);
-            $qualityArray = array_merge(array(null), $qualityArray);
-            $row[3] = implode('#', $qualityArray);
+            $iterations = $row[3];
+            $iterationsArray = array_fill(0, $maxCh, $iterations);
+            $iterationsArray = array_merge(array(null), $iterationsArray);
+            $row[3] = implode('#', $iterationsArray);
 
             # Delete old entry.
             if (!$db->Execute("DELETE FROM " . $tabname .
