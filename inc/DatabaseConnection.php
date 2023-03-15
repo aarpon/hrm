@@ -2339,7 +2339,7 @@ class DatabaseConnection
             case 'PerformAberrationCorrection':
             case 'AberrationCorrectionMode':
             case 'AdvancedCorrectionOptions':
-	    case 'HotPixelCorrection':
+            case 'HotPixelCorrection':
             case 'PSF' :
                 return "provided";
             case 'Binning':
