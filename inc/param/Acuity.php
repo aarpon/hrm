@@ -59,7 +59,7 @@ class Acuity extends NumericalArrayParameter
     {
 
         $value = array_slice($this->value, 0, $numberOfChannels);
-        $value = implode($value, ", ");
+        $value = implode(", ", $value);
         $result = $this->formattedName() . $value . "\n";
 
         return $result;

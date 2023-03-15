@@ -126,7 +126,7 @@ class NumericalVectorParameter extends NumericalParameter
     {
         ksort($this->value);
         $value = array_slice($this->value, 0, $this->componentCnt);
-        $value = implode($value, ', ');
+        $value = implode(', ', $value);
         $result = $this->formattedName();
         if ($this->notSet()) {
             $result = $result . "*not set*" . "\n";
