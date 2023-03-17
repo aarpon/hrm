@@ -39,3 +39,11 @@ ${PROJECT_DIR}/composer.phar dump-autoload --optimize --working-dir=${PROJECT_DI
 # Set the default coding standard for phpcs
 ${PROJECT_DIR}/vendor/bin/phpcs --config-set default_standard PSR12
 
+###############################################################################
+#
+# Apply necessary patches
+#
+###############################################################################
+
+echo "Patching... "
+patch ${PROJECT_DIR}/vendor/adldap2/adldap2/lib/adLDAP/classes/adLDAPUsers.php ${PROJECT_DIR}/setup/adldap2.patch
