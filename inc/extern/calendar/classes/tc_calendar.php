@@ -700,7 +700,7 @@ class tc_calendar{
 		}
 	}
 	
-	function &check_json_decode($str){
+	static function &check_json_decode($str){
 		//should replace with better solution in the future
 		
 		if(function_exists("json_decode")){
