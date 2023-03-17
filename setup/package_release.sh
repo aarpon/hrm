@@ -12,10 +12,10 @@ if [[ "$#" -ne 2 && "$#" -ne 3 ]]; then
     echo "    Usage: "$0" package_dir archive_name [branch]"
     echo ""
     echo "        package_dir : directory where a release version of the code is prepared (e.g. /tmp/release)"
-    echo "        archive_name: full file name of the ZIP file to publish (e.g. /tmp/hrm_3.6.0.zip)"
+    echo "        archive_name: full file name of the ZIP file to publish (e.g. /tmp/hrm_3.9.0.zip)"
     echo "        branch      : (optional) branch to user for release. By default, this is 'master'."
     echo ""
-    echo "    Example: "$0" /tmp/release /tmp/hrm_3.4.0.zip"
+    echo "    Example: "$0" /tmp/release /tmp/hrm_3.9.0.zip"
     echo ""
     exit
 fi
@@ -62,6 +62,15 @@ ${PACKAGE_DIR}/composer.phar install --no-dev --working-dir=${PACKAGE_DIR}
 
 # Make sure to add our source to the autoloader path
 ${PACKAGE_DIR}/composer.phar dump-autoload --optimize --working-dir=${PACKAGE_DIR}
+
+###############################################################################
+#
+# Apply necessary patches
+#
+###############################################################################
+
+echo "Patching... "
+patch ${PACKAGE_DIR}/vendor/adldap2/adldap2/lib/adLDAP/classes/adLDAPUsers.php ${PACKAGE_DIR}/setup/adldap2.patch
 
 ###############################################################################
 #
