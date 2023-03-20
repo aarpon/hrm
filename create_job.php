@@ -173,11 +173,9 @@ include("header.inc.php");
                 }
             }
 
-            // Make sure that if we had Imaris Classic, TIFF 8, or TIFF 16
-            // as output file format and a time-series dataset, we reset
-            // the value to ics2
+            // Make sure that if we had TIFF 8 or TIFF 16 as output file format
+            // and a time-series dataset, we reset the value to ics2
             if (
-                ($value == 'IMS (Imaris Classic)') ||
                 ($value == 'TIFF 8-bit') || ($value == 'TIFF 16-bit')
             ) {
                 if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0)) {
@@ -221,11 +219,9 @@ include("header.inc.php");
                     $possibleValues = array_values($possibleValues);
                 }
 
-                // If the dataset is a time series, we remove Imaris classic, TIFF 8,
-                // TIFF RGB and TIFF 16 from the list
+                // If the dataset is a time series, we remove TIFF 8, TIFF RGB and TIFF 16
+                // from the list
                 if (($_SESSION['autoseries'] == "TRUE") || ($timeValue > 0)) {
-                    $possibleValues =
-                        array_diff($possibleValues, array('IMS (Imaris Classic)'));
                     $possibleValues = array_diff($possibleValues, array('TIFF 16-bit'));
                     $possibleValues = array_diff($possibleValues, array('TIFF 8-bit'));
                     $possibleValues = array_diff($possibleValues, array('RGB TIFF 8-bit'));
