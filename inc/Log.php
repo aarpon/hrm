@@ -79,7 +79,7 @@ class Log
         self::$monologger->pushHandler($handler);
 
         // Log initialization
-        self::$monologger->addInfo("Initialized logging.");
+        self::$monologger->info("Initialized logging.");
     }
 
     /**
@@ -106,7 +106,7 @@ class Log
         if (is_array($message)) {
             $message = implode(", ", $message);
         }
-        self::getMonoLogger()->addDebug($message);
+        self::getMonoLogger()->debug($message);
     }
 
     /**
@@ -118,7 +118,7 @@ class Log
         if (is_array($message)) {
             $message = implode(", ", $message);
         }
-        self::getMonoLogger()->addInfo($message);
+        self::getMonoLogger()->info($message);
     }
 
     /**
@@ -130,7 +130,7 @@ class Log
         if (is_array($message)) {
             $message = implode(", ", $message);
         }
-        self::getMonoLogger()->addWarning($message);
+        self::getMonoLogger()->warning($message);
     }
 
     /**
@@ -142,6 +142,6 @@ class Log
         if (is_array($message)) {
             $message = implode(", ", $message);
         }
-        self::getMonoLogger()->addError($message);
+        self::getMonoLogger()->error($message);
     }
 }
