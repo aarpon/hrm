@@ -6589,6 +6589,39 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
+// -----------------------------------------------------------------------------
+// Update to revision 20
+// Description:
+//     * Remove "IMS (Imaris Classic)" from the list out output file formats.
+// -----------------------------------------------------------------------------
+$n = 20;
+if ($current_revision < $n) {
+
+    // Remove "IMS (Imaris Classic)" from possible_values
+    $query = "SELECT * FROM possible_values WHERE parameter = 'OutputFileFormat' AND value = 'IMS (Imaris Classic)';";
+    $rs = $db->Execute($query);
+    $rows = $rs->getRows();
+    if (count($rows) > 0) {
+        $query = "DELETE FROM possible_values WHERE parameter = 'OutputFileFormat' AND value = 'IMS (Imaris Classic)';";
+        $rs = $db->Execute($query);
+        if (!$rs) {
+            $msg = "Could not delete the IMS (Imaris Classic) output file format from possible_values table.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Update revision
+    if (!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
 fclose($fh);
 
 return;
