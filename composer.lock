@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "36e39f9cc478e1b4bdad350de730b5fa",
+    "content-hash": "d45e092186a4f6fa9ec7eaf6645f6865",
     "packages": [
         {
             "name": "aarpon/php-traditional-server_old",
@@ -88,23 +88,20 @@
         },
         {
             "name": "adodb/adodb-php",
-            "version": "v5.22.4",
+            "version": "v5.20.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "bb87e83338c99038986878ac78f680becf9e8091"
+                "reference": "6c38e6c614802acd3151444a71191912edcec965"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/bb87e83338c99038986878ac78f680becf9e8091",
-                "reference": "bb87e83338c99038986878ac78f680becf9e8091",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/6c38e6c614802acd3151444a71191912edcec965",
+                "reference": "6c38e6c614802acd3151444a71191912edcec965",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0 || ^8.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^8.5"
+                "php": ">=5.3.2"
             },
             "type": "library",
             "autoload": {
@@ -133,7 +130,7 @@
                 }
             ],
             "description": "ADOdb is a PHP database abstraction layer library",
-            "homepage": "https://adodb.org/",
+            "homepage": "http://adodb.org/",
             "keywords": [
                 "abstraction",
                 "database",
@@ -145,7 +142,7 @@
                 "issues": "https://github.com/ADOdb/ADOdb/issues",
                 "source": "https://github.com/ADOdb/ADOdb"
             },
-            "time": "2022-10-28T17:34:17+00:00"
+            "time": "2022-01-22T22:38:02+00:00"
         },
         {
             "name": "monolog/monolog",
