@@ -305,26 +305,38 @@ class TaskSetting extends Setting
         }
 
         // Number of iterations
-        if (isset($postedParameters["NumberOfIterations"]) || $postedParameters["NumberOfIterations"] == '') {
-            $parameter = $this->parameter("NumberOfIterations");
-            $parameter->setValue($postedParameters["NumberOfIterations"]);
-            $this->set($parameter);
-            if (!$skipDeconAll && !$parameter->check()) {
-                $this->message = $parameter->message();
-                $noErrorsFound = false;
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
+            $name = "it$i";
+            if (isset($postedParameters[$name])) {
+                $value[$i] = $postedParameters[$name];
             }
         }
+        $parameter = $this->parameter("NumberOfIterations");
+        $parameter->setValue($value);
+        $this->set($parameter);
+        if (!$skipDeconAll && !$parameter->check()) {
+            $this->message = $parameter->message();
+            $noErrorsFound = false;
+        }
+        
 
         // Quality change
-        if (isset($postedParameters["QualityChangeStoppingCriterion"]) || $postedParameters["QualityChangeStoppingCriterion"] == '') {
-            $parameter = $this->parameter("QualityChangeStoppingCriterion");
-            $parameter->setValue($postedParameters["QualityChangeStoppingCriterion"]);
-            $this->set($parameter);
-            if (!$skipDeconAll && !$parameter->check()) {
-                $this->message = $parameter->message();
-                $noErrorsFound = false;
+        for ($i = 0; $i < $maxChanCnt; $i++) {
+            $value[$i] = null;
+            $name = "q$i";
+            if (isset($postedParameters[$name])) {
+                $value[$i] = $postedParameters[$name];
             }
         }
+        $parameter = $this->parameter("QualityChangeStoppingCriterion");
+        $parameter->setValue($value);
+        $this->set($parameter);
+        if (!$skipDeconAll && !$parameter->check()) {
+            $this->message = $parameter->message();
+            $noErrorsFound = false;
+        }
+
 
         // Stabilization in Z
         if (isset($postedParameters["ZStabilization"]) || $postedParameters["ZStabilization"] == '') {
@@ -884,13 +896,15 @@ class TaskSetting extends Setting
             }
 
             if (isset($huArray[$key])) {
-                $it = $huArray[$key];
-                if ($it > $itMax) {
-                    $itMax = $it;
+                $it[$chan] = $huArray[$key];
+                if ($it[$chan] > $itMax) {
+                    $itMax = $it[$chan];
                 }
+            } else {
+                $it[$chan] = $itMax;
             }
         }
-        $this->parameter['NumberOfIterations']->setValue($itMax);
+        $this->parameter['NumberOfIterations']->setValue($it);
 
         // Array Detector Reduction Mode.
         for ($chan = 0; $chan < $maxChanCnt; $chan++) {
@@ -916,13 +930,15 @@ class TaskSetting extends Setting
             }
 
             if (isset($huArray[$key])) {
-                $q = $huArray[$key];
-                if ($q < $qMin) {
-                    $qMin = $q;
+                $q[$chan] = $huArray[$key];
+                if ($q[$chan] < $qMin) {
+                    $qMin = $q[$chan];
                 }
+            } else {
+                $q[$chan] = $qMin;
             }
         }
-        $this->parameter["QualityChangeStoppingCriterion"]->setValue($qMin);
+        $this->parameter["QualityChangeStoppingCriterion"]->setValue($q);
 
         // Stabilization in Z.
         if (isset($huArray['stabilize enabled'])) {

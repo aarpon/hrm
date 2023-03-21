@@ -1972,7 +1972,7 @@ class HuygensTemplate
                     $taskDescr .= $this->getBleachingMode();
                     break;
                 case 'q':
-                    $taskDescr .= $this->getQualityFactor();
+                    $taskDescr .= $this->getQualityFactor($channel);
                     break;
                 case 'brMode':
                     $taskDescr .= $this->getBrMode();
@@ -1981,7 +1981,7 @@ class HuygensTemplate
                     $taskDescr .= $this->getVarPsf($channel);
                     break;
                 case 'it':
-                    $taskDescr .= $this->getIterations();
+                    $taskDescr .= $this->getIterations($channel);
                     break;
                 case 'bgMode':
                     $taskDescr .= $this->getBgMode();
@@ -2263,20 +2263,22 @@ class HuygensTemplate
      * Gets the deconvolution quality factor.
      * @return float The quality factor
      */
-    private function getQualityFactor()
+    private function getQualityFactor($channel)
     {
         $deconSetting = $this->deconSetting;
-        $parameter = $deconSetting->parameter('QualityChangeStoppingCriterion');
-        return $parameter->value();
+        $q = $deconSetting->parameter('QualityChangeStoppingCriterion')->value();
+        return $q[$channel];
     }
 
     /**
      * Gets the maximum number of iterations for the deconvolution.
      * @return int The maximum number of iterations.
      */
-    private function getIterations()
+    private function getIterations($channel)
     {
-        return $this->deconSetting->parameter('NumberOfIterations')->value();
+        $deconSetting = $this->deconSetting;
+        $it = $deconSetting->parameter("NumberOfIterations")->value();
+        return $it[$channel];
     }
 
     /**
