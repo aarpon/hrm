@@ -2011,8 +2011,8 @@ div.StedDeplModeValues {
 
 .message_confidence_estimated:before {
     font-size: 0.8em;
-    content: "Cannot be read from file, please fill in.";
-    color: #b09065;
+    content: "Estimated from other parameters, please check.";
+    color: #F0C010;
 }
 
 .message_confidence_default {

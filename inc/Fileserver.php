@@ -215,6 +215,48 @@ class Fileserver
         }
     }
 
+
+    /**
+     * Parse file to a format to use for obtaining the confidence levels for
+     * the file metadata.
+     * @param string $file The file name.
+     * @return string The file extension.
+     */
+    public function fileToConfidenceLevelFormat($file)
+    {
+        $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
+        switch ($fileExtension) {
+            case 'ims':
+            case 'lif':
+            case 'lof':
+            case 'lsm':
+            case 'oif':
+            case 'pic':
+            case 'r3d':
+            case 'stk':
+            case 'zvi':
+            case 'czi':
+            case 'nd2':
+            case 'nd':
+            case 'hdf5':
+            case 'ics':
+                $fileFormat =  $fileExtension;
+            case 'h5':
+                return 'hdf5';
+            case 'tif':
+            case 'tiff':
+                $fileFormat =  'tiff';
+            case 'ome.tif':
+            case 'ome.tiff':
+            case 'ome':
+                $fileFormat =  'ome';
+            default:
+                # 'all' will cause a default setting.
+                $fileFormat =  'all';
+        }
+        return $fileFormat;
+    }
+
     /**
      * Extracts the file extension, also if it's a subimage.
      * @param string $file The file name.
