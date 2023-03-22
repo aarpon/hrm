@@ -35,6 +35,10 @@
     {
       "name": "Egor Zindy",
       "email": "egor.zindy@manchester.ac.uk"
+    },
+    {
+      "name": "Kevin Namink",
+      "email": "kevin@svi.nl"
     }
   ],
   "minimum-stability": "stable",

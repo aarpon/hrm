@@ -405,8 +405,10 @@ class ExternalProcess
 
         /* Close pipes. Check first if they are proper handlers. If, for
            example, opening them did not work out, the handlers won't exist. */
-        if (is_resource($this->pipes[0])) {
-            fclose($this->pipes[0]);
+        if (isset($this->pipes[0])) {
+            if (is_resource($this->pipes[0])) {
+                fclose($this->pipes[0]);
+            }
         }
 
         if (is_resource($this->out_file)) {
