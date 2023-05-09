@@ -838,7 +838,7 @@ include("header.inc.php");
                         <a href="javascript:openWindow(
                             'http://www.svi.nl/MaxNumOfIterations')">
                             <img src="images/help.png" alt="?"/></a>
-                        number of iterations:
+                        Number of iterations:
                     </p>
 <table><tr>
                         <?php
