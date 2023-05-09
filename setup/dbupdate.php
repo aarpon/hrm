@@ -6638,6 +6638,12 @@ if ($current_revision < $n) {
 
             # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
             $quality = $row[3];
+
+            # If the first character is a '#' the change has already been
+            # applied, don't edit this value.
+            if (substr($quality, 0, 1) == '#') {
+                continue;
+            }
             $qualityArray = array_fill(0, $maxCh, $quality);
             $qualityArray = array_merge(array(null), $qualityArray);
             $row[3] = implode('#', $qualityArray);
@@ -6681,6 +6687,13 @@ if ($current_revision < $n) {
 
             # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
             $quality = $row[3];
+            
+            # If the first character is a '#' the change has already been
+            # applied, don't edit this value.
+            if (substr($quality, 0, 1) == '#') {
+                continue;
+            }
+            
             $qualityArray = array_fill(0, $maxCh, $quality);
             $qualityArray = array_merge(array(null), $qualityArray);
             $row[3] = implode('#', $qualityArray);
@@ -6729,6 +6742,13 @@ if ($current_revision < $n) {
 
             # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
             $iterations = $row[3];
+            
+            # If the first character is a '#' the change has already been
+            # applied, don't edit this value.
+            if (substr($iterations, 0, 1) == '#') {
+                continue;
+            }
+            
             $iterationsArray = array_fill(0, $maxCh, $iterations);
             $iterationsArray = array_merge(array(null), $iterationsArray);
             $row[3] = implode('#', $iterationsArray);
@@ -6772,6 +6792,13 @@ if ($current_revision < $n) {
 
             # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
             $iterations = $row[3];
+            
+            # If the first character is a '#' the change has already been
+            # applied, don't edit this value.
+            if (substr($iterations, 0, 1) == '#') {
+                continue;
+            }
+
             $iterationsArray = array_fill(0, $maxCh, $iterations);
             $iterationsArray = array_merge(array(null), $iterationsArray);
             $row[3] = implode('#', $iterationsArray);
