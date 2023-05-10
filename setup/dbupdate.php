@@ -186,6 +186,7 @@ function insert_column($tabname,$fields) {
 
     // NOTE: ADOdb AddColumnSQL, not guaranteed to work under all situations.
     // Please document here those situations (unknown as of February 2014).
+    // AddColumnSQL should fail if the tables doesn't exist yet (May 2023).
     $sqlarray = $datadict->AddColumnSQL($tabname, $fields);
 
     // return 0 if failed, 1 if executed all but with errors,
@@ -204,7 +205,8 @@ function insert_column($tabname,$fields) {
 
 // Check the existence and the structure of a table.
 // If the table does not exist, it is created;
-// if a field is not correct, it is altered;
+// if a field is not correct, it is altered; -> This might fail with the
+// updated adodb package. But this function is not used so I'll keep it.
 // if a field does not exist, it is added and the default value for that field is put in the record.
 function check_table_existence_and_structure($tabname,$flds) {
     global $datadict;
@@ -5254,7 +5256,7 @@ if ($current_revision < $n) {
     $columns = $db->MetaColumnNames($tabname);
     if (!array_key_exists(strtoupper($newcolumn), $columns)) {
 
-        $sqlarray = $datadict->ChangeTableSQL($tabname, "$newcolumn I", $dropOldFlds=false);
+        $sqlarray = $datadict->AddColumnSQL($tabname, "$newcolumn I");
         $rs = $datadict->ExecuteSQLArray($sqlarray);
         if($rs != 2) {
             $msg = "An error occurred while adding support for multi GPU deconvolution.";
