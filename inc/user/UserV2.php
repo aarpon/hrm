@@ -660,4 +660,53 @@ class UserV2
 
         return true;
     }
+
+
+    // Custom serialize function to avoid problems with serializing proxies
+    // that contain particular classes (ie. LDAP\\Connection).
+    public function __serialize()
+    {
+        // Unset proxy.
+        unset($this->proxy);
+        $this->proxy = null;
+
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'emailAddress' => $this->emailAddress,
+            'institution_id' => $this->institution_id,
+            'group' => $this->group,
+            'role' => $this->role,
+            'authMode' => $this->authMode,
+            'creationDate' => $this->creationDate,
+            'lastAccessDate' => $this->lastAccessDate,
+            'status' => $this->status,
+            'isAdmin' => $this->isAdmin,
+            'isLoggedIn' => $this->isLoggedIn
+        ];
+    }
+
+    // Unserialize function that also attempts to make a new proxy if the name
+    // exists.
+    public function __unserialize(array $data)
+    {
+        $this->id = $data['id'];
+        $this->name = $data['name'];
+        $this->emailAddress = $data['emailAddress'];
+        $this->institution_id = $data['institution_id'];
+        $this->group = $data['group'];
+        $this->role = $data['role'];
+        $this->authMode = $data['authMode'];
+        $this->creationDate = $data['creationDate'];
+        $this->lastAccessDate = $data['lastAccessDate'];
+        $this->status = $data['status'];
+        $this->isAdmin = $data['isAdmin'];
+        $this->isLoggedIn = $data['isLoggedIn'];
+
+        // Make a new proxy if the name exists.
+        if ($this->name != null) {
+            $this->setName($this->name);
+        }
+    }
+
 }

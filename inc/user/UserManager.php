@@ -814,7 +814,12 @@ class UserManager
         // @TODO Use the Shell classes!
         Log::info("Removing directories for '" . $username . "'.");
         global $userManagerScript;
-        Log::info(shell_exec($userManagerScript . " delete " . $username));
+        $retVal = shell_exec($userManagerScript . " delete " . $username);
+        if ($retVal == null) {
+            Log::info("Remove call had no output or encountered an error.");
+        } else {
+            Log::info($retVal);
+        }
     }
 
     /**
