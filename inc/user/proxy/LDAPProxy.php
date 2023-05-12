@@ -347,7 +347,11 @@ class LDAPProxy extends AbstractProxy
 
         // Get the membership information
         $info = @ldap_get_entries($this->m_Connection, $sr);
-        $groups = $info[0]["memberof"];
+        if ($info['count'] == 0) {
+            $groups = [];
+        } else {
+            $groups = $info[0]["memberof"];
+        }
 
         // Filter by valid groups?
         if (count($this->m_LDAP_Valid_Groups) == 0) {
