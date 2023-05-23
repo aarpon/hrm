@@ -35,7 +35,8 @@ ${PROJECT_DIR}/composer.phar dump-autoload --optimize --working-dir=${PROJECT_DI
 #
 # Apply necessary patches
 #
-###############################################################################
+##############################################################################
 
-echo "Patching... "
-patch ${PROJECT_DIR}/vendor/adldap2/adldap2/lib/adLDAP/classes/adLDAPUsers.php ${PROJECT_DIR}/setup/adldap2.patch
+# Currently none.
+# echo "Patching... "
+# patch ${PROJECT_DIR}/file.file ${PROJECT_DIR}/setup/patch.patch

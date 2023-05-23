@@ -69,8 +69,9 @@ ${PACKAGE_DIR}/composer.phar dump-autoload --optimize --working-dir=${PACKAGE_DI
 #
 ###############################################################################
 
-echo "Patching... "
-patch ${PACKAGE_DIR}/vendor/adldap2/adldap2/lib/adLDAP/classes/adLDAPUsers.php ${PACKAGE_DIR}/setup/adldap2.patch
+# Currently none.
+# echo "Patching... "
+# patch ${PROJECT_DIR}/file.file ${PROJECT_DIR}/setup/patch.patch
 
 ###############################################################################
 #
