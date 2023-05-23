@@ -353,6 +353,14 @@ class UserV2
      */
     public function proxy()
     {
+        if ($this->proxy == null) {
+            if ($this->name != null) {
+                $this->proxy = ProxyFactory::getProxy($this->name);
+            } else {
+                Log::Error("Cannot get a proxy: no name known.");
+            }
+        }
+        
         return $this->proxy;
     }
 
@@ -424,7 +432,7 @@ class UserV2
             return true;
         }
 
-        return $this->proxy->isActive($this->name());
+        return $this->proxy()->isActive($this->name());
     }
 
     /**
@@ -442,7 +450,7 @@ class UserV2
             return false;
         }
 
-        return $this->proxy->isDisabled($this->name());
+        return $this->proxy()->isDisabled($this->name());
     }
 
     /**
@@ -454,7 +462,7 @@ class UserV2
         // If the email is already stored in the object, return it; otherwise
         // retrieve it.
         if ($this->emailAddress == "") {
-            $this->emailAddress = $this->proxy->getEmailAddress($this->name());
+            $this->emailAddress = $this->proxy()->getEmailAddress($this->name());
         }
 
         return $this->emailAddress;
@@ -534,7 +542,7 @@ class UserV2
         // If the group is already stored in the object, return it; otherwise
         // retrieve it.
         if ($this->group == "") {
-            $this->group = $this->proxy->getGroup($this->name());
+            $this->group = $this->proxy()->getGroup($this->name());
         }
 
         return $this->group;
@@ -594,7 +602,7 @@ class UserV2
         if ($this->isLoggedIn) {
             // If the User is logged in, always retrieve the e-mail address
             // via the  correct proxy.
-            $this->emailAddress = $this->proxy->getEmailAddress($this->name);
+            $this->emailAddress = $this->proxy()->getEmailAddress($this->name);
         } else {
             $this->emailAddress = $row["email"];
         }
@@ -603,7 +611,7 @@ class UserV2
         if ($this->isLoggedIn) {
             // If the User is logged in, always retrieve the research group
             // via the  correct proxy.
-            $this->group = $this->proxy->getGroup($this->name);
+            $this->group = $this->proxy()->getGroup($this->name);
         } else {
             $this->group = $row["research_group"];
         }
@@ -702,11 +710,8 @@ class UserV2
         $this->status = $data['status'];
         $this->isAdmin = $data['isAdmin'];
         $this->isLoggedIn = $data['isLoggedIn'];
-
-        // Make a new proxy if the name exists.
-        if ($this->name != null) {
-            $this->setName($this->name);
-        }
+        
+        // A proxy will be generated when necessary.
     }
 
 }
