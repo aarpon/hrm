@@ -45,5 +45,6 @@ ${PROJECT_DIR}/vendor/bin/phpcs --config-set default_standard PSR12
 #
 ###############################################################################
 
-echo "Patching... "
-patch ${PROJECT_DIR}/vendor/adldap2/adldap2/lib/adLDAP/classes/adLDAPUsers.php ${PROJECT_DIR}/setup/adldap2.patch
+# Currently none.
+# echo "Patching... "
+# patch ${PROJECT_DIR}/file.file ${PROJECT_DIR}/setup/patch.patch
