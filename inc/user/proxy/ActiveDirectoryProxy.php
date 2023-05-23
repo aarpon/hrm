@@ -10,8 +10,7 @@
 
 namespace hrm\user\proxy;
 
-use adLDAP\adLDAP;
-use adLDAP\adLDAPException;
+use Adldap;
 use Exception;
 use hrm\Log;
 
@@ -29,10 +28,18 @@ use hrm\Log;
 class ActiveDirectoryProxy extends AbstractProxy
 {
     /**
-     * The adLDAP object.
+     * The adLDAP class.
      * @var adLDAP
      */
     private $m_AdLDAP;
+
+    
+    /**
+     * The adLDAP provider class.
+     * @var adLDAP_provider
+     */
+    private $m_AdLDAP_provider;
+    
 
     /**
      * Array of valid groups.
@@ -57,6 +64,15 @@ class ActiveDirectoryProxy extends AbstractProxy
      */
     private $m_AuthorizedGroups;
 
+    /**
+     * Append this to usernames. Similar to $m_UsernameSuffix, if both are present 
+     * the m_AccountSuffix has precedence.
+     *
+     * @var string
+    */
+    private $m_AccountSuffix;
+
+    
     /**
      * Append this to usernames in AD-forests to request the email address.
      *
@@ -120,18 +136,16 @@ class ActiveDirectoryProxy extends AbstractProxy
         /** @noinspection PhpIncludeInspection */
         include($conf);
 
-        // Set up the adLDAP object
+        // Set up the adLDAP options.
         $options = array(
             'account_suffix'      => $ACCOUNT_SUFFIX,
-            'ad_port'             => intval($AD_PORT),
+            'port'                => intval($AD_PORT),
             'base_dn'             => $BASE_DN,
-            'domain_controllers'  => $DOMAIN_CONTROLLERS,
-            'admin_username'      => $AD_USERNAME,
-            'admin_password'      => $AD_PASSWORD,
-            'real_primarygroup'   => $REAL_PRIMARY_GROUP,
+            'hosts'               => $DOMAIN_CONTROLLERS,
+            'username'            => $AD_USERNAME,
+            'password'            => $AD_PASSWORD,
             'use_ssl'             => $USE_SSL,
-            'use_tls'             => $USE_TLS,
-            'recursive_groups'    => $RECURSIVE_GROUPS);
+            'use_tls'             => $USE_TLS);
 
         // Check group filters
         if ($VALID_GROUPS === null) {
@@ -149,41 +163,42 @@ class ActiveDirectoryProxy extends AbstractProxy
         $this->m_ValidGroups      =  $VALID_GROUPS;
         $this->m_AuthorizedGroups =  $AUTHORIZED_GROUPS;
 
+        $this->m_AccountSuffix = $ACCOUNT_SUFFIX;
+        
         $this->m_UsernameSuffix = $AD_USERNAME_SUFFIX;
         $this->m_UsernameSuffixReplaceMatch = $AD_USERNAME_SUFFIX_PATTERN;
         $this->m_UsernameSuffixReplaceString = $AD_USERNAME_SUFFIX_REPLACE;
 
-        // Check if we have conflicting username settings
+        // Check if we have conflicting username settings.
         if (!empty($ACCOUNT_SUFFIX) && !empty($AD_USERNAME_SUFFIX)) {
             Log::error('$AD_USERNAME_SUFFIX and $ACCOUNT_SUFFIX are both set!');
         }
 
         try {
-            $this->m_AdLDAP = new adLDAP($options);
-        } catch (adLDAPException $e) {
-            // Make sure to clean stack traces
-            $pos = stripos($e, 'AD said:');
-            if ($pos !== false) {
-                $e = substr($e, 0, $pos);
-            }
+            // Start AdLDAP class instance.
+            $this->m_AdLDAP = new Adldap\Adldap();
+        
+            // Add a provider.
+            $this->m_AdLDAP->addProvider($options);
+            
+            // Connect to the provider.
+            $this->m_AdLDAP_provider = $this->m_AdLDAP->connect();
+            
+        } catch (Adldap\Auth\BindException $e) {
             echo $e;
+            Log::Error("Failed starting active_dir authentication, got: " . $e);
             exit();
         }
     }
 
+    
     /**
-     * Destructor. Closes the connection started by the adLDAP object.
+     * Destructor.
      */
     public function __destruct()
     {
-        // We ask the adLDAP object to close the connection. A check whether a
-        // connection actually exists will be made by the adLDAP object itself.
-        // This is a fallback to make sure to close any open sockets when the
-        // object is deleted, since all methods of this class that access the
-        // adLDAP object explicitly close the connection when done.
-        if ($this->m_AdLDAP !== null) {
-            $this->m_AdLDAP->close();
-        }
+        // The adldap2 package used (v10.5.0 or higher) should never have
+        // persistant connections. 
     }
 
     /**
@@ -195,6 +210,42 @@ class ActiveDirectoryProxy extends AbstractProxy
         return 'Active Directory';
     }
 
+
+
+    /**
+     * Fetches and returns a user from the server based on a username.
+     * @param string $username Username to fetch.
+     * @return the user model instance or false if unsuccessful.
+    */
+    function getUser($username)
+    {
+        if (!empty($this->m_AccountSuffix)) {
+            $username .= $this->m_AccountSuffix;
+            
+            if(!empty($this->m_UsernameSuffix)) {
+                Log::error('$AD_USERNAME_SUFFIX and $ACCOUNT_SUFFIX are both set!');
+            }
+        } elseif (!empty($this->m_UsernameSuffix)) {
+            $username .= $this->m_UsernameSuffix;
+            if ($this->m_UsernameSuffixReplaceMatch != '') {
+                $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
+                $replace = $this->m_UsernameSuffixReplaceString;
+                Log::info("getUser(): preg_replace($pattern, $replace, $username)");
+                $username = preg_replace($pattern, $replace, $username);
+                Log::info("Processed AD user name: '$username'");
+            }
+        }
+
+        $user = $this->m_AdLDAP_provider->search()->whereEquals("userprincipalname", $username)->get()->first();
+        if ($user == null) {
+            Log::error("Failed to get user '$username' in server.");
+            return false;
+        }
+        return $user;
+    }
+
+
+    
     /**
      * Authenticates the User with given username and password against Active
      * Directory.
@@ -210,15 +261,24 @@ class ActiveDirectoryProxy extends AbstractProxy
             return false;
         }
 
-        // Authenticate against AD
-        $b = $this->m_AdLDAP->user()->authenticate(strtolower($username), $password);
-
+        // Authenticate against AD.
+        try {
+            $b = $this->m_AdLDAP_provider->auth()->attempt(strtolower($username), $password);
+        } catch (Adldap\Auth\UsernameRequiredException $e) {
+            Log::Error("No username supplied, got: " . $e);
+            return false;
+        } catch (Adldap\Auth\PasswordRequiredException $e) {
+            Log::Error("No password supplied, got: " . $e);
+            return false;
+        }
+        
+        
         // If authentication failed, we can return here.
         if ($b === false) {
             Log::info("User '$username': authentication FAILED!");
-            $this->m_AdLDAP->close();
             return false;
         }
+        Log::info("User '$username': authentication SUCCESS!");
 
         // If if succeeded, do we need to check for group authorization?
         if (count($this->m_AuthorizedGroups) == 0) {
@@ -227,18 +287,14 @@ class ActiveDirectoryProxy extends AbstractProxy
         }
 
         // We need to retrieve the groups and compare them.
-
-        // Get the user groups from AD
-        $userGroups = $this->m_AdLDAP->user()->groups($username);
-
-        // Test for intersection
-        $b = count(array_intersect($userGroups, $this->m_AuthorizedGroups)) > 0;
-        if ($b === true) {
+        $group = $this->getGroup($username, false);
+        if ($group != "") {
             Log::info("User '$username': group authentication succeeded.");
-        } else {
-            Log::info("User '$username': user rejected by failed group authentication.");
+            return true;
         }
-        return $b;
+        
+        Log::info("User '$username': user rejected by failed group authentication.");
+        return false;
     }
 
     /**
@@ -248,74 +304,58 @@ class ActiveDirectoryProxy extends AbstractProxy
     */
     public function getEmailAddress($username)
     {
-        // If needed, process the user name suffix for subdomains
-        $username .= $this->m_UsernameSuffix;
-        if ($this->m_UsernameSuffixReplaceMatch != '') {
-            $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
-            $replace = $this->m_UsernameSuffixReplaceString;
-            Log::info("getEmailAddress(): preg_replace($pattern, $replace, $username)");
-            $username = preg_replace($pattern, $replace, $username);
-            Log::info("Processed AD user name: '$username'");
+        // Attempt to get the user data with the username.
+        $user = $this->getUser($username);
+        if (!$user) {
+            return false;
         }
 
-        // Get the email from AD
-        $info = $this->m_AdLDAP->user()->infoCollection($username, array("mail"));
-
+        // Attempt to get the mail data for the user.
+        $mail = $user->getEmail();
         if (!$info) {
             Log::warning('No email address found for username "' . $username . '"');
             return "";
         }
-        Log::info('Email for username "' . $username . '": ' . $info->mail);
-        return $info->mail;
+        Log::info('Email for username "' . $username . '": ' . $mail);
+        return $mail;
     }
 
     /**
      * Returns the group the user with given username belongs to.
      * @param string $username Username for which to query the group.
+     * @param bool $verbose Set the verbosity of this function (to reproduce old log behavior).
      * @return string Group or "" if not found.
     */
-    public function getGroup($username)
+    public function getGroup($username, $verbose = true)
     {
-        // If needed, process the user name suffix for subdomains
-        $username .= $this->m_UsernameSuffix;
-        if ($this->m_UsernameSuffixReplaceMatch != '') {
-            $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
-            $replace = $this->m_UsernameSuffixReplaceString;
-            Log::info("getEmailAddress(): preg_replace($pattern, $replace, $username)");
-            $username = preg_replace($pattern, $replace, $username);
-            Log::info("Processed AD user name: '$username'");
-        }
-
-        // Get the user groups from AD
-        $userGroups = $this->m_AdLDAP->user()->groups($username);
-
-        // If no groups found, return ""
-        if (!$userGroups) {
-            Log::info('No groups found for username "' . $username . '"');
+        
+        // Attempt to get the user data with the username.
+        $user = $this->getUser($username);
+        if (!$user) {
             return "";
         }
-
-        // Make sure to work on an array
-        if (!is_array($userGroups)) {
-            $userGroups = array($userGroups);
-        }
-
-        // If the list of valid groups is not empty, find the intersection
-        // with the returned group list; otherwise, keep working with the
-        // original array.
-        if (count($this->m_ValidGroups) > 0) {
-            $userGroups = array_values(array_intersect($userGroups, $this->m_ValidGroups));
-        }
-
-        // Now return the first entry
-        if (count($userGroups) == 0) {
-            Log::info("Group for username $username not found in the list of valid groups!");
-            $group = "";
+        
+        if ($REAL_PRIMARY_GROUP) {
+            $group = $user->getPrimaryGroup()->getName();
+            if (in_array($group, $this->m_AuthorizedGroups)) {
+                if ($verbose) {
+                    Log::info('Group for username "' . $username . '": ' . $group);
+                }
+                return $group;
+            }
         } else {
-            $group = $userGroups[0];
+            foreach ($this->m_AuthorizedGroups as $group) {
+                if ($user->inGroup($group, $recursive=$RECURSIVE_GROUPS)) {
+                    if ($verbose) {
+                        Log::info('Group for username "' . $username . '": ' . $group);
+                    }
+                    return $group;
+                }
+            }
         }
-
-        Log::info('Group for username "' . $username . '": ' . $group);
-        return $group;
+        if ($verbose) {
+            Log::info("Group for username $username not found in the list of valid groups!");
+        }
+        return "";
     }
 }
