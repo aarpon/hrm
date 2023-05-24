@@ -2034,9 +2034,6 @@ class Fileserver
 
         $file = stripslashes($file);
 
-        // Retrieve source file name
-        $sourceFilename = $this->getSourceFileNameForResult($file);
-
         /* All job previews share a common root name and relative path. */
         $this->previewBase = $file;
 
@@ -2086,7 +2083,7 @@ class Fileserver
         echo '
       <div id="basket"> <!--basket-->
       <div id="title">
-      <h1>' . $sourceFilename . '</h1>
+      <h1>Detailed results</h1>
       </div>';
 
         $pdest = $this->destinationFolder();
@@ -4418,40 +4415,5 @@ class Fileserver
             }
         }
         return TRUE;
-    }
-
-    private function getSourceFileNameForResult($filename)
-    {
-
-        // Remove the extension
-        $pos = strrpos($filename, '_hrm.');
-        $body = substr($filename, 0, $pos);
-
-        // Build the source template file name
-        $sourceTemplateName = $this->sourceFolder() . "/.hrm_" . $body . ".hgsb";
-
-        // Read the file
-        $content = file_get_contents($sourceTemplateName);
-        if ($content === false) {
-            return "Detailed results";
-        }
-
-        // Use regex to extract source file name
-        if (preg_match("/imgOpen \{path\s\{(?<name>.*?)\}/", $content, $matches) == 0) {
-            return "Detailed results";
-        }
-        $sourceFileName = $matches['name'];
-
-        // Extract the file name
-        $sourceFileName = basename($sourceFileName);
-
-        // Limit the file name to 40 characters if needed
-        if (strlen($sourceFileName) > 40) {
-            $sourceFileName = substr($sourceFileName, 0, 30) .
-                '&#8230;' . substr($sourceFileName, strlen($sourceFileName) - 9);
-        }
-
-        // Return
-        return $sourceFileName;
     }
 }
