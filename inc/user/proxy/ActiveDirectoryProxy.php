@@ -109,6 +109,21 @@ class ActiveDirectoryProxy extends AbstractProxy
     private $m_UsernameSuffixReplaceString;
 
     /**
+     * Tweak to get the real primary group from Active Directory. It works if
+     * the user's primary group is domain users.
+     * http://support.microsoft.com/?kbid=321360
+     *
+     * @var bool
+     */
+    private $m_RecursiveGroups;
+
+    /**
+     * When querying group memberships, do it recursively.
+     * @var bool
+     */
+    private $m_RealPrimaryGroup;
+
+    /**
      * ActiveDirectoryProxy constructor: instantiates an
      * ActiveDirectoryProxy object with the settings specified in
      * the configuration file.
@@ -121,7 +136,7 @@ class ActiveDirectoryProxy extends AbstractProxy
     {
         global $ACCOUNT_SUFFIX, $AD_PORT, $BASE_DN, $DOMAIN_CONTROLLERS,
                $AD_USERNAME, $AD_PASSWORD, $REAL_PRIMARY_GROUP, $USE_SSL,
-               $USE_TLS, $RECURSIVE_GROUPS, $AUTHORIZED_GROUPS, $VALID_GROUPS,
+               $USE_TLS, $AUTHORIZED_GROUPS, $VALID_GROUPS, $RECURSIVE_GROUPS,
                $AD_USERNAME_SUFFIX, $AD_USERNAME_SUFFIX_PATTERN,
                $AD_USERNAME_SUFFIX_REPLACE;
 
@@ -176,6 +191,9 @@ class ActiveDirectoryProxy extends AbstractProxy
         $this->m_UsernameSuffixReplaceMatch = $AD_USERNAME_SUFFIX_PATTERN;
         $this->m_UsernameSuffixReplaceString = $AD_USERNAME_SUFFIX_REPLACE;
 
+        $this->m_RecursiveGroups = $RECURSIVE_GROUPS;
+        $this->m_RealPrimaryGroup = $REAL_PRIMARY_GROUP;
+
         // Check if we have conflicting username settings.
         if (!empty($ACCOUNT_SUFFIX) && !empty($AD_USERNAME_SUFFIX)) {
             Log::error('$AD_USERNAME_SUFFIX and $ACCOUNT_SUFFIX are both set!');
@@ -226,14 +244,27 @@ class ActiveDirectoryProxy extends AbstractProxy
     */
     function getUser($username)
     {
+        // Try retrieving the user in with the SAM Account Name
+        $user = $this->m_AdLDAP_provider->search()->whereEquals("samaccountname", $username)->get()->first();
+        if ($user != null) {
+            return $user;
+        }
+
+        // Since it failed, try with the User Principal Name
         if (!empty($this->m_AccountSuffix)) {
+
+            // Append the account suffix
             $username .= $this->m_AccountSuffix;
-            
+
             if(!empty($this->m_UsernameSuffix)) {
                 Log::error('$AD_USERNAME_SUFFIX and $ACCOUNT_SUFFIX are both set!');
             }
+
         } elseif (!empty($this->m_UsernameSuffix)) {
+
+            // Append the username suffix
             $username .= $this->m_UsernameSuffix;
+
             if ($this->m_UsernameSuffixReplaceMatch != '') {
                 $pattern = "/$this->m_UsernameSuffixReplaceMatch/";
                 $replace = $this->m_UsernameSuffixReplaceString;
@@ -251,8 +282,6 @@ class ActiveDirectoryProxy extends AbstractProxy
         return $user;
     }
 
-
-    
     /**
      * Authenticates the User with given username and password against Active
      * Directory.
@@ -319,7 +348,7 @@ class ActiveDirectoryProxy extends AbstractProxy
 
         // Attempt to get the mail data for the user.
         $mail = $user->getEmail();
-        if (!$info) {
+        if (!$mail) {
             Log::warning('No email address found for username "' . $username . '"');
             return "";
         }
@@ -335,14 +364,13 @@ class ActiveDirectoryProxy extends AbstractProxy
     */
     public function getGroup($username, $verbose = true)
     {
-        
         // Attempt to get the user data with the username.
         $user = $this->getUser($username);
         if (!$user) {
             return "";
         }
         
-        if ($REAL_PRIMARY_GROUP) {
+        if ($this->m_RealPrimaryGroup) {
             $group = $user->getPrimaryGroup()->getName();
             if (in_array($group, $this->m_AuthorizedGroups)) {
                 if ($verbose) {
@@ -352,7 +380,7 @@ class ActiveDirectoryProxy extends AbstractProxy
             }
         } else {
             foreach ($this->m_AuthorizedGroups as $group) {
-                if ($user->inGroup($group, $recursive=$RECURSIVE_GROUPS)) {
+                if ($user->inGroup($group, $recursive=$this->m_RecursiveGroups)) {
                     if ($verbose) {
                         Log::info('Group for username "' . $username . '": ' . $group);
                     }
