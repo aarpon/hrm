@@ -235,7 +235,7 @@ class UserV2
         $this->name = $name;
 
         // Get the appropriate proxy
-        $this->proxy = ProxyFactory::getProxy($name);
+        $this->proxy = $this->proxy();
 
         // Load the user
         $this->load();
@@ -391,7 +391,7 @@ class UserV2
         }
 
         // Get the appropriate proxy
-        $this->proxy = ProxyFactory::getProxy($this->name());
+        $this->proxy = $this->proxy();
 
         // Try authenticating the user
         $this->isLoggedIn = $this->proxy->authenticate($this->name(), $password);

@@ -136,13 +136,20 @@ class ActiveDirectoryProxy extends AbstractProxy
         /** @noinspection PhpIncludeInspection */
         include($conf);
 
+        // Make sure that $AD_USERNAME contains the suffix
+        if (! str_contains($AD_USERNAME, $ACCOUNT_SUFFIX)) {
+            $username = $AD_USERNAME . $ACCOUNT_SUFFIX;
+        } else {
+            $username = $AD_USERNAME;
+        }
+
         // Set up the adLDAP options.
         $options = array(
             'account_suffix'      => $ACCOUNT_SUFFIX,
             'port'                => intval($AD_PORT),
             'base_dn'             => $BASE_DN,
             'hosts'               => $DOMAIN_CONTROLLERS,
-            'username'            => $AD_USERNAME,
+            'username'            => $username,
             'password'            => $AD_PASSWORD,
             'use_ssl'             => $USE_SSL,
             'use_tls'             => $USE_TLS);
