@@ -2183,10 +2183,15 @@ class DatabaseConnection
     {
         $query = "update job_queue set status='delete' where (status='queued' or status='paused') and id='$id';";
         // $query = "update job_queue set status='delete' where id='" . $id . "'";
-        $result = $this->execute($query);
+        $result1 = $this->execute($query);
         $query = "update job_queue set status='kill' where status='started' and id='$id';";
-        $result = $this->execute($query);
-        return $result;
+        $result2 = $this->execute($query);
+        if ($result1 === true || $result2 === true) {
+            return true;
+        } else {
+            Log::info("No jobs removed.");
+            return false;
+        }
     }
 
     /**
