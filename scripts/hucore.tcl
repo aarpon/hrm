@@ -288,17 +288,21 @@ proc calculateNyquistRate {} {
 
     set error [ getInputVariables {micr na ex em pcnt ril} ]
     if { $error } { exit 1 }
+    
+    set img [img create temp]
 
-    a setp -na $na -ex $ex -em $em -pcnt $pcnt -ril $ril \
+    $img setp -na $na -ex $ex -em $em -pcnt $pcnt -ril $ril \
         -micr $micr -s {1 1 1}
 
-    set nrate [a nyq -tclReturn]
+    set nrate [$img nyq -tclReturn]
 
     set sampxy [expr int( 1000 * [lindex $nrate 0] ) ]
     set sampz [expr int( 1000 * [lindex $nrate 2] ) ]
 
     reportKeyValue "xy" $sampxy
     reportKeyValue "z" $sampz
+
+    $img del
 }
 
 
