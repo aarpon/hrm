@@ -6728,7 +6728,6 @@ if ($current_revision < $n) {
         }
     }
 
-
     // Expand the NumberOfIterations to set values per channel.
     unset($temp);
     $tabname = "task_parameter";
