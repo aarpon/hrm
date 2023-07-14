@@ -6599,7 +6599,6 @@ if ($current_revision < $n) {
     write_to_log($msg);
 }
 
-
 // -----------------------------------------------------------------------------
 // Update to revision 20
 // Description:
