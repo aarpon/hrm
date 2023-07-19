@@ -6687,7 +6687,7 @@ if ($current_revision < $n) {
         while ($row = $rs->FetchRow()) {
 
             # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
-            $quality = $row[3];
+            $quality = $row[5];
             
             # If the first character is a '#' the change has already been
             # applied, don't edit this value.
@@ -6697,13 +6697,12 @@ if ($current_revision < $n) {
             
             $qualityArray = array_fill(0, $maxCh, $quality);
             $qualityArray = array_merge(array(null), $qualityArray);
-            $row[3] = implode('#', $qualityArray);
+            $row[5] = implode('#', $qualityArray);
 
             # Delete old entry.
             if (!$db->Execute("DELETE FROM " . $tabname .
-                              " WHERE owner='" . $row[0] .
-                              "' AND setting='" . $row[1] .
-                              "' AND name='" . $row[2] . "'")) {
+                              " WHERE id='" . $row[0] .
+                              "' AND setting_id='" . $row[1] . "'")) {
                 $msg = "An error occurred while updating " .
                     "the database to revision " . $n . ".";
                 write_message($msg);
@@ -6792,7 +6791,7 @@ if ($current_revision < $n) {
         while ($row = $rs->FetchRow()) {
 
             # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
-            $iterations = $row[3];
+            $iterations = $row[5];
             
             # If the first character is a '#' the change has already been
             # applied, don't edit this value.
@@ -6802,13 +6801,12 @@ if ($current_revision < $n) {
 
             $iterationsArray = array_fill(0, $maxCh, $iterations);
             $iterationsArray = array_merge(array(null), $iterationsArray);
-            $row[3] = implode('#', $iterationsArray);
+            $row[5] = implode('#', $iterationsArray);
 
             # Delete old entry.
             if (!$db->Execute("DELETE FROM " . $tabname .
-                              " WHERE owner='" . $row[0] .
-                              "' AND setting='" . $row[1] .
-                              "' AND name='" . $row[2] . "'")) {
+                              " WHERE id='" . $row[0] .
+                              "' AND setting_id='" . $row[1] . "'")) {
                 $msg = "An error occurred while updating " .
                     "the database to revision " . $n . ".";
                 write_message($msg);
