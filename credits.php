@@ -82,7 +82,7 @@ include("header.inc.php");
                 ETH Zurich</a>;
         </li>
         <li>
-            <b>Daniel Sevilla</b>,
+            <b>Kevin Namink</b>,
             <a href="https://www.svi.nl" onclick="this.target='_blank'; return true;">
                 Scientific Volume Imaging</a>;
         </li>
@@ -126,6 +126,11 @@ include("header.inc.php");
 
     <h2>Former developers</h2>
     <ul>
+        <li>
+            <b>Daniel Sevilla</b>,
+            <a href="https://www.svi.nl" onclick="this.target='_blank'; return true;">
+                Scientific Volume Imaging</a>;
+        </li>
         <li>
             <b>Asheesh Gulati</b>,
             <a href="https://biop.epfl.ch/" onclick="this.target='_blank'; return true;">
