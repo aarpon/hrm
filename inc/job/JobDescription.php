@@ -547,6 +547,13 @@ class JobDescription
         $tmp = explode($taskSetting->name(), $this->sourceImageShortName());
         $outputFile = end($tmp);
         $outputFile = str_replace(" ", "_", $outputFile);
+        // Max final file name length is 128 characters, truncate if
+        // necessary. Reserve enough space for all possible extra suffixes.
+        $pathInfo = pathinfo($outputFile);
+        if (strlen($pathInfo['basename']) > 76) {
+            $outputFile = $pathInfo['dirname'] . "/";
+            $outputFile .= substr($pathInfo['basename'], 0, 70) . "_trunc";
+        }
         $result = $outputFile . "_" . $this->id() . "_hrm";
         # Add a non-numeric string at the end: if the task name ends with a
         # number, that will be removed when saving using some file formats that

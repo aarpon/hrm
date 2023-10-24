@@ -1293,6 +1293,9 @@ class DatabaseConnection
             $sqlAutoSeries = "T";
         }
         $slashesFile = addslashes($file);
+        if (strlen($slashesFile) > 191) {
+            Log::error("File name too long!");
+        }
         $query = "insert into job_files values ('$id', '$username', '$slashesFile', '$sqlAutoSeries')";
         $result = $result && $this->execute($query);
         return $result;
