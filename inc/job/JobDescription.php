@@ -546,7 +546,7 @@ class JobDescription
         // (see http://stackoverflow.com/questions/4636166/ for more details)
         $tmp = explode($taskSetting->name(), $this->sourceImageShortName());
         $outputFile = end($tmp);
-        $outputFile = str_replace(" ", "_", $outputFile);
+        $outputFile = str_replace(array(" ",":"), "_", $outputFile);
         // Max final file name length is 128 characters, truncate if
         // necessary. Reserve enough space for all possible extra suffixes.
         $pathInfo = pathinfo($outputFile);
