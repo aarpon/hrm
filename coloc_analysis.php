@@ -23,7 +23,7 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
 }
 
 if ($_SESSION['user']->isAdmin()) {
-    $db = new DatabaseConnection;
+    $db = DatabaseConnection::get();
     $maxChanCnt = $db->getMaxChanCnt();
     $_SESSION['analysis_setting']->setNumberOfChannels($maxChanCnt);
 } else {

@@ -35,3 +35,16 @@ fi
 
 # Make sure to add our source to the autoloader path
 ${PROJECT_DIR}/composer.phar dump-autoload --optimize --working-dir=${PROJECT_DIR}
+
+# Set the default coding standard for phpcs
+${PROJECT_DIR}/vendor/bin/phpcs --config-set default_standard PSR12
+
+###############################################################################
+#
+# Apply necessary patches
+#
+###############################################################################
+
+# Currently none.
+# echo "Patching... "
+# patch ${PROJECT_DIR}/file.file ${PROJECT_DIR}/setup/patch.patch

@@ -3,6 +3,7 @@
 // Copyright and license notice: see license.txt
 
 use hrm\Nav;
+use hrm\OmeroConnection;
 use hrm\System;
 use hrm\Util;
 
@@ -138,6 +139,14 @@ include("header.inc.php");
                 </td>
             </tr>
             <tr>
+                <td class="key">
+                    HuCore server type
+                </td>
+                <td class="value">
+                    <?php echo System::getHucoreServerType(); ?>
+                </td>
+            </tr>
+            <tr>
                 <td class="section">
                     Licenses in use
                 </td>
@@ -169,6 +178,29 @@ include("header.inc.php");
                     ?>
                 </td>
             </tr>
+
+            <?php
+                if ($omero_transfers) {
+            ?>
+            <tr>
+                <td class="section">
+                    HRM-OMERO Connector
+                </td>
+                <td class="value">
+                    &nbsp;
+                </td>
+            <tr>
+                <td class="key">
+                    Version
+                </td>
+                <td class="value">
+                    <?php echo OmeroConnection::getConnectorVersion(); ?>
+                </td>
+            </tr>
+            <?php
+                }
+            ?>
+
             <tr>
                 <td class="section">
                     System

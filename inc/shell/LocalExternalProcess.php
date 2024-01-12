@@ -10,8 +10,6 @@
 
 namespace hrm\shell;
 
-require_once dirname(__FILE__) . "/../bootstrap.php";
-
 global $hucore, $hutask;
 
 /** @todo Why is $hucore forced here? */
@@ -117,6 +115,8 @@ class LocalExternalProcess extends ExternalProcess
         // hang up shouldn't happen with local external process
         // therefore nothing to do
     }
+
+    // TODO: a rename function?
 
     /**
      * Executes a command.

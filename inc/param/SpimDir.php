@@ -62,7 +62,7 @@ class SpimDir extends AnyTypeArrayParameter
      */
     public function translatedValue()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->translationFor($this->name, $this->value);
         return $result;
     }

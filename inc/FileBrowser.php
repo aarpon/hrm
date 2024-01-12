@@ -10,8 +10,6 @@
 
 namespace hrm;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
-
 /**
   Image file browser
 
@@ -38,14 +36,18 @@ function fileButton($type) {
   # confirmation before actually posting.
   $mode = "ajax";
 
+  $buttonId = "";
+
   switch ($type) {
     case "download":
+      $buttonId = "id=\"webTransferButton\"";
       $onClick = "downloadImages()";
       $name = "download";
       $tip = 'Compress and download';
       break;
 
     case "upload":
+      $buttonId = "id=\"webTransferButton\"";
       $max = UtilV2::getMaxUploadFileSize() / 1024 / 1024;
       $maxFile = "$max MB";
       $max = UtilV2::getMaxPostSize() / 1024 / 1024;
@@ -77,6 +79,7 @@ function fileButton($type) {
       break;
 
     case "omeroImport":
+        $buttonId = "id=\"omeroButton\"";
         $name    = "getOmeroData";
         $value   = "OMERO Data";
         $mode    = "post";
@@ -87,6 +90,7 @@ function fileButton($type) {
         break;
 
     case "omeroExport":
+        $buttonId = "id=\"omeroButton\"";
         $name    = "getOmeroData";
         $value   = "OMERO Data";
         $mode    = "post";
@@ -109,10 +113,12 @@ function fileButton($type) {
       }
     $ret = "\n\n<input name=\"$name\" type=\"submit\"
                  value=\"$value\" class=\"$class\"
+                 $buttonId
                  onclick=\"UnTip(); $onClick\"
                  onmouseover=\"Tip('$tip')\" onmouseout=\"UnTip()\" />";
   } else {
     $ret = "\n\n<input class=\"icon $name\" type=\"button\"
+            $buttonId
             onclick=\"UnTip(); $onClick\"
             onmouseover=\"Tip('$tip')\" onmouseout=\"UnTip()\" />";
   }
@@ -527,7 +533,7 @@ include("header_fb.inc.php");
                     forceMultipart: true,
                     customHeaders: {
                         "DestinationFolder" : "<?php echo($_SESSION['fileserver']->sourceFolder()); ?>",
-                            "ImageExtensions" : ['dv', 'ims', 'lif', 'lof', 'lsm', 'oif', 'pic', 'r3d', 'stk',
+                            "ImageExtensions" : ['dv', 'ims', 'lif', 'lof', 'lsm', 'vsi', 'oif', 'pic', 'r3d', 'stk',
                                                  'zvi', 'czi', 'nd2', 'nd', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
                             'ome.tiff', 'ome', 'ics', 'ids']
                     }
@@ -547,9 +553,9 @@ include("header_fb.inc.php");
                 validation: {
                     stopOnFirstInvalidFile: false,
                     sizeLimit: totalAllowedSizeOfSingleFile,
-                    acceptFiles: ".dv,.ims,.lif,.lof,.lsm,.oif,.pic,.3rd,.stk,.zvi,.czi,.nd2,.nd,.tf2,.tf8,.btf,.h5," +
+                    acceptFiles: ".dv,.ims,.lif,.lof,.lsm,.vsi,.oif,.pic,.3rd,.stk,.zvi,.czi,.nd2,.nd,.tf2,.tf8,.btf,.h5," +
                         ".tif,.tiff,.ome.tif,.ome.tiff,.ics,.ids,.zip,.tgz,.tar,.tar.gz",
-                    allowedExtensions: ['dv', 'ims', 'lif', 'lof', 'lsm', 'oif', 'pic', 'r3d', 'stk',
+                    allowedExtensions: ['dv', 'ims', 'lif', 'lof', 'lsm', 'vsi', 'oif', 'pic', 'r3d', 'stk',
                                         'zvi', 'czi', 'nd2', 'nd', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
                         'ome.tiff', 'ome', 'ics', 'ids', 'zip', 'tgz', 'tar', 'tar.gz'],
                 },

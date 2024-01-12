@@ -48,8 +48,8 @@ function release() {
     element.style.color = 'black';
 }
 
-function seek(channel) {
-    var url = "select_psf_popup.php?channel=" + channel;
+function seek(channel,type) {
+    var url = "select_" + type + "_popup.php?channel=" + channel;
     var name = "snitch";
     var options = "directories = no, menubar = no, status = no, width = 560, height = 400";
     snitch = window.open(url, name, options);
@@ -93,21 +93,34 @@ function seek(channel) {
     snitch.focus();
 }
 
+function hpcReset() {
+    var select = document.getElementById("select");
+    select.elements["hpc"].value = "";
+}
+
 window.onunload = function() {if (snitch != null) snitch.close()};
 
-function switchSnrMode(algorithm) {
-    if (algorithm == 'cmle') {
-        $('#cmle-snr').show();
-        $('#gmle-snr').hide();
-        $('#qmle-snr').hide();
-    } else if (algorithm == 'gmle') {
-        $('#cmle-snr').hide();
-        $('#gmle-snr').show();
-        $('#qmle-snr').hide();
-    } else if (algorithm == 'qmle') {
-        $('#cmle-snr').hide();
-        $('#gmle-snr').hide();
-        $('#qmle-snr').show();
+function switchSnrMode(algorithm, channel) {    
+    if (algorithm.value === "cmle") {
+        $('#cmle-snr-' + channel).show();
+        $('#gmle-snr-' + channel).hide();
+        $('#qmle-snr-' + channel).hide();
+        $('#skip-snr-' + channel).hide();
+    } else if (algorithm.value === "gmle") {
+        $('#cmle-snr-' + channel).hide();
+        $('#gmle-snr-' + channel).show();
+        $('#qmle-snr-' + channel).hide();
+        $('#skip-snr-' + channel).hide();
+    } else if (algorithm.value === "qmle") {                
+        $('#cmle-snr-' + channel).hide();
+        $('#gmle-snr-' + channel).hide();
+        $('#qmle-snr-' + channel).show();
+        $('#skip-snr-' + channel).hide();
+    } else if (algorithm.value === "skip") {
+        $('#cmle-snr-' + channel).hide();
+        $('#gmle-snr-' + channel).hide();
+        $('#qmle-snr-' + channel).hide();
+        $('#skip-snr-' + channel).show();
     }
 }
 
@@ -135,6 +148,18 @@ function switchTStabilizationMode() {
         $('#TStabilizationMethodDiv').hide();
         $('#TStabilizationRotationDiv').hide();
         $('#TStabilizationCroppingDiv').hide();
+    }
+}
+
+function switchAcuityMode() {
+    if ($('#AcuityMode').val() == 'on') {
+        for (var chan = 0; chan < 6; chan++) {
+            $('#acuity-' + chan).show();
+        }
+    } else {
+        for (var chan = 0; chan < 6; chan++) {
+            $('#acuity-' + chan).hide();
+        }
     }
 }
 
@@ -359,7 +384,7 @@ function createImageSelection(fileList) {
 
 function addTemplateFile() {
     content = '<div class="inputFile" name="inputFile">'
-        + '<input type="file" name="upfile[]" size="3">'
+        + '<input type="file" class="selection" name="upfile[]" size="3">'
         + '</div>';
 
     changeDiv('upfile_0', content);

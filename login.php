@@ -71,12 +71,16 @@ $_SESSION['request'] = $req;
 
 if (isset($_POST['password']) && isset($_POST['username'])) {
     if ($clean['password'] != "" && $clean['username'] != "") {
-
         // Create a user
-        $tentativeUser = new UserV2($clean['username']);
+        try {
+            $tentativeUser = new UserV2($clean['username']);
+        } catch (Exception $e) {
+            Log::error("Failed instantiating User.");
+            echo("Error. Please contact your administrator.");
+            exit();
+        }
 
         if ($tentativeUser->logIn($clean['password'])) {
-
             // If the user does not exist yet in the system, we add it
             if (!UserManager::existsUser($tentativeUser)) {
                 UserManager::addUser($tentativeUser, $clean['password']);
@@ -119,7 +123,7 @@ if (isset($_POST['password']) && isset($_POST['username'])) {
                 }
             }
 
-        } else if (UserManager::isLoginRestrictedToAdmin()) {
+        } elseif (UserManager::isLoginRestrictedToAdmin()) {
             if ($tentativeUser->isAdmin()) {
                 $message = "Wrong password";
             } else {
@@ -149,7 +153,6 @@ include("header.inc.php");
             <?php
             echo(Nav::linkWikiPage('HuygensRemoteManagerHelpLogin'));
             echo(Nav::externalSupportLinks());
-            echo(Nav::actionStyleToggle());
             ?>
         </ul>
     </div>
@@ -171,7 +174,7 @@ include("header.inc.php");
 
 <div id="welcome"><?php
     // Check that the database is reachable
-    $db = new DatabaseConnection();
+    $db = DatabaseConnection::get();
     if (!$db->isReachable()) {
         echo "<div class=\"dbOutDated\">Warning: the database is not reachable!\n";
         echo "<p>Please contact your administrator.</p>" .
@@ -185,7 +188,7 @@ include("header.inc.php");
     if (System::getHuCoreVersionAsInteger() == 0) {
         echo "<div class=\"dbOutDated\">Warning: unknown HuCore version!\n";
         echo "<p>Please ask the administrator to start the queue manager.</p>" .
-            "<p>You are now allowed to login until this issue has been " .
+            "<p>You are not allowed to log in until this issue has been " .
             "fixed.</p></div>";
         echo "</div>\n";
         include("footer.inc.php");

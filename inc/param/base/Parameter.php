@@ -12,9 +12,6 @@ namespace hrm\param\base;
 
 use hrm\DatabaseConnection;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
-
 /**
  * (Abstract) base class for all Parameter types in HRM.
  */
@@ -370,7 +367,7 @@ abstract class Parameter {
      * @return mixed Translated possible value.
     */
     public function translatedValueFor($possibleValue) {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->translationFor($this->name, $possibleValue);
     }
 

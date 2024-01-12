@@ -1,4 +1,5 @@
 <?php
+
 /**
  * System
  *
@@ -10,7 +11,7 @@
 
 namespace hrm;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
+use Exception;
 
 /**
  * Commodity class for inspecting the System.
@@ -28,55 +29,55 @@ class System
      * Current HRM major version. This value has to be set by the developers!
      * @var int
      */
-    const HRM_VERSION_MAJOR = 3;
+    private const HRM_VERSION_MAJOR = 3;
 
     /**
      * Current HRM minor version. This value has to be set by the developers!
      * @var int
      */
-    const HRM_VERSION_MINOR = 6;
+    private const HRM_VERSION_MINOR = 9;
 
     /**
      * Current HRM maintenance (patch) version. This value has to be set by the
      * developers!
      * @var int
      */
-    const HRM_VERSION_MAINTENANCE = 0;
+    private const HRM_VERSION_MAINTENANCE = 0;
 
     /**
      * Database revision needed by current HRM version. This value has to be
      * set by the developers!
      * @var int
      */
-    const DB_LAST_REVISION = 17;
+    private const DB_LAST_REVISION = 20;
 
     /**
      * Minimum HuCore (major) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
-    const MIN_HUCORE_VERSION_MAJOR = 14;
+    private const MIN_HUCORE_VERSION_MAJOR = 21;
 
     /**
      * Minimum HuCore (minor) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
-    const MIN_HUCORE_VERSION_MINOR = 6;
+    private const MIN_HUCORE_VERSION_MINOR = 10;
 
     /**
      * Minimum HuCore (maintenance) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
-    const MIN_HUCORE_VERSION_MAINTENANCE = 1;
+    private const MIN_HUCORE_VERSION_MAINTENANCE = 1;
 
     /**
      * Minimum HuCore (patch) version number to be compatible with HRM.
      * This value has to be set by the developers!
      * @var int
      */
-    const MIN_HUCORE_VERSION_PATCH = 7;
+    private const MIN_HUCORE_VERSION_PATCH = 0;
 
     /**
      * Returns the HRM version.
@@ -86,7 +87,6 @@ class System
      */
     public static function getHRMVersionAsString($version = -1)
     {
-
         if ($version == -1) {
             // Return current HRM version
             $version = self::HRM_VERSION_MAJOR . "." . self::HRM_VERSION_MINOR;
@@ -154,13 +154,13 @@ class System
      *
      * @return bool True if a newer HRM release exist, false otherwise; if no
      * version information could be retrieved, an Exception is thrown.
-     * @throws \Exception If the remove server could not be reached.
+     * @throws Exception If the remove server could not be reached.
      */
     public static function isThereNewHRMRelease()
     {
         $latestVersion = self::getLatestHRMVersionFromRemoteAsInteger();
         if ($latestVersion === -1) {
-            throw new \Exception("Could not retrieve version information!");
+            throw new Exception("Could not retrieve version information!");
         }
         if (self::getHRMVersionAsInteger() < $latestVersion) {
             return true;
@@ -184,9 +184,8 @@ class System
      */
     public static function getDBCurrentRevision()
     {
-        $db = new DatabaseConnection();
-        $rows = $db->query(
-            "SELECT * FROM global_variables WHERE name LIKE 'dbrevision';");
+        $db = DatabaseConnection::get();
+        $rows = $db->query("SELECT * FROM global_variables WHERE name LIKE 'dbrevision';");
         if (!$rows) {
             return 0;
         } else {
@@ -209,7 +208,7 @@ class System
      */
     public static function getHuCoreVersionAsInteger()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT value FROM global_variables WHERE name= 'huversion';";
         $version = $db->queryLastValue($query);
         if ($version == false) {
@@ -240,11 +239,10 @@ class System
      */
     public static function getMinHuCoreVersionAsInteger()
     {
-        $v = self::MIN_HUCORE_VERSION_MAJOR * 1000000 +
+        return self::MIN_HUCORE_VERSION_MAJOR * 1000000 +
             self::MIN_HUCORE_VERSION_MINOR * 10000 +
             self::MIN_HUCORE_VERSION_MAINTENANCE * 100 +
             self::MIN_HUCORE_VERSION_PATCH;
-        return $v;
     }
 
     /**
@@ -254,7 +252,7 @@ class System
      */
     public static function isMinHuCoreVersion()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT value FROM global_variables WHERE name= 'huversion';";
         $version = $db->queryLastValue($query);
         if ($version == false) {
@@ -271,7 +269,7 @@ class System
      */
     public static function setHuCoreVersion($value)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rs = $db->query("SELECT * FROM global_variables WHERE name = 'huversion';");
         if (!$rs) {
             $query = "INSERT INTO global_variables VALUES ('huversion', '" . $value . "');";
@@ -314,7 +312,7 @@ class System
      */
     public static function getAllLicenses()
     {
-        $allLicenses = array(
+        return array(
             "microscopes" => array(
                 "confocal" => "Confocal",
                 "multi-photon" => "Multi-photon",
@@ -333,9 +331,11 @@ class System
                 "gpuMaxCores-1024" => "GPU max cores: 1024",
                 "gpuMaxCores-3072" => "GPU max cores: 3072",
                 "gpuMaxCores-8192" => "GPU max cores: 8192",
+                "gpuMaxCores-24576" => "GPU max cores: 24576",
                 "gpuMaxMemory-2048" => "GPU max memory: 2GB",
                 "gpuMaxMemory-4096" => "GPU max memory: 4GB",
                 "gpuMaxMemory-24576" => "GPU max memory: 24GB",
+                "gpuMaxMemory-65536" => "GPU max memory: 64GB",
                 "server=desktop" => "Server type: desktop",
                 "server=small" => "Server type: small",
                 "server=medium" => "Server type: medium",
@@ -358,8 +358,6 @@ class System
                 "visu" => "Visualization"
             )
         );
-
-        return $allLicenses;
     }
 
     /**
@@ -369,9 +367,8 @@ class System
      */
     public static function getActiveLicenses()
     {
-        $db = new DatabaseConnection();
-        $activeLicenses = $db->getActiveLicenses();
-        return $activeLicenses;
+        $db = DatabaseConnection::get();
+        return $db->getActiveLicenses();
     }
 
     /**
@@ -380,7 +377,7 @@ class System
      */
     public static function hucoreHasValidLicense()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->hucoreHasValidLicense();
     }
 
@@ -392,7 +389,7 @@ class System
      */
     public static function hasLicense($feature)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->hasLicense($feature);
     }
 
@@ -402,7 +399,7 @@ class System
      */
     public static function getHucoreServerType()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->hucoreServerType();
     }
 
@@ -460,6 +457,14 @@ class System
                         return ($r . " (Yosemite)");
                     case '15':
                         return ($r . " (El Capitan)");
+                    case '16':
+                        return ($r . " (Sierra)");
+                    case '17':
+                        return ($r . " (High Sierra)");
+                    case '18':
+                        return ($r . " (Mojave)");
+                    case '19':
+                        return ($r . " (Catalina)");
                     default:
                         return ($r);
                 }
@@ -477,9 +482,23 @@ class System
      */
     public static function getApacheVersion()
     {
-        $apver = "";
-        if (preg_match('|Apache\/(\d+)\.(\d+)\.(\d+)|', apache_get_version(), $apver)) {
-            return "${apver[1]}.${apver[2]}.${apver[3]}";
+        // Query the Apache version string.
+        //
+        // Depending on how PHP and Apache are installed, the `apache_get_version()`
+        // function may not exist. In that case, we will assume that getApacheVersion()
+        // is triggered via the browser and hence the $_SERVER variable will be defined.
+        $version = "";
+        if (function_exists('apache_get_version')) {
+            $version = apache_get_version();
+        } else {
+            if (isset($_SERVER['SERVER_SOFTWARE']) && strlen($_SERVER['SERVER_SOFTWARE']) > 0) {
+                $version = $_SERVER["SERVER_SOFTWARE"];
+            }
+        }
+
+        // Extract the version number
+        if (preg_match('|Apache/(\d+)\.(\d+)\.(\d+)|', $version, $apver)) {
+                return "${apver[1]}.${apver[2]}.${apver[3]}";
         } else {
             return "Unknown";
         }
@@ -492,7 +511,7 @@ class System
      */
     public static function getDatabaseType()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         return $db->type();
     }
 
@@ -503,8 +522,13 @@ class System
     public static function getDatabaseVersion()
     {
         $dbver = "";
-        $db = new DatabaseConnection();
-        if (preg_match('|(\d+)\.(\d+)\.(\d+)|', $db->version(), $dbver)) {
+        $db = DatabaseConnection::get();
+        if (preg_match(
+            '|(\d+)\.(\d+)\.(\d+)|',
+            $db->version(),
+            $dbver
+        )
+        ) {
             return "${dbver[1]}.${dbver[2]}.${dbver[3]}";
         } else {
             return "Unknown";
@@ -529,7 +553,9 @@ class System
     public static function getMemoryLimit($unit = 'M')
     {
         return System::formatMemoryStringByUnit(
-            UtilV2::let_to_num(ini_get('memory_limit')), $unit);
+            UtilV2::let_to_num(ini_get('memory_limit')),
+            $unit
+        );
     }
 
     /**
@@ -542,7 +568,9 @@ class System
     public static function getPostMaxSizeFromIni($unit = 'M')
     {
         return System::formatMemoryStringByUnit(
-            UtilV2::let_to_num(ini_get('post_max_size')), $unit);
+            UtilV2::let_to_num(ini_get('post_max_size')),
+            $unit
+        );
     }
 
     /**
@@ -559,7 +587,9 @@ class System
                 return "limited by php.ini.";
             } else {
                 return System::formatMemoryStringByUnit(
-                    UtilV2::let_to_num(ini_get('$max_post_limit')), $unit);
+                    UtilV2::let_to_num(ini_get('$max_post_limit')),
+                    $unit
+                );
             }
         } else {
             return "Not defined!";
@@ -646,7 +676,9 @@ class System
     public static function isUploadMaxFileSizeFromIni($unit = 'M')
     {
         return System::formatMemoryStringByUnit(
-            UtilV2::let_to_num(ini_get('upload_max_filesize')), $unit);
+            UtilV2::let_to_num(ini_get('upload_max_filesize')),
+            $unit
+        );
     }
 
     /**
@@ -663,7 +695,9 @@ class System
                 return "limited by php.ini.";
             } else {
                 return System::formatMemoryStringByUnit(
-                    UtilV2::let_to_num($max_upload_limit), $unit);
+                    UtilV2::let_to_num($max_upload_limit),
+                    $unit
+                );
             }
         } else {
             return "Not defined!";
@@ -703,15 +737,15 @@ class System
      * Gigabytes. Default is 'M'. Omit the parameter to use the default.
      * @return string Memory amount in the requested unit.
      */
-    private function formatMemoryStringByUnit($value, $unit = 'M')
+    private static function formatMemoryStringByUnit($value, $unit = 'M')
     {
         switch ($unit) {
-            case 'G' :
+            case 'G':
                 $factor = 1024 * 1024 * 1024;
                 $digits = 3;
                 $unit_string = "GB";
                 break;
-            case 'B' :
+            case 'B':
                 $factor = 1;
                 $digits = 0;
                 $unit_string = " bytes";
@@ -768,5 +802,4 @@ class System
         }
         return $versionString;
     }
-
 }

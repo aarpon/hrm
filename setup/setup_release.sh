@@ -30,3 +30,13 @@ fi
 
 # Make sure to add our source to the autoloader path
 ${PROJECT_DIR}/composer.phar dump-autoload --optimize --working-dir=${PROJECT_DIR}
+
+###############################################################################
+#
+# Apply necessary patches
+#
+##############################################################################
+
+# Currently none.
+# echo "Patching... "
+# patch ${PROJECT_DIR}/file.file ${PROJECT_DIR}/setup/patch.patch

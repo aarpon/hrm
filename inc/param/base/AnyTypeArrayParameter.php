@@ -11,9 +11,6 @@ namespace hrm\param\base;
 
 use hrm\DatabaseConnection;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
-
 /**
  * Class for a Parameter that has an array of variable of any type
  * as possible value.
@@ -44,7 +41,7 @@ class AnyTypeArrayParameter extends NumericalArrayParameter
         $this->possibleValues = array();
 
         // Get and set the Parameter possible values
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $this->possibleValues = $db->readPossibleValues($this);
     }
 

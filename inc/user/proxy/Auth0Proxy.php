@@ -13,8 +13,6 @@ namespace hrm\user\proxy;
 use hrm\Log;
 use Auth0\SDK\Auth0;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * Manages authentication against the internal HRM  user database.
  *
@@ -32,8 +30,8 @@ class Auth0Proxy extends AbstractProxy {
      * Auth0Proxy constructor.
      * No parameters are passed to the constructor.
      */
-    public function __construct() {
-
+    public function __construct()
+    {
         // Include the configuration file
         $conf = dirname(__FILE__) . "/../../../config/auth0_config.inc";
         if (! is_file($conf)) {
@@ -53,7 +51,6 @@ class Auth0Proxy extends AbstractProxy {
             'client_secret' => $AUTH0_CLIENT_SECRET,
             'redirect_uri'  => $AUTH0_REDIRECT_URI
         ));
-
     }
 
     /**
@@ -73,10 +70,9 @@ class Auth0Proxy extends AbstractProxy {
      * @return bool True if authentication succeeded, false otherwise.
      * @throws \Exception Implement this function!
     */
-    public function authenticate($username, $password) {
-
+    public function authenticate($username, $password)
+    {
         throw new \Exception("Implement!");
-
     }
 
     /**
@@ -85,8 +81,8 @@ class Auth0Proxy extends AbstractProxy {
      * @return null|string Group or Array of groups or NULL if not found.
      * @throws \Exception Implement this function!
      */
-    public function getEmailAddress($username) {
-
+    public function getEmailAddress($username)
+    {
         throw new \Exception("Implement!");
     }
 
@@ -96,10 +92,8 @@ class Auth0Proxy extends AbstractProxy {
      * @return string Group or "" if not found.
      * @throws \Exception Implement this function!
     */
-    public function getGroup($username) {
-
+    public function getGroup($username)
+    {
         throw new \Exception("Implement!");
-
     }
-
-};
+}

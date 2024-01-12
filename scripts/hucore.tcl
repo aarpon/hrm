@@ -85,7 +85,7 @@ proc reportImageDimensions { } {
 # Return 1 if the image is of a type that supports sub-images. Currently, only
 # LIF, LOF and CZI.
 proc isMultiImgFile { filename } {
-    set multiImgExtensions { ".lif" ".lof" ".czi"}
+    set multiImgExtensions { ".lif" ".lof" ".czi" ".nd"}
 
     set ext [file extension $filename]
     set isMulti 0
@@ -160,6 +160,8 @@ proc reportSubImages {} {
         # Parse CZIs and 1st nesting level LIFs accordingly.
         set extension [file extension $path]
         if { [string equal -nocase $extension ".czi"] } {
+            set subImages [lindex $contents 1]
+        } elseif { [string equal -nocase $extension ".nd"] } {
             set subImages [lindex $contents 1]
         } elseif { [string equal -nocase $extension ".lif"]
                || [string equal -nocase $extension ".lof"]} {
@@ -286,17 +288,21 @@ proc calculateNyquistRate {} {
 
     set error [ getInputVariables {micr na ex em pcnt ril} ]
     if { $error } { exit 1 }
+    
+    set img [img create temp]
 
-    a setp -na $na -ex $ex -em $em -pcnt $pcnt -ril $ril \
+    $img setp -na $na -ex $ex -em $em -pcnt $pcnt -ril $ril \
         -micr $micr -s {1 1 1}
 
-    set nrate [a nyq -tclReturn]
+    set nrate [$img nyq -tclReturn]
 
     set sampxy [expr int( 1000 * [lindex $nrate 0] ) ]
     set sampz [expr int( 1000 * [lindex $nrate 2] ) ]
 
     reportKeyValue "xy" $sampxy
     reportKeyValue "z" $sampz
+
+    $img del
 }
 
 
@@ -469,10 +475,6 @@ proc getMetaDataFromHuTemplate {} {
 # Script for reading in a Huygens deconvolution template and output template data.
 proc getDeconDataFromHuTemplate {} {
 
-    set parseKeys {
-        "cmle" "qmle" "stabilize" "shift" "autocrop" "stabilize:post"
-    } 
-
     set error [ getInputVariables {huTemplate} ]
     if { $error } { exit 1 }
 
@@ -486,7 +488,7 @@ proc getDeconDataFromHuTemplate {} {
         set chanCnt 0
         foreach item $taskList {
             set item [::Template::Decon::stripSuffix $item]
-            if {$item ni {"cmle" "qmle" "gmle"}} continue
+            if {$item ni {"cmle" "qmle" "gmle" "deconSkip"}} continue
             incr chanCnt
         }
         if {$chanCnt == 0} {
@@ -500,14 +502,12 @@ proc getDeconDataFromHuTemplate {} {
     # is added automatically.
     set templateList [::Template::loadCommon "decon" $huTemplate outArr]
 
-    # Convert the result to a dict.
-    dict set templDict params $templateList
-
     # Stick to the channels from the original template. Discard the rest.
-    dict map {dictKey dictValue} [dict get $templDict params] {
+    foreach {dictKey dictValue} $templateList {
 
         set item [::Template::Decon::stripSuffix $dictKey]
-        if {$item ni {"cmle" "qmle" "gmle" "stabilize" "shift" "autocrop"}} {
+        if {$item ni {"cmle" "qmle" "gmle" "deconSkip" "stabilize"
+            "stabilize:post" "shift" "autocrop"}} {
             continue
         }
         reportKeyValue $dictKey $dictValue
@@ -524,6 +524,7 @@ proc getDeconDataFromHuTemplate {} {
 
 proc estimateSnrFromImage {} {
 
+
     if { [info proc ::WebTools::estimateSnrFromImage] == "" } {
         reportError "This tool requires Huygens Core 3.5.1 or higher"
         return
@@ -533,6 +534,7 @@ proc estimateSnrFromImage {} {
     set error [ getInputVariables {
         basename src series dest snrVersion returnImages
     } ]
+    
     if { $error } { exit 1 }
 
     # Optional arguments:
@@ -541,7 +543,15 @@ proc estimateSnrFromImage {} {
 
     # Opening images
     set srcImg [ hrmImgOpen $src $basename -series $series ]
+    
+    array set params [$srcImg setp -tclReturn]
+    if {"generic" in $params(mType)} {
+     	reportError "The image meta data specifies no microscope type.\
+                     Impossible to continue."
+    	return
+    }
 
+    
     if { $s != -1 } {
         reportMsg "Setting voxel size $s"
         if { [ catch { eval $srcImg setp -s {$s} } err ] } {

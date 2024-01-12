@@ -11,8 +11,6 @@ namespace hrm\param\base;
 
 use hrm\DatabaseConnection;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
 /**
  * Class for a Parameter that has a scalar number as possible value.
  *
@@ -76,7 +74,7 @@ class NumericalParameter extends Parameter
 
         // Gets the Parameter's possible values, default value and all
         // boundary values from the database and sets them
-        $db = new DatabaseConnection;
+        $db = DatabaseConnection::get();
         $values = $db->readNumericalValueRestrictions($this);
         $min = intval($values[0]);
         $max = intval($values[1]);

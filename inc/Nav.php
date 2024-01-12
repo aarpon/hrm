@@ -10,8 +10,6 @@
 
 namespace hrm;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
-
 /**
  * Commodity class to manage all links and actions of the navigation bar.
  *
@@ -32,10 +30,15 @@ class Nav
      */
     public static function linkWikiPage($pageName, $wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Help",
-            "https://svi.nl/$pageName", "images/help.png",
-            "Help", true, $wrapInLiElement, "");
-
+        return self::buildLinkHTMLElement(
+            "Help",
+            "https://svi.nl/$pageName",
+            "images/help.png",
+            "Help",
+            true,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -47,10 +50,15 @@ class Nav
      */
     public static function linkProjectWebsite($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("HRM Project Website",
-            "http://www.huygens-rm.org", "images/logo_small.png",
-            "HRM Project Website", true,
-            $wrapInLiElement, "");
+        return self::buildLinkHTMLElement(
+            "HRM Project Website",
+            "http://www.huygens-rm.org",
+            "images/logo_small.png",
+            "HRM Project Website",
+            true,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -62,10 +70,15 @@ class Nav
      */
     public static function linkMailingList($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Sign up to HRM news",
+        return self::buildLinkHTMLElement(
+            "Sign up to HRM news",
             "https://lists.sourceforge.net/lists/listinfo/hrm-list",
-            "images/email.png", "Sign up to HRM news",
-            true, $wrapInLiElement, "");
+            "images/email.png",
+            "Sign up to HRM news",
+            true,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -77,10 +90,15 @@ class Nav
      */
     public static function linkSVIWiki($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("SVI wiki",
+        return self::buildLinkHTMLElement(
+            "SVI wiki",
             "http://www.svi.nl/FrontPage",
-            "images/wiki.png", "SVI wiki",
-            true, $wrapInLiElement, "");
+            "images/wiki.png",
+            "SVI wiki",
+            true,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -92,10 +110,15 @@ class Nav
      */
     public static function linkManual($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("HRM manual",
+        return self::buildLinkHTMLElement(
+            "HRM manual",
             "http://huygens-remote-manager.readthedocs.io/en/latest/user/index.html",
-            "images/manual.png", "HRM manual",
-            true, $wrapInLiElement, "");
+            "images/manual.png",
+            "HRM manual",
+            true,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -107,10 +130,15 @@ class Nav
      */
     public static function linkReportIssue($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Feedback",
+        return self::buildLinkHTMLElement(
+            "Feedback",
             "http://hrm.svi.nl:8080/redmine/projects/public/issues/new",
-            "images/report_issue.png", "Bug report",
-            true, $wrapInLiElement, "");
+            "images/report_issue.png",
+            "Bug report",
+            true,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -122,11 +150,15 @@ class Nav
      */
     public static function linkWhatsNew($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("What's new?",
+        return self::buildLinkHTMLElement(
+            "What's new?",
             "https://github.com/aarpon/hrm/releases/latest",
             "images/whatsnew.png",
-            "What's new?", true,
-            $wrapInLiElement, "");
+            "What's new?",
+            true,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -138,11 +170,15 @@ class Nav
      */
     public static function linkCredits($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Credits",
+        return self::buildLinkHTMLElement(
+            "Credits",
             "credits.php",
             "images/credits.png",
-            "Credits", false,
-            $wrapInLiElement, "");
+            "Credits",
+            false,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -154,11 +190,15 @@ class Nav
      */
     public static function linkRawImages($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Raw images",
+        return self::buildLinkHTMLElement(
+            "Raw images",
             "file_management.php?folder=src",
             "images/rawdata_small.png",
-            "Raw images", false,
-            $wrapInLiElement, "");
+            "Raw images",
+            false,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -170,11 +210,15 @@ class Nav
      */
     public static function linkResults($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Results",
+        return self::buildLinkHTMLElement(
+            "Results",
             "file_management.php?folder=dest",
             "images/results_small.png",
-            "Results", false,
-            $wrapInLiElement, "");
+            "Results",
+            false,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -190,11 +234,15 @@ class Nav
      */
     public static function linkHome($currentPage, $wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Home",
+        return self::buildLinkHTMLElement(
+            "Home",
             $currentPage . "?home=home",
             "images/home.png",
-            "Home", false,
-            $wrapInLiElement, "");
+            "Home",
+            false,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -253,11 +301,15 @@ EOT;
      */
     public static function linkLogOut($currentPage, $wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Logout",
+        return self::buildLinkHTMLElement(
+            "Logout",
             $currentPage . "?exited=exited",
             "images/exit.png",
-            "Logout", false,
-            $wrapInLiElement, "");
+            "Logout",
+            false,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -269,11 +321,15 @@ EOT;
      */
     public static function linkJobQueue($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Queue",
+        return self::buildLinkHTMLElement(
+            "Queue",
             "job_queue.php",
             "images/queue_small.png",
-            "Queue", false,
-            $wrapInLiElement, "");
+            "Queue",
+            false,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -307,9 +363,15 @@ EOT;
      */
     public static function linkBack($toURL, $wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Back", $toURL,
-            "images/back_small.png", "Back", false,
-            $wrapInLiElement, "");
+        return self::buildLinkHTMLElement(
+            "Back",
+            $toURL,
+            "images/back_small.png",
+            "Back",
+            false,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -321,9 +383,15 @@ EOT;
      */
     public static function exitToLogin($wrapInLiElement = true)
     {
-        return self::buildLinkHTMLElement("Exit", "login.php",
-            "images/exit.png", "Exit", false,
-            $wrapInLiElement, "");
+        return self::buildLinkHTMLElement(
+            "Exit",
+            "login.php",
+            "images/exit.png",
+            "Exit",
+            false,
+            $wrapInLiElement,
+            ""
+        );
     }
 
     /**
@@ -334,7 +402,6 @@ EOT;
     public static function actionStyleToggle()
     {
         $html = <<<EOT
-<li>
 <div class="theme_div">
 <form>
 <label>Theme:</label>
@@ -342,7 +409,6 @@ EOT;
 <input type="submit" class="theme_name" onclick="switch_style('light');return false;" name="theme" value="light">
 </form>
 </div>
-</li>
 EOT;
         return $html;
     }
@@ -356,9 +422,13 @@ EOT;
      */
     public static function actionCheckForUpdates($wrapInLiElement = true)
     {
-        return self::buildActionHTMLElement("Check for updates",
-            "images/check_for_update.png", "Check for updates",
-            "checkForUpdates();", $wrapInLiElement);
+        return self::buildActionHTMLElement(
+            "Check for updates",
+            "images/check_for_update.png",
+            "Check for updates",
+            "checkForUpdates();",
+            $wrapInLiElement
+        );
     }
 
     /**
@@ -432,12 +502,15 @@ EOT;
      *                        The 'onclick=' fragment must be omitted!
      * @return string HTML string to be echoed in the page.
      */
-    private static function buildLinkHTMLElement($text, $url, $img_url,
-                                                 $altText, $extern = false,
-                                                 $wrapInLiElement = true,
-                                                 $onclick = "")
-    {
-
+    private static function buildLinkHTMLElement(
+        $text,
+        $url,
+        $img_url,
+        $altText,
+        $extern = false,
+        $wrapInLiElement = true,
+        $onclick = ""
+    ) {
         $openingLi = "";
         $closingLi = "";
         if ($wrapInLiElement == true) {
@@ -474,9 +547,13 @@ EOT;
      *             Optional, default is true.
      * @return string HTML string to be echoed in the page.
      */
-    private static function buildActionHTMLElement($text, $img_url, $altText,
-                                                   $action, $wrapInLiElement = true)
-    {
+    private static function buildActionHTMLElement(
+        $text,
+        $img_url,
+        $altText,
+        $action,
+        $wrapInLiElement = true
+    ) {
         $openingLi = "";
         $closingLi = "";
         if ($wrapInLiElement == true) {

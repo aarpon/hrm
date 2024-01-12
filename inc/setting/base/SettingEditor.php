@@ -13,9 +13,6 @@ use hrm\DatabaseConnection;
 use hrm\HuygensTools;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . '/../../bootstrap.php';
-
-
 /**
  * Abstract class for a SettingEditor.
  *
@@ -86,7 +83,7 @@ abstract class SettingEditor
     {
         $settings = array();
         $user = $this->user;
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $results = $db->getSettingList($user->name(), $this->table());
         foreach ($results as $row) {
             /** @var Setting $setting */
@@ -109,7 +106,7 @@ abstract class SettingEditor
     public function setting($name)
     {
         $user = $this->user;
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $results = $db->getSettingList($user->name(), $this->table());
         foreach ($results as $row) {
             if ($row['name'] == $name) {
@@ -343,7 +340,7 @@ abstract class SettingEditor
                 $setting->resetDefault();
             }
             // Update the database
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $db->updateDefault($setting);
         }
         return true;
@@ -366,7 +363,7 @@ abstract class SettingEditor
         if (!isset($settings[$name])) {
             return False;
         }
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if (!$db->deleteSetting($settings[$name])) {
             $this->message = "delete setting - database error";
             return False;

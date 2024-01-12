@@ -9,8 +9,6 @@
  */
 namespace hrm;
 
-require_once dirname(__FILE__) . '/bootstrap.php';
-
 /**
  * Static class with some commodity functionality (version 2).
  */
@@ -28,7 +26,7 @@ class UtilV2
 
         // Parse the URL to make sure we handle the relative HRM document path
         $c = parse_url($hrm_url);
-        if (isset($c["path"])) {
+        if (isset($c["path"]) && $c["path"] != "/") {
             return ($c["path"] . "/upload/FileUploader.inc.php");
         } else {
             return "/upload/FileUploader.inc.php";

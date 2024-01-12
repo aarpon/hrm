@@ -54,19 +54,36 @@ $microscopes = array(
     "Nikon TE2000-E with the C1 scanning head" =>
         array("micro=Nikon_TE2000E_C1&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6&extra1=1.5&txt1=Optional+1.5x+magnification",
             "https://svi.nl/Nikon_TE2000E_C1"),
-    "Nikon TiE A1R" =>
-        array("micro=Nikon_TiE_A1R&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.456&u=-6", "https://svi.nl/Nikon_TiE_A1R"),
+    "Nikon TE2000-E with the C2 scanning head" =>
+        array("micro=Nikon_TE2000E_C2&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6&extra1=1.5&txt1=Optional+1.5x+magnification",
+            "https://svi.nl/Nikon_TE2000E_C2"),
+    "Nikon A1, A1 Plus, A1HD25, A1RHD25, AX, AXR" =>
+        array("micro=Nikon_A_Series&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1&c=0.456&u=-6", "https://svi.nl/Nikon_A_Series"),
+    "Olympus FV10i" =>
+        array("micro=Olympus_FV10i&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=3.8&c=0.399&u=-6", "https://svi.nl/Olympus_FV10i"),
     "Olympus FV300 and FVX" =>
         array("micro=Olympus_FV300&param=Reported+pinhole+parameter&table=1&a=1&b=0&na=0&wl=0&msys=3.426&c=0.5&u=-6", "https://svi.nl/Olympus_FV300"),
     "Olympus FV500" =>
         array("micro=Olympus_FV500&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=3.8&c=0.5641896&u=-6", "https://svi.nl/Olympus_FV500"),
     "Olympus FV1000" =>
         array("micro=Olympus_FV1000&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=3.82&c=0.5641896&u=-6", "https://svi.nl/Olympus_FV1000"),
-    "Yokogawa spinning disk (pinhole radius)" =>
+    "Olympus FV3000" =>
+        array("micro=Olympus_FV3000&param=Pinhole+side+(microns)&a=1&b=0&na=0&wl=0&msys=7.6&c=0.5641896&u=-6", "https://svi.nl/Olympus_FV3000"),
+    "Yokogawa spinning disk - pinhole RADIUS - all CSU models" =>
         array("micro=Yokogawa_spinning_disk&d=50&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6",
             "https://svi.nl/YokogawaDisk"),
-    "Yokogawa spinning disk (pinhole distance)" =>
+    "Yokogawa spinning disk - pinhole DISTANCE - CSU-10, CSU-22, CSU-X1" =>
         array("micro=Yokogawa_disk_(pinhole_distance)&d=253&a=1&b=0&na=0&wl=0&msys=1&c=1&u=-6&ru=-6&rtag=pinhole+distance",
+            "https://svi.nl/BackProjectedPinholeDistance"),
+    "Yokogawa spinning disk - pinhole DISTANCE - CSU-W1" =>
+        array("micro=Yokogawa_disk_(pinhole_distance)&d=253&a=1&b=0&na=0&wl=0&msys=0.5065&c=1&u=-6&ru=-6&rtag=pinhole+distance",
+            "https://svi.nl/BackProjectedPinholeDistance"),
+
+    "Visitech Infinity spinning disk - pinhole RADIUS" =>
+        array("micro=Visitech_spinning_disk&d=50&a=1&b=0&na=0&wl=0&msys=1&c=0.5&u=-6",
+            "https://svi.nl/Visitech_Infinity"),
+    "Visitech Infinity spinning disk - pinhole DISTANCE" =>
+        array("micro=Visitech_disk_(pinhole_distance)&d=253&a=1&b=0&na=0&wl=0&msys=1&c=1&u=-6&ru=-6&rtag=pinhole+distance",
             "https://svi.nl/BackProjectedPinholeDistance"),
     "Zeiss LSM410 inverted" =>
         array("micro=Zeiss_LSM410_inverted_P8&param=Reported+parameter+(P_8)&a=3.92157&b=0&na=0&wl=0&msys=2.23&c=0.56419&u=-6",
@@ -79,6 +96,11 @@ $microscopes = array(
         array("micro=Zeiss_LSM710&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "https://svi.nl/Zeiss_LSM710"),
     "Zeiss LSM780" =>
         array("micro=Zeiss_780&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "https://svi.nl/Zeiss_LSM780"),
+    "Zeiss LSM800" =>
+        array("micro=Zeiss_800&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.53&c=0.564&u=-6", "https://svi.nl/Zeiss_LSM800"),
+    "Zeiss LSM880" =>
+        array("micro=Zeiss_800&param=Pinhole+diameter+(microns)&a=1&b=0&na=0&wl=0&msys=1.9048&c=0.564&u=-6", "https://svi.nl/Zeiss_LSM880"),
+
     "Not listed" =>
         array("micro=Not_listed_microscope&param=Pinhole+physical+diameter+(microns)&a=1&b=0&na=0&wl=0&u=-6", "https://svi.nl/ReportOtherMicroscope")
 
@@ -484,14 +506,8 @@ echo "\n</div> <!-- content -->\n";
         if ($error) {
             $out .= "<h3>Error!</h3>\n" . $error;
         } else {
-            $result = round($phr / $M, 2);
-            $out .= "<h4>";
-            $out .= "Backprojected $rtag $runits: <b>$result</b>";
-            $out .= "</h4>";
 
-            $out .= "<p>&nbsp;</p>";
-
-            $out .= "<p>This is the parameter list used in this calculation:</p>";
+            $out .= "<p>Parameters used for the calculation:</p>";
             $out .= $warning;
 
             $out .= "<p>";
@@ -506,6 +522,14 @@ echo "\n</div> <!-- content -->\n";
                 }
             }
             $out .= "</p>\n";
+
+            $out .= "<p>&nbsp;</p>";
+
+            $result = round($phr / $M, 2);
+            $out .= "<fieldset id='backproj_result'>";
+            $out .= "<legend>Result</legend>";
+            $out .= "Backprojected $rtag $runits: <em class='result_value'>$result</em>";
+            $out .= "</fieldset>";
         }
 
         $out .= "<div id=\"controls\">";

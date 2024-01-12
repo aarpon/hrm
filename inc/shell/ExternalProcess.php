@@ -12,8 +12,6 @@ namespace hrm\shell;
 
 use hrm\Log;
 
-require_once dirname(__FILE__) . "/../bootstrap.php";
-
 global $hucore, $hutask;
 
 /** @todo Why is $hucore forced here? */
@@ -257,9 +255,13 @@ class ExternalProcess
     {
         global $huygens_user;
 
+        /* Some versions or configurations of SSH close the connection
+           right away if there's no redirection of stderr to stdout. */
         $cmd = 'ssh -f ' . $huygens_user . "@" . $this->host . " '" .
-            $command . " '";
-        $cmd .= " & echo $! \n";
+            $command . " 2>&1";
+        $cmd .= " & echo $!'\n";
+
+
 
         $ret = fwrite($this->pipes[0], $cmd);
         fflush($this->pipes[0]);
@@ -364,10 +366,12 @@ class ExternalProcess
         $pid = "";
 
         $this->out_file = fopen($this->descriptorSpec[1][1], "r");
-        fseek($this->out_file, 0, SEEK_END);
+
+        fseek($this->out_file, 0, SEEK_SET);
+
 
         $command = $this->huscript_path . " $hutask \"" . $templateName . "\"";
-        $this->execute($command);
+        $result = $this->execute($command);
 
         sleep(1);
 
@@ -401,8 +405,10 @@ class ExternalProcess
 
         /* Close pipes. Check first if they are proper handlers. If, for
            example, opening them did not work out, the handlers won't exist. */
-        if (is_resource($this->pipes[0])) {
-            fclose($this->pipes[0]);
+        if (isset($this->pipes[0])) {
+            if (is_resource($this->pipes[0])) {
+                fclose($this->pipes[0]);
+            }
         }
 
         if (is_resource($this->out_file)) {

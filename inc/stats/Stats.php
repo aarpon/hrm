@@ -14,8 +14,6 @@ use hrm\DatabaseConnection;
 use hrm\Util;
 use hrm\user\UserV2;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * Commodity class to generate statistics of HRM usage.
  *
@@ -76,7 +74,7 @@ class Stats
     public function __construct($username)
     {
         $this->m_Username = $username;
-        $this->m_DB = new DatabaseConnection();
+        $this->m_DB = DatabaseConnection::get();
         $this->m_Filter_FromDate = $this->getFromDate();
         $this->m_Filter_ToDate = $this->getToDate();
         $this->m_Filter_Group = "All groups";

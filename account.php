@@ -77,14 +77,11 @@ if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
     exit();
 }
 
-if (isset($_SERVER['HTTP_REFERER']) &&
-    !strstr($_SERVER['HTTP_REFERER'], 'account')
-) {
+if (isset($_SERVER['HTTP_REFERER']) && !strstr($_SERVER['HTTP_REFERER'], 'account')) {
     $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
 
 if (isset($_SESSION['account_user'])) {
-
     // Make sure the User is properly loaded
     $edit_user = $_SESSION['account_user'];
 
@@ -100,62 +97,47 @@ $message = "";
  *
  **************************************************************************** */
 
-// If updating some other User setting, remove the loaded
-// User from the session and return to the referer page.
-if ((isset($_POST['cancel']))) {
-   unset($_SESSION['account_user']);
-   header("Location: " . $_SESSION['referer']);
-   exit();
-}
-
 if (isset($_POST['modify'])) {
-
     // Initialize the result to True
-    $result = True;
+    $result = true;
 
     // E-mail address
     if (UserManager::canModifyEmailAddress($edit_user)) {
-
         // Check that a valid e-mail address was provided
         if ($clean['email'] == "") {
-            $result = False;
+            $result = false;
             $message = "Please fill in the email field with a valid address";
         } else {
             $emailToUse = $clean['email'];
         }
 
     } else {
-
         // Use current e-mail address
         $emailToUse = $edit_user->emailAddress();
-
     }
 
     // User group
     if (UserManager::canModifyGroup($edit_user)) {
-
         // Check that a valid group was provided
         if ($clean['group'] == "") {
-            $result = False;
+            $result = false;
             $message = "Please fill in the group field";
         } else {
             $groupToUse = $clean['group'];
         }
 
     } else {
-
         // Use current group
         $groupToUse = $edit_user->userGroup();
-
     }
 
     // Passwords
     if ($clean['pass1'] == "" || $clean['pass2'] == "") {
-        $result = False;
-        $message = "Please fill in both password fields";
+        $result = false;
+        $message = "Please enter a valid password in both password fields";
     } else {
         if ($clean['pass1'] != $clean['pass2']) {
-            $result = False;
+            $result = false;
             $message = "Passwords do not match";
         } else {
             $passToUse = $clean['pass1'];
@@ -164,7 +146,6 @@ if (isset($_POST['modify'])) {
 
     // Update the information in the database
     if ($result == true) {
-
         // Update the User information
         if (UserManager::canModifyEmailAddress($edit_user)) {
             $edit_user->SetEmailAddress($emailToUse);
@@ -172,24 +153,22 @@ if (isset($_POST['modify'])) {
         if (UserManager::canModifyGroup($edit_user)) {
             $edit_user->SetGroup($groupToUse);
         }
-        $success = UserManager::storeUser($edit_user, true);
+        try {
+            $success = UserManager::storeUser($edit_user, true);
+        } catch (Exception $e) {
+            $success = false;
+        }
 
         if ($success == true) {
-
             // Now we need to update the password (and update the success
             // status).
-            $success &= UserManager::changeUserPassword($edit_user->name(),
-                $passToUse);
-
+            $success &= UserManager::changeUserPassword($edit_user->name(), $passToUse);
         }
 
         if (!$success) {
-
-            $message = "Sorry, an error occurred and the user data could " .
-                "not be updated!";
+            $message = "Sorry, an error occurred and the user data could not be updated!";
 
         } else {
-
             // If updating some other User setting, remove the modified
             // User from the session and return to the user management page.
             if (isset($_SESSION['account_user'])) {
@@ -255,7 +234,6 @@ include("header.inc.php");
             $somethingToChange = false;
 
             if (UserManager::canModifyEmailAddress($edit_user)) {
-
                 $emailForForm = "";
                 if ($clean['email'] != "") {
                     $emailForForm = $clean['email'];
@@ -279,7 +257,6 @@ include("header.inc.php");
             <?php
 
             if (UserManager::canModifyGroup($edit_user)) {
-
                 $emailForForm = "";
                 if ($clean['group'] != "") {
                     $groupForForm = $clean['group'];
@@ -318,7 +295,7 @@ include("header.inc.php");
                 $somethingToChange = true;
             }
             ?>
-            <p/>
+            <p>&nbsp;</p>
 
             <?php
             $referer = $_SESSION['referer'];
@@ -329,7 +306,7 @@ include("header.inc.php");
         if ($somethingToChange == true) {
             ?>
             <div id="controls">
-                <input type="submit" name="cancel" value=""
+                <input type="button" name="cancel" value=""
                        class="icon cancel"
                        onmouseover="TagToTip('ttSpanCancel' )"
                        onmouseout="UnTip()"
@@ -352,7 +329,7 @@ include("header.inc.php");
                        onclick="document.location.href='<?php echo $referer ?>'"/>
             </div>
 
-        <?php
+            <?php
         }
         ?>
     </form>

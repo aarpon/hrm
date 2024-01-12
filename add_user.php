@@ -16,8 +16,6 @@ require_once dirname(__FILE__) . '/inc/bootstrap.php';
 // Settings
 global $hrm_url, $image_folder, $image_host, $email_sender, $userManagerScript;
 
-require_once dirname(__FILE__) . '/inc/bootstrap.php';
-
 session_start();
 
 if (!isset($_SESSION['user']) || !$_SESSION['user']->isLoggedIn()) {
@@ -75,6 +73,12 @@ if (isset($_POST["inform"]) && $_POST["inform"] == "Yes") {
  * END OF SANITIZE INPUT
  *
  */
+
+if (isset($_GET['home'])) {
+    header("Location: " . "home.php");
+    exit();
+}
+
 // Add the user
 if (isset($_POST['add'])) {
 
@@ -83,7 +87,7 @@ if (isset($_POST['add'])) {
     } else if ($clean["email"] == "") {
         $message = "Please provide a valid email address!";
     } else if ($clean['group'] == "") {
-        $message = "Please a group!";
+        $message = "Please provide a group!";
     } else {
 
         // Make sure that there is no user with same name

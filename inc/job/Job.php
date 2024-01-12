@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Job
  *
@@ -7,6 +8,7 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
 namespace hrm\job;
 
 use hrm\shell\ExternalProcessFactory;
@@ -14,8 +16,6 @@ use hrm\shell\ExternalProcess;
 use hrm\Fileserver;
 use hrm\HuygensTemplate;
 use hrm\Log;
-
-require_once dirname(__FILE__) . '/../bootstrap.php';
 
 
 /**
@@ -166,11 +166,15 @@ class Job
             'absolute'                        => 'Background absolute value',
             'estimation'                      => 'Background estimation',
             'ratio'                           => 'Signal/Noise ratio',
+            'acuity mode'                     => 'Acuity mode',
+            'acuity'                          => 'Acuity',
             'array detector reduction mode'   => 'Array detector reduction mode',
+            'bleaching'                       => 'Bleaching Mode',
             'autocrop'                        => 'Autocrop',
             'z stabilization'                 => 'Z Stabilization',
             't stabilization'                 => 'T Stabilization');
     }
+
 
     /**
      * Sets the path and name of the output image (no extension) from the JobDescription.
@@ -306,36 +310,22 @@ class Job
     }
 
     /**
-     * Creates a Huygens Template for elementary jobs or splits compound jobs.
-     * @return bool    For elementary jobs, returns true if the template was generated
-     * successfully, or false otherwise; for compound jobs, it always returns false.
+     * Creates a Huygens Template from job queue.
+     * @return bool Return true if the Huygens template could be generated, false otherwise.
      */
-    public function createSubJobsOrHuTemplate()
+    public function buildAndWriteHuygensTemplate()
     {
-        $result = True;
-        $desc = $this->jobDescription;
+        Log::info("Creating Huygens template");
 
-        if ($desc->isCompound()) {
-            $result = $result && $desc->createSubJobs();
-            if ($result) {
-                Log::info("created sub jobs");
-            }
-            if ($result) {
-                $queue = new JobQueue();
-                $result = $result && $queue->removeJob($desc);
-                if ($result)
-                    Log::info("removed compound job\n");
-                // TODO: check if this does fix compound job processing
-                $result = False;
-            }
+        $this->createHuygensTemplate();
+        if (!$this->writeHuTemplate()) {
+            Log::error("Could not write Huygens template!");
+            return false;
         } else {
-            Log::info("Job is elementary");
-
-            $this->createHuygensTemplate();
-            $result = $result && $this->writeHuTemplate();
-            Log::info("Created Huygens template");
+            Log::info("Successfully created Huygens template for job with id " . $this->jobDescription->id());
         }
-        return $result;
+
+        return true;
     }
 
     /**
@@ -344,7 +334,7 @@ class Job
      */
     public function writeHuTemplate()
     {
-        $result = True;
+        $result = true;
         $desc = $this->description();
         $user = $desc->owner();
         $username = $user->name();
@@ -356,7 +346,7 @@ class Job
         if (!$file) {
             Log::error("Error opening file $templateFile, verify permissions! Waiting 15 seconds...");
             sleep(15);
-            return False;
+            return false;
         } else {
             $result = $result && (fwrite($file, $this->huTemplate) > 0);
             fclose($file);
@@ -456,14 +446,15 @@ class Job
         $this->shell = ExternalProcessFactory::getExternalProcess(
             $this->server(),
             $this->server() . "_" . $this->id() . "_out.txt",
-            $this->server() . "_" . $this->id() . "_error.txt");
+            $this->server() . "_" . $this->id() . "_error.txt"
+        );
         $proc = $this->shell;
 
         /* Check whether the shell is ready to accept further execution. If
          not, the shell will be released internally, no need to release it
          here. */
         if (!$proc->runShell()) {
-            return False;
+            return false;
         }
 
         // Server name without proc number
@@ -484,22 +475,17 @@ class Job
 
         // If fileshare is not on the same host as Huygens.
         if (!$imageProcessingIsOnQueueManager) {
-
-            // Old code: to be removed.
-            // $marker = $huygens_server_image_folder . "/" . $user->name() .
-            // "/" . $image_destination . "/" . $finishedMarker;
-
             // Copy the finished marker
             $marker = $dpath . $finishedMarker;
             $remoteFile = exec("ssh " . $huygens_user . "@" .
                 $server_hostname . " ls " . $marker);
 
-            // Old code: to be removed.
-            //Log::error("ssh " . $huygens_user . "@" . $server_hostname . "
-            //ls " . $marker);
-            //Log::error($result);
+            $result = !$proc->existsHuygensProcess($this->pid());
 
-            if ($remoteFile == $marker) {
+            // Notice that the job is finished if $result = true.
+            if (!$result && $proc->isHuygensProcessSleeping($this->pid())) {
+                $proc->rewakeHuygensProcess($this->pid());
+            } elseif ($result && $remoteFile == $marker) {
                 if (!file_exists($dpath)) {
                     $result = exec("mkdir -p " . escapeshellarg($dpath));
                 }
@@ -507,13 +493,13 @@ class Job
                     . $server_hostname . ":" . $marker . " .)");
 
                 $this->filterHuygensOutput();
+
+                $result = file_exists($marker);
             }
         }
 
-        $result = file_exists($dpath . $finishedMarker);
 
         if ($imageProcessingIsOnQueueManager) {
-
             $result = !$proc->existsHuygensProcess($this->pid());
 
             // Notice that the job is finished if $result = true.
@@ -525,7 +511,6 @@ class Job
         }
 
         if (!$result && file_exists($path . '/' . $endTimeMarker)) {
-
             // Tasks may report an estimated end time, whenever they can.
             $estEndTime = file_get_contents($path . '/' . $endTimeMarker);
             Log::info("Estimated end time for " . $desc->id() . ": $estEndTime");
@@ -553,35 +538,34 @@ class Job
 
         /* Set file names. */
         $historyFile = $this->destImage . $this->pipeProducts["history"];
-        $tmpFile = $this->destImage . $this->pipeProducts["tmp"];
         $paramFile = $this->destImage . $this->pipeProducts["parameters"];
         $colocFile = $this->destImage . $this->pipeProducts["coloc"];
         $errorFile = $logdir . "/" . $this->server() . "_" .
-            $this->id() . "_error.txt";
+		$this->id() . "_error.txt";
+	$logFile   = $logdir . "/" . $this->server() . "_" .
+		$this->id() . "_out.txt";
         $huygensOut = dirname($this->destImage) . "/" .
-            $this->pipeProducts["main"];
+		$this->pipeProducts["main"];
 
-        /* The Huygens history file will be removed. */
-        $this->shell->removeFile($historyFile);
-
-        /* The Huygens job main file will be given a job id name. */
-        $this->shell->renameFile($huygensOut, $tmpFile);
+        /* Remove unnecessary output files from the Huygens job. */
+	$this->shell->removeFile($historyFile);
+	$this->shell->removeFile($huygensOut);	
 
         /* TODO: find workaround. The multiserver configuration has latency
          between renaming and reading files. A sleep(1) fixes it. The single
          server configuration seems to be benefited from it as well. */
         sleep(1);
 
-        /* Read the Huygens output file and make an html table from it. */
-        $jobReport = $this->shell->readFile($tmpFile);
+	/* Read this job's log file with the stdout redirected from the Huygens
+           process. Parse it and make html tables from it. */
+        $jobReport = file($logFile);
 
-        if (!empty($jobReport)) {
-
+	if (!empty($jobReport)) {
             if ("" !== $error = $this->checkForErrors($jobReport)) {
                 $this->copyString2File($error, $errorFile);
                 $this->shell->copyFile2Host($errorFile);
-            } else {
-
+	    } else {
+		
                 /* Build parameter tables from the Huygens output file. */
                 $parsedParam = $this->HuReportFile2Html($jobReport);
                 $this->copyString2File($parsedParam, $paramFile);
@@ -589,14 +573,12 @@ class Job
 
                 /* Build colocalization tables from the Huygens output file. */
                 $parsedColoc = $this->HuColoc2Html($jobReport);
-
+                
                 if ($this->colocRunOk) {
                     $this->copyString2File($parsedColoc, $colocFile);
                     $this->shell->copyFile2Host($colocFile);
                 }
             }
-
-            $this->shell->removeFile($tmpFile);
         }
     }
 
@@ -659,18 +641,18 @@ class Job
     private function writeWarning(array $reportFile)
     {
 
-        $micrMismatch = False;
+        $micrMismatch = false;
 
         $html = "";
 
         /* Extract data from the file and into the table. */
-        $pattern = "/{Microscope conflict for channel ([0-9]):(.*)}/";
+        $pattern = "/Microscope conflict for channel ([0-9]):(.*)/";
         foreach ($reportFile as $reportEntry) {
             if (!preg_match($pattern, $reportEntry, $matches)) {
                 continue;
             }
 
-            $micrMismatch = True;
+            $micrMismatch = true;
 
             $warning = "<p><b><u>WARNING</u>:</b>";
             $warning .= " The <b>microscope type</b> selected to deconvolve ";
@@ -704,7 +686,7 @@ class Job
     private function writeScalingFactorsTable(array $reportFile)
     {
 
-        $scaling = False;
+        $scaling = false;
 
         /* Insert a title and an explanation. */
         $title = "<br /><b><u>Scaling factors summary</u></b>";
@@ -726,10 +708,9 @@ class Job
 
         /* Extract data from the file and into the table. */
         foreach ($reportFile as $reportEntry) {
-
-            $pattern = "/the image will be multiplied by (.*)\.}}/";
+            $pattern = "/the image will be multiplied by (.*)\./";
             if (preg_match($pattern, $reportEntry, $matches)) {
-                $scaling = True;
+                $scaling = true;
 
                 $row = $this->insertCell("Scaling factor", "cell");
                 $row .= $this->insertCell("All", "cell");
@@ -738,9 +719,9 @@ class Job
                 $table .= $this->insertRow($row);
             }
 
-            $pattern = "/{Scaling of channel ([0-9]): (.*)}}/";
+            $pattern = "/Scaling of channel ([0-9]): (.*)/";
             if (preg_match($pattern, $reportEntry, $matches)) {
-                $scaling = True;
+                $scaling = true;
 
                 $row = $this->insertCell("Scaling factor", "cell");
                 $row .= $this->insertCell($matches[1], "cell");
@@ -791,18 +772,17 @@ class Job
         $table .= $this->insertRow($row);
 
         /* Extract data from the file and into the table. */
-        $pattern = "/{Parameter ([a-zA-Z3]+?) (of channel ([0-9])\s|)(.*) ";
-        $pattern .= "(template|metadata|meta data): (.*).}}/";
+        $pattern = "/Parameter ([a-zA-Z3]+?) (of channel ([0-9])\s|)(.*) ";
+        $pattern .= "(template|metadata|meta data): (.*)./";
 
-        foreach ($reportFile as $reportEntry) {
-
+	foreach ($reportFile as $reportEntry) {
             /* Use strpos on most lines for speed reasons. */
-            if (strpos($reportEntry, "Parameter") === FALSE) {
+            if (strpos($reportEntry, "Parameter") === false) {
                 continue;
-            }
+	    }
             if (!preg_match($pattern, $reportEntry, $matches)) {
                 continue;
-            }
+	    }
 
             $paramName = $matches[1];
 
@@ -920,7 +900,6 @@ class Job
 
         /* Extract data from the restoration parameters and into the table. */
         foreach ($this->restParam as $paramName => $paramText) {
-
             $pattern = "/(.*)$paramName(.*):";
             $pattern .= "\s+([0-9\.\s\,]+|[a-zA-Z0-9\,\s\/]+\s?[a-zA-Z0-9]*)\n/";
 
@@ -1002,13 +981,13 @@ class Job
         $html = "";
 
         /* Extract data from the file and into the table. */
-        $pattern = "/{Colocalization report: (.*)}}}/";
-
+        $pattern = "/Colocalization report: (.*)}}/";
+        	 
         /* Every loop creates a coloc table. */
-        foreach ($reportFile as $reportEntry) {
+	foreach ($reportFile as $reportEntry) {
             if (!preg_match($pattern, $reportEntry, $matches)) {
                 continue;
-            }
+	    }
             /* Add a horizontal separator before each table. */
             $colocRun = $this->insertSeparator("");
 
@@ -1053,7 +1032,6 @@ class Job
 
         /* Extract colocalization coefficients frame by frame. */
         foreach ($frameResults as $frameCnt => $frameResult) {
-
             $pattern = "/([0-9a-zA-Z]+) {(-?[0-9.]+)}/";
             if (!preg_match_all($pattern, $frameResult, $matches)) {
                 continue;
@@ -1061,13 +1039,11 @@ class Job
 
             /* Insert the column headers. */
             if ($frameCnt == 0) {
-
                 /* If parsing reached this point the coloc run went Ok. */
-                $this->colocRunOk = TRUE;
+                $this->colocRunOk = true;
 
                 $headerRow = "";
                 foreach ($matches[1] as $key => $parameter) {
-
                     switch ($parameter) {
                         case "frame":
                             $headerRow .= $this->insertCell("Frame", "header");
@@ -1090,7 +1066,6 @@ class Job
             /* Insert the table rows. */
             $frameRow = $this->insertCell($frameCnt, "header");
             foreach ($matches[2] as $key => $value) {
-
                 switch ($matches[1][$key]) {
                     case "frame":
                         break;

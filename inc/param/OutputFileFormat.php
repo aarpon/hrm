@@ -48,7 +48,7 @@ class OutputFileFormat extends ChoiceParameter
      */
     public function translatedValue()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->translationFor($this->name, $this->value);
         return $result;
     }
@@ -67,8 +67,6 @@ class OutputFileFormat extends ChoiceParameter
             case "tiffrgb":
             case "tiff16":
                 return "tif";
-            case "imaris":
-                return "ims";
             case "ome":
                 return "ome";
             case "ics":

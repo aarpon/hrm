@@ -12,8 +12,6 @@ namespace hrm\param;
 use hrm\DatabaseConnection;
 use hrm\param\base\ChoiceParameter;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * A ChoiceParameter to represent the microscope type.
  *
@@ -50,7 +48,7 @@ class MicroscopeType extends ChoiceParameter
      */
     public function translatedValue()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->translationFor($this->name, $this->value);
         return $result;
     }
@@ -67,7 +65,7 @@ class MicroscopeType extends ChoiceParameter
      */
     public function translateHucore($hucoreval)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->hucoreTranslation($this->name, $hucoreval);
         return $result;
     }
@@ -81,7 +79,7 @@ class MicroscopeType extends ChoiceParameter
      */
     static public function hasLicense($value)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         switch ($value) {
             case 'widefield':
                 return $db->hasLicense("widefield");

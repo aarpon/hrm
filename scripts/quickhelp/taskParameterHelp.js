@@ -11,24 +11,44 @@ window.helpText = new Array();
 
 window.helpText[ "method" ] =
   '<p>The Huygens software has different deconvolution algorithms as ' +
-  'restoration methods.  HRM offers the possibility of using the two most ' +
-  'important ones: the <b>CMLE algorithm</b> is optimally suited for ' +
+  'restoration methods. The <b>CMLE algorithm</b> is optimally suited for ' +
   'low-signal images; the <b>QMLE algorithm</b> is faster than CMLE, ' +
   'but it only works well with noise-free images (for example, good quality ' +
   'widefield images). Alternatively, <b>GMLE</b> can be used as a fast, ' +
-  'good-quality algorithm for noisy images.</p>';
+  'good-quality algorithm for noisy images (for example STED or low signal confocal).</p>' +
+  '<p>Different algorithms can be selected for different channels. ' +
+  'This is mostly relevant when mixing channels from different microscope ' +
+  'types in the same data set. For example, Confocal and Widefield channels ' + 
+  'from the same field of view, or two confocal channels ' +
+  'with different pinhole sizes. </p>' + 
+  '<p>Choose <b>Skip</b> on selected channels to skip the deconvolution. ' +
+  'This can also be useful for stabilization, chromatic aberration, ' +
+  'correction or colocalization analysis of previously deconvolved data. ' +
+  'In order to accomplish this, set all channels to <b>Skip</b>, then set ' +
+  'the parameters of the stabilization, chromactic aberration or ' +
+  'colocalization tasks.</p>';
 
 window.helpText[ "snr" ] =
-  '<p>The SNR controls the sharpness of the result: only with noise-free ' +
-  'images you can safely demand very sharp results (high SNR values) without ' +
-  'amplifying noise.</p>' +
+  '<p>The signal-to-noise ratio is a constant signifying the relative amount of ' +
+  'useful data as opposed to noise that is present in the image.' +
+  '<p>Though it is a constant, in legacy SNR mode it may be adjusted to control ' +
+  'the sharpness of the result at the risk of amplifying noise. ' +
+  'In acuity mode, it is best to provide or estimate this parameter as accurately ' +
+  'as possible and use the acuity parameter to adjust sharpness instead. </p>' +
   '<p>The different deconvolution algorithms have different requirements on ' +
   'the SNR parameter.</p>' +
-  '<p>For the <strong>CMLE and GMLE algorithms</strong>, you are asked to give a ' +
-  'numericalestimation of the SNR of your images. The SNR estimator can help you ' +
-  'calculate the SNR for your images.</p>' +
-  '<p>For the <strong>QMLE algorithm</strong>, only a coarser classification ' +
-  'of the SNR is required.</p>';
+  '<p>For each of the <strong>GMLE, CMLE and GMLE algorithms</strong>, you ' +
+  'are asked to give a numerical estimation of the SNR of your images. The SNR ' +
+  'estimator can help you calculate the SNR for your images.</p>';
+
+window.helpText[ "acuity" ] =
+  '<p>The acuity controls the sharpness of the result. If you want to suppress noise ' +
+  'use a negative value; if you want to increase sharpness and can tolerate the ' +
+  'potential amplification of noise use a positive value.</p>' +
+  '<p>This abstracted parameter is included for completeness and compatibility ' +
+  'with other Huygens products. If you are unfamiliar with the effects of this ' +
+  'setting it is advised to use the legacy SNR mode.</p>' +
+  '<p>Accepted values range between -100 and 100. </p>';
  
 window.helpText[ "background" ] =
   '<p>The background is any additive and approximately constant signal in ' +
@@ -45,7 +65,9 @@ window.helpText[ "stopcrit" ] =
   '<p>Please notice that the maximum number of iterations is limited. If ' +
   'you are using the CMLE algorithm and you feel like you would need more ' +
   'iterations to converge to a solution, you might probably want to try ' +
-  'the GMLE algorithm instead.</p>';
+  'the GMLE algorithm instead.</p>' +
+  '<p>The stopping criteria can be set per channel. When a channel is ' +
+  'left unset the same value as the channel before it is used.</p>';
 
 window.helpText[ "zstabilization" ] =
   '<p>Due to the high lateral resolution, <b>STED</b> image ' +
@@ -61,6 +83,10 @@ window.helpText[ "autocrop" ] =
   'proposal for the crop region. In computing this initial proposal the ' +
   'Microscopic Parameters are taken into account, making sure that ' +
   'cropping will not have a negative impact on the deconvolution result.</p>';
+
+window.helpText[ "bleaching" ] =
+  '<p>If possible, apply bleaching correction. This will be the case' +
+  'for 3D widefield-based volumes as well as for all time series.</p>';
 
 window.helpText[ "arrayDetectorReductionMode" ] =
     '<p>The array detector reduction mode specifies which pixel reassignment method ' +

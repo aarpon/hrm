@@ -7,15 +7,14 @@
  * This file is part of the Huygens Remote Manager
  * Copyright and license notice: see license.txt
  */
+
 namespace hrm\user;
 
+use Exception;
 use hrm\Log;
 use hrm\DatabaseConnection;
 use hrm\System;
 use hrm\user\proxy\ProxyFactory;
-
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 
 /**
  * Manages Users.
@@ -33,7 +32,8 @@ class UserManager
      * @return bool True if the UserManager can modify tue User's e-mail
      * address in the backing user management system, false otherwise.
      */
-    public static function canModifyEmailAddress(UserV2 $user) {
+    public static function canModifyEmailAddress(UserV2 $user)
+    {
         return $user->proxy()->canModifyEmailAddress();
     }
 
@@ -46,7 +46,8 @@ class UserManager
      * @return bool True if the UserManager can modify tue User's group
      * address in the backing user management system, false otherwise.
      */
-    public static function canModifyGroup(UserV2 $user) {
+    public static function canModifyGroup(UserV2 $user)
+    {
         return $user->proxy()->canModifyGroup();
     }
 
@@ -59,7 +60,8 @@ class UserManager
      * @return bool True if the UserManager can modify tue User's password
      * in the backing user management system, false otherwise.
      */
-    public static function canModifyPassword(UserV2 $user) {
+    public static function canModifyPassword(UserV2 $user)
+    {
         return $user->proxy()->canModifyPassword();
     }
 
@@ -80,7 +82,7 @@ class UserManager
      */
     public static function existsUserWithName($username)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "select status from username where lower(name) = lower('$username')";
         $result = $db->queryLastValue($query);
         if ($result) {
@@ -93,6 +95,7 @@ class UserManager
      * Find and return a User by name.
      * @param string $username Name of the User to be retrieved.
      * @return UserV2/null Requested User or null if not found.
+     * @throws Exception If instantiating the UserV2 object failed.
      */
     public static function findUserByName($username)
     {
@@ -106,15 +109,15 @@ class UserManager
     }
 
     /**
-     * Generates a random (plain) password.
+     * Generates a random (plain!) password.
      *
-     * The password returned should still be encrypted (by whatever means)
-     * before it is stored into a database.
+     * This plain password is sent to the user when a new account is created.
+     * The version stored in the database must still be encrypted first!
      *
      * @return string Plain text password.
      */
-    public static function generateRandomPlainPassword() {
-
+    public static function generateRandomPlainPassword()
+    {
         // md5() is just to make the password harder
         return (md5(UserManager::generateUniqueId()));
     }
@@ -124,8 +127,8 @@ class UserManager
      *
      * @return string Id.
      */
-    public static function generateUniqueId() {
-
+    public static function generateUniqueId()
+    {
         return uniqid();
     }
 
@@ -136,8 +139,7 @@ class UserManager
      */
     public static function isLoginRestrictedToAdmin()
     {
-        $result = !(System::isDBUpToDate());
-        return $result;
+        return !(System::isDBUpToDate());
     }
 
     /**
@@ -151,7 +153,7 @@ class UserManager
      */
     public static function existsUserRegistrationRequestWithSeed($seed)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT seedid FROM username WHERE status=='" .
             UserConstants::STATUS_NEW_ACCOUNT . "' AND seedid = '$seed';";
         $value = $db->queryLastValue($query);
@@ -176,9 +178,8 @@ class UserManager
      */
     public static function existsUserPasswordResetRequestWithSeed($username, $seed)
     {
-        $db = new DatabaseConnection();
-        $query = "SELECT seedid FROM username WHERE " .
-            "name='" . $username ."' AND status='" .
+        $db = DatabaseConnection::get();
+        $query = "SELECT seedid FROM username WHERE " . "name='" . $username ."' AND status='" .
             UserConstants::STATUS_PASSWORD_RESET . "' AND seedid='$seed';";
         $value = $db->queryLastValue($query);
         if ($value == false) {
@@ -198,7 +199,7 @@ class UserManager
     public static function generateAndSetSeed($name)
     {
         $seed = UserManager::generateUniqueId();
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "UPDATE username SET seedid='$seed' WHERE name = '$name';";
         $value = $db->execute($query);
         if ($value == false) {
@@ -216,7 +217,7 @@ class UserManager
      */
     public static function resetSeed($name)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "UPDATE username SET seedid=NULL WHERE name = '$name';";
         $value = $db->execute($query);
         if ($value == false) {
@@ -230,9 +231,9 @@ class UserManager
     /**
      * Return all institution rows.
      */
-    public static function getAllInstitutions() {
-
-        $db = new DatabaseConnection();
+    public static function getAllInstitutions()
+    {
+        $db = DatabaseConnection::get();
         $query = "SELECT * FROM institution;";
         $rows = $db->execute($query);
         if ($rows == false) {
@@ -249,7 +250,7 @@ class UserManager
      */
     public static function numberOfJobsInQueue($username)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT COUNT(id) FROM job_queue WHERE username = '" . $username . "';";
         $row = $db->execute($query)->FetchRow();
         return $row[0];
@@ -261,7 +262,7 @@ class UserManager
      */
     public static function getTotalNumberOfQueuedJobs()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "SELECT COUNT(id) FROM job_queue;";
         $row = $db->execute($query)->FetchRow();
         return $row[0];
@@ -273,10 +274,10 @@ class UserManager
      * @param $password string User password The password is not stored in the User object.
      * Set $password to "" to create a random password (useful for external authentication
      * mechanisms).
-     * @throws \Exception If user creation failed.
+     * @throws Exception If user creation failed.
      */
-    public static function addUser(UserV2 $user, $password="") {
-
+    public static function addUser(UserV2 $user, $password = "")
+    {
         // Create a random password if needed
         if ($password == "") {
             $password = self::generateRandomPlainPassword();
@@ -293,7 +294,7 @@ class UserManager
             $user->role(),
             $user->status(),
             "" // Seed
-            );
+        );
     }
 
     /**
@@ -310,18 +311,19 @@ class UserManager
      * default).
      * @param string $seed Seed used to label a user registration request in the database.
      * @return True if the User could be created, false otherwise.
-     * @throws \Exception If the authentication mode is not supported.
+     * @throws Exception If the authentication mode is not supported.
      */
-    public static function createUser($username,
-                               $password,
-                               $emailAddress,
-                               $group,
-                               $institution_id = 1,
-                               $authentication = "",
-                               $role = UserConstants::ROLE_USER,
-                               $status = UserConstants::STATUS_ACTIVE,
-                               $seed = "") {
-
+    public static function createUser(
+        $username,
+        $password,
+        $emailAddress,
+        $group,
+        $institution_id = 1,
+        $authentication = "",
+        $role = UserConstants::ROLE_USER,
+        $status = UserConstants::STATUS_ACTIVE,
+        $seed = ""
+    ) {
         // Create a random password if needed
         if ($password == "") {
             $password = self::generateRandomPlainPassword();
@@ -333,19 +335,21 @@ class UserManager
 
         // Check that the authentication is supported.
         if (! array_key_exists($authentication, ProxyFactory::getAllConfiguredAuthenticationModes())) {
-            throw new \Exception("Authentication mode not configured or not supported!");
+            throw new Exception("Authentication mode not configured or not supported!");
         }
 
         // If the User already exists, return false
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if ($db->query("select name from username where name='$username'")) {
             return false;
         }
 
         // Hash the password
-        $password = password_hash($password,
+        $password = password_hash(
+            $password,
             UserConstants::HASH_ALGORITHM,
-            array('cost' => UserConstants::HASH_ALGORITHM_COST));
+            array('cost' => UserConstants::HASH_ALGORITHM_COST)
+        );
 
         // Add the User
         $record["name"] = $username;
@@ -361,9 +365,9 @@ class UserManager
         $record["seedid"] = $seed;
         $table = "username";
         $insertSQL = $db->connection()->GetInsertSQL($table, $record);
-        if(!$db->execute($insertSQL)) {
+        if (!$db->execute($insertSQL)) {
             Log::error("Could not create new user '$username'!");
-            return False;
+            return false;
         }
 
         // Return success
@@ -383,18 +387,18 @@ class UserManager
      * @param bool $force User to be updated in the database!
      * @return bool True if the User could be updated or created successfully,
      * false otherwise.
-     * @throws \Exception If user creation failed.
+     * @throws Exception If user creation failed.
      */
-    public static function storeUser(UserV2 $user, $force=false)
+    public static function storeUser(UserV2 $user, $force = false)
     {
         if (!($user->isLoggedIn()) && !($force)) {
             return false;
         }
 
-        $db = new DatabaseConnection();
+        // Get the database connection object
+        $db = DatabaseConnection::get();
 
         if (self::findUserByName($user->name()) == null) {
-
             // Create the User with a random password
             return self::createUser(
                 $user->name(),
@@ -409,7 +413,6 @@ class UserManager
             );
 
         } else {
-
             // Update the User
             $sql = "UPDATE username SET name=?, email=?, research_group=?, " .
                 "institution_id=?, role=?, status=? WHERE id=?;";
@@ -421,7 +424,8 @@ class UserManager
                     $user->institution_id(),
                     $user->role(),
                     $user->status(),
-                    $user->id()));
+                    $user->id())
+            );
             if ($result === false) {
                 return false;
             }
@@ -435,12 +439,12 @@ class UserManager
      * @param UserV2 $user User to update with the database content. The User must exist
      * in the database; if it does not, an Exception is thrown!
      * @return UserV2 Reloaded user.
-     * @throws \Exception If the user does not exist in the database.
+     * @throws Exception If the user does not exist in the database.
      */
-    public static function reload(UserV2 $user) {
-
+    public static function reload(UserV2 $user)
+    {
         if (! self::findUserByName($user->name())) {
-            throw new \Exception("User $user does not exist!");
+            throw new Exception("User $user does not exist!");
         }
 
         // Force a reload
@@ -460,15 +464,19 @@ class UserManager
     public static function changeUserPassword($username, $password)
     {
         // Hash the password
-        $hashPassword = password_hash($password,
+        $hashPassword = password_hash(
+            $password,
             UserConstants::HASH_ALGORITHM,
-            array('cost' => UserConstants::HASH_ALGORITHM_COST));
+            array('cost' => UserConstants::HASH_ALGORITHM_COST)
+        );
 
         // Store it in the database
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "UPDATE username SET password=? WHERE name=?;";
-        $result = $db->connection()->Execute($query,
-            array($hashPassword, $username));
+        $result = $db->connection()->Execute(
+            $query,
+            array($hashPassword, $username)
+        );
         if ($result === false) {
             return false;
         }
@@ -482,9 +490,8 @@ class UserManager
      */
     public static function deleteUser($username)
     {
-
         // Delete the user
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // If there are jobs in the queue for the user, we do not delete
         $sql = "SELECT id FROM job_queue WHERE username=?;";
@@ -567,14 +574,11 @@ class UserManager
         $success = $db->connection()->CompleteTrans();
 
         if ($success) {
-
             // Delete the user folders
             UserManager::deleteUserFolders($username);
-
-            return True;
+            return true;
         }
-
-        return False;
+        return false;
     }
 
     /**
@@ -590,9 +594,9 @@ class UserManager
      * UserConstants::ROLE_USER).
      * @return bool True if the user role could be changed; false otherwise.
      */
-    public static function setRole($username, $role=UserConstants::ROLE_USER)
+    public static function setRole($username, $role = UserConstants::ROLE_USER)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $sql = "UPDATE username SET role=? WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($role, $username));
         if ($result === false) {
@@ -611,8 +615,8 @@ class UserManager
      * @return bool True if the authentication mode could be set successfully,
      * false otherwise.
      */
-    public static function setAuthenticationMode($username, $mode) {
-
+    public static function setAuthenticationMode($username, $mode)
+    {
         // Get all configured authentication modes
         $allAuthModes = ProxyFactory::getAllConfiguredAuthenticationModes();
 
@@ -625,7 +629,7 @@ class UserManager
         }
 
         // Try updating the user
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $sql = "UPDATE username SET authentication=? WHERE name=?;";
         $result = $db->connection()->Execute($sql, array($mode, $username));
         if ($result === false) {
@@ -698,7 +702,7 @@ class UserManager
      */
     public static function getAllUserDBRows()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->query("SELECT * FROM username ORDER BY name");
         return $rows;
     }
@@ -709,7 +713,7 @@ class UserManager
      */
     public static function getAllActiveUserDBRows()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->query("SELECT * FROM username WHERE (status = '" .
             UserConstants::STATUS_ACTIVE . "' OR status = '" .
             UserConstants::STATUS_OUTDATED . "' OR status = '" .
@@ -726,7 +730,7 @@ class UserManager
      */
     public static function getAllPendingUserDBRows()
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->query("SELECT * FROM username WHERE (seedid IS NOT NULL OR length(seedid) > 0)" .
             " AND status='" . UserConstants::STATUS_NEW_ACCOUNT . "' ORDER BY name;");
         return $rows;
@@ -742,7 +746,7 @@ class UserManager
     public static function getAllUserDBRowsByInitialLetter($c)
     {
         $c = strtolower($c);
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $rows = $db->query("SELECT * FROM username WHERE name LIKE '$c%' ORDER BY name;");
         return $rows;
     }
@@ -754,9 +758,8 @@ class UserManager
      */
     public static function getTotalNumberOfUsers()
     {
-        $db = new DatabaseConnection();
-        $count = $db->queryLastValue(
-            "SELECT count(*) FROM username WHERE TRUE;");
+        $db = DatabaseConnection::get();
+        $count = $db->queryLastValue("SELECT count(*) FROM username WHERE TRUE;");
         return $count;
     }
 
@@ -767,16 +770,14 @@ class UserManager
      */
     public static function getNumberCountPerInitialLetter()
     {
-
         // Open database connection
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
 
         // Initialize array of counts
         $counts = array();
 
         // Query and store the counts
         for ($i = 0; $i < 26; $i++) {
-
             // Initial letter (filter)
             $c = chr(97 + $i);
 
@@ -787,7 +788,6 @@ class UserManager
 
             // Store the count
             $counts[$c] = count($result);
-
         }
 
         return $counts;
@@ -799,9 +799,7 @@ class UserManager
      */
     public static function createUserFolders($username)
     {
-
-        // TODO Use the Shell classes!
-
+        // @TODO Use the Shell classes!
         Log::info("Creating directories for '" . $username . "'.");
         global $userManagerScript;
         Log::info(shell_exec($userManagerScript . " create " . $username));
@@ -813,12 +811,15 @@ class UserManager
      */
     public static function deleteUserFolders($username)
     {
-
-        // TODO Use the Shell classes!
-
+        // @TODO Use the Shell classes!
         Log::info("Removing directories for '" . $username . "'.");
         global $userManagerScript;
-        Log::info(shell_exec($userManagerScript . " delete " . $username));
+        $retVal = shell_exec($userManagerScript . " delete " . $username);
+        if ($retVal == null) {
+            Log::info("Remove call had no output or encountered an error.");
+        } else {
+            Log::info($retVal);
+        }
     }
 
     /**
@@ -832,7 +833,7 @@ class UserManager
      */
     public static function getUserStatus($name)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "select status from username where name = '$name'";
         $result = $db->queryLastValue($query);
         if ($result === false) {
@@ -850,7 +851,7 @@ class UserManager
      */
     public static function setUserStatus($name, $status)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $query = "update username set status='$status' where name='$name'";
         $result = $db->execute($query);
         if ($result) {
@@ -879,7 +880,7 @@ class UserManager
      */
     private static function updateUserStatus($username, $status)
     {
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         if ($status == UserConstants::STATUS_PASSWORD_RESET) {
             $query = "UPDATE username SET status = '$status' WHERE name = '$username'";
         } else {
@@ -902,7 +903,7 @@ class UserManager
     private static function updateAllUsersStatus($status)
     {
         // Only the super admin is left untouched
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $role = UserConstants::ROLE_SUPERADMIN;
         $query = "UPDATE username SET status = '$status', seedid = '' WHERE role != $role";
         $result = $db->execute($query);
@@ -912,5 +913,4 @@ class UserManager
             return false;
         }
     }
-
 }

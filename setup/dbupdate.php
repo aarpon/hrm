@@ -35,6 +35,7 @@
 //    it is simply updated to the last revision.
 
 // Include hrm_config.inc.php
+use hrm\DatabaseConnection;
 use hrm\System;
 use hrm\user\proxy\ProxyFactory;
 use hrm\user\UserConstants;
@@ -185,6 +186,7 @@ function insert_column($tabname,$fields) {
 
     // NOTE: ADOdb AddColumnSQL, not guaranteed to work under all situations.
     // Please document here those situations (unknown as of February 2014).
+    // AddColumnSQL should fail if the tables doesn't exist yet (May 2023).
     $sqlarray = $datadict->AddColumnSQL($tabname, $fields);
 
     // return 0 if failed, 1 if executed all but with errors,
@@ -203,7 +205,8 @@ function insert_column($tabname,$fields) {
 
 // Check the existence and the structure of a table.
 // If the table does not exist, it is created;
-// if a field is not correct, it is altered;
+// if a field is not correct, it is altered; -> This might fail with the
+// updated adodb package. But this function is not used so I'll keep it.
 // if a field does not exist, it is added and the default value for that field is put in the record.
 function check_table_existence_and_structure($tabname,$flds) {
     global $datadict;
@@ -368,16 +371,16 @@ if (!($efh = @fopen($error_file, 'a'))) { // If the file does not exist, it is c
 }
 write_to_error(timestamp());
 
-//  Check if the database exists; if it does not exist, create it
-$dsn = $db_type."://".$db_user.":".$db_password."@".$db_host;
-
-$db = ADONewConnection($dsn);
-if(!$db) {
-    $msg = "Cannot connect to database host.";
+// Connect to the database server
+$db = ADONewConnection($db_type);
+$success = $db->Connect($db_host, $db_user, $db_password);
+if ($success === false) {
+    $msg = "Cannot connect to the database server on $db_host.";
     write_message($msg);
     write_to_error($msg);
     return;
 }
+
 $datadict = NewDataDictionary($db);   // Build a data dictionary
 $databases = $db->MetaDatabases();
 if (!in_array($db_name, $databases)) {
@@ -394,24 +397,30 @@ if (!in_array($db_name, $databases)) {
     write_to_log($msg);
 }
 
-// Connect to the database
-$dsn = $db_type."://".$db_user.":".$db_password."@".$db_host."/".$db_name;
-$db = ADONewConnection($dsn);
-if(!$db) {
-    $msg = "Cannot connect to the database, probably creation failed.\n".
-    "Please check that database user '$db_user' exists\n".
-    "and has privileges to administrate databases.";
+// Connect to the database '$db_name'
+$success = $db->SelectDB($db_name);
+
+if ($success === false) {
+    $msg = "Cannot connect to database '$db_name' on $db_host.";
     write_message($msg);
     write_to_error($msg);
-    return;
-}
 
-// Build a data dictionary to automate the creation of tables
-$datadict = NewDataDictionary($db);
+    // Before giving up, try a different method. This seems to work
+    // particularly well for Postgresql.
+    $msg = "Trying a different method ...";
+    write_message($msg);    
+    $db->PConnect($db_host, $db_user, $db_password, $db_name);
+    $errorMsg = $db->errorMsg();
+    
+    if ($errorMsg != "") {
+        write_message($errorMsg);
+        write_to_error($errorMsg);
+        return;
+    }
+}
 
 // Extract the list of existing tables
 $tables = $db->MetaTables("TABLES");
-
 
 
 // -----------------------------------------------------------------------------
@@ -435,7 +444,7 @@ if (!in_array("global_variables", $tables)) {
 
 // Check if the variable dbrevision exists
 $rs = $db->Execute("SELECT * FROM global_variables WHERE name = 'dbrevision'");
-if ($rs->EOF) { // If the variable dbrevision does not exist, create it and set its value to 0
+if ($rs->EOF ) { // If the variable dbrevision does not exist, create it and set its value to 0
     $record = array();
     $record["name"] = "dbrevision";
     $record["value"] = "0";
@@ -5068,12 +5077,20 @@ if ($current_revision < $n) {
         // Drop current index on 'name' from old username table (if the
         // index is no longer there because the database update was run
         // more than once in developement, we silently continue).
-        $dropIndexSQL = $datadict->DropIndexSQL("idx_name", $tabname);
-        if (!$db->Execute($dropIndexSQL[0])) {
-            // The index could not be dropped. We continue.
+        // Please notice that in recent versions of MySQL, the renamed table
+        // `username` does no longer exist at this stage, in contrast to what
+        // happened in the past. Hence, we add an additional check.
+
+        // Refresh the list of tables
+        $tables = $db->MetaTables();
+        if (in_array($tabname, $tables)) {
+            $dropIndexSQL = $datadict->DropIndexSQL("idx_name", $tabname);
+            if (!$db->Execute($dropIndexSQL[0])) {
+                // The index could not be dropped. We continue.
+            }
         }
 
-        // Refresh the table list
+        // Refresh the table list once more
         $tables = $db->MetaTables();
 
         // Create new table: username
@@ -5239,7 +5256,7 @@ if ($current_revision < $n) {
     $columns = $db->MetaColumnNames($tabname);
     if (!array_key_exists(strtoupper($newcolumn), $columns)) {
 
-        $sqlarray = $datadict->ChangeTableSQL($tabname, "$newcolumn I", $dropOldFlds=false);
+        $sqlarray = $datadict->AddColumnSQL($tabname, "$newcolumn I");
         $rs = $datadict->ExecuteSQLArray($sqlarray);
         if($rs != 2) {
             $msg = "An error occurred while adding support for multi GPU deconvolution.";
@@ -5908,7 +5925,7 @@ if ($current_revision < $n) {
     $record = array();
     $record["parameter"] = "ArrayDetectorReductionMode";
     $record["value"] = "superY";
-    $record["translation"] = "Super:Y create an image supersampled in Y.";
+    $record["translation"] = "SuperY: create an image supersampled in Y.";
     $record["isDefault"] = "f";
 
     // Skip it if the row is already there.
@@ -5929,6 +5946,893 @@ if ($current_revision < $n) {
 
     // Update revision
     if(!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 18
+// -----------------------------------------------------------------------------
+$n = 18;
+if ($current_revision < $n) {
+
+    // Add All files to possible image file formats
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "ImageFileFormat";
+    $record["value"] = "all";
+    $record["translation"] = "All files (*.*)";
+    $record["isDefault"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE value='" . $record['value'] .
+             "' AND parameter='" . $record['parameter'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+       if(!$db->Execute($insertSQL)) {
+           $msg = "An error occurred while updating " .
+                  "the database to revision " . $n . ".";
+           write_message($msg);
+           write_to_error($msg);
+           return;
+       }
+    }
+
+    // Correct Imaris' default.
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'OutputFileFormat';
+    $record["value"]       = 'IMS (Imaris Classic)';
+    $record["translation"] = 'Imaris';
+    $record["isDefault"]   = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE', 
+        "parameter='OutputFileFormat' and translation='Imaris'")) {
+        $msg = "Could not correct entry for OutputFileFormat Imaris in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Correct CZI translation for alphabetical sorts.
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"]   = 'ImageFileFormat';
+    $record["value"]       = 'czi';
+    $record["translation"] = 'Zeiss CZI (*.czi)';
+    $record["isDefault"]   = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE',
+        "parameter='ImageFileFormat' and value='czi'")) {
+        $msg = "Could not correct entry for InputFileFormat CZI in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Add entry to DeconvolutionAlgorithm.
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "DeconvolutionAlgorithm";
+    $record["value"] = "skip";
+    $record["translation"] = "Skip";
+    $record["isDefault"] = "f";
+    $insertSQL = $db->GetInsertSQL($tabname, $record);
+    if(!$db->Execute($insertSQL)) {
+        $msg = "An error occurred while updating the database to revision " . $n . ".";
+        write_message($msg);
+        write_to_error($msg);
+        return;
+    }
+
+    // Add a settings_id column to the job_queue table
+    $tabname   = "job_queue";
+    $newcolumn = "settings_id";
+    $type = "C(30)";
+
+    // Add new column 'settings_id' to job_queue
+    $allcolumns = $db->MetaColumnNames($tabname);
+    if (! array_key_exists(strtoupper($newcolumn), $allcolumns)) {
+        if ( !insert_column($tabname, $newcolumn . " " . $type) ) {
+            $msg = "Error adding new column $newcolumn to table $tabname!";
+            write_message($msg);
+            write_to_log($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Update revision
+    if(!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+// -----------------------------------------------------------------------------
+// Update to revision 19
+// Description:
+//     * Update translation for Imaris format
+//     * Update display name of the Imaris format
+//     * Add Olympus VSI file format
+//     * Set ND as multifile format
+//     * Increase maximum number of iterations to 1000
+//     * Add bleaching mode option
+//     * Extend ChromaticAberration parameter to support 14 values (instead of 5)
+// -----------------------------------------------------------------------------
+$n = 19;
+if ($current_revision < $n) {
+
+    // Correct Imaris' default.
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"] = 'OutputFileFormat';
+    $record["value"] = 'IMS (Imaris Classic)';
+    $record["translation"] = 'imaris';
+    $record["isDefault"] = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE',
+        "parameter='OutputFileFormat' and translation='Imaris'")) {
+        $msg = "Could not correct entry for OutputFileFormat Imaris in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Correct Imaris' displayed name to reflect support for Imaris 5.5 files.
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"] = 'ImageFileFormat';
+    $record["value"] = 'ims';
+    $record["translation"] = 'Imaris Classic/Imaris 5.5 (*.ims)';
+    $record["isDefault"] = 'f';
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE',
+        "parameter='ImageFileFormat' and value='ims'")) {
+        $msg = "Could not correct entry for ImageFileFormat ims in possible_values.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Add Olympus VSI file to possible_values
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"] = 'ImageFileFormat';
+    $record["value"] = 'vsi';
+    $record["translation"] = 'Olympus VSI (*.vsi)';
+    $record["isDefault"] = 'f';
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname . " WHERE parameter='" .
+        $record['parameter'] . "' AND value='" . $record['value'] . "' " .
+        " AND translation='" . $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
+            $msg = "Could not add entry for Olympus VSI in table 'possible_values'.";
+            write_message($msg);
+            write_to_error($msg);
+            return false;
+        }
+    }
+
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "vsi";
+    $record["extension"] = "vsi";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "Could not add entry for Olympus VSI in table 'file_extension'.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "vsi";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $record["hucoreName"] = "vsi";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE name='" . $record['name'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // ------- Set ND as multifile format. ------
+    $tabname = "file_format";
+    $record = array();
+    $record["ismultifile"] = 't';
+    if (!$db->AutoExecute('file_format', $record, 'UPDATE', "name like 'nd'")) {
+        $msg = error_message($tabname);
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // Increase the maximum number of iterations to 1000.
+    $tabname = 'boundary_values';
+    $record = array();
+    $record["parameter"] = 'NumberOfIterations';
+    $record["min"] = '1';
+    $record["max"] = '1000';
+    $record["min_included"] = 't';
+    $record["max_included"] = 't';
+    $record["standard"] = null;
+    if (!$db->AutoExecute($tabname, $record, 'UPDATE',
+        "parameter='NumberOfIterations' and max='100'")) {
+        $msg = "Could not update the max value of NumberOfIterations to '1000'.";
+        write_message($msg);
+        write_to_error($msg);
+        return false;
+    }
+
+    // -------------------- Add bleaching mode option ------------------------
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "BleachingMode";
+    $record["value"] = "auto";
+    $record["translation"] = "Apply a correction for bleaching, if possible";
+    $record["isDefault"] = "f";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    $tabname = "possible_values";
+    $record = array();
+    $record["parameter"] = "BleachingMode";
+    $record["value"] = "off";
+    $record["translation"] = "Do not apply a bleaching correction";
+    $record["isDefault"] = "t";
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // In task_parameter all ChromaticAberration values have to be changed to
+    // sets of 14 instead of 5. Because this will leave little room (3
+    // characters)  for each chromatic aberration component it makes more
+    // sense to split the chromatic aberration components in separate entries
+    // per channel.
+    unset($temp);
+    $tabname = "task_parameter";
+    $fields_set = array('owner', 'setting', 'name', 'value');
+    $name = "ChromaticAberration";
+    $insertArray = array(null, null, null, null, null, null, null, null, null);
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+        " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+            $array = explode('#', $row[3]);
+            $maxCh = intdiv(count($array), 5);
+
+            // Get sets of 5 components, add null value entries after and 1 in
+            // front, then implode and add to the database with the channel in
+            // the value.
+            for ($ch = 0; $ch < $maxCh; $ch++) {
+                $inx = $ch * 5 + 1;
+                $currCh = array_slice($array, $inx, 5);
+                $currCh = array_merge(array(null), $currCh, $insertArray);
+                $row[3] = implode('#', $currCh);
+                $row[2] = $name . "Ch" . $ch;
+                for ($i = 0; $i < count($fields_set); $i++) {
+                    $temp[$fields_set[$i]] = $row[$i];
+                }
+
+                $insertSQL = $db->GetInsertSQL($tabname, $temp);
+                if (!$db->Execute($insertSQL)) {
+                    $msg = "An error occurred while updating " .
+                        "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+
+            // Delete the old entry.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                " WHERE owner='" . $row[0] .
+                "' AND setting='" . $row[1] .
+                "' AND name='" . $name . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // The same for the shared_templates:
+    $tabname = "shared_task_parameter";
+    $fields_set = array('id', 'setting_id', 'owner', 'setting', 'name', 'value');
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+        " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+            $array = explode('#', $row[5]);
+            $maxCh = intdiv(count($array), 5);
+
+            // Get sets of 5 components, add null value entries after and 1 in
+            // front, then implode and add to the database with the channel in
+            // the value.
+            for ($ch = 0; $ch < $maxCh; $ch++) {
+                $inx = $ch * 5 + 1;
+                $currCh = array_slice($array, $inx, 5);
+                $currCh = array_merge(array(null), $currCh, $insertArray);
+                $row[5] = implode('#', $currCh);
+                $row[4] = $name . "Ch" . $ch;
+                for ($i = 0; $i < count($fields_set); $i++) {
+                    $temp[$fields_set[$i]] = $row[$i];
+                }
+                $temp["id"] = null; // An id will be automatically assigned.
+
+                $insertSQL = $db->GetInsertSQL($tabname, $temp);
+                if (!$db->Execute($insertSQL)) {
+                    $msg = "An error occurred while updating " .
+                        "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+
+            // Delete the old entry.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                " WHERE id='" . $row[0] .
+                "' AND setting_id='" . $row[1] .
+                "' AND owner='" . $row[2] .
+                "' AND setting='" . $row[3] .
+                "' AND name='" . $name . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // Also in possible_values, the old default was actually wrong as well. It
+    // had a 6'th hashtag.
+    $tabname = "possible_values";
+    $fields_set = array('parameter', 'value', 'translation', 'isDefault');
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+        " WHERE parameter = '" . $name . "'");
+    $maxCh = 6;
+    $defaultCh0 = "#0#0#0#0#1#########";
+    $default = "##############";
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+
+            // Set new defaults for each channel.
+            for ($ch = 0; $ch < $maxCh; $ch++) {
+                $temp["parameter"] = $name . "Ch" . $ch;
+                if ($ch == 0) {
+                    $temp["value"] = $defaultCh0;
+                } else {
+                    $temp["value"] = $default;
+                }
+                $temp["translation"] = $row[2];
+                $temp["isDefault"] = $row[3];
+
+                $insertSQL = $db->GetInsertSQL($tabname, $temp);
+                if (!$db->Execute($insertSQL)) {
+                    $msg = "An error occurred while updating " .
+                        "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+
+            // Delete the old entry. There should only be one.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                " WHERE parameter='" . $row[0] .
+                "' AND value='" . $row[1] .
+                "' AND translation='" . $row[2] .
+                "' AND isDefault='" . $row[3] . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // -------------------- Add acuity mode option ------------------------
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"] = 'AcuityMode';
+    $record["value"] = 'on';
+    $record["translation"] = 'Enable acuity mode';
+    $record["isDefault"] = 'f';
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"] = 'AcuityMode';
+    $record["value"] = 'off';
+    $record["translation"] = 'Use legacy SNR';
+    $record["isDefault"] = 't';
+
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE parameter='" . $record['parameter'] .
+        "' AND value='" . $record['value'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // -------------------- Add acuity boundary values ------------------------
+    $tabname = 'boundary_values';
+    $record = array();
+    $record["parameter"] = 'Acuity';
+    $record["min"] = '-100';
+    $record["max"] = '100';
+    $record["min_included"] = 't';
+    $record["max_included"] = 't';
+    $record["standard"] = null;
+    if ($db->Execute("SELECT * FROM " . $tabname . " WHERE parameter='" . $record["parameter"] . "' AND min='" . $record["min"] . "' AND max='" . $record["max"] . "' AND min_included='" . $record["min_included"] . "' AND max_included='" . $record["max_included"] . "'")->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    // In HRM 3.8.0 the SNR values are always numeric in order to match the
+    // current behaviour in the Huygens software. However, the database may
+    // still be storing qualitative SNR values for restoration templates if the
+    // deconvolution algorithm was set to QMLE. The qualitative values would be
+    // saved as integers and mapped according to "1" => "low", "2" => "fair",
+    // "3" => "good", "4" => "inf". Search through the database and replace
+    // these instances with appropriate numeric values.
+    unset($temp);
+    $tabname = "task_parameter";
+    $fields_set = array('owner','setting','name','value');
+    $algName = "DeconvolutionAlgorithm";
+    $snrName = "SignalNoiseRatio";
+    $snrQMLEArray = array("1" => "5.6", "2" => "16.0",
+                          "3" => "33.3", "4" => "1000.0");
+
+    // Select all decon algorithm entries.
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $algName . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+            $array = explode('#', $row[3]);
+            $setting = $row[1];
+            
+            // Use the setting to find the corresponding SNR values.
+            $snrVals = $db->execute("SELECT * FROM " . $tabname .
+                                    " WHERE setting = '" . $setting .
+                                    "' AND name ='" . $snrName . "'");
+            if ($snrVals) {
+                // Should be just a single row.
+                $snrRow = $snrVals->FetchRow();
+                
+                // If the decon algorithm entries contain a 'qmle' value, modify
+                // them according to the conversion array.
+                for ($ch = 0; $ch < count($array); $ch++) {
+                    if ($array[$ch] == 'qmle') {
+                        $snrArray = explode('#', $snrRow[3]);
+                        if (in_array($snrArray[$ch], array("1","2","3","4"))) {
+                            $snrArray[$ch] = $snrQMLEArray[$snrArray[$ch]];
+                            $snrRow[3] = implode('#', $snrArray);
+                        }
+                    }
+                }
+                for ($i = 0; $i < count($fields_set); $i++) {
+                    $temp[$fields_set[$i]] = $snrRow[$i];
+                }
+
+                // Delete the entry.
+                if (!$db->Execute("DELETE FROM " . $tabname .
+                                  " WHERE owner='" . $snrRow[0] .
+                                  "' AND setting='" . $snrRow[1] .
+                                  "' AND name='" . $snrName . "'")) {
+                    $msg = "An error occurred while updating " .
+                         "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_log($msg);
+                    write_to_error($msg);
+                    return;
+                }
+                    
+                // Reinsert the entry in the database.
+                $insertSQL = $db->GetInsertSQL($tabname, $temp);
+                if (!$db->Execute($insertSQL)) {
+                    $msg = "An error occurred while updating " .
+                         "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+        }
+    }
+    
+    // Re-do all of the above for the shared templates.
+    $tabname = "shared_task_parameter";
+    $fields_set = array('id','setting_id','owner','setting','name','value');
+    
+    // Select all decon algorithm entries.
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $algName . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+            $array = explode('#', $row[5]);
+            $setting = $row[3];
+            
+            // Use the setting to find the corresponding SNR values.
+            $snrVals = $db->execute("SELECT * FROM " . $tabname .
+                                    " WHERE setting = '" . $setting .
+                                    "' AND name ='" . $snrName . "'");
+            if ($snrVals) {
+                // Should be just a single row.
+                $snrRow = $snrVals->FetchRow();
+                
+                // If the decon algorithm entries contain a 'qmle' value, modify
+                // them according to the conversion array.
+                for ($ch = 0; $ch < count($array); $ch++) {
+                    if ($array[$ch] == 'qmle') {
+                        $snrArray = explode('#', $snrRow[5]);
+                        if (in_array($snrArray[$ch], array("1","2","3","4"))) {
+                            $snrArray[$ch] = $snrQMLEArray[$snrArray[$ch]];
+                            $snrRow[5] = implode('#', $snrArray);
+                        }
+                    }
+                }
+                for ($i = 0; $i <count($fields_set); $i++) {
+                    $temp[$fields_set[$i]] = $snrRow[$i];
+                }
+                
+                // Delete the entry.
+                if (!$db->Execute("DELETE FROM " . $tabname .
+                                  " WHERE id='" . $snrRow[0] .
+                                  "' AND setting_id='" . $snrRow[1] .
+                                  "' AND owner='" . $snrRow[2] .
+                                  "' AND setting='" . $snrRow[3] .
+                                  "' AND name='" . $snrName . "'")) {
+                    $msg = "An error occurred while updating " .
+                         "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_log($msg);
+                    write_to_error($msg);
+                    return;
+                }
+                
+                // Reinsert the entry in the database.
+                $insertSQL = $db->GetInsertSQL($tabname, $temp);
+                if (!$db->Execute($insertSQL)) {
+                    $msg = "An error occurred while updating " .
+                         "the database to revision " . $n . ".";
+                    write_message($msg);
+                    write_to_error($msg);
+                    return;
+                }
+            }
+        }
+    }    
+
+    // Update revision
+    if (!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+// -----------------------------------------------------------------------------
+// Update to revision 20
+// Description:
+//     * Remove "IMS (Imaris Classic)" from the list out output file formats.
+//     * Expand the QualityChangeStoppingCriterion to set values per channel.
+//     * Expand the NumberOfIterations to set values per channel.
+// -----------------------------------------------------------------------------
+$n = 20;
+if ($current_revision < $n) {
+
+    // Remove "IMS (Imaris Classic)" from possible_values
+    $query = "SELECT * FROM possible_values WHERE parameter = 'OutputFileFormat' AND value = 'IMS (Imaris Classic)';";
+    $rs = $db->Execute($query);
+    $rows = $rs->getRows();
+    if (count($rows) > 0) {
+        $query = "DELETE FROM possible_values WHERE parameter = 'OutputFileFormat' AND value = 'IMS (Imaris Classic)';";
+        $rs = $db->Execute($query);
+        if (!$rs) {
+            $msg = "Could not delete the IMS (Imaris Classic) output file format from possible_values table.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Expand the QualityChangeStoppingCriterion to set values per channel.
+    unset($temp);
+    $tabname = "task_parameter";
+    $fields_set = array('owner','setting','name','value');
+    $name = "QualityChangeStoppingCriterion";
+    $maxCh = 6;
+
+    // Select all QualityChangeStoppingCriterion entries.
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+
+            # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
+            $quality = $row[3];
+
+            # If the first character is a '#' the change has already been
+            # applied, don't edit this value.
+            if (substr($quality, 0, 1) == '#') {
+                continue;
+            }
+            $qualityArray = array_fill(0, $maxCh, $quality);
+            $qualityArray = array_merge(array(null), $qualityArray);
+            $row[3] = implode('#', $qualityArray);
+
+            # Delete old entry.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                              " WHERE owner='" . $row[0] .
+                              "' AND setting='" . $row[1] .
+                              "' AND name='" . $row[2] . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+
+            # Set new entry.
+            for ($i = 0; $i < count($fields_set); $i++) {
+                $temp[$fields_set[$i]] = $row[$i];
+            }
+            $insertSQL = $db->GetInsertSQL($tabname, $temp);
+            if (!$db->Execute($insertSQL)) {
+                
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+    
+    // Re-do all of the above for the shared templates.
+    $tabname = "shared_task_parameter";
+    $fields_set = array('id','setting_id','owner','setting','name','value');
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+
+            # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
+            $quality = $row[5];
+            
+            # If the first character is a '#' the change has already been
+            # applied, don't edit this value.
+            if (substr($quality, 0, 1) == '#') {
+                continue;
+            }
+            
+            $qualityArray = array_fill(0, $maxCh, $quality);
+            $qualityArray = array_merge(array(null), $qualityArray);
+            $row[5] = implode('#', $qualityArray);
+
+            # Delete old entry.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                              " WHERE id='" . $row[0] .
+                              "' AND setting_id='" . $row[1] . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+
+            # Set new entry.
+            for ($i = 0; $i < count($fields_set); $i++) {
+                $temp[$fields_set[$i]] = $row[$i];
+            }
+            $insertSQL = $db->GetInsertSQL($tabname, $temp);
+            if (!$db->Execute($insertSQL)) {
+                
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // Expand the NumberOfIterations to set values per channel.
+    unset($temp);
+    $tabname = "task_parameter";
+    $fields_set = array('owner','setting','name','value');
+    $name = "NumberOfIterations";
+    $maxCh = 6;
+
+    // Select all NumberOfIterations entries.
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+
+            # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
+            $iterations = $row[3];
+            
+            # If the first character is a '#' the change has already been
+            # applied, don't edit this value.
+            if (substr($iterations, 0, 1) == '#') {
+                continue;
+            }
+            
+            $iterationsArray = array_fill(0, $maxCh, $iterations);
+            $iterationsArray = array_merge(array(null), $iterationsArray);
+            $row[3] = implode('#', $iterationsArray);
+
+            # Delete old entry.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                              " WHERE owner='" . $row[0] .
+                              "' AND setting='" . $row[1] .
+                              "' AND name='" . $row[2] . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+
+            # Set new entry.
+            for ($i = 0; $i < count($fields_set); $i++) {
+                $temp[$fields_set[$i]] = $row[$i];
+            }
+            $insertSQL = $db->GetInsertSQL($tabname, $temp);
+            if (!$db->Execute($insertSQL)) {
+                
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+    
+    // Re-do all of the above for the shared templates.
+    $tabname = "shared_task_parameter";
+    $fields_set = array('id','setting_id','owner','setting','name','value');
+    $rs = $db->execute("SELECT * FROM " . $tabname .
+                       " WHERE name = '" . $name . "'");
+    if ($rs) {
+        while ($row = $rs->FetchRow()) {
+
+            # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
+            $iterations = $row[5];
+            
+            # If the first character is a '#' the change has already been
+            # applied, don't edit this value.
+            if (substr($iterations, 0, 1) == '#') {
+                continue;
+            }
+
+            $iterationsArray = array_fill(0, $maxCh, $iterations);
+            $iterationsArray = array_merge(array(null), $iterationsArray);
+            $row[5] = implode('#', $iterationsArray);
+
+            # Delete old entry.
+            if (!$db->Execute("DELETE FROM " . $tabname .
+                              " WHERE id='" . $row[0] .
+                              "' AND setting_id='" . $row[1] . "'")) {
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_log($msg);
+                write_to_error($msg);
+                return;
+            }
+
+            # Set new entry.
+            for ($i = 0; $i < count($fields_set); $i++) {
+                $temp[$fields_set[$i]] = $row[$i];
+            }
+            $insertSQL = $db->GetInsertSQL($tabname, $temp);
+            if (!$db->Execute($insertSQL)) {
+                
+                $msg = "An error occurred while updating " .
+                    "the database to revision " . $n . ".";
+                write_message($msg);
+                write_to_error($msg);
+                return;
+            }
+        }
+    }
+
+    // Update revision
+    if (!update_dbrevision($n))
         return;
 
     $current_revision = $n;

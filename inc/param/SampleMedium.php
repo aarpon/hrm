@@ -12,8 +12,6 @@ namespace hrm\param;
 use hrm\DatabaseConnection;
 use hrm\param\base\ChoiceParameter;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * A ChoiceParameter to represent the sample medium.
  *
@@ -51,7 +49,7 @@ class SampleMedium extends ChoiceParameter
     public function translatedValue()
     {
         if (in_array($this->value, $this->possibleValues)) {
-            $db = new DatabaseConnection();
+            $db = DatabaseConnection::get();
             $result = $db->translationFor($this->name, $this->value);
             return $result;
         } else {

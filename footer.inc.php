@@ -71,6 +71,7 @@ function addDevelopers(array $name_list, array $email_list)
 <?php
 
 use hrm\System;
+use hrm\Nav;
 
 // Check whether a user is currently logged in
 $loggedIn = (isset($_SESSION['user']) && $_SESSION['user']->isLoggedIn());
@@ -89,8 +90,10 @@ $loggedIn = (isset($_SESSION['user']) && $_SESSION['user']->isLoggedIn());
                 echo "v" . System::getHRMVersionAsString();
             }
         ?>
-        <br/>
     </div>
+    <?php
+    echo(Nav::actionStyleToggle());
+    ?>
 </div>
 
 </div> <!-- basket -->

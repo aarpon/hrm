@@ -12,8 +12,6 @@ namespace hrm\param;
 use hrm\DatabaseConnection;
 use hrm\param\base\SingleOrMultiChannelParameter;
 
-require_once dirname(__FILE__) . '/../bootstrap.php';
-
 /**
  * A SingleOrMultiChannelParameter to represent the image file format.
  *
@@ -50,7 +48,7 @@ class ImageFileFormat extends SingleOrMultiChannelParameter
             $value = $this->value();
         }
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $result = $db->fileExtensions($value);
         return $result;
     }

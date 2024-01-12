@@ -12,8 +12,6 @@ namespace hrm\shell;
 
 use hrm\DatabaseConnection;
 
-require_once dirname(__FILE__) . "/../bootstrap.php";
-
 /**
  * Factory that returns an external process (Shell) that works either locally or on a remote server.
  *
@@ -42,7 +40,7 @@ class ExternalProcessFactory
     {
         global $imageProcessingIsOnQueueManager;
 
-        $db = new DatabaseConnection();
+        $db = DatabaseConnection::get();
         $huscript_path = $db->huscriptPathOn($host);
 
         if ($imageProcessingIsOnQueueManager) {

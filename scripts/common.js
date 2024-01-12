@@ -141,22 +141,24 @@ function smoothChangeDiv(div, html, time) {
 }
 
 function isChromaticTableEmpty( ) {
-    var tag = "ChromaticAberration";
-    
-    table = document.getElementById(tag);
-    
+    var allEmpty = true;
+
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
+
+    table = document.getElementById(tableTag);
+
     channelCnt = table.rows.length - 1;
     componentCnt = table.rows[0].cells.length - 1;
-    
-    var allEmpty = true;
+
     for (var chan = 0; chan < channelCnt; chan++) {
         for (var component = 0; component < componentCnt; component++) {
-            var id = tag + "Ch";
+            var id = channelTag + "Ch";
             id = id.concat(chan);
             id += "_";
             id = id.concat(component);
             inputElement = document.getElementById(id);
-            
+
             if (inputElement.value != "") {
                 allEmpty = false;
                 break;
@@ -172,35 +174,47 @@ function isChromaticTableEmpty( ) {
 
 function initChromaticChannelReference() {
 
+    var tableTag   = "ChromaticAberrationTable";
+
+    table = document.getElementById(tableTag);
+
+    channelCnt = table.rows.length - 1;
+
+    if (channelCnt == 1) {
+        return;
+    }
+
     emptyTable = isChromaticTableEmpty();
-    
+
     if (emptyTable == true) {
         chan = 0;
     } else {
         chan = searchChromaticChannelReference();
     }
-    
+
+    clearChromaticChannelReference();
     setChromaticChannelReference( chan );
 }
 
 function searchChromaticChannelReference( ) {
-    var tag = "ChromaticAberration";
-    
-    table = document.getElementById(tag);
-    
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
+
+    table = document.getElementById(tableTag);
+
     channelCnt = table.rows.length - 1;
     componentCnt = table.rows[0].cells.length - 1;
-    
+
     for (var chan = 0; chan < channelCnt; chan++) {
         var isReference = false;
-        
+
         for (var component = 0; component < componentCnt; component++) {
-            var id = tag + "Ch";
+            var id = channelTag + "Ch";
             id = id.concat(chan);
             id += "_";
             id = id.concat(component);
             inputElement = document.getElementById(id);
-            
+
             if (inputElement.value != 0 && component < 4) {
                 break;
             }
@@ -221,62 +235,192 @@ function searchChromaticChannelReference( ) {
 
 // The reference always contains values 0, 0, 0, 0, 1. */
 function setChromaticChannelReference( chan ) {
-    var tag = "ChromaticAberration";
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
 
-    table = document.getElementById(tag);
-    
+    table = document.getElementById(tableTag);
+
     componentCnt = table.rows[0].cells.length - 1;
-    
+
     for (var component = 0; component < componentCnt; component++) {
-        var id = tag + "Ch";
+        var id = channelTag + "Ch";
         id = id.concat(chan);
         id += "_";
         id = id.concat(component);
         
         inputElement = document.getElementById(id);
         inputElement.readOnly = true;
-        inputElement.style.color="#000";
         inputElement.style.backgroundColor="#888";
-        
+
         if (component == 4) {
             inputElement.value = 1;
         } else {
             inputElement.value = 0;
-        } 
+        }
     }
+    
+    var id = channelTag + "DiscardOtherCh" + chan;
+    buttonElement = document.getElementById(id);
+    buttonElement.setAttribute('hidden', true);
+    
+    // todo: make sure it is "reset" in the case of 14 parameters.
     
     var tag = "ReferenceChannel";
     inputElement = document.getElementById(tag);
     inputElement.value = chan;
 }
 
-function removeChromaticChannelReference( ) {
-    var tag = "ChromaticAberration";
+function clearChromaticChannelReference( ) {
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
 
-    table = document.getElementById(tag);
-    
+    table = document.getElementById(tableTag);
+
     channelCnt = table.rows.length - 1;
     componentCnt = table.rows[0].cells.length - 1;
-    
+
     for (var chan = 0; chan < channelCnt; chan++) {
+
+        // If there are 14 parameters known for this chanenl don't make
+        // it editable.
+        var id = channelTag + "DiscardOtherCh";
+        id = id.concat(chan);
+        inputElement = document.getElementById(id);
+        var nonEditable14params = !inputElement.getAttribute('hidden');
+        
         for (var component = 0; component < componentCnt; component++) {
-            var id = tag + "Ch";
+            var id = channelTag + "Ch";
             id = id.concat(chan);
             id += "_";
             id = id.concat(component);
-
             inputElement = document.getElementById(id);
-            inputElement.readOnly = false;
-            inputElement.style.color="#000";
-            inputElement.style.backgroundColor="";    
+
+            if (nonEditable14params) {
+                inputElement.readOnly = true;
+                inputElement.style.backgroundColor="#666";
+            } else {
+                inputElement.readOnly = false;
+                inputElement.style.backgroundColor="";
+            }
         }
     }
 }
 
 function changeChromaticChannelReference(selectObj) {
-    removeChromaticChannelReference( );
+    clearChromaticChannelReference( );
     setChromaticChannelReference( selectObj.value );
 }
+
+function editChromaticChannelWith14Params(channel) {
+    // Hide the discard button.
+    var tag = "ChromaticAberrationDiscardOtherCh" + channel;
+    butElement = document.getElementById(tag);
+    butElement.setAttribute('hidden', true);
+    clearChromaticChannelReference( );
+
+    // Round the values to 5 decimals. This both makes it easier to edit and
+    // ensures the new values are saved properly. 
+    var tableTag   = "ChromaticAberrationTable";
+    var channelTag = "ChromaticAberration";
+    table = document.getElementById(tableTag);
+    channelCnt = table.rows.length - 1;
+    componentCnt = table.rows[0].cells.length - 1;
+    for (var component = 0; component < componentCnt; component++) {
+        var id = channelTag + "Ch" + channel + "_" + component;
+        inputElement = document.getElementById(id);
+        var rounded = Math.round(inputElement.value * 100000) / 100000;
+        inputElement.value = rounded;
+    }
+
+    // Call setChromaticChannelReference to properly redo the layout.
+    var tag = "ReferenceChannel";
+    refElement = document.getElementById(tag);
+    setChromaticChannelReference( refElement.value );
+}
+
+
+// Grey out selected input fields when the decon algorithm is set to 'skip'.
+function updateDeconEntryProperties( ) {
+    var deconTag             =  "DeconvolutionAlgorithm";
+
+    var paramAllChanTagArray = ["QualityChangeStoppingCriterion",
+                                "NumberOfIterations"];
+
+    var paramChanTagArray    = ["SignalNoiseRatioCMLE",
+                                "SignalNoiseRatioQMLE",
+                                "SignalNoiseRatioGMLE",
+                                "SignalNoiseRatioSKIP",
+                                "Acuity",
+                                "BackgroundOffsetPercent"];
+
+    var skipAllChannels = true;
+
+    // First, the channel-dependent parameters.
+    for (var chan = 0; chan < 6; chan++) {
+        var deconChanTag = deconTag.concat(chan);
+
+        var deconInputElement = document.getElementsByName(deconChanTag);
+        var deconAlgorithm    = deconInputElement[0];
+
+        if (deconAlgorithm === undefined) continue;
+        if (deconAlgorithm.value !== "skip") skipAllChannels = false;
+
+        // Show the input box relevant for the current algorithm.
+        switchSnrMode(deconAlgorithm, chan);
+
+        for (var tagIdx = 0; tagIdx < paramChanTagArray.length; tagIdx++) {
+            var tag = paramChanTagArray[tagIdx];
+            var id = tag.concat(chan);
+
+            if (document.getElementById(id) == null) continue;
+            var paramInputElement = document.getElementById(id);
+
+            if ( deconAlgorithm.value === "skip" ) {
+                paramInputElement.readOnly = true;
+                paramInputElement.style.backgroundColor="#888";
+            } else {
+                paramInputElement.readOnly = false;
+                paramInputElement.style.backgroundColor="";
+            }
+        }
+    }
+
+    // Then, the channel-independent parameters. These are changed when all
+    // channels are skipped.
+    for (var tagIdx = 0; tagIdx < paramAllChanTagArray.length; tagIdx++) {
+        var id = paramAllChanTagArray[tagIdx];
+
+        var paramInputElement = document.getElementById(id);
+
+        if (skipAllChannels) {
+            paramInputElement.readOnly = true;
+            paramInputElement.style.backgroundColor="#888";
+        } else {
+            paramInputElement.readOnly = false;
+            paramInputElement.style.backgroundColor="";
+        }
+    }
+}
+
+
+function copySnrToOtherAlgorithms(channel, inputObj) {
+
+    var tagArray = ["SignalNoiseRatioCMLE",
+                    "SignalNoiseRatioGMLE",
+                    "SignalNoiseRatioQMLE",
+                    "SignalNoiseRatioSKIP"];
+
+    for (var i = 0; i < tagArray.length; i++) {
+        var tag = tagArray[i];
+        var id = tag.concat(channel);
+
+        if (inputObj.name == id) {
+            continue;
+        }
+        document.getElementById(id).value = inputObj.value;
+    }
+}
+
 
 // Grey out the STED input fields of a specific channel if the
 // corresponding depletion mode is set to 'confocal'.
@@ -286,28 +430,30 @@ function changeStedEntryProperties(selectObj, channel) {
                     "StedImmunity",
                     "Sted3D"];
 
+
     for (var i = 0; i < tagArray.length; i++) {
         var tag = tagArray[i];
         var id = tag.concat(channel);
 
+        if (document.getElementById(id) == null) continue;
+
         var inputElement = document.getElementById(id);
-        
+
         if ( selectObj.value == 'off-confocal' ) {
             inputElement.readOnly = true;
-            inputElement.style.color="#000";
             inputElement.style.backgroundColor="#888";
         } else {
             inputElement.readOnly = false;
-            inputElement.style.color="#000";
             inputElement.style.backgroundColor="";
         }
     }
 }
 
-function setStedEntryProperties( ) {
+
+function setStedEntryProperties(chanCnt) {
     var tag = "StedDepletionMode";
-    
-    for (var chan = 0; chan < 5; chan++) {
+
+    for (var chan = 0; chan < chanCnt; chan++) {
         var name = tag.concat(chan);
 
         var inputElement = document.getElementsByName(name);
@@ -399,8 +545,8 @@ function changeSpimEntryProperties(selectObj, channel) {
 
 function setSpimEntryProperties( ) {
     var tag = "SpimExcMode";
-    
-    for (var chan = 0; chan < 5; chan++) {
+
+    for (var chan = 0; chan < 6; chan++) {
         var name = tag.concat(chan);
 
         inputElement = document.getElementsByName(name);
@@ -409,6 +555,10 @@ function setSpimEntryProperties( ) {
 }
 
 function checkAgainstFormat(file, selectedFormat) {
+
+    if (selectedFormat == 'all') {
+        return true;
+    }
 
         // Both variables as in the 'file_extension' table.
     var fileFormat    = '';
@@ -419,23 +569,23 @@ function checkAgainstFormat(file, selectedFormat) {
     // Pattern lif, czi subimages:  = (\s\(.*\))*
 
     var nameDivisions;
-    nameDivisions = file.match(/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/);    
+    nameDivisions = file.match(/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/);
 
         // A first check on the file extension.
     if (nameDivisions != null) {
-        
+
         // Specific to ome-tiff.
         if (typeof nameDivisions[2] !== 'undefined') {
             if (nameDivisions[2] == 'ome') {
                 fileExtension = nameDivisions[2] + '.';
             }
         }
-        
+
         // Main extension.
         if (typeof nameDivisions[3] !== 'undefined') {
             fileExtension += nameDivisions[3];
         }
-        
+
         fileExtension = fileExtension.toLowerCase();
 
         switch (fileExtension) {
@@ -445,8 +595,9 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'lof':
             case 'lsm':
             case 'oif':
+            case 'vsi':
             case 'pic':
-            case 'r3d':           
+            case 'r3d':
             case 'stk':
             case 'zvi':
             case 'czi':
@@ -480,20 +631,20 @@ function checkAgainstFormat(file, selectedFormat) {
                 fileFormat    = '';
                 fileExtension = '';
         }
-    }    
+    }
 
         // Control over tiffs: this structure corresponds to Leica tiffs.
     if ((file.match(/[^_]+_(T|t|Z|z|CH|ch)[0-9]+\w+\.\w+/)) != null) {
         if (fileExtension == 'tiff' || fileExtension == 'tif') {
             fileFormat = 'tiff-leica';
-        } 
+        }
     }
 
         // Control over stks: redundant.
     if ((file.match(/[^_]+_(T|t)[0-9]+\.\w+/)) != null) {
         if (fileExtension == 'stk') {
             fileFormat = 'stk';
-        } 
+        }
     }
 
         // Control over ics's, no distinction between ics and ics2.
@@ -784,11 +935,20 @@ function cancelSelection() {
     changeDiv('selection', control);
 }
 
-function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
+function changeFileSelectionValueAt(index, newName) {
+    document.getElementById('fileSelection')[index].value = newName;
+    document.getElementById('fileSelection')[index].text = newName;
+    setActionToUpdate();
+    document.getElementById('file_browser').submit();
+    
+}
 
+function imgPrev(infile, mode, gen, sanitized, compare, index,
+                 dir, referer, data) {
     var file = unescape(infile);
     var tip, html, link, onClick = "";
-
+    var regexpRes;
+    
     if (mode == 0 && gen == 1) {
         try
         {
@@ -804,7 +964,7 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
             mode = 0;
         }
     }
-
+    
     switch (mode)
     {
         case 0:
@@ -817,30 +977,45 @@ function imgPrev(infile, mode, gen, compare, index, dir, referer, data) {
 
            // Preview doesn't exist, but you can create it now.
            link = "file_management.php?genPreview=" + infile + "&src=" + dir
-                  + "&data=" + data + '&index=' + index;
-
+                   + "&data=" + data + '&index=' + index;
+           
            onClick =  '<center><img src=\\\'images/spin.gif\\\' '
                 +                           'alt=\\\'busy\\\'><br />'
                 + '<small>Generating preview in another window.<br />'
                 + 'Please wait...</small></center>';
 
-           html = '<input type="button" name="genPreview" value="" '
-                  +    'class="icon noPreview" '
-                  +    'onclick="'
-                  +        'changeDiv(\'info\',\'' + onClick + '\'); '
-                  +        'openTool(\'' + link + '\'); '
-                  +    '"'
-                  + '>'
-                  + '<br />'
-                  + '<div class="expandedView" '
-                  +    'onclick="'
-                  +        'changeDiv(\'info\',\'' + onClick + '\'); '
-                  +        'openTool(\'' + link + '\'); '
-                  +    '"'
-                  + '>'
-                  + '<img src="images/eye.png"> '
-                  + 'Click to generate preview'
-                  + '</div>';
+               html = '<input type="button" name="genPreview" value="" '
+                   +    'class="icon noPreview" '
+                   +    'onclick="'
+                   +        'changeDiv(\'info\',\'' + onClick + '\'); '
+                   +        'openTool(\'' + link + '\'); '
+                   +    '"'
+                   + '>'
+                   + '<br />'
+                   + '<div class="expandedView" '
+                   +    'onclick="'
+                   +        'changeDiv(\'info\',\'' + onClick + '\'); '
+                   +        'openTool(\'' + link + '\'); ';
+               if ( infile != sanitized ) {
+                   html = html + 'changeFileSelectionValueAt(\''
+                       + index + '\', \'' + unescape(sanitized) + '\'); ';
+               }
+               html = html +    '"'
+                   + '>'
+                   + '<img src="images/eye.png"> '
+                   + 'Click to generate preview';
+
+               // Check if the (base)names of the sanitized and original name
+               // are the same, otherwise mention that it will rename the file.
+               if ( infile != sanitized ) {
+                   regexpRes =  /^(.+)\ \(.+\)$/g.exec(file);
+                   if (regexpRes && sanitized.startsWith(regexpRes[1])) {
+                       // It is not a subimage or the basename is the same.
+                   } else {
+                       html = html + ' (the file will be renamed)';
+                   }
+               }
+               html = html + '</div>';
            }
 
            break;

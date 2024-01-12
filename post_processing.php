@@ -29,11 +29,14 @@ $message = "";
  **************************************************************************** */
 
 /** @var ChromaticAberration $parameter */
-$chromaticParam = $_SESSION['task_setting']->parameter("ChromaticAberration");
 $chanCnt = $_SESSION['task_setting']->numberOfChannels();
-$componentCnt = $chromaticParam->componentCnt();
-$chromaticArray = $chromaticParam->value();
-ksort($chromaticArray);
+$chromaticArray = array();
+for ($ch=0; $ch<$chanCnt; $ch++) {
+    $chromaticParam[$ch] = 
+        $_SESSION['task_setting']->parameter("ChromaticAberrationCh" . $ch);
+}
+$maxComponentCnt = $chromaticParam[0]->maxComponentCnt();
+$shownComponentCnt = $chromaticParam[0]->shownComponentCnt();
 
 
 /* *****************************************************************************
@@ -42,23 +45,24 @@ ksort($chromaticArray);
  *
  **************************************************************************** */
 $postErrors = 0;
-if ($_SESSION['user']->isAdmin()
-    || $_SESSION['task_setting']->isEligibleForCAC()) {
-   if (!$_SESSION['task_setting']->checkPostedChromaticAberrationParameters($_POST)) {
-     $postErrors++;
-   }
+if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForCAC()) {
+    if (!$_SESSION['task_setting']->checkPostedChromaticAberrationParameters($_POST)) {
+        $postErrors++;
+    }
 }
-if ($_SESSION['user']->isAdmin()
-    || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
-   if (!$_SESSION['task_setting']->checkPostedTStabilizationParameters($_POST)) {
-     $postErrors++;
-   }
+if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+    if (!$_SESSION['task_setting']->checkPostedTStabilizationParameters($_POST)) {
+        $postErrors++;
+    }
+}
+if (!$_SESSION['task_setting']->checkPostedHotPixelCorrectionParameters($_POST)) {
+    $postErrors++;
 }
 
 if ($postErrors == 0) {
     $saved = $_SESSION['task_setting']->save();
     if ($saved) {
-        header("Location: " . "select_task_settings.php");
+        header("Location: " . "select_hpc.php");
         exit();
     } else {
         $message = $_SESSION['task_setting']->message();
@@ -117,11 +121,10 @@ include("header.inc.php");
 
 <div id="content">
     <h3>Restoration - Post Deconvolution</h3>
-    
+
     <form method="post" action="" id="select">
 <?php
-if ($_SESSION['user']->isAdmin()
-    || $_SESSION['task_setting']->isEligibleForCAC()) {
+if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForCAC()) {
 ?>
     <div id="ChromaticAberration">
         <fieldset class="setting provided"
@@ -160,7 +163,7 @@ if ($_SESSION['user']->isAdmin()
                 ?>
             </select>
 
-                <table id="ChromaticAberration">
+                <table id="ChromaticAberrationTable">
                     <tr>
                         <td class="header">Ch</td>
                         <td class="header">Shift x<br/>(&#956m)</td>
@@ -172,14 +175,13 @@ if ($_SESSION['user']->isAdmin()
 
                     <?php
                     for ($chan = 0; $chan < $chanCnt; $chan++) {
-                        $offset = $chan * $componentCnt;
                         ?>
                         <tr>
                             <td class="header"><?php echo $chan; ?></td>
 
                             <?php
 
-                            for ($component = 0; $component < $componentCnt; $component++) {
+                            for ($component = 0; $component < $shownComponentCnt; $component++) {
                                 ?>
 
                                 <td><input
@@ -188,12 +190,19 @@ if ($_SESSION['user']->isAdmin()
                                         title="Channel <?php echo $chan; ?>, component <?php echo $component; ?>"
                                         type="text"
                                         size="1"
-                                        value="<?php echo $chromaticArray[$offset]; ?>"
+                                        value="<?php echo $chromaticParam[$chan]->value()[$component]; ?>"
                                         class="multichannelinput"/></td>
                                 <?php
-                                $offset++;
                             }
+                        
                             ?>
+                             <td><input type="button"
+                                     id="ChromaticAberrationDiscardOtherCh<?php echo $chan?>"
+                                     name="ChromaticAberrationDiscardOtherCh<?php echo $chan?>"
+                                     title="Discard this channel's other components to edit the remaining"
+                                     value="Discard other"
+                                     <?php if ($chromaticParam[$chan]->value()[13] == null) { echo 'hidden=true'; }?>
+                                     onclick="editChromaticChannelWith14Params(<?php echo $chan?>)"/></td>
                         </tr>
                         <?php
                     }
@@ -214,8 +223,7 @@ if ($_SESSION['user']->isAdmin()
               TIME STABILIZATION
         */
 
-if ($_SESSION['user']->isAdmin()
-  || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
+if ($_SESSION['user']->isAdmin() || $_SESSION['task_setting']->isEligibleForTStabilization($_SESSION['setting'])) {
         ?>
 
     <div id="TimeStabilization">
@@ -239,7 +247,7 @@ if ($_SESSION['user']->isAdmin()
             Stabilization of Time Series:
 
             <select name="TStabilization"
-                    id="TStabilization"                    
+                    id="TStabilization"
                     title="Stabilization of Time Series"
                     class="selection"
                     onchange="switchTStabilizationMode(this)">
@@ -247,7 +255,7 @@ if ($_SESSION['user']->isAdmin()
             $parameterTStabilization = $_SESSION['task_setting']->parameter("TStabilization");
             $possibleValues = $parameterTStabilization->possibleValues();
             $selectedValue = $parameterTStabilization->value();
-            
+
             // The javascript expects option values to match their indexes:
              sort($possibleValues);
 
@@ -267,7 +275,7 @@ if ($_SESSION['user']->isAdmin()
                  </option>
            <?php
              }
-           ?>           
+           ?>
             </select>
 
         <?php
@@ -278,7 +286,7 @@ if ($_SESSION['user']->isAdmin()
            $visibility = " style=\"display: none\"";
            if ($parameterTStabilization->value() == 1)
               $visibility = " style=\"display: block\"";
-    
+
         ?>
 
          <div id="TStabilizationMethodDiv" <?php echo $visibility ?>>
@@ -294,7 +302,7 @@ if ($_SESSION['user']->isAdmin()
                 $_SESSION['task_setting']->parameter("TStabilizationMethod");
             $possibleValues = $parameterTStabilizationMethod->possibleValues();
             $selectedValue = $parameterTStabilizationMethod->value();
-            
+
             // The javascript expects option values to match their indexes:
              sort($possibleValues);
 
@@ -313,10 +321,10 @@ if ($_SESSION['user']->isAdmin()
                      value="<?php echo $possibleValue ?>">
                     <?php echo $translation ?>
                  </option>
-                 
+
         <?php
              }
-        ?>        
+        ?>
             </select>
 
          </div> <!-- TStabilizationMethodDiv -->
@@ -327,7 +335,7 @@ if ($_SESSION['user']->isAdmin()
         /*
               TIME STABILIZATION: ROTATION
         */
-        
+
         ?>
 
          <div id="TStabilizationRotationDiv" <?php echo $visibility ?>>
@@ -343,7 +351,7 @@ if ($_SESSION['user']->isAdmin()
                 $_SESSION['task_setting']->parameter("TStabilizationRotation");
             $possibleValues = $parameterTStabilizationRotation->possibleValues();
             $selectedValue = $parameterTStabilizationRotation->value();
-            
+
             // The javascript expects option values to match their indexes:
              sort($possibleValues);
 
@@ -365,7 +373,7 @@ if ($_SESSION['user']->isAdmin()
              }
          ?>
             </select>
-            
+
          </div> <!-- TStabilizationRotationDiv -->
 
 
@@ -374,9 +382,9 @@ if ($_SESSION['user']->isAdmin()
         /*
               TIME STABILIZATION: CROPPING
         */
-        
+
         ?>
-        
+
          <div id="TStabilizationCroppingDiv" <?php echo $visibility ?>>
 
           Cropping Scheme:
@@ -391,7 +399,7 @@ if ($_SESSION['user']->isAdmin()
                 $_SESSION['task_setting']->parameter("TStabilizationCropping");
             $possibleValues = $parameterTStabilizationCropping->possibleValues();
             $selectedValue = $parameterTStabilizationCropping->value();
-            
+
             // The javascript expects option values to match their indexes:
              sort($possibleValues);
 
@@ -411,7 +419,7 @@ if ($_SESSION['user']->isAdmin()
                  </option>
          <?php
              }
-         ?>         
+         ?>
             </select>
 
           </div> <!-- TStabilizationCroppingDiv -->
@@ -435,8 +443,8 @@ if ($_SESSION['user']->isAdmin()
                onmouseout="UnTip()"
                onclick="deleteValuesAndRedirect(
                     'select_task_settings.php' );"/>
-        <input type="submit" value="" class="icon save"
-               onmouseover="TagToTip('ttSpanSave' )"
+        <input type="submit" value="" class="icon next"
+               onmouseover="TagToTip('ttSpanForward' )"
                onmouseout="UnTip()"
                onclick="process()"/>
     </div>
@@ -448,7 +456,7 @@ if ($_SESSION['user']->isAdmin()
     <div id="info">
         <h3>Quick help</h3>
         <div id="contextHelp">
-            <p>On this page you specify the parameters of those 
+            <p>On this page you specify the parameters of those
                restoration operations to be carried out on the deconvolved
                image.</p>
         </div>
@@ -465,11 +473,16 @@ if ($_SESSION['user']->isAdmin()
 </div> <!-- rightpanel -->
 
 
+<?php
+    if ($chanCnt > 1) {
+?>
 <script type="text/javascript">
     initChromaticChannelReference();
 </script>
 
 <?php
+    }
+
 include("footer.inc.php");
 
 // Workaround for IE
