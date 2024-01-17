@@ -1189,8 +1189,14 @@ class HuygensTemplate
                     case 'lambdaEx':
                     case 'lambdaSted':
                     case 'mType':
-                    case 'estMethod':
                         $taskDescr .= $chromValue;
+                        break;
+                    case 'estMethod':
+                        if ($chromaticParam->componentCnt() > 5) {
+                            $taskDescr .= '6';
+                        } else {
+                            $taskDescr .= $chromValue;
+                        }
                         break;
                     case 'channel':
                         $taskDescr .= $chan;
