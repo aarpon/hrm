@@ -506,7 +506,7 @@ class JobDescription
         //$parameterSetting = $this->parameterSetting;
         //$parameter = $parameterSetting->parameter('ImageFileFormat');
         //$fileFormat = $parameter->value();
-        if (preg_match("/^(.*)\.(lif|lof|czi|nd)\s\((.*)\)/i", $inputFile[0], $match)) {
+        if (preg_match("/^(.*)\.(lif|lof|czi|nd|msr|obf)\s\((.*)\)/i", $inputFile[0], $match)) {
             $inputFile = $match[1] . '_' . $match[2] . '_' . $match[3];
         } else {
             $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));

@@ -576,7 +576,7 @@ function checkAgainstFormat(file, selectedFormat) {
 
     // Pattern ome.tiff        = (\.([^\..]+))*
     // Pattern file extension: = \.([A-Za-z0-9]+)
-    // Pattern lif, czi subimages:  = (\s\(.*\))*
+    // Pattern lif, czi, obf subimages:  = (\s\(.*\))*
 
     var nameDivisions;
     nameDivisions = file.match(/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/);
@@ -616,6 +616,8 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'tf2':
             case 'tf8':
             case 'btf':
+            case 'msr':
+            case 'obf':
                 fileFormat = fileExtension;
                 break;
             case 'h5':

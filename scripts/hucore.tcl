@@ -83,9 +83,9 @@ proc reportImageDimensions { } {
 
 # Auxiliary procedure isMultiImgFile.
 # Return 1 if the image is of a type that supports sub-images. Currently, only
-# LIF, LOF and CZI.
+# LIF, LOF, CZI, MSR and OBF.
 proc isMultiImgFile { filename } {
-    set multiImgExtensions { ".lif" ".lof" ".czi" ".nd"}
+    set multiImgExtensions { ".lif" ".lof" ".czi" ".nd" ".msr" ".obf"}
 
     set ext [file extension $filename]
     set isMulti 0
@@ -164,7 +164,10 @@ proc reportSubImages {} {
         } elseif { [string equal -nocase $extension ".nd"] } {
             set subImages [lindex $contents 1]
         } elseif { [string equal -nocase $extension ".lif"]
-               || [string equal -nocase $extension ".lof"]} {
+                   || [string equal -nocase $extension ".lof"]
+                   || [string equal -nocase $extension ".msr"]
+                   || [string equal -nocase $extension ".obf"]
+               } {
             set resDict [dict create {*}[lindex $contents 1]]
             set subImages [dict keys $resDict]
 

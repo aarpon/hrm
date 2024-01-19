@@ -3315,7 +3315,7 @@ class HuygensTemplate
 
         /*If a (string) comes after the file name, the string is interpreted
          as a subimage. Currently this is for LIF, LOF and CZI files only. */
-        if (preg_match("/^(.*\.(lif|czi|lof|nd))\s\((.*)\)/i",
+        if (preg_match("/^(.*\.(lif|czi|lof|nd|msr|obf))\s\((.*)\)/i",
             $this->srcImage, $match)) {
             $this->srcImage = $match[1];
             $this->subImage = $match[3]; // @todo Is this correct?
