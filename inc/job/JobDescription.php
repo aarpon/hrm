@@ -499,19 +499,14 @@ class JobDescription
     {
         $files = $this->files();
         $inputFile = end($files);
+        // Handle subfolders.
         $inputFile = explode("/", $inputFile);
-        // remove file extension
-        //$inputFile = explode(".", end($inputFile));
-        //$inputFile = $inputFile[0];
-        //$parameterSetting = $this->parameterSetting;
-        //$parameter = $parameterSetting->parameter('ImageFileFormat');
-        //$fileFormat = $parameter->value();
-        if (preg_match("/^(.*)\.(lif|lof|czi|nd|msr|obf)\s\((.*)\)/i", $inputFile[0], $match)) {
+        // Match for container files.
+        if (preg_match("/^(.*)\.(lif|lof|czi|nd|msr|obf)\s\((.*)\)/i", end($inputFile), $match)) {
             $inputFile = $match[1] . '_' . $match[2] . '_' . $match[3];
         } else {
             $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
         }
-
         return $inputFile;
     }
 
