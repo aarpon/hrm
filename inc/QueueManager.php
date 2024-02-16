@@ -260,7 +260,7 @@ class QueueManager
         foreach ($files as $file) {
             $counter++;
             $match = array();
-            if (preg_match("/^(.*\.(lif|lof|czi|nd))\s\((.*)\)/i", $file, $match)) {
+            if (preg_match("/^(.*\.(lif|lof|czi|nd|obf|msr))\s\((.*)\)/i", $file, $match)) {
                 $filteredFiles[$counter] = $match[1];
             } else {
                 $filteredFiles[$counter] = $file;
@@ -808,9 +808,9 @@ class QueueManager
                 // Remove all the transferred files from the processing server.
                 $this->cleanUpRemoteServer($job);
 
-                // Reset server and remove job from the job queue
+                // Reset server and remove job from the job queue.
                 $this->stopTime = $queue->stopJob($job);
-                $this->assembleJobLogFile($job, $startTime, $logFile, $errorFile);
+                $this->assembleJobLogFile($job, $startTime, $this->stopTime, $logFile, $errorFile);
 
                 // Write email
                 if ($send_mail) {
@@ -838,7 +838,7 @@ class QueueManager
      * @param string $errorFile Full path to the errorlog file.
      * @return string Job log to be displayed.
      */
-    public function assembleJobLogFile($job, $startTime, $logFile, $errorFile)
+    public function assembleJobLogFile($job, $startTime, $endTime, $logFile, $errorFile)
     {
         $result = false;
         $desc = $job->description();
@@ -855,7 +855,7 @@ class QueueManager
         // Message
         $text = '';
         $text .= "Job id: $id (pid $pid on $server), started " .
-            "at $startTime and finished at " . date("Y-m-d H:i:s") . "\n\n";
+            "at $startTime and finished at $endTime \n\n";
 
         if (file_exists($errorFile)) {
             $text .= "- HUYGENS ERROR REPORT (stderr) --------------\n\n" . file_get_contents($errorFile);

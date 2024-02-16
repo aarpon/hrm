@@ -6602,9 +6602,9 @@ if ($current_revision < $n) {
 // -----------------------------------------------------------------------------
 // Update to revision 20
 // Description:
+//     * Remove "IMS (Imaris Classic)" from the list out output file formats.
 //     * Expand the QualityChangeStoppingCriterion to set values per channel.
 //     * Expand the NumberOfIterations to set values per channel.
-//     * Remove "IMS (Imaris Classic)" from the list out output file formats.
 // -----------------------------------------------------------------------------
 $n = 20;
 if ($current_revision < $n) {
@@ -6687,7 +6687,7 @@ if ($current_revision < $n) {
         while ($row = $rs->FetchRow()) {
 
             # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
-            $quality = $row[3];
+            $quality = $row[5];
             
             # If the first character is a '#' the change has already been
             # applied, don't edit this value.
@@ -6697,13 +6697,12 @@ if ($current_revision < $n) {
             
             $qualityArray = array_fill(0, $maxCh, $quality);
             $qualityArray = array_merge(array(null), $qualityArray);
-            $row[3] = implode('#', $qualityArray);
+            $row[5] = implode('#', $qualityArray);
 
             # Delete old entry.
             if (!$db->Execute("DELETE FROM " . $tabname .
-                              " WHERE owner='" . $row[0] .
-                              "' AND setting='" . $row[1] .
-                              "' AND name='" . $row[2] . "'")) {
+                              " WHERE id='" . $row[0] .
+                              "' AND setting_id='" . $row[1] . "'")) {
                 $msg = "An error occurred while updating " .
                     "the database to revision " . $n . ".";
                 write_message($msg);
@@ -6792,7 +6791,7 @@ if ($current_revision < $n) {
         while ($row = $rs->FetchRow()) {
 
             # Transform "<val>" to "#<val>#<val>#<val>#<val>#<val>#<val>".
-            $iterations = $row[3];
+            $iterations = $row[5];
             
             # If the first character is a '#' the change has already been
             # applied, don't edit this value.
@@ -6802,13 +6801,12 @@ if ($current_revision < $n) {
 
             $iterationsArray = array_fill(0, $maxCh, $iterations);
             $iterationsArray = array_merge(array(null), $iterationsArray);
-            $row[3] = implode('#', $iterationsArray);
+            $row[5] = implode('#', $iterationsArray);
 
             # Delete old entry.
             if (!$db->Execute("DELETE FROM " . $tabname .
-                              " WHERE owner='" . $row[0] .
-                              "' AND setting='" . $row[1] .
-                              "' AND name='" . $row[2] . "'")) {
+                              " WHERE id='" . $row[0] .
+                              "' AND setting_id='" . $row[1] . "'")) {
                 $msg = "An error occurred while updating " .
                     "the database to revision " . $n . ".";
                 write_message($msg);
@@ -6842,6 +6840,156 @@ if ($current_revision < $n) {
     write_message($msg);
     write_to_log($msg);
 }
+
+
+
+// -----------------------------------------------------------------------------
+// Update to revision 21
+// Description:
+//     * Add Aberrior MSR and OBF file support.
+// -----------------------------------------------------------------------------
+$n = 21;
+if ($current_revision < $n) {
+
+    
+    // Add Aberrior MSR file to possible_values
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"] = 'ImageFileFormat';
+    $record["value"] = 'msr';
+    $record["translation"] = 'Abberior MSR (*.msr)';
+    $record["isDefault"] = 'f';
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname . " WHERE parameter='" .
+        $record['parameter'] . "' AND value='" . $record['value'] . "' " .
+        " AND translation='" . $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
+            $msg = "Could not add entry for Abberior MSR in table 'possible_values'.";
+            write_message($msg);
+            write_to_error($msg);
+            return false;
+        }
+    }
+    
+    // Add Aberrior MSR file to file_extension
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "msr";
+    $record["extension"] = "msr";
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "Could not add entry for Abberior MSR in table 'file_extension'.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Add Aberrior MSR file to file_format
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "msr";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $record["ismultifile"] = 't';
+    $record["hucoreName"] = "msr";
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE name='" . $record['name'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    // Add Aberrior OBF file to possible_values
+    $tabname = 'possible_values';
+    $record = array();
+    $record["parameter"] = 'ImageFileFormat';
+    $record["value"] = 'obf';
+    $record["translation"] = 'Abberior MSR (*.obf)';
+    $record["isDefault"] = 'f';
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname . " WHERE parameter='" .
+        $record['parameter'] . "' AND value='" . $record['value'] . "' " .
+        " AND translation='" . $record["translation"] . "' AND isDefault='" .
+        $record["isDefault"] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        if (!$db->AutoExecute($tabname, $record, 'INSERT')) {
+            $msg = "Could not add entry for Abberior OBF in table 'possible_values'.";
+            write_message($msg);
+            write_to_error($msg);
+            return false;
+        }
+    }
+    
+    // Add Aberrior OBF file to file_extension
+    $tabname = "file_extension";
+    $record = array();
+    $record["file_format"] = "obf";
+    $record["extension"] = "obf";
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE file_format='" . $record['file_format'] .
+        "' AND extension='" . $record['extension'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "Could not add entry for Abberior OBF in table 'file_extension'.";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+    // Add Aberrior OBF file to file_format
+    $tabname = "file_format";
+    $record = array();
+    $record["name"] = "obf";
+    $record["isFixedGeometry"] = "f";
+    $record["isSingleChannel"] = "f";
+    $record["isVariableChannel"] = "t";
+    $record["ismultifile"] = 't';
+    $record["hucoreName"] = "obf";
+    // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+        " WHERE name='" . $record['name'] . "'";
+    if ($db->Execute($query)->RecordCount() == 0) {
+        $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if (!$db->Execute($insertSQL)) {
+            $msg = "An error occurred while updating " .
+                "the database to revision " . $n . ".";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+    
+
+    // Update revision
+    if (!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
+
 
 fclose($fh);
 

@@ -909,6 +909,11 @@ function jsonGetFileFormats()
     $translations = array();
     foreach ($formats as $key => $format) {
         $translations[$key] = $fileFormat->translatedValueFor($format);
+
+        // Ensure "all" is on top. Temporarily set to zeroes.
+        if ($format == "all") {
+            $translations[$key] = "000";
+        }
     }
 
     // This sort function maintains the key/value associations.
@@ -918,7 +923,9 @@ function jsonGetFileFormats()
     foreach ($translations as $key => $translation) {
         $format = $formats[$key];
 
+        // Restore "all" text and append please choose text.
         if ($format == "all") {
+            $translation = $fileFormat->translatedValueFor($format);
             $translation .= " Please choose a file format ...";
         }
 

@@ -499,19 +499,14 @@ class JobDescription
     {
         $files = $this->files();
         $inputFile = end($files);
+        // Handle subfolders.
         $inputFile = explode("/", $inputFile);
-        // remove file extension
-        //$inputFile = explode(".", end($inputFile));
-        //$inputFile = $inputFile[0];
-        //$parameterSetting = $this->parameterSetting;
-        //$parameter = $parameterSetting->parameter('ImageFileFormat');
-        //$fileFormat = $parameter->value();
-        if (preg_match("/^(.*)\.(lif|lof|czi|nd)\s\((.*)\)/i", $inputFile[0], $match)) {
+        // Match for container files.
+        if (preg_match("/^(.*)\.(lif|lof|czi|nd|msr|obf)\s\((.*)\)/i", end($inputFile), $match)) {
             $inputFile = $match[1] . '_' . $match[2] . '_' . $match[3];
         } else {
             $inputFile = substr(end($inputFile), 0, strrpos(end($inputFile), "."));
         }
-
         return $inputFile;
     }
 
@@ -546,7 +541,14 @@ class JobDescription
         // (see http://stackoverflow.com/questions/4636166/ for more details)
         $tmp = explode($taskSetting->name(), $this->sourceImageShortName());
         $outputFile = end($tmp);
-        $outputFile = str_replace(" ", "_", $outputFile);
+        $outputFile = str_replace(array(" ",":"), "_", $outputFile);
+        // Max final file name length is 128 characters, truncate if
+        // necessary. Reserve enough space for all possible extra suffixes.
+        $pathInfo = pathinfo($outputFile);
+        if (strlen($pathInfo['basename']) > 76) {
+            $outputFile = $pathInfo['dirname'] . "/";
+            $outputFile .= substr($pathInfo['basename'], 0, 70) . "_trunc";
+        }
         $result = $outputFile . "_" . $this->id() . "_hrm";
         # Add a non-numeric string at the end: if the task name ends with a
         # number, that will be removed when saving using some file formats that

@@ -1293,6 +1293,9 @@ class DatabaseConnection
             $sqlAutoSeries = "T";
         }
         $slashesFile = addslashes($file);
+        if (strlen($slashesFile) > 191) {
+            Log::error("File name too long!");
+        }
         $query = "insert into job_files values ('$id', '$username', '$slashesFile', '$sqlAutoSeries')";
         $result = $result && $this->execute($query);
         return $result;
@@ -1449,7 +1452,6 @@ class DatabaseConnection
         $taskSetting = $desc->taskSetting();
         $analysisSetting = $desc->analysisSetting();
 
-        $stopTime = date("Y-m-d H:i:s");
         $id = $desc->id();
         /** @var UserV2 $user */
         $user = $desc->owner();
@@ -1467,8 +1469,9 @@ class DatabaseConnection
         $parameter = $analysisSetting->parameter('ColocAnalysis');
         $colocAnalysis = $parameter->value();
 
+        // Note: both startTime and endTime are now set in database time.
         $query = "insert into statistics values ('$id', '$owner', '$group', " .
-            "'$startTime', '$stopTime', '$inFormat', '$outFormat', " .
+            "'$startTime', NOW(), '$inFormat', '$outFormat', " .
             "'$PSF', '$microscope', '$colocAnalysis')";
 
         $this->execute($query);

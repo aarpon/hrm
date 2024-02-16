@@ -250,11 +250,11 @@ class Nav
      *
      * @param bool $wrapInLiElement Wrap the link in a <li></li> element.
      *             Optional, default is true.
-     * @param bool $showSignUp True if the sign up button should be displayed, false otherwise.
-     * @param string $req Request.
+     * @param bool $showSignUp Whether to show the sign up link or not.
+     *             Optional, default is true.
      * @return string HTML code to the login link.
      */
-    public static function linkLogIn($wrapInLiElement = true, $showSignUp = true, $req = "")
+    public static function linkLogIn($wrapInLiElement = true, $showSignUp = true)
     {
         $openingLi = "";
         $closingLi = "";
@@ -279,7 +279,6 @@ EOT;
 <input id="username" name="username" type="text" class="textfield" tabindex="1"/>
 <label for="password">Password</label>
 <input id="password" name="password" type="password" class="textfield" tabindex="2"/>
-<input type="hidden" name="request" value="$req"/>
 <button type="submit" class="dark" value="login">Log in</button>
 $signUpElement
 <button type="button" class="button" value="reset" onclick="location.href = 'reset_password.php';">Reset</button>

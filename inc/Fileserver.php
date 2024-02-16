@@ -238,6 +238,8 @@ class Fileserver
             case 'czi':
             case 'nd2':
             case 'nd':
+            case 'msr':
+            case 'obf':
             case 'hdf5':
             case 'ics':
                 $fileFormat =  $fileExtension;
@@ -314,6 +316,8 @@ class Fileserver
                 case 'tf2':
                 case 'tf8':
                 case 'btf':
+                case 'msr':
+                case 'obf':
                     $fileFormat = $fileExtension;
                     break;
                 case 'h5':

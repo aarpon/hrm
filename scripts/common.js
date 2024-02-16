@@ -318,6 +318,9 @@ function editChromaticChannelWith14Params(channel) {
     butElement.setAttribute('hidden', true);
     clearChromaticChannelReference( );
 
+    scaleElement = document.getElementById("ChromaticAberrationScaleTitle");
+    scaleElement.innerHTML = 'Scale<br/>(ratio)';
+
     // Round the values to 5 decimals. This both makes it easier to edit and
     // ensures the new values are saved properly. 
     var tableTag   = "ChromaticAberrationTable";
@@ -328,7 +331,12 @@ function editChromaticChannelWith14Params(channel) {
     for (var component = 0; component < componentCnt; component++) {
         var id = channelTag + "Ch" + channel + "_" + component;
         inputElement = document.getElementById(id);
-        var rounded = Math.round(inputElement.value * 100000) / 100000;
+        if (component == 4) {
+            var rounded = Math.round(Math.pow(10, inputElement.value / 10)
+                                     * 100000) / 100000;
+        } else {
+            var rounded = Math.round(inputElement.value * 100000) / 100000;
+        }
         inputElement.value = rounded;
     }
 
@@ -351,7 +359,9 @@ function updateDeconEntryProperties( ) {
                                 "SignalNoiseRatioGMLE",
                                 "SignalNoiseRatioSKIP",
                                 "Acuity",
-                                "BackgroundOffsetPercent"];
+                                "BackgroundOffsetPercent",
+                                "q",
+                                "it"];
 
     var skipAllChannels = true;
 
@@ -566,7 +576,7 @@ function checkAgainstFormat(file, selectedFormat) {
 
     // Pattern ome.tiff        = (\.([^\..]+))*
     // Pattern file extension: = \.([A-Za-z0-9]+)
-    // Pattern lif, czi subimages:  = (\s\(.*\))*
+    // Pattern lif, czi, obf subimages:  = (\s\(.*\))*
 
     var nameDivisions;
     nameDivisions = file.match(/(\.([^\..]+))*\.([A-Za-z0-9]+)(\s\(.*\))*$/);
@@ -606,6 +616,8 @@ function checkAgainstFormat(file, selectedFormat) {
             case 'tf2':
             case 'tf8':
             case 'btf':
+            case 'msr':
+            case 'obf':
                 fileFormat = fileExtension;
                 break;
             case 'h5':
