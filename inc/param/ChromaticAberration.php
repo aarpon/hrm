@@ -98,7 +98,7 @@ class ChromaticAberration extends Parameter
      */
     public function shownComponentCnt()
     {
-        return $this->componentCnt();
+        return 5;
     }
     
     /**
@@ -127,7 +127,7 @@ class ChromaticAberration extends Parameter
     public function displayString($chanCnt = 0)
     {
         // Don't show anything when the channel is irrelevant.
-        if ($this->channel > $chanCnt) {
+        if ($this->channel >= $chanCnt) {
             return "";
         }
         return rtrim($this->value->displayString(), ", \n\r\t\v\x00"). "\n";
@@ -167,6 +167,21 @@ class ChromaticAberration extends Parameter
         if ($isReference) {
             $valuesArray = array("0","0","0","0","1",null,null,null,
                                  null,null,null,null,null,null);
+        }
+
+        // If only 5 values are present, fill the rest with nulls.
+        if (sizeof($valuesArray) == 5) {
+            array_push($valuesArray,
+                       null,null,null,null,null,null,null,null,null);
+            $this->componentCnt = 5;
+        } else {
+            $this->componentCnt = 14;
+            foreach ($valuesArray as $val) {
+                if ($val == null || $val == "") {
+                    $this->componentCnt = 5;
+                    break;
+                }
+            }
         }
         
         //error_log(implode('_', $valuesArray));

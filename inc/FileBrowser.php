@@ -535,7 +535,7 @@ include("header_fb.inc.php");
                         "DestinationFolder" : "<?php echo($_SESSION['fileserver']->sourceFolder()); ?>",
                             "ImageExtensions" : ['dv', 'ims', 'lif', 'lof', 'lsm', 'vsi', 'oif', 'pic', 'r3d', 'stk',
                                                  'zvi', 'czi', 'nd2', 'nd', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
-                            'ome.tiff', 'ome', 'ics', 'ids']
+                                                 'ome.tiff', 'ome', 'msr', 'obf', 'ics', 'ids']
                     }
                 },
                 chunking: {
@@ -554,10 +554,10 @@ include("header_fb.inc.php");
                     stopOnFirstInvalidFile: false,
                     sizeLimit: totalAllowedSizeOfSingleFile,
                     acceptFiles: ".dv,.ims,.lif,.lof,.lsm,.vsi,.oif,.pic,.3rd,.stk,.zvi,.czi,.nd2,.nd,.tf2,.tf8,.btf,.h5," +
-                        ".tif,.tiff,.ome.tif,.ome.tiff,.ics,.ids,.zip,.tgz,.tar,.tar.gz",
+                        ".tif,.tiff,.ome.tif,.ome.tiff,.msr,.obf,.ics,.ids,.zip,.tgz,.tar,.tar.gz",
                     allowedExtensions: ['dv', 'ims', 'lif', 'lof', 'lsm', 'vsi', 'oif', 'pic', 'r3d', 'stk',
                                         'zvi', 'czi', 'nd2', 'nd', 'tf2', 'tf8', 'btf', 'h5', 'tif', 'tiff', 'ome.tif',
-                        'ome.tiff', 'ome', 'ics', 'ids', 'zip', 'tgz', 'tar', 'tar.gz'],
+                                        'ome.tiff', 'ome', 'msr', 'obf', 'ics', 'ids', 'zip', 'tgz', 'tar', 'tar.gz'],
                 },
                 resume: {
                     enabled: true

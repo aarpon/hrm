@@ -83,9 +83,9 @@ proc reportImageDimensions { } {
 
 # Auxiliary procedure isMultiImgFile.
 # Return 1 if the image is of a type that supports sub-images. Currently, only
-# LIF, LOF and CZI.
+# LIF, LOF, CZI, MSR and OBF.
 proc isMultiImgFile { filename } {
-    set multiImgExtensions { ".lif" ".lof" ".czi" ".nd"}
+    set multiImgExtensions { ".lif" ".lof" ".czi" ".nd" ".msr" ".obf"}
 
     set ext [file extension $filename]
     set isMulti 0
@@ -164,7 +164,10 @@ proc reportSubImages {} {
         } elseif { [string equal -nocase $extension ".nd"] } {
             set subImages [lindex $contents 1]
         } elseif { [string equal -nocase $extension ".lif"]
-               || [string equal -nocase $extension ".lof"]} {
+                   || [string equal -nocase $extension ".lof"]
+                   || [string equal -nocase $extension ".msr"]
+                   || [string equal -nocase $extension ".obf"]
+               } {
             set resDict [dict create {*}[lindex $contents 1]]
             set subImages [dict keys $resDict]
 
@@ -194,6 +197,42 @@ proc hrmImgOpen { dir file args } {
     set matched [regexp $exp $path match path subimage]
 
     if { $matched } {
+        
+        # Check if the subimage matches. The agressive sanitization in the
+        # HRM will replace ":" with "_" in the subimage name.
+        if {[string first "_" $subimage] > -1} {
+            
+            set cmd "img preOpen \"$path\""
+            if { [ catch {
+                set res [eval $cmd]
+            } res ] } {
+                reportError "$res"
+                reportError "command: $cmd"
+                return -1
+            }
+            set subImages {}
+            set extension [file extension $path]
+            if { [string equal -nocase $extension ".czi"]
+                 || [string equal -nocase $extension ".nd"]} {
+                set subImages [lindex $res 1]
+            } elseif { [string equal -nocase $extension ".lif"]
+                       || [string equal -nocase $extension ".lof"]
+                       || [string equal -nocase $extension ".msr"]
+                       || [string equal -nocase $extension ".obf"] } {
+                set resDict [dict create {*}[lindex $res 1]]
+                set subImages [dict keys $resDict]
+            }
+            if {$subimage ni $subImages} {
+                foreach sub $subImages {
+                    set replacedSubImage [regsub -all {\:} $sub {_}]
+                    if {$subimage eq $replacedSubImage} {
+                        set subimage $sub
+                        break
+                    }
+                }
+            }
+        }
+        
         # puts "Opening image: '$path' -subImage $subimage"
         set cmd "img open \"$path\" -subImage \"$subimage\" $args"
         if { [ catch {

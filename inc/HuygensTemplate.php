@@ -1189,8 +1189,14 @@ class HuygensTemplate
                     case 'lambdaEx':
                     case 'lambdaSted':
                     case 'mType':
-                    case 'estMethod':
                         $taskDescr .= $chromValue;
+                        break;
+                    case 'estMethod':
+                        if ($chromaticParam->componentCnt() > 5) {
+                            $taskDescr .= '6';
+                        } else {
+                            $taskDescr .= $chromValue;
+                        }
                         break;
                     case 'channel':
                         $taskDescr .= $chan;
@@ -2391,7 +2397,11 @@ class HuygensTemplate
                     $taskDescr .= $this->string2tcllist($coefficients);
                     break;
                 case 'map':
-                    $taskDescr .= $this->getColocMap();
+                    if ($this->getColocMap() == "") {
+                        $taskDescr .= "none";
+                    } else {
+                        $taskDescr .= $this->getColocMap();
+                    }
                     break;
                 case 'destDir':
                     $destDir = $this->getDestDir() . "/hrm_previews";
@@ -3309,7 +3319,7 @@ class HuygensTemplate
 
         /*If a (string) comes after the file name, the string is interpreted
          as a subimage. Currently this is for LIF, LOF and CZI files only. */
-        if (preg_match("/^(.*\.(lif|czi|lof|nd))\s\((.*)\)/i",
+        if (preg_match("/^(.*\.(lif|czi|lof|nd|msr|obf))\s\((.*)\)/i",
             $this->srcImage, $match)) {
             $this->srcImage = $match[1];
             $this->subImage = $match[3]; // @todo Is this correct?
