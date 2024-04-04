@@ -2397,7 +2397,11 @@ class HuygensTemplate
                     $taskDescr .= $this->string2tcllist($coefficients);
                     break;
                 case 'map':
-                    $taskDescr .= $this->getColocMap();
+                    if ($this->getColocMap() == "") {
+                        $taskDescr .= "none";
+                    } else {
+                        $taskDescr .= $this->getColocMap();
+                    }
                     break;
                 case 'destDir':
                     $destDir = $this->getDestDir() . "/hrm_previews";
