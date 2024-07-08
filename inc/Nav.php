@@ -132,7 +132,7 @@ class Nav
     {
         return self::buildLinkHTMLElement(
             "Feedback",
-            "http://hrm.svi.nl:8080/redmine/projects/public/issues/new",
+            "https://github.com/aarpon/hrm/issues",
             "images/report_issue.png",
             "Bug report",
             true,
