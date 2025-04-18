@@ -1628,22 +1628,22 @@ class HuygensTemplate
 
         switch ($direction) {
             case '':
-            case 'right':
+            case 'From right':
                 $angle = 0.0;
                 break;
-            case 'left':
+            case 'From left':
                 $angle = 180.0;
                 break;
-            case 'top':
+            case 'From top':
                 $angle = 90.0;
                 break;
-            case 'bottom':
+            case 'From bottom':
                 $angle = 270.0;
                 break;
-            case 'left+right':
+            case 'Right + left':
                 $angle = 0.0;
                 break;
-            case 'top+bottom':
+            case 'Top + bottom':
                 $angle = 90.0;
                 break;
             default:
