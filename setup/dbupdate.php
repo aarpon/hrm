@@ -6991,6 +6991,50 @@ if ($current_revision < $n) {
 
 
 
+// -----------------------------------------------------------------------------
+// Update to revision 22
+// Description:
+//     * Add support for VT-iSIM microscopy.
+// -----------------------------------------------------------------------------
+$n = 22;
+if ($current_revision < $n) {
+
+    // ------- Add VT-iSIM microscopy. ------
+
+    $tabname = "possible_values";
+
+    $record = array();
+    $record["parameter"] = "MicroscopeType";
+    $record["value"] = "VT-iSIM";
+    $record["translation"] = "isim";
+    $record["isDefault"] = "f";
+    $record["parameter_key"] = "MicroscopeType10";
+
+        // Skip it if the row is already there.
+    $query = "SELECT * FROM " . $tabname .
+             " WHERE parameter='" . $record['parameter'] .
+             "' AND value='" . $record['value'] . "'";
+    if ( $db->Execute( $query )->RecordCount( ) == 0 ) {
+       $insertSQL = $db->GetInsertSQL($tabname, $record);
+        if(!$db->Execute($insertSQL)) {
+            $msg = "Error updating to revision " . $n .
+	           " (line " . __LINE__ . ").";
+            write_message($msg);
+            write_to_error($msg);
+            return;
+        }
+    }
+
+    // Update revision
+    if (!update_dbrevision($n))
+        return;
+
+    $current_revision = $n;
+    $msg = "Database successfully updated to revision " . $current_revision . ".";
+    write_message($msg);
+    write_to_log($msg);
+}
+
 fclose($fh);
 
 return;

@@ -49,7 +49,7 @@ class System
      * set by the developers!
      * @var int
      */
-    private const DB_LAST_REVISION = 21;
+    private const DB_LAST_REVISION = 22;
 
     /**
      * Minimum HuCore (major) version number to be compatible with HRM.
@@ -318,6 +318,7 @@ class System
                 "multi-photon" => "Multi-photon",
                 "nipkow-disk" => "Spinning-disk",
                 "spim" => "SPIM",
+                "isim" => "VT-ISIM",
                 "sted" => "STED",
                 "sted3D" => "STED 3D",
                 "widefield" => "Widefield",

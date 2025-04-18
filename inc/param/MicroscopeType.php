@@ -95,6 +95,8 @@ class MicroscopeType extends ChoiceParameter
                 return $db->hasLicense("sted3D");
             case 'SPIM':
                 return $db->hasLicense("spim");
+            case 'VT-iSIM':
+                return $db->hasLicense("isim");
             case 'rescan':
                 return $db->hasLicense("rescan");
             case 'array detector confocal':
