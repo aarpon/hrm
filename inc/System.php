@@ -126,6 +126,9 @@ class System
         if ($version === false) {
             return -1;
         }
+        if (!is_numeric($version)) {
+            return -1;
+        }
         return $version;
     }
 
