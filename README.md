@@ -4,13 +4,12 @@
 The Huygens Remote Manager is an open-source, efficient, multi-user web-based interface to the Huygens software by Scientific Volume Imaging for parallel batch deconvolutions.
 
 For more information please see:
- * [HRM project website](http://huygens-rm.org/)
+ * [HRM project](https://github.com/aarpon/hrm/)
  * [HRM documentation on ReadTheDocs.org](http://huygens-remote-manager.readthedocs.org/en/latest/)
- * [HRM API](http://api.huygens-rm.org/html/index.html)
 
 ## Download the latest production version
 
-You can download the latest version from https://www.huygens-rm.org/wp/?page_id=11. This is a complete distribution, ready to configure and install as explained in the [installation instruction](https://huygens-remote-manager.readthedocs.io/en/latest/admin/index.html).
+You can download the latest version from https://sourceforge.net/projects/hrm/. This is a complete distribution, ready to configure and install as explained in the [installation instruction](https://huygens-remote-manager.readthedocs.io/en/latest/admin/index.html).
 
 ## For developers 
 
